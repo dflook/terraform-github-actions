@@ -1,0 +1,27 @@
+name: terraform-output
+description: Set the action outputs from terraform configuration outputs
+author: Daniel Flook
+
+inputs:
+  path:
+    description: Path to the terraform configuration
+    required: true
+  workspace:
+    description: Name of the terraform workspace
+    required: false
+    default: default
+  backend_config:
+    description: Comma separated list of backend configs to set, e.g. 'foo=bar'
+    required: false
+  backend_config_file:
+    description: Path to a backend config file
+    required: false
+
+runs:
+  using: docker
+  image: ../image/Dockerfile
+  entrypoint: /entrypoints/output.sh
+
+branding:
+  icon: globe
+  color: purple

@@ -1,0 +1,150 @@
+name: Test terraform-plan
+
+on: [pull_request]
+
+jobs:
+  no_changes:
+    runs-on: ubuntu-latest
+    name: No changes
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Plan
+        uses: ./terraform-plan
+        id: plan
+        with:
+          path: tests/plan/no_changes
+
+      - name: Verify outputs
+        run: |
+          echo "changes=${{ steps.plan.outputs.changes }}"
+
+          if [[ "${{ steps.plan.outputs.changes }}" != "false" ]]; then
+            echo "::error:: output changes not set correctly"
+            exit 1
+          fi
+
+  no_changes_no_comment:
+    runs-on: ubuntu-latest
+    name: No changes without comment
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          path: tests/plan/no_changes
+          add_github_comment: false
+
+  plan_change_comment:
+    runs-on: ubuntu-latest
+    name: Change
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Plan
+        uses: ./terraform-plan
+        id: plan
+        with:
+          path: tests/plan/plan
+
+      - name: Verify outputs
+        run: |
+          echo "changes=${{ steps.plan.outputs.changes }}"
+
+          if [[ "${{ steps.plan.outputs.changes }}" != "true" ]]; then
+            echo "::error:: output changes not set correctly"
+            exit 1
+          fi
+
+  plan_change_no_comment:
+    runs-on: ubuntu-latest
+    name: Change without github comment
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          path: tests/plan/plan
+          add_github_comment: false
+
+  error:
+    runs-on: ubuntu-latest
+    name: Error
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Plan
+        uses: ./terraform-plan
+        continue-on-error: true
+        id: plan
+        with:
+          path: tests/plan/error
+
+      - name: Check invalid
+        run: |
+          if [[ "${{ steps.plan.outcome }}" != "failure" ]]; then
+            echo "Plan did not fail correctly"
+            exit 1
+          fi
+
+  error_no_comment:
+    runs-on: ubuntu-latest
+    name: Error without comment
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Plan
+        uses: ./terraform-plan
+        continue-on-error: true
+        id: plan
+        with:
+          path: tests/plan/error
+          add_github_comment: false
+
+      - name: Check invalid
+        run: |
+          if [[ "${{ steps.plan.outcome }}" != "failure" ]]; then
+            echo "Plan did not fail correctly"
+            exit 1
+          fi
+
+  plan_without_token:
+    runs-on: ubuntu-latest
+    name: Add comment without token
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Plan
+        uses: ./terraform-plan
+        continue-on-error: true
+        id: plan
+        with:
+          path: tests/plan/error
+
+      - name: Check invalid
+        run: |
+          if [[ "${{ steps.plan.outcome }}" != "failure" ]]; then
+            echo "Plan did not fail correctly"
+            exit 1
+          fi

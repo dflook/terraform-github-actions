@@ -1,0 +1,17 @@
+name: terraform-validate
+description: Validate a terraform configuration directory
+author: Daniel Flook
+
+inputs:
+  path:
+    description: Path to the terraform configuration
+    required: true
+
+runs:
+  using: docker
+  image: ../image/Dockerfile
+  entrypoint: /entrypoints/validate.sh
+
+branding:
+  icon: globe
+  color: purple

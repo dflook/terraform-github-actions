@@ -1,0 +1,27 @@
+name: terraform-remote-state
+description: Retrieve remote state from a backend
+author: Daniel Flook
+
+inputs:
+  backend_type:
+    description: The backend plugin name
+    required: true
+  workspace:
+    description: Name of the terraform workspace
+    required: false
+    default: default
+  backend_config:
+    description: Comma separated list of backend config values to set, e.g. 'foo=bar'
+    required: false
+  backend_config_file:
+    description: Path to a backend config file
+    required: false
+
+runs:
+  using: docker
+  image: ../image/Dockerfile
+  entrypoint: /entrypoints/remote-state.sh
+
+branding:
+  icon: globe
+  color: purple

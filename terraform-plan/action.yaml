@@ -1,0 +1,49 @@
+name: terraform-plan
+description: Create a terraform plan
+author: Daniel Flook
+
+inputs:
+  path:
+    description: Path to the terraform configuration
+    required: true
+  workspace:
+    description: Name of the terraform workspace
+    required: false
+    default: default
+  backend_config:
+    description: Comma separated list of backend config values to set, e.g. 'foo=bar'
+    required: false
+  backend_config_file:
+    description: Path to a backend config file
+    required: false
+  var:
+    description: Comma separated list of vars to set, e.g. 'foo=bar'
+    required: false
+  var_file:
+    description: Comma separated list of var file paths
+    required: false
+  parallelism:
+    description: Limit the number of concurrent operations
+    required: false
+    default: 0
+  label:
+    description: A friendly name for this plan
+    required: false
+    default: ""
+  add_github_comment:
+    description: Add the plan to a GitHub PR
+    required: false
+    default: true
+
+outputs:
+  changes:
+    description: If the plan changes any resources - 'true' or 'false'
+
+runs:
+  using: docker
+  image: ../image/Dockerfile
+  entrypoint: /entrypoints/plan.sh
+
+branding:
+  icon: globe
+  color: purple

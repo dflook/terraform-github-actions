@@ -1,0 +1,37 @@
+name: terraform-destroy
+description: Destroys all resources in a terraform workspace
+author: Daniel Flook
+
+inputs:
+  path:
+    description: Path to the terraform configuration
+    required: true
+  workspace:
+    description: Name of the terraform workspace
+    required: false
+    default: default
+  backend_config:
+    description: Comma separated list of backend configs to set, e.g. 'foo=bar'
+    required: false
+  backend_config_file:
+    description: Path to a backend config file
+    required: false
+  var:
+    description: Comma separated list of vars to set, e.g. 'foo=bar'
+    required: false
+  var_file:
+    description: Comma separated list of var file paths
+    required: false
+  parallelism:
+    description: Limit the number of concurrent operations
+    required: false
+    default: 0
+
+runs:
+  using: docker
+  image: ../image/Dockerfile
+  entrypoint: /entrypoints/destroy.sh
+
+branding:
+  icon: globe
+  color: purple

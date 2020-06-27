@@ -1,0 +1,37 @@
+name: Test terraform-check
+
+on: [pull_request]
+
+jobs:
+  no_changes:
+    runs-on: ubuntu-latest
+    name: No changes
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Check
+        uses: ./terraform-check
+        with:
+          path: tests/plan/no_changes
+
+  plan_change_comment:
+    runs-on: ubuntu-latest
+    name: Changes
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Check
+        uses: ./terraform-check
+        continue-on-error: true
+        id: check
+        with:
+          path: tests/plan/plan
+
+      - name: Check invalid
+        run: |
+          if [[ "${{ steps.check.outcome }}" != "failure" ]]; then
+            echo "Check did not fail correctly"
+            exit 1
+          fi

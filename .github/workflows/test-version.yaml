@@ -1,0 +1,150 @@
+name: Test terraform-version
+
+on: [pull_request]
+
+jobs:
+  required_version:
+    runs-on: ubuntu-latest
+    name: specific required_version
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Test terraform-version
+        uses: ./terraform-version
+        id: terraform-version
+        with:
+          path: tests/version/required_version
+
+      - name: Print the version
+        run: echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
+
+      - name: Check the version
+        run: |
+          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "0.12.26" ]]; then
+            echo "::error:: Terraform version not set from required_version"
+            exit 1
+          fi
+
+  required_version_range:
+    runs-on: ubuntu-latest
+    name: required_version range
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Test terraform-version
+        uses: ./terraform-version
+        id: terraform-version
+        with:
+          path: tests/version/range
+
+      - name: Print the version
+        run: echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
+
+      - name: Check the version
+        run: |
+          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "0.12.5" ]]; then
+            echo "::error:: Terraform version not set from required_version range"
+            exit 1
+          fi
+
+  tfswitch:
+    runs-on: ubuntu-latest
+    name: tfswitch
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Test terraform-version
+        uses: ./terraform-version
+        id: terraform-version
+        with:
+          path: tests/version/tfswitch
+
+      - name: Print the version
+        run: echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
+
+      - name: Check the version
+        run: |
+          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "0.12.21" ]]; then
+            echo "::error:: Terraform version not set from .tfswitchrc"
+            exit 1
+          fi
+
+  tfenv:
+    runs-on: ubuntu-latest
+    name: tfenv
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Test terraform-version
+        uses: ./terraform-version
+        id: terraform-version
+        with:
+          path: tests/version/tfenv
+
+      - name: Print the version
+        run: echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
+
+      - name: Check the version
+        run: |
+          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "0.12.17" ]]; then
+            echo "::error:: Terraform version not set from .terraform-version"
+            exit 1
+          fi
+
+  empty_path:
+    runs-on: ubuntu-latest
+    name: latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Test terraform-version
+        uses: ./terraform-version
+        id: terraform-version
+        with:
+          path: tests/version/empty
+
+      - name: Print the version
+        run: echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
+
+      - name: Check the version
+        run: |
+          if [[ "${{ steps.terraform-version.outputs.terraform }}" != *"0.12"* ]]; then
+            echo "::error:: Terraform version not set from required_version"
+            exit 1
+          fi
+
+  provider_versions:
+    runs-on: ubuntu-latest
+    name: provider versions
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Test terraform-version
+        uses: ./terraform-version
+        id: terraform-version
+        with:
+          path: tests/version/providers
+
+      - name: Print the version
+        run: |
+          echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
+          echo "The random version was ${{ steps.terraform-version.outputs.random }}"
+          echo "The acme version was ${{ steps.terraform-version.outputs.acme }}"
+
+      - name: Check the version
+        run: |
+          if [[ "${{ steps.terraform-version.outputs.random }}" != "2.2.0" ]]; then
+            echo "::error:: random provider version has not been set"
+            exit 1
+          fi
+
+          if [[ -z "${{ steps.terraform-version.outputs.acme }}" ]]; then
+            echo "::error:: acme provider version has not been set"
+            exit 1
+          fi

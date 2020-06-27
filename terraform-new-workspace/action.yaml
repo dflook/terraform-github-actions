@@ -1,0 +1,26 @@
+name: terraform-new-workspace
+description: Create a new terraform workspace
+author: Daniel Flook
+
+inputs:
+  path:
+    description: Path to the terraform configuration
+    required: true
+  workspace:
+    description: Name of the terraform workspace
+    required: true
+  backend_config:
+    description: Comma separated list of backend configs to set, e.g. 'foo=bar'
+    required: false
+  backend_config_file:
+    description: Path to a backend config file"
+    required: false
+
+runs:
+  using: docker
+  image: ../image/Dockerfile
+  entrypoint: /entrypoints/new-workspace.sh
+
+branding:
+  icon: globe
+  color: purple

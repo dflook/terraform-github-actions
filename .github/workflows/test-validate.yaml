@@ -1,0 +1,37 @@
+name: Test terraform-validate
+
+on: [pull_request]
+
+jobs:
+  valid:
+    runs-on: ubuntu-latest
+    name: valid
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: validate
+        uses: ./terraform-validate
+        with:
+          path: tests/validate/valid
+
+  invalid:
+    runs-on: ubuntu-latest
+    name: Invalid terraform configuration
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: validate
+        uses: ./terraform-validate
+        id: validate
+        continue-on-error: true
+        with:
+          path: tests/validate/invalid
+
+      - name: Check invalid
+        run: |
+          if [[ "${{ steps.validate.outcome }}" != "failure" ]]; then
+            echo "Validate did not fail correctly"
+            exit 1
+          fi

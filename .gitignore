@@ -1,0 +1,4 @@
+.terraform/
+/.idea/
+.pytest_cache/
+/venv/

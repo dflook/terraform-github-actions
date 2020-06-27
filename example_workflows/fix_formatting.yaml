@@ -1,0 +1,21 @@
+name: Fix terraform formatting
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  fix_formatting:
+    runs-on: ubuntu-latest
+    name: Fix terraform formatting in example terraform configuration
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: terraform fmt
+        uses: dflook/terraform-fmt@v1
+        with:
+          path: terraform

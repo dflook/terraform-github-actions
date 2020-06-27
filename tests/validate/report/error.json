@@ -1,0 +1,16 @@
+{
+  "valid": false,
+  "error_count": 2,
+  "warning_count": 0,
+  "diagnostics": [
+    {
+      "severity": "error",
+      "summary": "Could not satisfy plugin requirements",
+      "detail": "\nPlugin reinitialization required. Please run \"terraform init\".\n\nPlugins are external binaries that Terraform uses to access and manipulate\nresources. The configuration provided requires plugins which can't be located,\ndon't satisfy the version constraints, or are otherwise incompatible.\n\nTerraform automatically discovers provider requirements from your\nconfiguration, including providers used in child modules. To see the\nrequirements and constraints from each module, run \"terraform providers\".\n"
+    },
+    {
+      "severity": "error",
+      "summary": "provider.null: no suitable version installed\n  version requirements: \"(any version)\"\n  versions installed: none"
+    }
+  ]
+}

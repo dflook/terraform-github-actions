@@ -1,0 +1,38 @@
+name: Test terraform-fmt-check
+
+on: [pull_request]
+
+jobs:
+  canonical_fmt:
+    runs-on: ubuntu-latest
+    name: Canonical fmt
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: fmt-check
+        uses: ./terraform-fmt-check
+        with:
+          path: tests/fmt/canonical
+
+  non_canonical_fmt:
+    runs-on: ubuntu-latest
+    name: Non canonical fmt
+    continue-on-error: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: fmt-check
+        uses: ./terraform-fmt-check
+        continue-on-error: true
+        id: fmt-check
+        with:
+          path: tests/fmt/non-canonical
+
+      - name: Check invalid
+        run: |
+          if [[ "${{ steps.fmt-check.outcome }}" != "failure" ]]; then
+            echo "fmt-check did not fail correctly"
+            exit 1
+          fi

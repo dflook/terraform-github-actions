@@ -1,0 +1,25 @@
+{
+  "valid": false,
+  "error_count": 1,
+  "warning_count": 0,
+  "diagnostics": [
+    {
+      "severity": "error",
+      "summary": "Duplicate resource \"null_resource\" configuration",
+      "detail": "A null_resource resource named \"hello\" was already declared at main.tf:1,1-33. Resource names must be unique per type in each module.",
+      "range": {
+        "filename": "main.tf",
+        "start": {
+          "line": 2,
+          "column": 1,
+          "byte": 36
+        },
+        "end": {
+          "line": 2,
+          "column": 33,
+          "byte": 68
+        }
+      }
+    }
+  ]
+}

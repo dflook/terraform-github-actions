@@ -1,0 +1,21 @@
+name: terraform-version
+description: Prints terraform and providers versions
+author: Daniel Flook
+
+inputs:
+  path:
+    description: Path to the terraform configuration
+    required: true
+
+outputs:
+  version:
+    description: The terraform version used by the configuration
+
+runs:
+  using: docker
+  image: ../image/Dockerfile
+  entrypoint: /entrypoints/version.sh
+
+branding:
+  icon: globe
+  color: purple

@@ -1,0 +1,21 @@
+name: Test terraform-fmt
+
+on: [pull_request]
+
+jobs:
+  canonical_fmt:
+    runs-on: ubuntu-latest
+    name: Canonical fmt
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: terraform fmt
+        uses: ./terraform-fmt
+        with:
+          path: tests/fmt/non-canonical
+
+      - name: fmt-check
+        uses: ./terraform-fmt-check
+        with:
+          path: tests/fmt/non-canonical

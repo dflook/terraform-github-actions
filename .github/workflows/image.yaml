@@ -1,0 +1,32 @@
+name: Update base image
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - image/Dockerfile-base
+
+jobs:
+  push_image:
+    runs-on: ubuntu-latest
+    name: Docker Images
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Registry login
+        run: |
+          echo $DOCKER_TOKEN | docker login --username danielflook --password-stdin
+
+      - name: Base image
+        run: |
+          docker build --tag dflook/terraform-github-actions-base -f image/Dockerfile-base image
+
+          docker tag dflook/terraform-github-actions-base danielflook/terraform-github-actions-base:latest
+          docker push danielflook/terraform-github-actions-base:latest
+          docker tag dflook/terraform-github-actions-base danielflook/terraform-github-actions-base:$GITHUB_RUN_ID
+          docker push danielflook/terraform-github-actions-base:$GITHUB_RUN_ID

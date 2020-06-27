@@ -1,0 +1,52 @@
+name: terraform-apply
+description: Apply terraform plan
+author: Daniel Flook
+
+inputs:
+  path:
+    description: Path to the terraform configuration
+    required: true
+  workspace:
+    description: Name of the terraform workspace
+    required: false
+    default: default
+  backend_config:
+    description: Comma separated list of backend configs to set, e.g. 'foo=bar'
+    required: false
+    default: ""
+  backend_config_file:
+    description: Path to a backend config file
+    required: false
+    default: ""
+  var:
+    description: Comma separated list of vars to set, e.g. 'foo=bar'
+    required: false
+    default: ""
+  var_file:
+    description: Comma separated list of var file paths
+    required: false
+    default: ""
+  parallelism:
+    description: Limit the number of concurrent operations
+    required: false
+    default: 0
+  label:
+    description: A friendly name for this plan
+    required: false
+    default: ""
+  auto_approve:
+    description: Automatically approve and apply plan
+    default: false
+  target:
+    description: "Comma separated list of targets to apply against, e.g. 'kubernetes_secret.tls_cert_public,kubernetes_secret.tls_cert_private' NOTE: this argument only takes effect if auto_approve is also set."
+    required: false
+    default: ""
+
+runs:
+  using: docker
+  image: ../image/Dockerfile
+  entrypoint: /entrypoints/apply.sh
+
+branding:
+  icon: globe
+  color: purple

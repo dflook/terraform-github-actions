@@ -1,0 +1,17 @@
+name: terraform-fmt
+description: Rewrite terraform files into canonical format
+author: Daniel Flook
+
+inputs:
+  path:
+    description: Path to the terraform configuration
+    required: true
+
+runs:
+  using: docker
+  image: ../image/Dockerfile
+  entrypoint: /entrypoints/fmt.sh
+
+branding:
+  icon: globe
+  color: purple
