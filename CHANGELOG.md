@@ -4,20 +4,20 @@ All notable changes to this project will be documented in this file.
 The actions are versioned as a suite. Some actions may have no change
 in behaviour between versions.
 
-## [0.1.0] - 2020-07-02
+## [1.0.0] - 2020-07-06
 
 First release of the GitHub Actions:
-- [dflook/terraform-version@0.0.1](terraform-version)
-- [dflook/terraform-remote-state@0.0.1](terraform-remote-state)
-- [dflook/terraform-output@0.0.1](terraform-output)
-- [dflook/terraform-validate@0.0.1](terraform-validate)
-- [dflook/terraform-fmt-check@0.0.1](terraform-fmt-check)
-- [dflook/terraform-fmt@0.0.1](terraform-fmt)
-- [dflook/terraform-check@0.0.1](terraform-check)
-- [dflook/terraform-plan@0.0.1](terraform-plan)
-- [dflook/terraform-apply@0.0.1](terraform-apply)
-- [dflook/terraform-destroy@0.0.1](terraform-destroy)
-- [dflook/terraform-new-workspace@0.0.1](terraform-new-workspace)
-- [dflook/terraform-destroy-workspace@0.0.1](terraform-destroy-workspace)
+- [dflook/terraform-version@1.0.0](terraform-version)
+- [dflook/terraform-remote-state@1.0.0](terraform-remote-state)
+- [dflook/terraform-output@1.0.0](terraform-output)
+- [dflook/terraform-validate@1.0.0](terraform-validate)
+- [dflook/terraform-fmt-check@1.0.0](terraform-fmt-check)
+- [dflook/terraform-fmt@1.0.0](terraform-fmt)
+- [dflook/terraform-check@1.0.0](terraform-check)
+- [dflook/terraform-plan@1.0.0](terraform-plan)
+- [dflook/terraform-apply@1.0.0](terraform-apply)
+- [dflook/terraform-destroy@1.0.0](terraform-destroy)
+- [dflook/terraform-new-workspace@1.0.0](terraform-new-workspace)
+- [dflook/terraform-destroy-workspace@1.0.0](terraform-destroy-workspace)
 
-[0.0.1]: https://github.com/dflook/terraform-github-actions/releases/tag/v0.0.1
+[1.0.0]: https://github.com/dflook/terraform-github-actions/releases/tag/v1.0.0
