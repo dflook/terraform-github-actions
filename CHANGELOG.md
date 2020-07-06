@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The actions are versioned as a suite. Some actions may have no change
 in behaviour between versions.
 
-## [0.0.1] - 2020-07-02
+## [0.1.0] - 2020-07-02
 
 First release of the GitHub Actions:
 - [dflook/terraform-version@0.0.1](terraform-version)
