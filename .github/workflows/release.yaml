@@ -76,7 +76,7 @@ jobs:
                && git tag -a -m"$RELEASE_TAG" "$RELEASE_TAG" \
                && git tag -a -m"$RELEASE_TAG" "$major" \
                && git tag -a -m"$RELEASE_TAG" "$major.$minor" \
-               && git push --follow-tags
+               && git push --force --follow-tags
               )
             else
               echo "Skipping $action"
