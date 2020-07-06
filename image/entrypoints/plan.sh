@@ -2,8 +2,6 @@
 
 source /usr/local/actions.sh
 
-set -x
-
 debug
 setup
 init-backend
