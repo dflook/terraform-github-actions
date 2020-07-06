@@ -73,9 +73,9 @@ jobs:
               (cd "$HOME/$action" \
                && git add -A \
                && git commit -m "$RELEASE_TAG" \
-               && git tag -a -m"$RELEASE_TAG" "$RELEASE_TAG" \
-               && git tag -a -m"$RELEASE_TAG" "$major" \
-               && git tag -a -m"$RELEASE_TAG" "$major.$minor" \
+               && git tag --force -a -m"$RELEASE_TAG" "$RELEASE_TAG" \
+               && git tag --force -a -m"$RELEASE_TAG" "$major" \
+               && git tag --force -a -m"$RELEASE_TAG" "$major.$minor" \
                && git push --force --follow-tags
               )
             else
