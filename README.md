@@ -190,7 +190,8 @@ name: Check terraform file formatting
 
 on:
   push:
-    branch: master 
+    branches: 
+      - master 
 
 jobs:
   format:

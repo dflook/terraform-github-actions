@@ -132,7 +132,8 @@ name: Apply
 
 on:
   push:
-    branch: master
+    branches:
+      - master
 
 jobs:
   apply:
@@ -160,7 +161,8 @@ name: Apply
 
 on:
   push:
-    branch: master
+    branches:
+      - master
 
 jobs:
   apply:
@@ -183,7 +185,7 @@ This example workflow runs every morning and updates a TLS certificate
 if necessary.
 
 ```yaml
-name: Plan
+name: Rotate certs
 
 on:
   schedule:
@@ -192,7 +194,7 @@ on:
 jobs:
   apply:
     runs-on: ubuntu-latest
-    name: Apply approved plan
+    name: Rotate certs
     steps:
       - name: Checkout
         uses: actions/checkout@v2

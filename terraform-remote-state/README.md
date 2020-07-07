@@ -51,7 +51,7 @@ same value.
 
 ## Example usage
 
-This example sends a request to a url that has been provisioned by terraform
+This example sends a request to a url that has previously been provisioned by terraform, by fetching the url from the remote state in S3.
 
 ```yaml
 name: Send request
@@ -59,7 +59,11 @@ name: Send request
 on:
   push:
     branches:
-      master
+      - master
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
   get_remote_state:

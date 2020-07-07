@@ -67,10 +67,10 @@ jobs:
 
       - name: Get outputs
         uses: dflook/terraform-output@v1
-        id: my-terraform-config
+        id: tf-outputs
         with:
           path: my-terraform-config
 
       - name: Print the hostname
-        run: echo "The terraform version was ${{ steps.my-terraform-config.outputs.hostname }}"
+        run: echo "The terraform version was ${{ steps.tf-outputs.outputs.hostname }}"
 ```

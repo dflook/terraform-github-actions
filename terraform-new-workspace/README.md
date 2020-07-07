@@ -42,27 +42,26 @@ associated PR is opened or updated, and deploys a test environment to it.
 ```yaml
 name: Run integration tests
 
-on:
-  pull_request
+on: [pull_request]
 
 jobs:
-  check_format:
+  integration:
     runs-on: ubuntu-latest
-    name: Check terraform file are formatted correctly
+    name: Run integration tests
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: terraform new-workspace
+      - name: Use branch workspace
         uses: dflook/terraform-new-workspace@v1
         with:
-          path: my-terraform-config
+          path: terraform
           workspace: ${{ github.head_ref }}
-          
-      - name: terraform apply
+
+      - name: Deploy test infrastrucutre
         uses: dflook/terraform-apply@v1
         with:
-          path: my-terraform-config
+          path: terraform
           workspace: ${{ github.head_ref }}
           auto_approve: true
 ```

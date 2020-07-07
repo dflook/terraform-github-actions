@@ -107,22 +107,23 @@ This example workflow runs on every push to an open pull request,
 and create or updates a comment with the terraform plan
 
 ```yaml
-name: Plan
+name: PR Plan
 
 on: [pull_request]
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
-  check_format:
+  plan:
     runs-on: ubuntu-latest
-    name: Check terraform file are formatted correctly
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    name: Create terraform plan
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: terraform fmt
-        uses: dflook/terraform-fmt@1
+      - name: terraform plan
+        uses: dflook/terraform-plan@v1
         with:
-          path: my-terraform-config
+          path: my-terraform-cofnig
 ```

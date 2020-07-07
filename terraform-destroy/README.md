@@ -60,8 +60,7 @@ This action uses the `terraform destroy` command to destroy all resources in a t
 
 ## Example usage
 
-This example destroys the resources in a workspace named after the git branch
-when the associated PR is closed.
+This example destroys the resources in a workspace named after the git branch when the associated PR is closed.
 
 ```yaml
 name: Cleanup
@@ -71,7 +70,7 @@ on:
     types: [closed] 
 
 jobs:
-  check_format:
+  destroy_workspace:
     runs-on: ubuntu-latest
     name: Destroy terraform workspace
     steps:

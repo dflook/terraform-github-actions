@@ -23,7 +23,8 @@ name: Fix terraform file formatting
 
 on:
   push:
-    branch: master 
+    branches:
+      - master
 
 jobs:
   format:
@@ -37,7 +38,7 @@ jobs:
         uses: dflook/terraform-fmt@v1
         with:
           path: my-terraform-config
-          
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v2
         with:
