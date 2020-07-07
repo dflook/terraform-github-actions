@@ -37,8 +37,7 @@ This workflow runs on changes to a PR branch. It generates a terraform plan and 
 ```yaml
 name: Create terraform plan
 
-on:
-  pull_request
+on: [pull_request]
 
 jobs:
   plan:
@@ -229,8 +228,7 @@ It deploys the testing infrastructure using a terraform workspace dedicated to t
 ```yaml
 name: Run integration tests
 
-on:
-  pull_request
+on: [pull_request]
 
 jobs:
   check_format:
