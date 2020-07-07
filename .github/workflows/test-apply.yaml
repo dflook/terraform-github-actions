@@ -15,15 +15,10 @@ jobs:
 
       - name: Apply
         uses: ./terraform-apply
-        with:
-          path: tests/remote-state/test-bucket
-          auto_approve: true
-
-      - name: Get Outputs
-        uses: ./terraform-output
         id: output
         with:
           path: tests/remote-state/test-bucket
+          auto_approve: true
 
       - name: Verify outputs
         run: |
@@ -91,11 +86,6 @@ jobs:
 
       - name: Apply
         uses: ./terraform-apply
-        with:
-          path: tests/apply/changes
-
-      - name: Get Outputs
-        uses: ./terraform-output
         id: output
         with:
           path: tests/apply/changes
@@ -124,15 +114,10 @@ jobs:
 
       - name: Apply
         uses: ./terraform-apply
-        with:
-          path: tests/apply/vars
-          var: my_var=hello
-
-      - name: Get Outputs
-        uses: ./terraform-output
         id: output
         with:
           path: tests/apply/vars
+          var: my_var=hello
 
       - name: Verify outputs
         run: |
@@ -159,16 +144,11 @@ jobs:
 
       - name: Apply
         uses: ./terraform-apply
+        id: output
         with:
           path: tests/apply/vars
           label: TestLabel
           var: my_var=world
-
-      - name: Get Outputs
-        uses: ./terraform-output
-        id: output
-        with:
-          path: tests/apply/vars
 
       - name: Verify outputs
         run: |
@@ -190,11 +170,6 @@ jobs:
 
       - name: Apply
         uses: ./terraform-apply
-        with:
-          path: tests/apply/changes
-
-      - name: Get Outputs
-        uses: ./terraform-output
         id: output
         with:
           path: tests/apply/changes
@@ -219,11 +194,6 @@ jobs:
 
       - name: Apply
         uses: ./terraform-apply
-        with:
-          path: tests/remote-state/test-bucket
-
-      - name: Get Outputs
-        uses: ./terraform-output
         id: output
         with:
           path: tests/remote-state/test-bucket

@@ -120,6 +120,20 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
+## Outputs
+
+An action output will be created for each output of the terraform configuration.
+
+For example, with the terraform config:
+```hcl
+output "service_hostname" {
+  value = "example.com"
+}
+```
+
+Running this action will produce a "service_hostname" output with the same value.
+Only outputs with primitive types (number, string, bool) will be retrieved.
+
 ## Example usage
 
 ### Apply PR approved plans
