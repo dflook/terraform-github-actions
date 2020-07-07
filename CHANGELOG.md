@@ -1,8 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-The actions are versioned as a suite. Some actions may have no change
-in behaviour between versions.
+The actions are versioned as a suite. Some actions may have no change in behaviour between versions.
+
+You can specify an action version as:
+
+- `@v1.0.0` to use exactly this release
+- `@v1.0` to use the latest patch release for the specific minor version
+- `@v1` to use the latest minor release for the specific major version
 
 ## [1.0.0] - 2020-07-06
 
