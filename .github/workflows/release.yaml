@@ -76,8 +76,10 @@ jobs:
                && git tag --force -a -m"$RELEASE_TAG" "$RELEASE_TAG" \
                && git tag --force -a -m"$RELEASE_TAG" "$major" \
                && git tag --force -a -m"$RELEASE_TAG" "$major.$minor" \
+               && git push --force \
                && git push --force --tags
               )
+
             else
               echo "Skipping $action"
             fi
