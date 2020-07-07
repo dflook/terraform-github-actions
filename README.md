@@ -82,7 +82,7 @@ jobs:
 ```
 
 ### Linting
-This workflow runs on every push to non-master branches and checks the terraform configuration is valid.  
+This workflow runs on every push to non-master branches and checks the terraform configuration is valid.
 For extra strictness, we check the files are in the canonical format.
 
 This can be used to check for correctness before merging.
@@ -231,9 +231,9 @@ name: Run integration tests
 on: [pull_request]
 
 jobs:
-  check_format:
+  run_tests:
     runs-on: ubuntu-latest
-    name: Check terraform file are formatted correctly
+    name: Run integration tests
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -273,9 +273,9 @@ on:
     types: [closed] 
 
 jobs:
-  check_format:
+  cleanup_tests:
     runs-on: ubuntu-latest
-    name: Check terraform file are formatted correctly
+    name: Cleanup after integration tests
     steps:
       - name: Checkout
         uses: actions/checkout@v2
