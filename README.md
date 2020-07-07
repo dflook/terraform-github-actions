@@ -247,17 +247,11 @@ jobs:
           
       - name: Deploy test infrastrucutre
         uses: dflook/terraform-apply@v1
-        with:
-          path: my-terraform-config
-          workspace: ${{ github.head_ref }}
-          auto_approve: true
-          
-      - name: Get the terraform outputs
-        uses: dflook/terraform-output@v1
         id: test-infra
         with:
           path: my-terraform-config
           workspace: ${{ github.head_ref }}
+          auto_approve: true
 
       - name: Run tests
         run: |
