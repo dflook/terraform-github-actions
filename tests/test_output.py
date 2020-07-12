@@ -1,20 +1,18 @@
-import json
-
 from convert_output import convert_to_github
 
 
 def test_string():
     input = {
-        'sensitive_string': {
-            'sensitive': True,
-            'type': 'string',
-            'value': 'abc'
-        },
-        'string': {
-            'sensitive': False,
-            'type': 'string',
-            'value': 'xyz'
-        }
+      'sensitive_string': {
+        'sensitive': True,
+        'type': 'string',
+        'value': 'abc'
+      },
+      'string': {
+        'sensitive': False,
+        'type': 'string',
+        'value': 'xyz'
+      }
     }
 
     expected_output = [
