@@ -29,7 +29,14 @@ jobs:
           echo "my_bool = ${{ steps.terraform-output.outputs.my_bool }}"
           echo "my_sensitive_bool = ${{ steps.terraform-output.outputs.my_sensitive_bool }}"
 
+          echo "The vpc-id is ${{ fromJson(steps.terraform-output.outputs.vpc).id }}"
+          echo "The subnet-ids are is ${{ join(fromJson(steps.terraform-output.outputs.subnets).*.id) }}"
+
       - name: Verify outputs
+        env:
+          AWKWARD_STRING: ${{ steps.terraform-output.outputs.awkward_string }}
+          AWKWARD_OBJ: ${{ join(fromJson(steps.terraform-output.outputs.awkward_compound_output).nested.thevalue) }}
+
         run: |
           if [[ "${{ steps.terraform-output.outputs.my_number }}" != "5" ]]; then
             echo "::error:: output my_number not set correctly"
@@ -58,5 +65,30 @@ jobs:
 
           if [[ "${{ steps.terraform-output.outputs.my_sensitive_bool }}" != "false" ]]; then
             echo "::error:: output my_number not set correctly"
+            exit 1
+          fi
+
+          if [[ "${{ fromJson(steps.terraform-output.outputs.my_object).first }}" != "one" ]]; then
+            echo "::error:: fromJson(my_object).first not set correctly"
+            exit 1
+          fi
+
+          if [[ "${{ join(fromJson(steps.terraform-output.outputs.my_tuple)) }}" != "one,two" ]]; then
+            echo "::error:: join(fromJson(my_set)) not set correctly"
+            exit 1
+          fi
+
+          if [[ "${{ contains(fromJson(steps.terraform-output.outputs.my_set), 'one') }}" != "true" ]]; then
+            echo "::error:: contains(fromJson(my_set)) not set correctly"
+            exit 1
+          fi
+
+          if [[ "$AWKWARD_STRING" != "hello \"there\", here are some 'quotes'." ]]; then
+            echo "::error:: awkward_string not set correctly"
+            exit 1
+          fi
+
+          if [[ "$AWKWARD_OBJ" != "hello \"there\", here are some 'quotes'." ]]; then
+            echo "::error:: fromJson(awkward_compound_output).nested.thevalue not set correctly"
             exit 1
           fi
