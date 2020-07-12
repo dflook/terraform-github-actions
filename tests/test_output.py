@@ -15,8 +15,8 @@ def test_string():
     }
 
     expected_output = [
-        '::set-output name=sensitive_string::abc',
         '::add-mask::abc',
+        '::set-output name=sensitive_string::abc',
         '::set-output name=string::xyz'
     ]
 
@@ -40,8 +40,8 @@ def test_number():
 
     expected_output = [
         '::set-output name=int::123',
-        '::set-output name=sensitive_int::123',
-        '::add-mask::123'
+        '::add-mask::123',
+        '::set-output name=sensitive_int::123'
     ]
 
     output = list(convert_to_github(input))
@@ -52,19 +52,12 @@ def test_bool():
         "bool": {
             "sensitive": False,
             "type": "bool",
-            "value": 123
-        },
-        "sensitive_bool": {
-            "sensitive": True,
-            "type": "bool",
-            "value": 456
+            "value": True
         }
     }
 
     expected_output = [
-        '::set-output name=bool::123',
-        '::set-output name=sensitive_bool::456',
-        '::add-mask::456'
+        '::set-output name=bool::true'
     ]
 
     output = list(convert_to_github(input))
