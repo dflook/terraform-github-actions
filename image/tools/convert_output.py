@@ -4,7 +4,6 @@ import json
 import sys
 from typing import Dict, Iterable
 
-
 def convert_to_github(outputs: Dict) -> Iterable[str]:
     for name, output in outputs.items():
 
@@ -20,6 +19,15 @@ def convert_to_github(outputs: Dict) -> Iterable[str]:
             if output['type'] == 'bool':
                 yield f'::set-output name={name}::{json.dumps(output["value"])}'
 
+        else:
+            # complex type
+
+            value = json.dumps(output["value"], separators=(",", ":"))
+
+            if output['sensitive'] is True:
+                yield f'::add-mask::{value}'
+
+            yield f'::set-output name={name}::{value}'
 
 if __name__ == '__main__':
     try:
