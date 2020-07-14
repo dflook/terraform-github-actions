@@ -3,15 +3,18 @@
 This is one of a suite of terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
 This action generates and applies a terraform plan.
-
-It is assumed that the `terraform-plan` action has already run via a pull_request.
-The approved plan will be fetched from the PR and only applied if it is still valid.
+The default behaviour is to look for an approved plan that has been added to a PR using the `terraform-plan` action.
 
 If the plan is not found or has changed, then the `apply` action will fail.
-
 This is to ensure that the action only applies changes that have been reviewed by a human.
-
 You can disable this behaviour by setting `auto_approve: true`, which will always apply the generated plan.
+
+## Demo
+This a demo of the process for apply a terraform change using the [`dflook/terraform-plan`](https://github.com/dflook/terraform-github-actions/tree/master/terraform-plan) and [`dflook/terraform-apply`](https://github.com/dflook/terraform-github-actions/tree/master/terraform-apply) actions.
+
+<p align="center">
+    <img src="http://terraform-github-actions-images.s3-website.eu-west-2.amazonaws.com/v1.1.0/planapply.gif" width="1000">
+</p>
 
 ## GitHub
 
@@ -131,8 +134,8 @@ output "service_hostname" {
 }
 ```
 
-Running this action will produce a "service_hostname" output with the same value.
-Only outputs with primitive types (number, string, bool) will be retrieved.
+Running this action will produce a `service_hostname` output with the same value.
+See [terraform-output](https://github.com/dflook/terraform-github-actions/tree/master/terraform-output) for details.
 
 ## Example usage
 

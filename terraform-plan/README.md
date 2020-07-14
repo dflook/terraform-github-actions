@@ -2,11 +2,17 @@
 
 This is one of a suite of terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
-This actions generates and outputs a terraform plan to the workflow log.
+This actions generates a terraform plan. If the action is run on `pull_request` events it will add a comment on
+the PR containing the generated plan. When the action is run for other
+events, the plan is output to the workflow log.
 
-If the action is run on `pull_request` events it can additionally create
-a comment on the PR with the generated plan. To use this ensure that the
-`GITHUB_TOKEN` environment variable is set.
+<p align="center">
+    <img src="plan.png" width="500">
+</p>
+
+The `GITHUB_TOKEN` environment variable is must be set for the PR comment to be added.
+
+The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/master/terraform-apply) action can be used to apply the generated plan.
 
 ## Inputs
 
@@ -111,13 +117,12 @@ name: PR Plan
 
 on: [pull_request]
 
-env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 jobs:
   plan:
     runs-on: ubuntu-latest
     name: Create terraform plan
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}            
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -125,5 +130,5 @@ jobs:
       - name: terraform plan
         uses: dflook/terraform-plan@v1
         with:
-          path: my-terraform-cofnig
+          path: my-terraform-config
 ```
