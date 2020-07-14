@@ -29,9 +29,6 @@ jobs:
           echo "my_bool = ${{ steps.terraform-output.outputs.my_bool }}"
           echo "my_sensitive_bool = ${{ steps.terraform-output.outputs.my_sensitive_bool }}"
 
-          echo "The vpc-id is ${{ fromJson(steps.terraform-output.outputs.vpc).id }}"
-          echo "The subnet-ids are is ${{ join(fromJson(steps.terraform-output.outputs.subnets).*.id) }}"
-
       - name: Verify outputs
         env:
           AWKWARD_STRING: ${{ steps.terraform-output.outputs.awkward_string }}
