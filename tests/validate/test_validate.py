@@ -8,7 +8,7 @@ def test_valid():
       "diagnostics": []
     }
 
-    output = list(convert_to_github(input))
+    output = list(convert_to_github(input, 'terraform'))
     assert output == []
 
 def test_invalid():
@@ -34,7 +34,7 @@ def test_invalid():
         '::error ::providers.null: no suitable version installed'
     ]
 
-    output = list(convert_to_github(input))
+    output = list(convert_to_github(input, 'terraform'))
     assert output == expected_output
 
 def test_blah():
@@ -65,8 +65,62 @@ def test_blah():
     }
 
     expected_output = [
-        '::error file=main.tf,line=2,col=1::Duplicate resource "null_resource" configuration'
+        '::error file=terraform/main.tf,line=2,col=1::Duplicate resource "null_resource" configuration'
     ]
 
-    output = list(convert_to_github(input))
+    output = list(convert_to_github(input, 'terraform'))
+    assert output == expected_output
+
+
+def test_invalid_paths():
+    input = {
+      "valid": False,
+      "error_count": 2,
+      "warning_count": 0,
+      "diagnostics": [
+        {
+          "severity": "error",
+          "summary": "Duplicate resource \"null_resource\" configuration",
+          "detail": "A null_resource resource named \"hello\" was already declared at main.tf:1,1-33. Resource names must be unique per type in each module.",
+          "range": {
+            "filename": "main.tf",
+            "start": {
+              "line": 2,
+              "column": 1,
+              "byte": 36
+            },
+            "end": {
+              "line": 2,
+              "column": 33,
+              "byte": 68
+            }
+          }
+        },
+        {
+          "severity": "error",
+          "summary": "Duplicate resource \"null_resource\" configuration",
+          "detail": "A null_resource resource named \"goodbye\" was already declared at ../module/invalid.tf:1,1-33. Resource names must be unique per type in each module.",
+          "range": {
+            "filename": "../module/invalid.tf",
+            "start": {
+              "line": 2,
+              "column": 1,
+              "byte": 36
+            },
+            "end": {
+              "line": 2,
+              "column": 33,
+              "byte": 68
+            }
+          }
+        }
+      ]
+    }
+
+    expected_output = [
+        '::error file=tests/validate/invalid/main.tf,line=2,col=1::Duplicate resource "null_resource" configuration',
+        '::error file=tests/validate/module/invalid.tf,line=2,col=1::Duplicate resource "null_resource" configuration'
+    ]
+
+    output = list(convert_to_github(input, 'tests/validate/invalid'))
     assert output == expected_output
