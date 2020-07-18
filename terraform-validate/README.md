@@ -6,6 +6,11 @@ This action uses the `terraform validate` command to check that a terraform conf
 This can be used to check that a configuration is valid before creating a plan.
 
 Failing GitHub checks will be added for any problems found.
+
+<p align="center">
+    <img src="validate.png" width="1000">
+</p>
+
 If the terraform configuration is not valid, the build is failed.
 
 ## Inputs

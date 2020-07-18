@@ -3,7 +3,6 @@
 This is one of a suite of terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
 Retrieves the root-level outputs from a terraform remote state.
-Only primitive types (string, bool, number) can be retrieved.
 
 ## Inputs
 
@@ -40,14 +39,14 @@ Only primitive types (string, bool, number) can be retrieved.
 
 An output will be created for each root-level output in the terraform remote state.
 
-For example, if the remote state has an output that created using:
+For example, with a remote state that has an output created using:
 ```hcl
 output "service_hostname" {
   value = "example.com"
 }
 ```
-then running this action will produce a "service_hostname" output with the
-same value.
+Running this action will produce a `service_hostname` output with the same value.
+See [terraform-output](https://github.com/dflook/terraform-github-actions/tree/master/terraform-output) for details.
 
 ## Example usage
 

@@ -2,15 +2,15 @@
 
 This is one of a suite of terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
-This actions generates a terraform plan. If the action is run on `pull_request` events it will add a comment on
-the PR containing the generated plan. When the action is run for other
-events, the plan is output to the workflow log.
+This actions generates a terraform plan.
+If the action is run on `pull_request` events it will add a comment on the PR containing the generated plan.
 
 <p align="center">
-    <img src="plan.png" width="500">
+    <img src="plan.png" width="600">
 </p>
 
 The `GITHUB_TOKEN` environment variable is must be set for the PR comment to be added.
+The action can be run on other events, which prints the plan to the workflow log.
 
 The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/master/terraform-apply) action can be used to apply the generated plan.
 

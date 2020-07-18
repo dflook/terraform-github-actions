@@ -1,10 +1,13 @@
-# Terraform GitHub Actions
+# Terraform GitHub Actions ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/dflook/terraform-github-actions)
 
 This is a suite of terraform related GitHub Actions that can be used together to build effective Infrastructure as Code workflows.
 
-## Actions
+[GitHub Actions](https://github.com/features/actions) are a way to make automated workflows that trigger when events occur on your GitHub repository, using a YAML file that lives in your repo.
+These actions can be used to easily perform [Terraform](https://www.terraform.io/) tasks as part of your workflow.
 
+## Actions
 See the documentation for the available actions:
+
 - [dflook/terraform-plan](terraform-plan)
 - [dflook/terraform-apply](terraform-apply)
 - [dflook/terraform-output](terraform-output)
@@ -18,16 +21,24 @@ See the documentation for the available actions:
 - [dflook/terraform-destroy](terraform-destroy)
 - [dflook/terraform-version](terraform-version)
 
-## Examples
+## Example Usage
+These terraform actions can be added as steps to your own workflow files.
+GitHub reads workflow files from `.github/workflows/` within your repository.
+See the [Workflow documentation](https://docs.github.com/en/actions/configuring-and-managing-workflows/configuring-a-workflow#about-workflows) for details on writing workflows.
 
-Here are some examples of how these actions can be used together.
+Here are some examples of how the terraform actions can be used together in workflows.
 
 ### Terraform plan PR approval
 
 Terraform plans typically need to be reviewed by a human before being applied.
 Fortunately, GitHub has a well established method for requiring human reviews of changes - a Pull Request.
 
-We can use PRs to safely automate infrastructure changes.
+We can use PRs to safely plan and apply infrastructure changes.
+
+<p align="center">
+    <img src="terraform-apply/planapply.gif" width="1000">
+</p>
+
 You can make GitHub enforce this using branch protection, see the [dflook/terraform-apply](terraform-apply) action for details.
 
 In this example we use two workflows:
@@ -85,6 +96,10 @@ jobs:
 This workflow runs on every push to non-master branches and checks the terraform configuration is valid.
 For extra strictness, we check the files are in the canonical format.
 
+<p align="center">
+    <img src="terraform-validate/validate.png" width="1000">
+</p>
+
 This can be used to check for correctness before merging.
 
 #### lint.yaml
@@ -126,7 +141,7 @@ jobs:
 
 This workflow runs every morning and checks that the state of your infrastructure matches the configuration.
 
-This can be used to detect manual or misapplied changes before they become a problem.  
+This can be used to detect manual or misapplied changes before they become a problem.
 If there are any unexpected changes, the workflow will fail.
 
 #### drift.yaml
@@ -283,4 +298,5 @@ jobs:
 ```
 
 ## What if I don't use GitHub Actions?
-This is an adaption of OVO Energy's [`ovotech/terraform`](https://github.com/ovotech/circleci-orbs/tree/master/terraform) CircleCI orb. If you use CircleCI, check it out.
+If you use CircleCI, check out OVO Energy's [`ovotech/terraform`](https://github.com/ovotech/circleci-orbs/tree/master/terraform) CircleCI orb.
+If you use Jenkins, you have my sympathy.
