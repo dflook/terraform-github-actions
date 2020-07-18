@@ -8,9 +8,19 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.1.0` to use an exact release
-- `@v1.0` to use the latest patch release for the specific minor version
+- `@v1.2.0` to use an exact release
+- `@v1.2` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.2.0] - Unreleased
+
+### Added
+- Complex terraform types are now available as action outputs, which results in a json string approximating the type. See [dflook/terraform-output](terraform-output) for details.
+  This also affects the outputs of [dflook/terraform-apply](terraform-apply) and [dflook/terraform-remote-state](terraform-remote-state).
+
+### Fixed
+- File path in failing checks is now correct with respect to the repository, and can be clicked through to see the annotation in context.
+  This affects the [dflook/terraform-fmt-check](terraform-fmt-check) and [dflook/terraform-validate](terraform-validate) actions.
 
 ## [1.1.0] - 2020-07-07
 
@@ -35,5 +45,6 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.2.0]: https://github.com/olivierlacan/keep-a-changelog/compare/v1.0.0...v1.2.0
 [1.1.0]: https://github.com/olivierlacan/keep-a-changelog/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/dflook/terraform-github-actions/releases/tag/v1.0.0

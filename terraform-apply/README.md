@@ -13,7 +13,7 @@ You can disable this behaviour by setting `auto_approve: true`, which will alway
 This a demo of the process for apply a terraform change using the [`dflook/terraform-plan`](https://github.com/dflook/terraform-github-actions/tree/master/terraform-plan) and [`dflook/terraform-apply`](https://github.com/dflook/terraform-github-actions/tree/master/terraform-apply) actions.
 
 <p align="center">
-    <img src="http://terraform-github-actions-images.s3-website.eu-west-2.amazonaws.com/v1.1.0/planapply.gif" width="1000">
+    <img src="planapply.gif" width="1000">
 </p>
 
 ## GitHub
