@@ -12,7 +12,7 @@ When using an action you can specify the version as:
 - `@v1.2` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
 
-## [1.2.0] - Unreleased
+## [1.2.0] - 2020-07-18
 
 ### Added
 - Complex terraform types are now available as action outputs, which results in a json string approximating the type. See [dflook/terraform-output](terraform-output) for details.
