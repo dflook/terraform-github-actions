@@ -102,7 +102,7 @@ class TerraformComment:
 
     @property
     def workspace(self) -> str:
-        return os.environ.get('workspace')
+        return os.environ.get('INPUT_WORKSPACE')
 
     @property
     def label(self) -> str:
