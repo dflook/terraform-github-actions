@@ -31,13 +31,38 @@ jobs:
           workspace: ${{ github.head_ref }}-2
           backend_config: "token=${{ secrets.TF_API_TOKEN }}"
 
+      - name: Auto apply workspace
+        uses: ./terraform-apply
+        with:
+          path: tests/terraform-cloud
+          workspace: ${{ github.head_ref }}-1
+          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          auto_approve: true
+
       - name: Destroy workspace
         uses: ./terraform-destroy-workspace
         with:
           path: tests/terraform-cloud
           workspace: ${{ github.head_ref }}-1
           backend_config: "token=${{ secrets.TF_API_TOKEN }}"
-          auto_approve: true
+
+      - name: Plan workspace
+        uses: ./terraform-plan
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          path: tests/terraform-cloud
+          workspace: ${{ github.head_ref }}-2
+          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+
+      - name: Apply workspace
+        uses: ./terraform-apply
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          path: tests/terraform-cloud
+          workspace: ${{ github.head_ref }}-2
+          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
 
       - name: Destroy the last workspace
         uses: ./terraform-destroy-workspace
@@ -45,7 +70,6 @@ jobs:
           path: tests/terraform-cloud
           workspace: ${{ github.head_ref }}-2
           backend_config: "token=${{ secrets.TF_API_TOKEN }}"
-          auto_approve: true
 
       - name: Destroy non-existant workspace
         uses: ./terraform-destroy-workspace
@@ -55,7 +79,6 @@ jobs:
           path: tests/terraform-cloud
           workspace: ${{ github.head_ref }}-1
           backend_config: "token=${{ secrets.TF_API_TOKEN }}"
-          auto_approve: true
       - name: Check failed to destroy
         run: |
           if [[ "${{ steps.destroy-non-existant-workspace.outcome }}" != "failure" ]]; then
