@@ -73,6 +73,9 @@ class TerraformComment:
             if comment['user']['login'] == 'github-actions[bot]':
                 match = re.match(rf'{re.escape(self._comment_identifier)}\n```(.*?)```(.*)', comment['body'], re.DOTALL)
 
+                if not match:
+                    match = re.match(rf'{re.escape(self._old_comment_identifier)}\n```(.*?)```(.*)', comment['body'], re.DOTALL)
+
                 if match:
                     self._comment_url = comment['url']
                     self._plan = match.group(1).strip()
@@ -89,12 +92,88 @@ class TerraformComment:
         if self.workspace != 'default':
             label += f' in the __{self.workspace}__ workspace'
 
+        if self.backend_config:
+            label += f'\nWith backend config: `{self.backend_config}`'
+
+        if self.backend_config_files:
+            label += f'\nWith backend config files: `{self.backend_config_files}`'
+
+        if self.vars:
+            label += f'\nWith vars: `{self.vars}`'
+
+        if self.var_files:
+            label += f'\nWith var files: `{self.var_files}`'
+
+        return label
+
+    @property
+    def _old_comment_identifier(self):
+        if self.label:
+            return f'Terraform plan for __{self.label}__'
+
+        label = f'Terraform plan in __{self.path}__'
+
+        if self.workspace != 'default':
+            label += f' in the __{self.workspace}__ workspace'
+
         if self.init_args:
             label += f'\nUsing init args: `{self.init_args}`'
         if self.plan_args:
             label += f'\nUsing plan args: `{self.plan_args}`'
 
         return label
+
+    @property
+    def backend_config(self) -> Optional[str]:
+        if os.environ.get('INPUT_BACKEND_CONFIG') is None:
+            return None
+
+        bad_words = [
+            'token',
+            'password',
+            'sas_token',
+            'access_key',
+            'secret_key',
+            'client_secret',
+            'access_token',
+            'http_auth',
+            'secret_id',
+            'encryption_key',
+            'key_material',
+            'security_token',
+            'conn_str',
+            'sse_customer_key',
+            'application_credential_secret'
+        ]
+
+        def has_bad_word(s: str) -> bool:
+            for bad_word in bad_words:
+                if bad_word in s:
+                    return True
+            return False
+
+        clean = []
+
+        for field in os.environ.get('INPUT_BACKEND_CONFIG', '').split(','):
+            if not field:
+                continue
+
+            if not has_bad_word(field):
+                clean.append(field)
+
+        return ','.join(clean)
+
+    @property
+    def backend_config_files(self) -> str:
+        return os.environ.get('INPUT_BACKEND_CONFIG_FILE')
+
+    @property
+    def vars(self) -> str:
+        return os.environ.get('INPUT_VAR')
+
+    @property
+    def var_files(self) -> str:
+        return os.environ.get('INPUT_VAR_FILE')
 
     @property
     def path(self) -> str:
