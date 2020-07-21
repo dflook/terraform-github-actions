@@ -15,7 +15,7 @@ mkdir -p "$PLAN_DIR"
 exec 3>&1
 
 set +e
-(cd $INPUT_PATH && terraform plan -input=false -no-color -detailed-exitcode -lock-timeout=300s -out="$PLAN_DIR/plan.out" $PLAN_ARGS) \
+(cd $INPUT_PATH && terraform plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PLAN_ARGS) \
     2>"$PLAN_DIR/error.txt" \
     | $TFMASK \
     | tee /dev/fd/3 \
