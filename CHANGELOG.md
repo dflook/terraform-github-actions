@@ -12,7 +12,7 @@ When using an action you can specify the version as:
 - `@v1.3` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
 
-## [1.3.0] - 2020-07-21
+## [1.3.0] - 2020-07-22
 
 ### Added
 - Support for the `remote` backend
