@@ -1,3 +1,5 @@
+#!/bin/bash
+
 set -eo pipefail
 
 function debug_log() {
@@ -47,6 +49,8 @@ function detect-tfmask() {
 function setup() {
   export TF_DATA_DIR="$HOME/.dflook-terraform-data-dir"
   export TF_PLUGIN_CACHE_DIR="$HOME/.terraform.d/plugin-cache"
+  unset TF_WORKSPACE
+
   mkdir -p "$TF_DATA_DIR" "$TF_PLUGIN_CACHE_DIR"
 
   if [[ "$INPUT_PATH" == "" ]]; then
@@ -94,18 +98,31 @@ function init-backend() {
 
   export INIT_ARGS
 
-  # Set workspace from parameter, allowing it to be overridden by TF_WORKSPACE.
-  # If TF_WORKSPACE is set we don't want terraform init to use the value, in the case we are running new_workspace.sh this would cause an error
-  readonly workspace="${TF_WORKSPACE:-$INPUT_WORKSPACE}"
-  export workspace
-  unset TF_WORKSPACE
-
   rm -rf "$TF_DATA_DIR"
-  (cd "$INPUT_PATH" && terraform init -input=false -lock-timeout=300s $INIT_ARGS)
+
+  set +e
+  (cd "$INPUT_PATH" && TF_WORKSPACE=$INPUT_WORKSPACE terraform init -input=false -lock-timeout=300s $INIT_ARGS \
+      2>"$PLAN_DIR/init_error.txt")
+
+  local INIT_EXIT=$?
+  set -e
+
+  if [[ $INIT_EXIT -eq 0 ]]; then
+    cat "$PLAN_DIR/init_error.txt" >&2
+  else
+    if grep -q "No existing workspaces." "$PLAN_DIR/init_error.txt" || grep -q "Failed to select workspace" "$PLAN_DIR/init_error.txt"; then
+      # Couldn't select workspace, but we don't really care.
+      # select-workspace will give a better error if the workspace is required to exist
+      :
+    else
+      cat "$PLAN_DIR/init_error.txt" >&2
+      exit $INIT_EXIT
+    fi
+  fi
 }
 
 function select-workspace() {
-  (cd "$INPUT_PATH" && terraform workspace select "$workspace")
+  (cd "$INPUT_PATH" && terraform workspace select "$INPUT_WORKSPACE")
 }
 
 function set-plan-args() {
