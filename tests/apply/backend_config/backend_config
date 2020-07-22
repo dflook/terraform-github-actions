@@ -1,0 +1,3 @@
+bucket = "terraform-github-actions"
+key    = "backend_config"
+region = "eu-west-2"
