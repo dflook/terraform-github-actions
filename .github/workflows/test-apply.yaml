@@ -202,6 +202,7 @@ jobs:
           path: tests/apply/vars
           label: TestLabel
           var: my_var=world
+          var_file: tests/apply/test.tfvars
 
       - name: Apply
         uses: ./terraform-apply
@@ -210,6 +211,7 @@ jobs:
           path: tests/apply/vars
           label: TestLabel
           var: my_var=world
+          var_file: tests/apply/test.tfvars
 
       - name: Verify outputs
         run: |

@@ -72,8 +72,8 @@ function relative_to() {
   local relpath
 
   absbase="$1"
-  relpath="$1"
-  realpath --no-symlinks --canonicalize-missing --relative-base="$absbase" "$relpath"
+  relpath="$2"
+  realpath --no-symlinks --canonicalize-missing --relative-to="$absbase" "$relpath"
 }
 
 function init() {
