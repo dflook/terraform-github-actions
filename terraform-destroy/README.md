@@ -31,7 +31,8 @@ This action uses the `terraform destroy` command to destroy all resources in a t
 
 * `var_file`
 
-  Comma separated list of terraform var files
+  Comma separated list of tfvars files to use.
+  Paths should be relative to the repository root.
 
   - Type: string
   - Optional
@@ -45,7 +46,8 @@ This action uses the `terraform destroy` command to destroy all resources in a t
 
 * `backend_config_file`
 
-  Comma separated list of terraform backend config files.
+  Comma separated list of terraform backend config files to use.
+  Paths should be relative to the repository root.
 
   - Type: string
   - Optional

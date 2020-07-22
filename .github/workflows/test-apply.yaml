@@ -140,9 +140,11 @@ jobs:
 
   backend_config:
     runs-on: ubuntu-latest
-    name: Apply changes that use a backend config
+    name: backend_config & backed_config_vars
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -151,14 +153,14 @@ jobs:
         uses: ./terraform-plan
         with:
           path: tests/apply/backend_config
-          backend_config: tests/apply/backend_config/backend_config
+          backend_config_file: tests/apply/backend_config/backend_config
 
       - name: Apply
         uses: ./terraform-apply
         id: backend_config_file
         with:
           path: tests/apply/backend_config
-          backend_config: tests/apply/backend_config/backend_config
+          backend_config_file: tests/apply/backend_config/backend_config
 
       - name: Verify outputs
         run: |
@@ -202,6 +204,7 @@ jobs:
           path: tests/apply/vars
           label: TestLabel
           var: my_var=world
+          var_file: tests/apply/test.tfvars
 
       - name: Apply
         uses: ./terraform-apply
@@ -210,6 +213,7 @@ jobs:
           path: tests/apply/vars
           label: TestLabel
           var: my_var=world
+          var_file: tests/apply/test.tfvars
 
       - name: Verify outputs
         run: |
