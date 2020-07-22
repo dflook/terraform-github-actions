@@ -32,7 +32,8 @@ This is intended to run on a schedule to notify if manual changes to your infras
 
 * `var_file`
 
-  Comma separated list of terraform var files
+  Comma separated list of tfvars files to use.
+  Paths should be relative to the repository root.
 
   - Type: string
   - Optional
@@ -46,7 +47,8 @@ This is intended to run on a schedule to notify if manual changes to your infras
 
 * `backend_config_file`
 
-  Comma separated list of terraform backend config files.
+  Comma separated list of terraform backend config files to use.
+  Paths should be relative to the repository root.
 
   - Type: string
   - Optional
