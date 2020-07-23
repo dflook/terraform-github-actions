@@ -17,7 +17,7 @@ When using an action you can specify the version as:
 
 ### Fixed
 - `backend_config_file` and `var_file` now work correctly. Paths should
-  be relative to the repository root.
+  be relative to the Action workspace.
 
 ## [1.3.0] - 2020-07-22
 
