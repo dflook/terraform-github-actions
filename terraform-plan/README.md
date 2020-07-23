@@ -3,7 +3,7 @@
 This is one of a suite of terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
 This actions generates a terraform plan.
-If the action is run on `pull_request` events it will add a comment on the PR containing the generated plan.
+If the triggering event relates to a PR it will add a comment on the PR containing the generated plan.
 
 <p align="center">
     <img src="plan.png" width="600">

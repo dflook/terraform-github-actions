@@ -34,21 +34,41 @@ def prs(repo: str) -> Iterable[Dict]:
 
 
 def find_pr() -> str:
-    if os.environ['GITHUB_EVENT_NAME'] == 'pull_request':
-        with open(os.environ['GITHUB_EVENT_PATH']) as f:
-            event = json.load(f)
+    """
+    Find the pull request this event is related to
 
+    >>> find_pr()
+    'https://api.github.com/repos/dflook/terraform-github-actions/pulls/8'
+
+    """
+
+    with open(os.environ['GITHUB_EVENT_PATH']) as f:
+        event = json.load(f)
+
+    event_type = os.environ['GITHUB_EVENT_NAME']
+
+    if event_type == ['pull_request', 'pull_request_review_comment']:
         return event['pull_request']['url']
 
-    repo = os.environ['GITHUB_REPOSITORY']
-    commit = os.environ['GITHUB_SHA']
+    elif event_type == 'issue_comment':
 
-    for pr in prs(repo):
-        if pr['merge_commit_sha'] == commit:
-            return pr['url']
+        if 'pull_request' in event['issue']:
+            return event['issue']['pull_request']['url']
+        else:
+            raise Exception(f'This comment is not for a PR. Add a filter of `if: github.event.issue.pull_request`')
 
-    raise Exception(f'No PR found in {repo} for commit {commit} (was it pushed directly to the target branch?)')
+    elif event_type == 'push':
+        repo = os.environ['GITHUB_REPOSITORY']
+        commit = os.environ['GITHUB_SHA']
 
+        for pr in prs(repo):
+            if pr['merge_commit_sha'] == commit:
+                return pr['url']
+
+        raise Exception(f'No PR found in {repo} for commit {commit} (was it pushed directly to the target branch?)')
+
+    else:
+        raise Exception(f"The {event_type} event doesn\'t relate to a Pull Request.")
 
 class TerraformComment:
     """
