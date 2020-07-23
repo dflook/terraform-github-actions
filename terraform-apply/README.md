@@ -2,12 +2,13 @@
 
 This is one of a suite of terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
-This action generates and applies a terraform plan.
-The default behaviour is to look for an approved plan that has been added to a PR using the `terraform-plan` action.
+This action applies a terraform plan.
+The default behaviour is to apply the plan that has been added to a PR using the `terraform-plan` action.
 
 If the plan is not found or has changed, then the `apply` action will fail.
 This is to ensure that the action only applies changes that have been reviewed by a human.
-You can disable this behaviour by setting `auto_approve: true`, which will always apply the generated plan.
+
+You can instead set `auto_approve: true` which will generate a plan and apply it immediately, without looking for a plan attached to a PR.
 
 ## Demo
 This a demo of the process for apply a terraform change using the [`dflook/terraform-plan`](https://github.com/dflook/terraform-github-actions/tree/master/terraform-plan) and [`dflook/terraform-apply`](https://github.com/dflook/terraform-github-actions/tree/master/terraform-apply) actions.
