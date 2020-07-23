@@ -30,7 +30,7 @@ Creates a new terraform workspace. If the workspace already exists, succeeds wit
 * `backend_config_file`
 
   Comma separated list of terraform backend config files to use.
-  Paths should be relative to the repository root.
+  Paths should be relative to the GitHub Actions workspace
 
   - Type: string
   - Optional

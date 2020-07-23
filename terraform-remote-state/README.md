@@ -31,7 +31,7 @@ Retrieves the root-level outputs from a terraform remote state.
 * `backend_config_file`
 
   Comma separated list of terraform backend config files to use.
-  Paths should be relative to the repository root.
+  Paths should be relative to the GitHub Actions workspace
 
   - Type: string
   - Optional

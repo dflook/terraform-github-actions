@@ -51,7 +51,7 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 * `var_file`
 
   Comma separated list of tfvars files to use.
-  Paths should be relative to the repository root.
+  Paths should be relative to the GitHub Actions workspace
 
   - Type: string
   - Optional
@@ -66,7 +66,7 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 * `backend_config_file`
 
   Comma separated list of terraform backend config files to use.
-  Paths should be relative to the repository root.
+  Paths should be relative to the GitHub Actions workspace
 
   - Type: string
   - Optional
