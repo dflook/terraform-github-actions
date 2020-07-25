@@ -8,10 +8,22 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.3.1` to use an exact release
-- `@v1.3` to use the latest patch release for the specific minor version
+- `@v1.4.0` to use an exact release
+- `@v1.4` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
 
+
+## [1.4.0] - 2020-07-25
+
+### Added
+- Better support for the `issue_comment` and `pull_request_review_comment`
+  events in the [dflook/terraform-plan](terraform-plan) and [dflook/terraform-apply](terraform-apply) actions
+
+  This allows using plan PR comments when triggered in reponse to those
+  events, enabling workflows like [applying a plan using a comment](terraform-apply#applying-a-plan-using-a-comment).
+
+### Fixed
+- Plan errors are now correctly added to the workflow log.
 
 ## [1.3.1] - 2020-07-23
 
@@ -57,6 +69,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.4.0]: https://github.com/dflook/terraform-github-actions/compare/v1.3.1...v1.4.0
 [1.3.1]: https://github.com/dflook/terraform-github-actions/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/dflook/terraform-github-actions/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/dflook/terraform-github-actions/compare/v1.1.0...v1.2.0
