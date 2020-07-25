@@ -240,7 +240,7 @@ name: Terraform Apply
 on: [issue_comment]
 
 jobs:
-  plan:
+  apply:
     if: github.event.issue.pull_request && contains(github.event.comment.body, 'terraform apply')
     runs-on: ubuntu-latest
     name: Apply terraform plan
