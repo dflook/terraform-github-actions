@@ -47,7 +47,7 @@ def find_pr() -> str:
 
     event_type = os.environ['GITHUB_EVENT_NAME']
 
-    if event_type == ['pull_request', 'pull_request_review_comment']:
+    if event_type in ['pull_request', 'pull_request_review_comment']:
         return event['pull_request']['url']
 
     elif event_type == 'issue_comment':
