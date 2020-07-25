@@ -78,6 +78,7 @@ if [[ $PLAN_EXIT -eq 1 ]]; then
 fi
 
 if [[ $PLAN_EXIT -eq 1 ]]; then
+    cat "$PLAN_DIR/error.txt"
     update_status "Error applying plan in $(job_markdown_ref)"
     exit 1
 fi
