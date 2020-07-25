@@ -154,9 +154,8 @@ function output() {
 function update_status() {
     local status="$1"
 
-    echo "$status"
-
     if ! STATUS="$status" github_pr_comment status 2>&1 | sed 's/^/::debug::/'; then
+        echo "$status"
         echo "Unable to update status on PR"
     fi
 }
