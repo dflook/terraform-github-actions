@@ -40,3 +40,17 @@ def test_convert_with_multiple_providers():
     ]
 
     assert list(convert_version(tf_version_output)) == expected
+
+def test_convert_0_13_providers():
+    tf_version_output = '''Terraform v0.13.0
++ provider registry.terraform.io/terraform-providers/acme v1.5.0    
++ provider registry.terraform.io/hashicorp/random v2.2.0
+'''
+
+    expected = [
+        '::set-output name=terraform::0.13.0',
+        '::set-output name=acme::1.5.0',
+        '::set-output name=random::2.2.0'
+    ]
+
+    assert list(convert_version(tf_version_output)) == expected

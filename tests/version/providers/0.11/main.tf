@@ -4,3 +4,7 @@ provider "random" {
 
 provider "acme" {
 }
+
+terraform {
+  required_version = "~>0.11"
+}

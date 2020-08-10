@@ -24,8 +24,17 @@ def convert_version(tf_output: str) -> Iterable[str]:
 
     yield f'::set-output name=terraform::{tf_version.group(1)}'
 
-    for provider in re.finditer(r'provider\.(\w+) v(.*)', tf_output):
-        yield f'::set-output name={provider.group(1)}::{provider.group(2)}'
+    for provider in re.finditer(r'provider[\. ](.+) v(.*)', tf_output):
+
+        provider_name = provider.group(1)
+        provider_version = provider.group(2)
+
+        if tf_version.group(1).startswith('0.13'):
+            source_address = re.match(r'(.*?)/(.*?)/(.*)', provider_name)
+            if source_address:
+                provider_name = source_address.group(3)
+
+        yield f'::set-output name={provider_name.strip()}::{provider_version.strip()}'
 
 
 if __name__ == '__main__':

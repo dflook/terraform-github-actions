@@ -6,7 +6,7 @@ terraform {
       prefix = "github-actions-"
     }
   }
-  required_version = "~> 0.12.0"
+  required_version = "~> 0.13.0"
 }
 
 resource "random_id" "the_id" {

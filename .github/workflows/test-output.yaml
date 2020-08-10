@@ -18,7 +18,7 @@ jobs:
         uses: ./terraform-output
         id: terraform-output
         with:
-          path: tests/remote-state/test-bucket
+          path: tests/remote-state/test-bucket_12
 
       - name: Print the outputs
         run: |
