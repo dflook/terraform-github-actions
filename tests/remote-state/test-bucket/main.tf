@@ -4,6 +4,7 @@ terraform {
     key    = "terraform-remote-state"
     region = "eu-west-2"
   }
+  required_version = "~> 0.12.0"
 }
 
 output "my_number" {
