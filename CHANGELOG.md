@@ -8,10 +8,15 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.4.0` to use an exact release
+- `@v1.4.1` to use an exact release
 - `@v1.4` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
 
+## [1.4.1] - 2020-08-11
+
+### Fixed
+- Latest Terraform versions with a patch version of '0' are correctly detected.
+  If not otherwise specified the latest terraform version is used. As of now the latest is v0.13.0.
 
 ## [1.4.0] - 2020-07-25
 
@@ -69,6 +74,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.4.1]: https://github.com/dflook/terraform-github-actions/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/dflook/terraform-github-actions/compare/v1.3.1...v1.4.0
 [1.3.1]: https://github.com/dflook/terraform-github-actions/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/dflook/terraform-github-actions/compare/v1.2.0...v1.3.0
