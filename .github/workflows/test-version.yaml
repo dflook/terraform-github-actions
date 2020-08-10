@@ -113,7 +113,7 @@ jobs:
 
       - name: Check the version
         run: |
-          if [[ "${{ steps.terraform-version.outputs.terraform }}" != *"0.12"* ]]; then
+          if [[ "${{ steps.terraform-version.outputs.terraform }}" != *"0.13"* ]]; then
             echo "::error:: Terraform version not set from required_version"
             exit 1
           fi
@@ -125,26 +125,74 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Test terraform-version
+      - name: Test terraform-version with 0.12
         uses: ./terraform-version
-        id: terraform-version
+        id: terraform-version-12
         with:
-          path: tests/version/providers
+          path: tests/version/providers/0.12
 
       - name: Print the version
         run: |
-          echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
-          echo "The random version was ${{ steps.terraform-version.outputs.random }}"
-          echo "The acme version was ${{ steps.terraform-version.outputs.acme }}"
+          echo "The terraform version was ${{ steps.terraform-version-12.outputs.terraform }}"
+          echo "The random version was ${{ steps.terraform-version-12.outputs.random }}"
+          echo "The acme version was ${{ steps.terraform-version-12.outputs.acme }}"
 
       - name: Check the version
         run: |
-          if [[ "${{ steps.terraform-version.outputs.random }}" != "2.2.0" ]]; then
+          if [[ "${{ steps.terraform-version-12.outputs.random }}" != "2.2.0" ]]; then
             echo "::error:: random provider version has not been set"
             exit 1
           fi
 
-          if [[ -z "${{ steps.terraform-version.outputs.acme }}" ]]; then
+          if [[ -z "${{ steps.terraform-version-12.outputs.acme }}" ]]; then
+            echo "::error:: acme provider version has not been set"
+            exit 1
+          fi
+
+      - name: Test terraform-version with 0.13
+        uses: ./terraform-version
+        id: terraform-version-13
+        with:
+          path: tests/version/providers/0.13
+
+      - name: Print the version
+        run: |
+          echo "The terraform version was ${{ steps.terraform-version-13.outputs.terraform }}"
+          echo "The random version was ${{ steps.terraform-version-13.outputs.random }}"
+          echo "The acme version was ${{ steps.terraform-version-13.outputs.acme }}"
+
+      - name: Check the version
+        run: |
+          if [[ "${{ steps.terraform-version-13.outputs.random }}" != "2.2.0" ]]; then
+            echo "::error:: random provider version has not been set"
+            exit 1
+          fi
+
+          if [[ -z "${{ steps.terraform-version-13.outputs.acme }}" ]]; then
+            echo "::error:: acme provider version has not been set"
+            exit 1
+          fi
+
+      - name: Test terraform-version with 0.11
+        uses: ./terraform-version
+        id: terraform-version-11
+        with:
+          path: tests/version/providers/0.11
+
+      - name: Print the version
+        run: |
+          echo "The terraform version was ${{ steps.terraform-version-11.outputs.terraform }}"
+          echo "The random version was ${{ steps.terraform-version-11.outputs.random }}"
+          echo "The acme version was ${{ steps.terraform-version-11.outputs.acme }}"
+
+      - name: Check the version
+        run: |
+          if [[ "${{ steps.terraform-version-11.outputs.random }}" != "2.2.0" ]]; then
+            echo "::error:: random provider version has not been set"
+            exit 1
+          fi
+
+          if [[ -z "${{ steps.terraform-version-11.outputs.acme }}" ]]; then
             echo "::error:: acme provider version has not been set"
             exit 1
           fi

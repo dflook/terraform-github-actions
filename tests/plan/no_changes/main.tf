@@ -1,3 +1,3 @@
-output "hello" {
-  value = "world"
+locals {
+  hello = "world"
 }

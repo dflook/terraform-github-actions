@@ -17,7 +17,7 @@ jobs:
         uses: ./terraform-apply
         id: output
         with:
-          path: tests/remote-state/test-bucket
+          path: tests/remote-state/test-bucket_12
           auto_approve: true
 
       - name: Verify outputs
@@ -39,7 +39,7 @@ jobs:
         id: apply
         continue-on-error: true
         with:
-          path: tests/remote-state/test-bucket
+          path: tests/remote-state/test-bucket_12
           auto_approve: true
 
       - name: Check failed to apply
@@ -138,7 +138,7 @@ jobs:
             exit 1
           fi
 
-  backend_config:
+  backend_config_12:
     runs-on: ubuntu-latest
     name: backend_config & backed_config_vars
     env:
@@ -152,19 +152,19 @@ jobs:
       - name: Plan
         uses: ./terraform-plan
         with:
-          path: tests/apply/backend_config
-          backend_config_file: tests/apply/backend_config/backend_config
+          path: tests/apply/backend_config_12
+          backend_config_file: tests/apply/backend_config_12/backend_config
 
       - name: Apply
         uses: ./terraform-apply
-        id: backend_config_file
+        id: backend_config_file_12
         with:
-          path: tests/apply/backend_config
-          backend_config_file: tests/apply/backend_config/backend_config
+          path: tests/apply/backend_config_12
+          backend_config_file: tests/apply/backend_config_12/backend_config
 
       - name: Verify outputs
         run: |
-          if [[ "${{ steps.backend_config_file.outputs.test }}" != "hello" ]]; then
+          if [[ "${{ steps.backend_config_file_12.outputs.test }}" != "hello" ]]; then
             echo "::error:: output from backend_config file not set correctly"
             exit 1
           fi
@@ -172,19 +172,70 @@ jobs:
       - name: Plan
         uses: ./terraform-plan
         with:
-          path: tests/apply/backend_config
+          path: tests/apply/backend_config_12
           backend_config: bucket=terraform-github-actions,key=backend_config,region=eu-west-2
 
       - name: Apply
         uses: ./terraform-apply
-        id: backend_config
+        id: backend_config_12
         with:
-          path: tests/apply/backend_config
+          path: tests/apply/backend_config_12
           backend_config: bucket=terraform-github-actions,key=backend_config,region=eu-west-2
 
       - name: Verify outputs
         run: |
-          if [[ "${{ steps.backend_config.outputs.test }}" != "hello" ]]; then
+          if [[ "${{ steps.backend_config_12.outputs.test }}" != "hello" ]]; then
+            echo "::error:: Output from backend_config not set correctly"
+            exit 1
+          fi
+
+  backend_config_13:
+    runs-on: ubuntu-latest
+    name: backend_config & backed_config_vars
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          path: tests/apply/backend_config_13
+          backend_config_file: tests/apply/backend_config_13/backend_config
+
+      - name: Apply
+        uses: ./terraform-apply
+        id: backend_config_file_13
+        with:
+          path: tests/apply/backend_config_13
+          backend_config_file: tests/apply/backend_config_13/backend_config
+
+      - name: Verify outputs
+        run: |
+          if [[ "${{ steps.backend_config_file_13.outputs.test }}" != "hello" ]]; then
+            echo "::error:: output from backend_config file not set correctly"
+            exit 1
+          fi
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          path: tests/apply/backend_config_13
+          backend_config: bucket=terraform-github-actions,key=backend_config_13,region=eu-west-2
+
+      - name: Apply
+        uses: ./terraform-apply
+        id: backend_config_13
+        with:
+          path: tests/apply/backend_config_13
+          backend_config: bucket=terraform-github-actions,key=backend_config_13,region=eu-west-2
+
+      - name: Verify outputs
+        run: |
+          if [[ "${{ steps.backend_config_13.outputs.test }}" != "hello" ]]; then
             echo "::error:: Output from backend_config not set correctly"
             exit 1
           fi
@@ -261,7 +312,7 @@ jobs:
         uses: ./terraform-apply
         id: output
         with:
-          path: tests/remote-state/test-bucket
+          path: tests/remote-state/test-bucket_12
 
       - name: Verify outputs
         run: |
