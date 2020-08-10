@@ -16,4 +16,6 @@ terraform {
     key    = "terraform-new-workspace"
     region = "eu-west-2"
   }
+
+  required_version = "~> 0.12.0"
 }
