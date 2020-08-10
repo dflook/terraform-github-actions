@@ -18,7 +18,8 @@ def get_versions() -> List[StrictVersion]:
 
 
 def latest_version(versions: List[StrictVersion]):
-    return str(sorted(versions, reverse=True)[0])
+    latest = sorted(versions, reverse=True)[0]
+    return '.'.join([str(x) for x in latest.version])
 
 
 if __name__ == '__main__':
@@ -31,3 +32,4 @@ def test_version():
     assert StrictVersion('0.12.28') in versions
     assert StrictVersion('0.12.5') in versions
     assert StrictVersion('0.11.14') in versions
+    assert StrictVersion('0.13.0') in versions
