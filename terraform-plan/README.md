@@ -105,9 +105,11 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `changes`
 
-  Set to 'true' if the plan would change any resources, 'false' if it wouldn't.
-  Note that an apply may still be needed to update any outputs, even if no
-  resources would change.
+  Set to 'true' if the plan would apply any changes, 'false' if it wouldn't.
+
+  Note that with terraform <0.13 an apply may still be needed to update any outputs, even if no
+  resources would change. With terraform >=0.13 this is correctly set to 'true' whenever an apply
+  needs to be run.
 
 ## Example usage
 
