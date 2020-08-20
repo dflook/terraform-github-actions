@@ -29,7 +29,7 @@ if __name__ == '__main__':
 def test_version():
     versions = get_versions()
     print(versions)
-    assert StrictVersion('0.12.28') in versions
+    assert StrictVersion('0.12.29') in versions
     assert StrictVersion('0.12.5') in versions
     assert StrictVersion('0.11.14') in versions
     assert StrictVersion('0.13.0') in versions
