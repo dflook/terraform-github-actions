@@ -6,6 +6,9 @@ inputs:
   path:
     description: Path to the terraform configuration
     required: true
+  version:
+    description: Override Terraform latest version
+    required: false
 
 outputs:
   version:

@@ -22,6 +22,9 @@ inputs:
   var_file:
     description: Comma separated list of var file paths
     required: false
+  version:
+    description: Override Terraform latest version
+    required: false
   parallelism:
     description: Limit the number of concurrent operations
     required: false
