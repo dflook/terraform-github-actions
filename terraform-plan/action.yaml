@@ -25,6 +25,7 @@ inputs:
   version:
     description: Override Terraform latest version
     required: false
+    default: latest
   parallelism:
     description: Limit the number of concurrent operations
     required: false

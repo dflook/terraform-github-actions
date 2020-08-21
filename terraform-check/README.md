@@ -23,6 +23,15 @@ This is intended to run on a schedule to notify if manual changes to your infras
   - Optional
   - Default: `default`
 
+* `version`
+
+  Override the Terraform binary version. It should be expressed in the
+  format used by the Terraform project to identify release versions.
+
+  - Type: string
+  - Optional
+  - Default: latest
+
 * `var`
 
   Comma separated list of terraform vars to set

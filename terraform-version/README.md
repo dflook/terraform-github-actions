@@ -27,6 +27,15 @@ outputs yourself.
   - Type: string
   - Required
 
+* `version`
+
+  Override the Terraform binary version. It should be expressed in the
+  format used by the Terraform project to identify release versions.
+
+  - Type: string
+  - Optional
+  - Default: latest
+
 ## Outputs
 
 * `terraform`

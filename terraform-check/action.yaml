@@ -16,6 +16,10 @@ inputs:
   backend_config_file:
     description: Path to a backend config file"
     required: false
+  version:
+    description: Override Terraform latest version
+    required: false
+    default: latest
   var:
     description: Comma separated list of vars to set, e.g. 'foo=bar'
     required: false

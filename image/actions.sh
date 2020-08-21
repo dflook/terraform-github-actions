@@ -29,7 +29,7 @@ function detect-terraform-version() {
     echo "$TF_SWITCH_OUTPUT"
   else
     echo "Reading latest terraform version"
-    if [[ "$INPUT_VERSION" == "" ]]; then
+    if [[ "$INPUT_VERSION" == "latest" ]]; then
       tfswitch "$(latest_terraform_version)"
     else
       tfswitch "$INPUT_VERSION"
