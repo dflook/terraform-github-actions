@@ -70,6 +70,18 @@ def find_pr() -> str:
     else:
         raise Exception(f"The {event_type} event doesn\'t relate to a Pull Request.")
 
+def current_user() -> str:
+    response = github.get('https://api.github.com/user')
+    if response.status_code != 403:
+        user = response.json()
+        debug('GITHUB_TOKEN user:')
+        debug(json.dumps(user))
+
+        return user['login']
+
+    # Assume this is the github actions app token
+    return 'github-actions[bot]'
+
 class TerraformComment:
     """
     The GitHub comment for this specific terraform plan
@@ -90,7 +102,7 @@ class TerraformComment:
         debug('Looking for an existing comment:')
         for comment in response.json():
             debug(json.dumps(comment))
-            if comment['user']['login'] == 'github-actions[bot]':
+            if comment['user']['login'] == current_user():
                 match = re.match(rf'{re.escape(self._comment_identifier)}\n```(.*?)```(.*)', comment['body'], re.DOTALL)
 
                 if not match:
