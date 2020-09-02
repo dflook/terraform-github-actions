@@ -8,9 +8,15 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.4.1` to use an exact release
+- `@v1.4.2` to use an exact release
 - `@v1.4` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.4.2] - 2020-09-02
+
+### Fixed
+- Using a personal access token instead of the Actions provided token now works.
+  This can be used to customise the PR comment author
 
 ## [1.4.1] - 2020-08-11
 
@@ -74,6 +80,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.4.2]: https://github.com/dflook/terraform-github-actions/compare/v1.4.1...v1.4.2
 [1.4.1]: https://github.com/dflook/terraform-github-actions/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/dflook/terraform-github-actions/compare/v1.3.1...v1.4.0
 [1.3.1]: https://github.com/dflook/terraform-github-actions/compare/v1.3.0...v1.3.1
