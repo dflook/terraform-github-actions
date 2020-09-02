@@ -343,3 +343,32 @@ jobs:
             echo "Apply did not fail correctly"
             exit 1
           fi
+
+  apply_user_token:
+    runs-on: ubuntu-latest
+    name: Apply using a personal access token
+    env:
+      GITHUB_TOKEN: ${{ secrets.USER_GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          label: User PAT
+          path: tests/apply/changes
+
+      - name: Apply
+        uses: ./terraform-apply
+        id: output
+        with:
+          label: User PAT
+          path: tests/apply/changes
+
+      - name: Verify outputs
+        run: |
+          if [[ "${{ steps.output.outputs.output_string }}" != "the_string" ]]; then
+            echo "::error:: output s not set correctly"
+            exit 1
+          fi
