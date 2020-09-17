@@ -103,7 +103,7 @@ class TerraformComment:
         for comment in response.json():
             debug(json.dumps(comment))
             if comment['user']['login'] == current_user():
-                match = re.match(rf'{re.escape(self._comment_identifier)}\n```(.*?)```(.*)', comment['body'], re.DOTALL)
+                match = re.match(rf'{re.escape(self._comment_identifier)}\n```(?:hcl)?(.*?)```(.*)', comment['body'], re.DOTALL)
 
                 if not match:
                     match = re.match(rf'{re.escape(self._old_comment_identifier)}\n```(.*?)```(.*)', comment['body'], re.DOTALL)
@@ -244,7 +244,7 @@ class TerraformComment:
         self._status = status.strip()
 
     def update_comment(self):
-        body = f'{self._comment_identifier}\n```\n{self.plan}\n```'
+        body = f'{self._comment_identifier}\n```hcl\n{self.plan}\n```'
 
         if self.status:
             body += '\n' + self.status
