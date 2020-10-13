@@ -22,6 +22,9 @@ set +e
     | sed '1,/---/d' \
         >"$PLAN_DIR/plan.txt"
 
+cp $PLAN_DIR/error.txt $ARTIFACT_DIR
+cp $PLAN_DIR/plan.txt $ARTIFACT_DIR
+
 readonly TF_EXIT=${PIPESTATUS[0]}
 set -e
 

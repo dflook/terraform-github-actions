@@ -5,8 +5,9 @@ source /usr/local/actions.sh
 debug
 setup
 
+
 EXIT_CODE=0
-for file in $(terraform fmt -recursive -no-color -check "$INPUT_PATH"); do
+for file in $(terraform fmt -recursive -no-color -check "$INPUT_PATH" | save_artifact fmt_check.txt); do
     echo "::error file=$file::File is not in canonical format (terraform fmt)"
     EXIT_CODE=1
 done

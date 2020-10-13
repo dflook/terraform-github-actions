@@ -41,6 +41,9 @@ function plan() {
         | sed '1,/---/d' \
             >"$PLAN_DIR/plan.txt"
 
+    cp $PLAN_DIR/error.txt $ARTIFACT_DIR
+    cp $PLAN_DIR/plan.txt $ARTIFACT_DIR
+
     PLAN_EXIT=${PIPESTATUS[0]}
     set -e
 }
@@ -48,7 +51,7 @@ function plan() {
 function apply() {
 
     set +e
-    (cd $INPUT_PATH && terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PLAN_OUT) | $TFMASK
+    (cd $INPUT_PATH && terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PLAN_OUT) | $TFMASK | save_artifact apply.txt
     local APPLY_EXIT=${PIPESTATUS[0]}
     set -e
 

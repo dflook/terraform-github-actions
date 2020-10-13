@@ -49,9 +49,11 @@ function detect-tfmask() {
 function setup() {
   export TF_DATA_DIR="$HOME/.dflook-terraform-data-dir"
   export TF_PLUGIN_CACHE_DIR="$HOME/.terraform.d/plugin-cache"
+  ARTIFACT_DIR=${HOME}/${GITHUB_RUN_ID}-${GITHUB_RUN_NUMBER}
+
   unset TF_WORKSPACE
 
-  mkdir -p "$TF_DATA_DIR" "$TF_PLUGIN_CACHE_DIR"
+  mkdir -p "$TF_DATA_DIR" "$TF_PLUGIN_CACHE_DIR" "$ARTIFACT_DIR"
 
   if [[ "$INPUT_PATH" == "" ]]; then
     echo "::error:: input 'path' not set"
@@ -162,4 +164,8 @@ function update_status() {
 
 function random_string() {
   python3 -c "import random; import string; print(''.join(random.choice(string.ascii_lowercase) for i in range(8)))"
+}
+
+function save_artifact {
+  tee $ARTIFACT_DIR/$1
 }
