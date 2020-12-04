@@ -38,7 +38,7 @@ function plan() {
         2>"$PLAN_DIR/error.txt" \
         | $TFMASK \
         | tee /dev/fd/3 \
-        | sed '1,/---/d' \
+        | compact_plan \
             >"$PLAN_DIR/plan.txt"
 
     PLAN_EXIT=${PIPESTATUS[0]}

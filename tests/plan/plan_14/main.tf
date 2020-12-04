@@ -5,3 +5,7 @@ resource "random_string" "my_string" {
 output "s" {
   value = "string"
 }
+
+terraform {
+  required_version = "~> 0.14.0"
+}
