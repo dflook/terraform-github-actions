@@ -113,8 +113,8 @@ jobs:
 
       - name: Check the version
         run: |
-          if [[ "${{ steps.terraform-version.outputs.terraform }}" != *"0.13"* ]]; then
-            echo "::error:: Terraform version not set from required_version"
+          if [[ "${{ steps.terraform-version.outputs.terraform }}" != *"0.14"* ]]; then
+            echo "::error:: Latest version was not used"
             exit 1
           fi
 
