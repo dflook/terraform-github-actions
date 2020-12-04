@@ -42,7 +42,103 @@ jobs:
           path: tests/plan/no_changes
           add_github_comment: false
 
-  plan_change_comment:
+  plan_change_comment_11:
+    runs-on: ubuntu-latest
+    name: Change
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Plan
+        uses: ./terraform-plan
+        id: plan
+        with:
+          path: tests/plan/plan_11
+
+      - name: Verify outputs
+        run: |
+          echo "changes=${{ steps.plan.outputs.changes }}"
+
+          if [[ "${{ steps.plan.outputs.changes }}" != "true" ]]; then
+            echo "::error:: output changes not set correctly"
+            exit 1
+          fi
+
+  plan_change_comment_12:
+    runs-on: ubuntu-latest
+    name: Change
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Plan
+        uses: ./terraform-plan
+        id: plan
+        with:
+          path: tests/plan/plan_12
+
+      - name: Verify outputs
+        run: |
+          echo "changes=${{ steps.plan.outputs.changes }}"
+
+          if [[ "${{ steps.plan.outputs.changes }}" != "true" ]]; then
+            echo "::error:: output changes not set correctly"
+            exit 1
+          fi
+
+  plan_change_comment_13:
+    runs-on: ubuntu-latest
+    name: Change
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Plan
+        uses: ./terraform-plan
+        id: plan
+        with:
+          path: tests/plan/plan_13
+
+      - name: Verify outputs
+        run: |
+          echo "changes=${{ steps.plan.outputs.changes }}"
+
+          if [[ "${{ steps.plan.outputs.changes }}" != "true" ]]; then
+            echo "::error:: output changes not set correctly"
+            exit 1
+          fi
+
+  plan_change_comment_14:
+    runs-on: ubuntu-latest
+    name: Change
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Plan
+        uses: ./terraform-plan
+        id: plan
+        with:
+          path: tests/plan/plan_14
+
+      - name: Verify outputs
+        run: |
+          echo "changes=${{ steps.plan.outputs.changes }}"
+
+          if [[ "${{ steps.plan.outputs.changes }}" != "true" ]]; then
+            echo "::error:: output changes not set correctly"
+            exit 1
+          fi
+
+  plan_change_comment_latest:
     runs-on: ubuntu-latest
     name: Change
     env:
