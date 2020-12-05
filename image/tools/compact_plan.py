@@ -2,11 +2,12 @@
 
 import sys
 
-if __name__ == '__main__':
+
+def compact_plan(input):
     plan = False
     buffer = []
 
-    for line in sys.stdin.readlines():
+    for line in input:
 
         if not plan and (
             line.startswith('An execution plan has been generated and is shown below') or
@@ -16,10 +17,14 @@ if __name__ == '__main__':
             plan = True
 
         if plan:
-            sys.stdout.write(line)
+            yield line
         else:
             buffer.append(line)
 
     if not plan and buffer:
-        for line in buffer:
-            sys.stdout.write(line)
+        yield from buffer
+
+
+if __name__ == '__main__':
+    for line in compact_plan(sys.stdin.readlines()):
+        sys.stdout.write(line)
