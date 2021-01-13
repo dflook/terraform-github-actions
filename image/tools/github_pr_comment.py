@@ -70,6 +70,18 @@ def find_pr() -> str:
     else:
         raise Exception(f"The {event_type} event doesn\'t relate to a Pull Request.")
 
+def current_user() -> str:
+    response = github.get('https://api.github.com/user')
+    if response.status_code != 403:
+        user = response.json()
+        debug('GITHUB_TOKEN user:')
+        debug(json.dumps(user))
+
+        return user['login']
+
+    # Assume this is the github actions app token
+    return 'github-actions[bot]'
+
 class TerraformComment:
     """
     The GitHub comment for this specific terraform plan
@@ -90,8 +102,8 @@ class TerraformComment:
         debug('Looking for an existing comment:')
         for comment in response.json():
             debug(json.dumps(comment))
-            if comment['user']['login'] == 'github-actions[bot]':
-                match = re.match(rf'{re.escape(self._comment_identifier)}\n```(.*?)```(.*)', comment['body'], re.DOTALL)
+            if comment['user']['login'] == current_user():
+                match = re.match(rf'{re.escape(self._comment_identifier)}\n```(?:hcl)?(.*?)```(.*)', comment['body'], re.DOTALL)
 
                 if not match:
                     match = re.match(rf'{re.escape(self._old_comment_identifier)}\n```(.*?)```(.*)', comment['body'], re.DOTALL)
@@ -232,7 +244,7 @@ class TerraformComment:
         self._status = status.strip()
 
     def update_comment(self):
-        body = f'{self._comment_identifier}\n```\n{self.plan}\n```'
+        body = f'{self._comment_identifier}\n```hcl\n{self.plan}\n```'
 
         if self.status:
             body += '\n' + self.status
