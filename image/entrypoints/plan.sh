@@ -19,7 +19,7 @@ set +e
     2>"$PLAN_DIR/error.txt" \
     | $TFMASK \
     | tee /dev/fd/3 \
-    | sed '1,/---/d' \
+    | compact_plan \
         >"$PLAN_DIR/plan.txt"
 
 readonly TF_EXIT=${PIPESTATUS[0]}
