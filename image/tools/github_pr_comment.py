@@ -4,6 +4,7 @@ import json
 import os
 import re
 import sys
+import datetime
 from typing import Optional, Dict, Iterable
 
 import requests
@@ -11,6 +12,32 @@ import requests
 github = requests.Session()
 github.headers['authorization'] = f'Bearer {os.environ["GITHUB_TOKEN"]}'
 
+def github_api_request(method, *args, **kw_args):
+    response = github.request(method, *args, **kw_args)
+
+    if response.status_code >= 400 and response.status_code < 500:
+        debug(str(response.headers))
+
+        try:
+            message = response.json()['message']
+
+            if response.headers['X-RateLimit-Remaining'] == '0':
+                limit_reset = datetime.datetime.fromtimestamp(int(response.headers['X-RateLimit-Reset']))
+                sys.stderr.write(message)
+                sys.stderr.write(f' Try again when the rate limit resets at {limit_reset} UTC.\n')
+                exit(1)
+
+            if message != 'Resource not accessible by integration':
+                sys.stderr.write(message)
+                sys.stderr.write('\n')
+                debug(response.content.decode())
+
+        except Exception:
+            sys.stderr.write(response.content.decode())
+            sys.stderr.write('\n')
+            raise
+
+    return response
 
 def debug(msg: str) -> None:
     for line in msg.splitlines():
@@ -21,7 +48,7 @@ def prs(repo: str) -> Iterable[Dict]:
     url = f'https://api.github.com/repos/{repo}/pulls'
 
     while True:
-        response = github.get(url, params={'state': 'all'})
+        response = github_api_request('get', url, params={'state': 'all'})
         response.raise_for_status()
 
         for pr in response.json():
@@ -71,7 +98,7 @@ def find_pr() -> str:
         raise Exception(f"The {event_type} event doesn\'t relate to a Pull Request.")
 
 def current_user() -> str:
-    response = github.get('https://api.github.com/user')
+    response = github_api_request('get', 'https://api.github.com/user')
     if response.status_code != 403:
         user = response.json()
         debug('GITHUB_TOKEN user:')
@@ -91,11 +118,11 @@ class TerraformComment:
         self._plan = None
         self._status = None
 
-        response = github.get(pr_url)
+        response = github_api_request('get', pr_url)
         response.raise_for_status()
 
         self._issue_url = response.json()['_links']['issue']['href'] + '/comments'
-        response = github.get(self._issue_url)
+        response = github_api_request('get', self._issue_url)
         response.raise_for_status()
 
         self._comment_url = None
@@ -254,11 +281,11 @@ class TerraformComment:
         if self._comment_url is None:
             # Create a new comment
             debug('Creating comment')
-            response = github.post(self._issue_url, json={'body': body})
+            response = github_api_request('post', self._issue_url, json={'body': body})
         else:
             # Update existing comment
             debug('Updating existing comment')
-            response = github.patch(self._comment_url, json={'body': body})
+            response = github_api_request('patch', self._comment_url, json={'body': body})
 
         debug(response.content.decode())
         response.raise_for_status()
