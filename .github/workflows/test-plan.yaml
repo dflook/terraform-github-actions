@@ -44,7 +44,7 @@ jobs:
 
   plan_change_comment_11:
     runs-on: ubuntu-latest
-    name: Change
+    name: Change terraform 11
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -68,7 +68,7 @@ jobs:
 
   plan_change_comment_12:
     runs-on: ubuntu-latest
-    name: Change
+    name: Change terraform 12
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -92,7 +92,7 @@ jobs:
 
   plan_change_comment_13:
     runs-on: ubuntu-latest
-    name: Change
+    name: Change terraform 13
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -116,7 +116,7 @@ jobs:
 
   plan_change_comment_14:
     runs-on: ubuntu-latest
-    name: Change
+    name: Change terraform 14
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -140,7 +140,7 @@ jobs:
 
   plan_change_comment_latest:
     runs-on: ubuntu-latest
-    name: Change
+    name: Change latest terraform
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
