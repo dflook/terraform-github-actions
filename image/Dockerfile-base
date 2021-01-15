@@ -5,7 +5,7 @@ RUN cd tfmask && make && make go/build
 
 FROM debian:buster-slim as base
 
-ARG DEFAULT_TF_VERSION=0.12.28
+ARG DEFAULT_TF_VERSION=0.14.4
 ARG TFSWITCH_VERSION=0.8.832
 
 # Terraform environment variables
@@ -33,8 +33,9 @@ RUN apt-get update && apt-get install -y \
 RUN curl -fsL https://github.com/warrensbox/terraform-switcher/releases/download/${TFSWITCH_VERSION}/terraform-switcher_${TFSWITCH_VERSION}_linux_amd64.tar.gz -o tfswitch.tar.gz \
  && tar -xvf tfswitch.tar.gz \
  && mv tfswitch /usr/local/bin \
- && rm -rf tfswitch \
- && tfswitch $DEFAULT_TF_VERSION
+ && rm -rf README.md LICENSE terraform-switcher \
+ && tfswitch $DEFAULT_TF_VERSION \
+ && mv /root/.terraform.versions /root/.terraform.versions.default
 RUN mkdir -p $TF_PLUGIN_CACHE_DIR
 
 COPY --from=tfmask /go/tfmask/release/tfmask /usr/local/bin/tfmask
