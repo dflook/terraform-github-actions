@@ -95,6 +95,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.5.2]: https://github.com/dflook/terraform-github-actions/compare/v1.5.1...v1.5.2
 [1.5.1]: https://github.com/dflook/terraform-github-actions/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/dflook/terraform-github-actions/compare/v1.4.2...v1.5.0
 [1.4.2]: https://github.com/dflook/terraform-github-actions/compare/v1.4.1...v1.4.2
