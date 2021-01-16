@@ -8,11 +8,16 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.5.1` to use an exact release
+- `@v1.5.2` to use an exact release
 - `@v1.5` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
 
-## [1.5.1] - 2020-012-05
+## [1.5.2] - 2021-01-16
+
+### Fixed
+- Multiple steps in the same job now only download the terraform binary once.
+
+## [1.5.1] - 2020-12-05
 
 ### Fixed
 - PR comments had an empty plan with Terraform 0.14
