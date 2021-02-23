@@ -2,3 +2,4 @@
 /.idea/
 .pytest_cache/
 /venv/
+.terraform.lock.hcl
