@@ -12,13 +12,16 @@ When using an action you can specify the version as:
 - `@v1.6` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
 
-## [1.6.0] - 2021-02-24
+## [1.6.0] - 2021-02-25
 
 ### Added
 - PR comments use a one line summary of the terraform output, with the full output in a collapsable pane.
 
   If a plan is short the output is shown by default. This can be controlled with the `TF_PLAN_COLLAPSE_LENGTH` environment
   variable for the [dflook/terraform-plan](terraform-plan) action.
+
+### Fixed
+- Now makes far fewer github api requests to avoid rate limiting.
 
 ## [1.5.2] - 2021-01-16
 

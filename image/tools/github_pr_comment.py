@@ -5,6 +5,7 @@ import os
 import re
 import sys
 import datetime
+import hashlib
 from typing import Optional, Dict, Iterable
 
 import requests
@@ -98,16 +99,37 @@ def find_pr() -> str:
         raise Exception(f"The {event_type} event doesn\'t relate to a Pull Request.")
 
 def current_user() -> str:
+
+    token_hash = hashlib.sha256(os.environ["GITHUB_TOKEN"].encode()).hexdigest()
+
+    try:
+        with open(f'.dflook-terraform/token-cache/{token_hash}') as f:
+            username = f.read()
+            debug(f'GITHUB_TOKEN username: {username}')
+            return username
+    except Exception as e:
+        debug(str(e))
+
     response = github_api_request('get', 'https://api.github.com/user')
     if response.status_code != 403:
         user = response.json()
         debug('GITHUB_TOKEN user:')
         debug(json.dumps(user))
 
-        return user['login']
+        username = user['login']
+    else:
+        # Assume this is the github actions app token
+        username = 'github-actions[bot]'
 
-    # Assume this is the github actions app token
-    return 'github-actions[bot]'
+    try:
+        os.makedirs('.dflook-terraform/token-cache', exist_ok=True)
+        with open(f'.dflook-terraform/token-cache/{token_hash}', 'w') as f:
+            f.write(username)
+    except Exception as e:
+        debug(str(e))
+
+    debug(f'GITHUB_TOKEN username: {username}')
+    return username
 
 class TerraformComment:
     """
@@ -129,10 +151,12 @@ class TerraformComment:
         response = github_api_request('get', self._issue_url)
         response.raise_for_status()
 
+        username = current_user()
+
         debug('Looking for an existing comment:')
         for comment in response.json():
             debug(json.dumps(comment))
-            if comment['user']['login'] == current_user():
+            if comment['user']['login'] == username:
                 match = re.match(rf'{re.escape(self._comment_identifier)}.*```(?:hcl)?(.*?)```.*', comment['body'], re.DOTALL)
 
                 if not match:
