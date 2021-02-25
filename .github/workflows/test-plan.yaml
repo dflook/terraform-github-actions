@@ -118,6 +118,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Change terraform 14
     env:
+      TF_PLAN_COLLAPSE_LENGTH: 30
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout

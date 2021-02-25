@@ -100,6 +100,21 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   env:
     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   ```
+  
+* `TF_PLAN_COLLAPSE_LENGTH`
+
+  When PR comments are enabled, the terraform output is included in a collapsable pane.
+  
+  If a terraform plan has fewer lines than this value, the pane is expanded
+  by default when the comment is displayed.
+
+  ```yaml
+  env:
+    TF_PLAN_COLLAPSE_LENGTH: 30
+  ```
+
+  - Optional
+  - Default: 10
 
 ## Outputs
 

@@ -70,5 +70,5 @@ jobs:
         run: echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
         
       - name: Print aws provider version
-        run: echo "The terraform version was ${{ steps.terraform-version.outputs.aws }}"        
+        run: echo "The aws provider version was ${{ steps.terraform-version.outputs.aws }}"        
 ```
