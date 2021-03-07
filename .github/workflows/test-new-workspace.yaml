@@ -185,19 +185,19 @@ jobs:
         uses: ./terraform-new-workspace
         with:
           path: tests/new-workspace/remote_14
-          workspace: my-first-workspace
+          workspace: test-workspace
 
       - name: Create first workspace again
         uses: ./terraform-new-workspace
         with:
           path: tests/new-workspace/remote_14
-          workspace: my-first-workspace
+          workspace: test-workspace
 
       - name: Apply in first workspace
         uses: ./terraform-apply
         with:
           path: tests/new-workspace/remote_14
-          workspace: my-first-workspace
+          workspace: test-workspace
           var: my_string=hello
           auto_approve: true
 
@@ -220,7 +220,7 @@ jobs:
         id: first_14
         with:
           path: tests/new-workspace/remote_14
-          workspace: my-first-workspace
+          workspace: test-workspace
 
       - name: Get second workspace outputs
         uses: ./terraform-output
@@ -245,7 +245,7 @@ jobs:
         uses: ./terraform-destroy-workspace
         with:
           path: tests/new-workspace/remote_14
-          workspace: my-first-workspace
+          workspace: test-workspace
           var: my_string=hello
 
       - name: Destroy second workspace
