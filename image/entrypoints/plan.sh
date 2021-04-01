@@ -27,7 +27,7 @@ set -e
 
 cat "$PLAN_DIR/error.txt"
 
-if [[ "$GITHUB_EVENT_NAME" == "pull_request" || "$GITHUB_EVENT_NAME" == "issue_comment" || "$GITHUB_EVENT_NAME" == "pull_request_review_comment" ]]; then
+if [[ "$GITHUB_EVENT_NAME" == "pull_request" || "$GITHUB_EVENT_NAME" == "issue_comment" || "$GITHUB_EVENT_NAME" == "pull_request_review_comment" || "$GITHUB_EVENT_NAME" == "pull_request_target" ]]; then
   if [[ "$INPUT_ADD_GITHUB_COMMENT" == "true" ]]; then
 
     if [[ -z "$GITHUB_TOKEN" ]]; then
@@ -46,7 +46,7 @@ if [[ "$GITHUB_EVENT_NAME" == "pull_request" || "$GITHUB_EVENT_NAME" == "issue_c
   fi
 
 else
-  debug_log "Not a pull_request, issue_comment or pull_request_review_comment event - not creating a PR comment"
+  debug_log "Not a pull_request, issue_comment, pull_request_target or pull_request_review_comment event - not creating a PR comment"
 fi
 
 if [[ $TF_EXIT -eq 1 ]]; then
