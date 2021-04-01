@@ -12,6 +12,11 @@ When using an action you can specify the version as:
 - `@v1.6` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
 
+## Unreleased
+
+### Added
+- Support for the [`pull_request_target`](https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request_target) event
+
 ## [1.6.0] - 2021-02-25
 
 ### Added
