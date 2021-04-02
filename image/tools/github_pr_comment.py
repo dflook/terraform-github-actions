@@ -11,7 +11,9 @@ from typing import Optional, Dict, Iterable
 import requests
 
 github = requests.Session()
-github.headers['authorization'] = f'Bearer {os.environ["GITHUB_TOKEN"]}'
+github.headers['authorization'] = f'token {os.environ["GITHUB_TOKEN"]}'
+github.headers['user-agent'] = 'terraform-github-actions'
+github.headers['accept'] = 'application/vnd.github.v3+json'
 
 def github_api_request(method, *args, **kw_args):
     response = github.request(method, *args, **kw_args)
@@ -75,7 +77,7 @@ def find_pr() -> str:
 
     event_type = os.environ['GITHUB_EVENT_NAME']
 
-    if event_type in ['pull_request', 'pull_request_review_comment', 'pull_request_target']:
+    if event_type in ['pull_request', 'pull_request_review_comment', 'pull_request_target', 'pull_request_review']:
         return event['pull_request']['url']
 
     elif event_type == 'issue_comment':

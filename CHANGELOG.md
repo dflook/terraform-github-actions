@@ -16,6 +16,8 @@ When using an action you can specify the version as:
 
 ### Added
 - Support for the [`pull_request_target`](https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request_target) event
+- Support for the [`pull_request_review`](https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request_review) event
+
 
 ## [1.6.0] - 2021-02-25
 
