@@ -8,11 +8,11 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.6.0` to use an exact release
-- `@v1.6` to use the latest patch release for the specific minor version
+- `@v1.7.0` to use an exact release
+- `@v1.7` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
 
-## Unreleased
+## [1.7.0] - 2021-04-02
 
 ### Added
 - Support for the [`pull_request_target`](https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request_target) event
@@ -115,6 +115,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.7.0]: https://github.com/dflook/terraform-github-actions/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/dflook/terraform-github-actions/compare/v1.5.2...v1.6.0
 [1.5.2]: https://github.com/dflook/terraform-github-actions/compare/v1.5.1...v1.5.2
 [1.5.1]: https://github.com/dflook/terraform-github-actions/compare/v1.5.0...v1.5.1
