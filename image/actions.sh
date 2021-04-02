@@ -122,7 +122,7 @@ function init-backend() {
   rm -rf "$TF_DATA_DIR"
 
   set +e
-  (cd "$INPUT_PATH" && TF_WORKSPACE=$INPUT_WORKSPACE terraform init -input=false -lock-timeout=300s $INIT_ARGS \
+  (cd "$INPUT_PATH" && TF_WORKSPACE=$INPUT_WORKSPACE terraform init -input=false $INIT_ARGS \
       2>"$PLAN_DIR/init_error.txt")
 
   local INIT_EXIT=$?
