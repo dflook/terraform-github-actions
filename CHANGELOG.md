@@ -17,6 +17,8 @@ When using an action you can specify the version as:
 ### Added
 - `TERRAFORM_CLOUD_TOKENS` environment variable may be set to configure tokens to use for Terraform Cloud/Enterprise etc
   when using `remote` backend or module registry.
+- `TERRAFORM_SSH_KEY` environment variable may be set to configure an SSH private key to use for
+  [Git Repository](https://www.terraform.io/docs/language/modules/sources.html#generic-git-repository) module sources.
 
 ## [1.7.0] - 2021-04-02
 

@@ -82,6 +82,21 @@ This action uses the `terraform destroy` command to destroy all resources in a t
   - Type: string
   - Optional
 
+* `TERRAFORM_SSH_KEY`
+
+  A SSH private key that terraform will use to fetch git module sources.
+
+  This should be in PEM format.
+
+  For example:
+  ```yaml
+  env:
+    TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
+  ```
+
+  - Type: string
+  - Optional
+
 ## Example usage
 
 This example deletes the workspace named after the git branch when the associated PR is closed.

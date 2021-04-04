@@ -59,6 +59,21 @@ Creates a new terraform workspace. If the workspace already exists, succeeds wit
   - Type: string
   - Optional
 
+* `TERRAFORM_SSH_KEY`
+
+  A SSH private key that terraform will use to fetch git module sources.
+
+  This should be in PEM format.
+
+  For example:
+  ```yaml
+  env:
+    TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
+  ```
+
+  - Type: string
+  - Optional
+
 ## Example usage
 
 This example creates a workspace named after the git branch when the

@@ -85,6 +85,22 @@ This is intended to run on a schedule to notify if manual changes to your infras
   - Type: string
   - Optional
 
+* `TERRAFORM_SSH_KEY`
+
+  A SSH private key that terraform will use to fetch git module sources.
+
+  This should be in PEM format.
+
+  For example:
+  ```yaml
+  env:
+    TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
+  ```
+
+  - Type: string
+  - Optional
+
+
 ## Example usage
 
 This example workflow runs every morning and will fail if there has been

@@ -60,6 +60,21 @@ Retrieve the root-level outputs from a terraform configuration.
   - Type: string
   - Optional
 
+* `TERRAFORM_SSH_KEY`
+
+  A SSH private key that terraform will use to fetch git module sources.
+
+  This should be in PEM format.
+
+  For example:
+  ```yaml
+  env:
+    TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
+  ```
+
+  - Type: string
+  - Optional
+
 ## Outputs
 
 An action output will be created for each output of the terraform configuration.

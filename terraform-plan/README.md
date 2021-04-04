@@ -126,6 +126,21 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   - Type: string
   - Optional
 
+* `TERRAFORM_SSH_KEY`
+
+  A SSH private key that terraform will use to fetch git module sources.
+
+  This should be in PEM format.
+
+  For example:
+  ```yaml
+  env:
+    TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
+  ```
+
+  - Type: string
+  - Optional
+
 * `TF_PLAN_COLLAPSE_LENGTH`
 
   When PR comments are enabled, the terraform output is included in a collapsable pane.

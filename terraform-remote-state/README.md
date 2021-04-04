@@ -41,7 +41,7 @@ Retrieves the root-level outputs from a terraform remote state.
 * `TERRAFORM_CLOUD_TOKENS`
 
   API tokens for terraform cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
-  These tokens may be used with the `remote` backend and for fetching required modules from the registry.
+  These tokens may be used with the `remote` backend.
 
   e.g for terraform cloud:
   ```yaml
