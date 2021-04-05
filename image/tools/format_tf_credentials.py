@@ -18,7 +18,7 @@ def format_credentials(input):
 }}
 '''
         else:
-            raise ValueError('terraform_cloud_credentials input should be "<hostname>=<token>"')
+            raise ValueError('TERRAFORM_CLOUD_TOKENS environment variable should be "<hostname>=<token>"')
 
 if __name__ == '__main__':
     try:
