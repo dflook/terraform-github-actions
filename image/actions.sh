@@ -191,4 +191,8 @@ function random_string() {
 
 function write_credentials() {
   format_tf_credentials >> $HOME/.terraformrc
+
+  echo "$TERRAFORM_SSH_KEY" >> /.ssh/id_rsa
+  chmod 600 /.ssh/id_rsa
+  chmod 700 /.ssh
 }

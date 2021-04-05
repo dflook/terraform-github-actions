@@ -70,15 +70,30 @@ This action uses the `terraform destroy` command to destroy all resources in a t
   e.g for terraform cloud:
   ```yaml
   env:
-    TERRAFORM_CLOUD_CREDENTIALS: app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
+    TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
   ```
 
   With Terraform Enterprise or other registries:
   ```yaml
   env:
-    TERRAFORM_CLOUD_CREDENTIALS: |
+    TERRAFORM_CLOUD_TOKENS: |
       app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
       terraform.example.com=${{ secrets.TF_REGISTRY_TOKEN }}
+  ```
+
+  - Type: string
+  - Optional
+
+* `TERRAFORM_SSH_KEY`
+
+  A SSH private key that terraform will use to fetch git module sources.
+
+  This should be in PEM format.
+
+  For example:
+  ```yaml
+  env:
+    TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
   ```
 
   - Type: string

@@ -13,4 +13,8 @@ COPY tools/workspace_exists.py /usr/local/bin/workspace_exists
 COPY tools/compact_plan.py /usr/local/bin/compact_plan
 COPY tools/format_tf_credentials.py /usr/local/bin/format_tf_credentials
 
+RUN echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config \
+ && echo "IdentityFile /.ssh/id_rsa" >> /etc/ssh/ssh_config \
+ && mkdir -p /.ssh
+
 LABEL org.opencontainers.image.title="GitHub actions for terraform"
