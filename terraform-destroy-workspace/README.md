@@ -58,6 +58,30 @@ This action uses the `terraform destroy` command to destroy all resources in a t
   - Optional
   - Default: 10
 
+## Environment Variables
+
+* `TERRAFORM_CLOUD_TOKENS`
+
+  API tokens for terraform cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
+  These tokens may be used with the `remote` backend and for fetching required modules from the registry.
+
+  e.g for terraform cloud:
+  ```yaml
+  env:
+    TERRAFORM_CLOUD_CREDENTIALS: app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
+  ```
+
+  With Terraform Enterprise or other registries:
+  ```yaml
+  env:
+    TERRAFORM_CLOUD_CREDENTIALS: |
+      app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
+      terraform.example.com=${{ secrets.TF_REGISTRY_TOKEN }}
+  ```
+
+  - Type: string
+  - Optional
+
 ## Example usage
 
 This example deletes the workspace named after the git branch when the associated PR is closed.

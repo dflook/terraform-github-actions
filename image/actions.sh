@@ -98,11 +98,15 @@ function relative_to() {
 }
 
 function init() {
+  write_credentials
+
   rm -rf "$TF_DATA_DIR"
   (cd "$INPUT_PATH" && terraform init -input=false -backend=false)
 }
 
 function init-backend() {
+  write_credentials
+
   INIT_ARGS=""
 
   if [[ -n "$INPUT_BACKEND_CONFIG_FILE" ]]; then
@@ -183,4 +187,8 @@ function update_status() {
 
 function random_string() {
   python3 -c "import random; import string; print(''.join(random.choice(string.ascii_lowercase) for i in range(8)))"
+}
+
+function write_credentials() {
+  format_tf_credentials >> $HOME/.terraformrc
 }

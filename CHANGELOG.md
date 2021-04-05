@@ -12,6 +12,12 @@ When using an action you can specify the version as:
 - `@v1.7` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
 
+## Unreleased
+
+### Added
+- `TERRAFORM_CLOUD_TOKENS` environment variable may be set to configure tokens to use for Terraform Cloud/Enterprise etc
+  when using `remote` backend or module registry.
+
 ## [1.7.0] - 2021-04-02
 
 ### Added
