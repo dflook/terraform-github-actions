@@ -3,7 +3,7 @@ name: Create terraform plan
 on:
   pull_request:
     branches:
-      - !master
+      - "!master"
 
 jobs:
   plan:
