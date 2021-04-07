@@ -109,7 +109,7 @@ name: Lint
 on:
   push:
     branches:
-      - !master
+      - '!master'
 
 jobs:
   validate:
