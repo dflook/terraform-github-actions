@@ -169,6 +169,11 @@ function set-plan-args() {
       done
   fi
 
+  if [[ -n "$INPUT_VARIABLES" ]]; then
+    echo "$INPUT_VARIABLES" > /.terraform-variables.tfvars
+    PLAN_ARGS="$PLAN_ARGS -var-file=/.terraform-variables.tfvars"
+  fi
+
   export PLAN_ARGS
 }
 

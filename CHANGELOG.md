@@ -12,6 +12,23 @@ When using an action you can specify the version as:
 - `@v1.8` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
 
+## Unreleased
+
+### Added
+- `variables` input for actions that use terraform input variables.
+
+  This value should be valid terraform syntax - like a [variable definition file](https://www.terraform.io/docs/language/values/variables.html#variable-definitions-tfvars-files).
+  Variable values set in `variables` override any given in var_files.
+  See action documentation for details, e.g. [terraform-plan](https://github.com/dflook/terraform-github-actions/tree/master/terraform-plan#inputs).
+
+### Deprecated
+- The `var` input has been deprecated due to the following limitations:
+  - Only primitive types can be set with `var` - number, bool and string.
+  - String values may not contain a comma.
+  - Values set with `var` will be overridden by values contained in `var_file`s
+
+  `variables` is the preferred way to set input variables.
+
 ## [1.8.0] - 2021-04-05
 
 ### Added

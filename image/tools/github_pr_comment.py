@@ -191,6 +191,19 @@ class TerraformComment:
         if self.var_files:
             label += f'\nWith var files: `{self.var_files}`'
 
+        if self.variables:
+            stripped_vars = self.variables.strip()
+            if '\n' in stripped_vars:
+                label += f'''<details><summary>With variables</summary>
+
+```hcl
+{stripped_vars}
+```
+</details>
+'''
+            else:
+                label += f'\nWith variables: `{stripped_vars}`'
+
         return label
 
     @property
@@ -253,6 +266,10 @@ class TerraformComment:
     @property
     def backend_config_files(self) -> str:
         return os.environ.get('INPUT_BACKEND_CONFIG_FILE')
+
+    @property
+    def variables(self) -> str:
+        return os.environ.get('INPUT_VARIABLES')
 
     @property
     def vars(self) -> str:

@@ -30,7 +30,7 @@ jobs:
         with:
           path: tests/new-workspace/remote_12
           workspace: my-first-workspace
-          var: my_string=hello
+          variables: my_string="hello"
           auto_approve: true
 
       - name: Create a second workspace
@@ -44,7 +44,7 @@ jobs:
         with:
           path: tests/new-workspace/remote_12
           workspace: ${{ github.head_ref }}
-          var: my_string=world
+          variables: my_string="world"
           auto_approve: true
 
       - name: Get first workspace outputs
@@ -78,14 +78,14 @@ jobs:
         with:
           path: tests/new-workspace/remote_12
           workspace: my-first-workspace
-          var: my_string=hello
+          variables: my_string="hello"
 
       - name: Destroy second workspace
         uses: ./terraform-destroy-workspace
         with:
           path: tests/new-workspace/remote_12
           workspace: ${{ github.head_ref }}
-          var: my_string=world
+          variables: my_string="world"
 
   create_workspace_13:
     runs-on: ubuntu-latest
@@ -114,7 +114,7 @@ jobs:
         with:
           path: tests/new-workspace/remote_13
           workspace: my-first-workspace
-          var: my_string=hello
+          variables: my_string="hello"
           auto_approve: true
 
       - name: Create a second workspace
@@ -128,7 +128,7 @@ jobs:
         with:
           path: tests/new-workspace/remote_13
           workspace: ${{ github.head_ref }}
-          var: my_string=world
+          variables: my_string="world"
           auto_approve: true
 
       - name: Get first workspace outputs
@@ -162,14 +162,14 @@ jobs:
         with:
           path: tests/new-workspace/remote_13
           workspace: my-first-workspace
-          var: my_string=hello
+          variables: my_string="hello"
 
       - name: Destroy second workspace
         uses: ./terraform-destroy-workspace
         with:
           path: tests/new-workspace/remote_13
           workspace: ${{ github.head_ref }}
-          var: my_string=world
+          variables: my_string="world"
 
   create_workspace_14:
     runs-on: ubuntu-latest
@@ -198,7 +198,7 @@ jobs:
         with:
           path: tests/new-workspace/remote_14
           workspace: test-workspace
-          var: my_string=hello
+          variables: my_string="hello"
           auto_approve: true
 
       - name: Create a second workspace
@@ -212,7 +212,7 @@ jobs:
         with:
           path: tests/new-workspace/remote_14
           workspace: ${{ github.head_ref }}
-          var: my_string=world
+          variables: my_string="world"
           auto_approve: true
 
       - name: Get first workspace outputs
@@ -246,11 +246,11 @@ jobs:
         with:
           path: tests/new-workspace/remote_14
           workspace: test-workspace
-          var: my_string=hello
+          variables: my_string="hello"
 
       - name: Destroy second workspace
         uses: ./terraform-destroy-workspace
         with:
           path: tests/new-workspace/remote_14
           workspace: ${{ github.head_ref }}
-          var: my_string=world
+          variables: my_string="world"

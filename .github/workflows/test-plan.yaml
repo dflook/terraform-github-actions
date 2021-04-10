@@ -245,3 +245,20 @@ jobs:
             echo "Plan did not fail correctly"
             exit 1
           fi
+
+  plan_single_variable:
+    runs-on: ubuntu-latest
+    name: Plan single variable
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          path: tests/apply/vars
+          variables: |
+            my_var="single"
+          var_file: tests/apply/test.tfvars

@@ -16,9 +16,13 @@ inputs:
   backend_config_file:
     description: Path to a backend config file"
     required: false
+  variables:
+    description: Variable definitions
+    required: false
   var:
     description: Comma separated list of vars to set, e.g. 'foo=bar'
     required: false
+    deprecationMessage: Use the variables input instead.
   var_file:
     description: Comma separated list of var file paths
     required: false

@@ -164,5 +164,5 @@ jobs:
 Which will print to the workflow log:
 ```
 The vpc-id is vpc-01463b6b84e1454ce
-The subnet-ids are is subnet-053008016a2c1768c,subnet-07d4ce437c43eba2f,subnet-0a5f8c3a20023b8c0
+The subnet-ids are subnet-053008016a2c1768c,subnet-07d4ce437c43eba2f,subnet-0a5f8c3a20023b8c0
 ```

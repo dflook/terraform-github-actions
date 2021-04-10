@@ -97,9 +97,9 @@ jobs:
             exit 1
           fi
 
-  apply_vars:
+  apply_variables:
     runs-on: ubuntu-latest
-    name: Apply approved changes with a variable
+    name: Apply approved changes with variables
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -110,7 +110,20 @@ jobs:
         uses: ./terraform-plan
         with:
           path: tests/apply/vars
-          var: my_var=hello
+          variables: |
+            my_var="hello"
+            complex_input=[
+              {
+                internal = 2000
+                external = 3000
+                protocol = "udp"
+              },
+              {
+                internal = 4000
+                external = 5000
+                protocol = "tcp"
+              },
+            ]
           var_file: tests/apply/test.tfvars
 
       - name: Apply
@@ -118,7 +131,20 @@ jobs:
         id: output
         with:
           path: tests/apply/vars
-          var: my_var=hello
+          variables: |
+            my_var="hello"
+            complex_input=[
+              {
+                internal = 2000
+                external = 3000
+                protocol = "udp"
+              },
+              {
+                internal = 4000
+                external = 5000
+                protocol = "tcp"
+              },
+            ]
           var_file: tests/apply/test.tfvars
 
       - name: Verify outputs
@@ -135,6 +161,11 @@ jobs:
 
           if [[ "${{ steps.output.outputs.from_varfile }}" != "monkey" ]]; then
             echo "::error:: output from_varfile not set correctly"
+            exit 1
+          fi
+
+          if [[ "${{ steps.output.outputs.complex_output }}" != "2000:3000:udp,4000:5000:tcp" ]]; then
+            echo "::error:: output complex_output not set correctly"
             exit 1
           fi
 
@@ -254,7 +285,7 @@ jobs:
         with:
           path: tests/apply/vars
           label: TestLabel
-          var: my_var=world
+          variables: my_var="world"
           var_file: tests/apply/test.tfvars
 
       - name: Apply
@@ -263,7 +294,7 @@ jobs:
         with:
           path: tests/apply/vars
           label: TestLabel
-          var: my_var=world
+          variables: my_var="world"
           var_file: tests/apply/test.tfvars
 
       - name: Verify outputs
@@ -370,5 +401,44 @@ jobs:
         run: |
           if [[ "${{ steps.output.outputs.output_string }}" != "the_string" ]]; then
             echo "::error:: output s not set correctly"
+            exit 1
+          fi
+
+  apply_vars:
+    runs-on: ubuntu-latest
+    name: Apply approved changes with deprecated vars
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          path: tests/apply/vars
+          var: my_var=hello
+          var_file: tests/apply/test.tfvars
+
+      - name: Apply
+        uses: ./terraform-apply
+        id: output
+        with:
+          path: tests/apply/vars
+          var: my_var=hello
+          var_file: tests/apply/test.tfvars
+
+      - name: Verify outputs
+        run: |
+          if [[ "${{ steps.output.outputs.output_string }}" != "the_string" ]]; then
+            echo "::error:: output s not set correctly"
+            exit 1
+          fi
+          if [[ "${{ steps.output.outputs.from_var }}" != "this should be overridden" ]]; then
+            echo "::error:: output from_var not set correctly"
+            exit 1
+          fi
+          if [[ "${{ steps.output.outputs.from_varfile }}" != "monkey" ]]; then
+            echo "::error:: output from_varfile not set correctly"
             exit 1
           fi

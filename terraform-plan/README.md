@@ -41,9 +41,50 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   - Type: string
   - Optional
 
-* `var`
+* `variables`
 
-  Comma separated list of terraform vars to set
+  Variables to set for the terraform plan. This should be valid terraform syntax - like a [variable definition file](https://www.terraform.io/docs/language/values/variables.html#variable-definitions-tfvars-files).
+
+  ```yaml
+  with:
+    variables: |
+      image_id = ${{ secrets.AMI_ID }}
+      availability_zone_names = [
+        "us-east-1a",
+        "us-west-1c",
+      ]
+  ```
+
+  Variables set here override any given in variable_files.
+
+  - Type: string
+  - Optional
+
+* ~~`var`~~
+
+  > :warning: **Deprecated**: Use the `variables` input instead.
+
+  Comma separated list of terraform vars to set.
+
+  This is deprecated due to the following limitations:
+  - Only primitive types can be set with `var` - number, bool and string.
+  - String values may not contain a comma.
+  - Values set with `var` will be overridden by values contained in `var_file`s
+
+  You can change from `var` to `variables` by putting each variable on a separate line and ensuring each string value is quoted.
+
+  For example:
+  ```yaml
+  with:
+    var: instance_type=m5.xlarge,nat_type=instance
+  ```
+  Becomes:
+  ```yaml
+  with:
+    variables: |
+      instance_type="m5.xlarge"
+      nat_type="instance"
+  ```
 
   - Type: string
   - Optional
@@ -193,6 +234,45 @@ jobs:
         uses: dflook/terraform-plan@v1
         with:
           path: my-terraform-config
+```
+
+### A full example of inputs
+
+This example workflow demonstrates most of the available inputs:
+- The environment variables are set at the workflow level.
+- The PR comment will be labelled `production`, and the plan will use the `prod` workspace.
+- Variables are read from `env/prod.tfvars`, with `turbo_mode` overridden to `true`.
+- The backend config is taken from `env/prod.backend`, and the token is set from a secret.
+
+```yaml
+name: PR Plan
+
+on: [pull_request]
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  TERRAFORM_CLOUD_TOKENS: terraform.example.com=${{ secrets.TF_REGISTRY_TOKEN }}
+  TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    name: Create terraform plan
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: terraform plan
+        uses: dflook/terraform-plan@v1
+        with:
+          path: my-terraform-config
+          label: production
+          workspace: prod
+          var_file: env/prod.tfvars
+          variables:
+            turbo_mode=true
+          backend_config_file: env/prod.backend
+          backend_config: token=${{ secrets.BACKEND_TOKEN }}
 ```
 
 ### Generating a plan using a comment
