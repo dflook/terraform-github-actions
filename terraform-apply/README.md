@@ -31,6 +31,8 @@ the master branch:
 
 ## Inputs
 
+These input values must be the same as any `terraform-plan` for the same configuration. (unless auto_approve: true)
+
 * `path`
 
   Path to the terraform configuration to apply
@@ -56,9 +58,50 @@ the master branch:
   - Type: string
   - Optional
 
-* `var`
+* `variables`
 
-  Comma separated list of terraform vars to set
+  Variables to set for the terraform plan. This should be valid terraform syntax - like a [variable definition file](https://www.terraform.io/docs/language/values/variables.html#variable-definitions-tfvars-files).
+
+  ```yaml
+  with:
+    variables: |
+      image_id = "${{ secrets.AMI_ID }}"
+      availability_zone_names = [
+        "us-east-1a",
+        "us-west-1c",
+      ]
+  ```
+
+  Variables set here override any given in `var_file`s.
+
+  - Type: string
+  - Optional
+
+* ~~`var`~~
+
+  > :warning: **Deprecated**: Use the `variables` input instead.
+
+  Comma separated list of terraform vars to set.
+
+  This is deprecated due to the following limitations:
+  - Only primitive types can be set with `var` - number, bool and string.
+  - String values may not contain a comma.
+  - Values set with `var` will be overridden by values contained in `var_file`s
+
+  You can change from `var` to `variables` by putting each variable on a separate line and ensuring each string value is quoted.
+
+  For example:
+  ```yaml
+  with:
+    var: instance_type=m5.xlarge,nat_type=instance
+  ```
+  Becomes:
+  ```yaml
+  with:
+    variables: |
+      instance_type="m5.xlarge"
+      nat_type="instance"
+  ```
 
   - Type: string
   - Optional

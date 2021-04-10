@@ -22,7 +22,28 @@ This action uses the `terraform destroy` command to destroy all resources in a t
   - Optional
   - Default: `default`
 
-* `var`
+* `variables`
+
+  Variables to set for the terraform destroy. This should be valid terraform syntax - like a [variable definition file](https://www.terraform.io/docs/language/values/variables.html#variable-definitions-tfvars-files).
+
+  ```yaml
+  with:
+    variables: |
+      image_id = ${{ secrets.AMI_ID }}
+      availability_zone_names = [
+        "us-east-1a",
+        "us-west-1c",
+      ]
+  ```
+
+  Variables set here override any given in variable_files.
+
+  - Type: string
+  - Optional
+
+* ~~`var`~~
+
+  > :warning: **Deprecated**: Use the `variables` input instead.
 
   Comma separated list of terraform vars to set
 

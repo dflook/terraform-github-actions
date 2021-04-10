@@ -1,9 +1,6 @@
 name: Create terraform plan
 
-on:
-  pull_request:
-    branches:
-      - "!master"
+on: [pull_request]
 
 jobs:
   plan:
