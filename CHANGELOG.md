@@ -8,11 +8,11 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.8.0` to use an exact release
-- `@v1.8` to use the latest patch release for the specific minor version
+- `@v1.9.0` to use an exact release
+- `@v1.9` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
 
-## Unreleased
+## [1.9.0] - 2021-04-10
 
 ### Added
 - `variables` input for actions that use terraform input variables.
@@ -144,6 +144,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
 
+[1.9.0]: https://github.com/dflook/terraform-github-actions/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/dflook/terraform-github-actions/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/dflook/terraform-github-actions/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/dflook/terraform-github-actions/compare/v1.5.2...v1.6.0
