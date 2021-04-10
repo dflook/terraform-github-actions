@@ -36,7 +36,7 @@ This action uses the `terraform destroy` command to destroy all resources in a t
       ]
   ```
 
-  Variables set here override any given in variable_files.
+  Variables set here override any given in `var_file`s.
 
   - Type: string
   - Optional

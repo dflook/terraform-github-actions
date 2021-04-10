@@ -55,7 +55,7 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
       ]
   ```
 
-  Variables set here override any given in variable_files.
+  Variables set here override any given in `var_file`s.
 
   - Type: string
   - Optional

@@ -37,7 +37,7 @@ This is intended to run on a schedule to notify if manual changes to your infras
       ]
   ```
 
-  Variables set here override any given in variable_files.
+  Variables set here override any given in `var_file`s.
 
   - Type: string
   - Optional
