@@ -57,6 +57,8 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
   Variables set here override any given in `var_file`s.
 
+  > :warning: Secret values are not masked in the PR comment. Set a `label` to avoid revealing the variables in the PR.
+
   - Type: string
   - Optional
 
