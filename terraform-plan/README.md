@@ -48,7 +48,7 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   ```yaml
   with:
     variables: |
-      image_id = ${{ secrets.AMI_ID }}
+      image_id = "${{ secrets.AMI_ID }}"
       availability_zone_names = [
         "us-east-1a",
         "us-west-1c",
