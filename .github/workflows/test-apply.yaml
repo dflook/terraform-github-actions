@@ -442,3 +442,41 @@ jobs:
             echo "::error:: output from_varfile not set correctly"
             exit 1
           fi
+
+  apply_refresh:
+    runs-on: ubuntu-latest
+    name: Apply changes are refresh
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Plan 1
+        uses: ./terraform-plan
+        with:
+          label: Refresh 1
+          path: tests/apply/refresh_15
+          variables: len=10
+
+      - name: Apply 1
+        uses: ./terraform-apply
+        with:
+          label: Refresh 1
+          path: tests/apply/refresh_15
+          variables: len=10
+
+      - name: Plan 2
+        uses: ./terraform-plan
+        with:
+          label: Refresh 2
+          path: tests/apply/refresh_15
+          variables: len=20
+
+      - name: Apply 2
+        uses: ./terraform-apply
+        id: output
+        with:
+          label: Refresh 2
+          path: tests/apply/refresh_15
+          variables: len=20
