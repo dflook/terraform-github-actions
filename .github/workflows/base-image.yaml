@@ -13,20 +13,21 @@ jobs:
     name: Docker Images
     env:
       GITHUB_TOKEN: ${{ github.token }}
-      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Registry login
-        run: |
-          echo $DOCKER_TOKEN | docker login --username danielflook --password-stdin
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          file: image/Dockerfile-base
+          context: image
+          push: true
+          tags: danielflook/terraform-github-actions-base:latest, danielflook/terraform-github-actions-base:$GITHUB_RUN_ID
 
-      - name: Base image
-        run: |
-          docker build --tag dflook/terraform-github-actions-base -f image/Dockerfile-base image
-
-          docker tag dflook/terraform-github-actions-base danielflook/terraform-github-actions-base:latest
-          docker push danielflook/terraform-github-actions-base:latest
-          docker tag dflook/terraform-github-actions-base danielflook/terraform-github-actions-base:$GITHUB_RUN_ID
-          docker push danielflook/terraform-github-actions-base:$GITHUB_RUN_ID
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
