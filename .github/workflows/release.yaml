@@ -22,8 +22,6 @@ jobs:
 
       - name: Action image
         run: |
-          docker build --tag dflook/terraform-github-actions-base -f image/Dockerfile-base image
-
           RELEASE_TAG=$(cat $GITHUB_EVENT_PATH | jq -r  '.release.tag_name' $GITHUB_EVENT_PATH)
 
           docker build --tag dflook/terraform-github-actions \

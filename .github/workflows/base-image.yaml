@@ -6,6 +6,8 @@ on:
       - master
     paths:
       - image/Dockerfile-base
+  schedule:
+    - cron: "0 1 * * 1"
 
 jobs:
   push_image:
