@@ -15,7 +15,7 @@ When using an action you can specify the version as:
 ## [1.9.2] - 2021-05-05
 
 ### Fixed
-- Slow state locking messages were being considered part of the plan, which could cause applys to be aborted.
+- Slow state locking messages were being considered part of the plan, which could cause apply actions to be aborted.
 
 ## [1.9.1] - 2021-04-21
 
