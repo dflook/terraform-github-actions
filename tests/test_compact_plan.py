@@ -169,6 +169,64 @@ Changes to Outputs:
     output = '\n'.join(compact_plan(input.splitlines()))
     assert output == expected_output
 
+def test_plan_15():
+    input = """
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # random_string.my_string will be created
+  + resource "random_string" "my_string" {
+      + id          = (known after apply)
+      + length      = 11
+      + lower       = true
+      + min_lower   = 0
+      + min_numeric = 0
+      + min_special = 0
+      + min_upper   = 0
+      + number      = true
+      + result      = (known after apply)
+      + special     = true
+      + upper       = true
+    }
+
+Plan: 1 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + s = "string"
+"""
+
+    expected_output = """Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # random_string.my_string will be created
+  + resource "random_string" "my_string" {
+      + id          = (known after apply)
+      + length      = 11
+      + lower       = true
+      + min_lower   = 0
+      + min_numeric = 0
+      + min_special = 0
+      + min_upper   = 0
+      + number      = true
+      + result      = (known after apply)
+      + special     = true
+      + upper       = true
+    }
+
+Plan: 1 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + s = "string\""""
+
+    output = '\n'.join(compact_plan(input.splitlines()))
+    assert output == expected_output
+
+
 def test_error_11():
     input = """
 Error: random_string.my_string: length: cannot parse '' as int: strconv.ParseInt: parsing "ten": invalid syntax
@@ -256,3 +314,69 @@ This should protect against the output changing again."""
     output = '\n'.join(compact_plan(input.splitlines()))
     assert output == expected_output
 
+def test_state_lock_12():
+    input = """Acquiring state lock. This may take a few moments...
+Refreshing Terraform state in-memory prior to plan...
+The refreshed state will be used to calculate this plan, but will not be
+persisted to local or remote state storage.
+
+Acquiring state lock. This may take a few moments...
+Releasing state lock. This may take a few moments...
+
+------------------------------------------------------------------------
+Acquiring state lock. This may take a few moments...
+
+An execution plan has been generated and is shown below.
+Resource actions are indicated with the following symbols:
+  + create
+Acquiring state lock. This may take a few moments...
+
+Terraform will perform the following actions:
+
+  # random_string.my_string will be created
+  + resource "random_string" "my_string" {
+      + id          = (known after apply)
+      + length      = 11
+      + lower       = true
+Acquiring state lock. This may take a few moments...
+      + min_lower   = 0
+      + min_numeric = 0
+      + min_special = 0
+      + min_upper   = 0
+      + number      = true
+      + result      = (known after apply)
+      + special     = true
+      + upper       = true
+Releasing state lock. This may take a few moments...
+    }
+
+Plan: 1 to add, 0 to change, 0 to destroy.
+Releasing state lock. This may take a few moments...
+Releasing state lock. This may take a few moments...
+"""
+
+    expected_output = """An execution plan has been generated and is shown below.
+Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # random_string.my_string will be created
+  + resource "random_string" "my_string" {
+      + id          = (known after apply)
+      + length      = 11
+      + lower       = true
+      + min_lower   = 0
+      + min_numeric = 0
+      + min_special = 0
+      + min_upper   = 0
+      + number      = true
+      + result      = (known after apply)
+      + special     = true
+      + upper       = true
+    }
+
+Plan: 1 to add, 0 to change, 0 to destroy."""
+
+    output = '\n'.join(compact_plan(input.splitlines()))
+    assert output == expected_output

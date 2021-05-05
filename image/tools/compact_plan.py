@@ -18,7 +18,9 @@ def compact_plan(input):
             plan = True
 
         if plan:
-            yield line
+            if not (line.startswith('Releasing state lock. This may take a few moments...')
+                    or line.startswith('Acquiring state lock. This may take a few moments...')):
+                yield line
         else:
             buffer.append(line)
 
