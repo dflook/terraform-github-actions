@@ -8,9 +8,14 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.9.1` to use an exact release
+- `@v1.9.2` to use an exact release
 - `@v1.9` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.9.2] - 2021-05-05
+
+### Fixed
+- Slow state locking messages were being considered part of the plan, which could cause applys to be aborted.
 
 ## [1.9.1] - 2021-04-21
 
@@ -149,6 +154,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
 
+[1.9.2]: https://github.com/dflook/terraform-github-actions/compare/v1.9.1...v1.9.2
 [1.9.1]: https://github.com/dflook/terraform-github-actions/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/dflook/terraform-github-actions/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/dflook/terraform-github-actions/compare/v1.7.0...v1.8.0
