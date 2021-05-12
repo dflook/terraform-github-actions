@@ -29,6 +29,9 @@ inputs:
     description: Limit the number of concurrent operations
     required: false
     default: 0
+  run:
+    description: Executes these shell commands before running terraform
+    required: false
 
 runs:
   using: docker

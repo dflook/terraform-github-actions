@@ -51,6 +51,13 @@ function detect-tfmask() {
   export TFMASK
 }
 
+function execute_run_commands() {
+  if [[ -z $INPUT_RUN ]]; then
+    echo "Executing init commands specified in 'run' parameter"
+    $INPUT_RUN
+  fi
+}
+
 function setup() {
   TERRAFORM_BIN_DIR="$HOME/.dflook-terraform-bin-dir"
   export TF_DATA_DIR="$HOME/.dflook-terraform-data-dir"
@@ -86,6 +93,8 @@ function setup() {
   debug_cmd ls -la $TERRAFORM_BIN_DIR
 
   detect-tfmask
+
+  execute_run_commands
 }
 
 function relative_to() {
