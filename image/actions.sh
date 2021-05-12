@@ -52,6 +52,8 @@ function detect-tfmask() {
 }
 
 function execute_run_commands() {
+  echo "execute_run_commands"
+  echo "$INPUT_RUN"
   if [[ -z $INPUT_RUN ]]; then
     echo "Executing init commands specified in 'run' parameter"
     $INPUT_RUN
