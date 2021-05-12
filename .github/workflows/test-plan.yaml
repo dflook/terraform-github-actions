@@ -287,3 +287,21 @@ jobs:
           variables: |
             my_var="single"
           var_file: tests/apply/test.tfvars
+
+  plan_change_run_commands:
+    runs-on: ubuntu-latest
+    name: Change with shell init commands
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          path: tests/plan/plan
+          run: |
+            echo testing command 1
+            echo testing command 2
+
