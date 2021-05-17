@@ -16,9 +16,6 @@ inputs:
   backend_config_file:
     description: Path to a backend config file
     required: false
-  run:
-    description: Executes these shell commands before running terraform
-    required: false
 
 runs:
   using: docker
