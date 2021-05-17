@@ -66,6 +66,24 @@ outputs yourself.
   - Type: string
   - Optional
 
+* `TERRAFORM_PRE_RUN`
+
+  A set of commands that will be ran prior to `terraform init`.
+
+  For example:
+  ```yaml
+  env:
+    TERRAFORM_PRE_RUN: |
+      # Install latest Azure CLI
+      curl -skL https://aka.ms/InstallAzureCLIDeb | bash
+      
+      # Install postgres client
+      apt-get install -y --no-install-recommends postgresql-client
+  ```
+
+  - Type: string
+  - Optional
+
 ## Outputs
 
 * `terraform`
