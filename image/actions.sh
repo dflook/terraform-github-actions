@@ -56,6 +56,10 @@ function execute_run_commands() {
     echo "Executing init commands specified in 'run' parameter"
     eval "$INPUT_RUN"
   fi
+  if [[ -n $TERRAFORM_PRE_RUN ]]
+    echo "Executing init commands specified in 'TERRAFORM_PRE_RUN' environment variable"
+    eval "$TERRAFORM_PRE_RUN"
+  fi
 }
 
 function setup() {
