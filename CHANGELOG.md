@@ -8,9 +8,14 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.9.2` to use an exact release
+- `@v1.9.3` to use an exact release
 - `@v1.9` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.9.3] - 2021-05-29
+
+### Fixed
+- With terraform 0.15.4, terraform-plan jobs that only had changes to outputs would fail when creating a PR comment.
 
 ## [1.9.2] - 2021-05-05
 
