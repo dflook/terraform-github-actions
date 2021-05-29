@@ -8,10 +8,17 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.9.3` to use an exact release
-- `@v1.9` to use the latest patch release for the specific minor version
+- `@v1.10.0` to use an exact release
+- `@v1.10` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
 
+## [1.10.0] - Unreleased
+
+### Added
+
+- `TERRAFORM_HTTP_CREDENTIALS` environment variable for configuring the username and password to use for
+  http module sources
+  
 ## [1.9.3] - 2021-05-29
 
 ### Fixed
