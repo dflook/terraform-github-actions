@@ -367,7 +367,10 @@ class TerraformComment:
                 summary = line
 
             if line.startswith('Changes to Outputs'):
-                return summary + ' Changes to Outputs.'
+                if summary:
+                    return summary + ' Changes to Outputs.'
+                else:
+                    return 'Changes to Outputs'
 
         return summary
 
