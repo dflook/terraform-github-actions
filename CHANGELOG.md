@@ -12,13 +12,15 @@ When using an action you can specify the version as:
 - `@v1.10` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
 
-## [1.10.0] - Unreleased
+## [1.10.0] - 2021-05-30
 
 ### Added
 
 - `TERRAFORM_HTTP_CREDENTIALS` environment variable for configuring the username and password to use for
-  http module sources
-  
+  `git::https://` & `https://` module sources.
+
+  See action documentation for details, e.g. [terraform-plan](https://github.com/dflook/terraform-github-actions/tree/master/terraform-plan#environment-variables)
+
 ## [1.9.3] - 2021-05-29
 
 ### Fixed
@@ -165,7 +167,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
-
+[1.10.0]: https://github.com/dflook/terraform-github-actions/compare/v1.9.3...v1.10.0
 [1.9.3]: https://github.com/dflook/terraform-github-actions/compare/v1.9.2...v1.9.3
 [1.9.2]: https://github.com/dflook/terraform-github-actions/compare/v1.9.1...v1.9.2
 [1.9.1]: https://github.com/dflook/terraform-github-actions/compare/v1.9.0...v1.9.1
