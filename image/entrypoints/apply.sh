@@ -104,7 +104,9 @@ else
     fi
 
     if ! github_pr_comment get >"$PLAN_DIR/approved-plan.txt"; then
-        echo "Approved plan not found"
+        echo "Plan not found on PR"
+        echo "Generate the plan first using the dflook/terraform-plan action. Alternatively set the auto_approve input to 'true'"
+        echo "If dflook/terraform-plan was used with add_github_comment set to changes-only, this may mean the plan has since changed to include changes"
         exit 1
     fi
 

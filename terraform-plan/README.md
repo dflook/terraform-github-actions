@@ -124,10 +124,11 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `add_github_comment`
 
-  The default is `true`, which adds a comment to the PR with the generated plan.
+  The default is `true`, which adds a comment to the PR with the results of the plan.
+  Set to `changes-only` to add a comment only when the plan indicates there are changes to apply.
   Set to `false` to disable the comment - the plan will still appear in the workflow log.
 
-  - Type: bool
+  - Type: string
   - Optional
   - Default: true
 
