@@ -8,11 +8,11 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.10.0` to use an exact release
-- `@v1.10` to use the latest patch release for the specific minor version
+- `@v1.11.0` to use an exact release
+- `@v1.11` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
 
-## Unreleased
+## [1.11.0] - 2021-06-05
 
 ### Added
 
@@ -180,6 +180,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.11.0]: https://github.com/dflook/terraform-github-actions/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/dflook/terraform-github-actions/compare/v1.9.3...v1.10.0
 [1.9.3]: https://github.com/dflook/terraform-github-actions/compare/v1.9.2...v1.9.3
 [1.9.2]: https://github.com/dflook/terraform-github-actions/compare/v1.9.1...v1.9.2
