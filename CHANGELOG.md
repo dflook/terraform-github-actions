@@ -12,6 +12,19 @@ When using an action you can specify the version as:
 - `@v1.10` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
 
+## Unreleased
+
+### Added
+
+- The `add_github_comment` input for dflook/terraform-plan may now be set to `changes-only`. This will only add a PR comment
+  for plans that result in changes to apply - no comment will be added for plans with no changes.
+
+### Changed
+
+- Improved messaging in the workflow log when dflook/terraform-apply is aborted because the plan has changed
+- Update documentation for `backend_config`, `backend_config_file`, `var_file` & `target` inputs to use separate lines for multiple values. 
+  Multiple values may still be separated by commas if preferred.
+
 ## [1.10.0] - 2021-05-30
 
 ### Added
