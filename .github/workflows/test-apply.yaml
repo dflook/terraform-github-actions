@@ -204,14 +204,20 @@ jobs:
         uses: ./terraform-plan
         with:
           path: tests/apply/backend_config_12
-          backend_config: bucket=terraform-github-actions,key=backend_config,region=eu-west-2
+          backend_config: |
+            bucket=terraform-github-actions
+            key=backend_config
+            region=eu-west-2
 
       - name: Apply
         uses: ./terraform-apply
         id: backend_config_12
         with:
           path: tests/apply/backend_config_12
-          backend_config: bucket=terraform-github-actions,key=backend_config,region=eu-west-2
+          backend_config: |
+            bucket=terraform-github-actions
+            key=backend_config
+            region=eu-west-2
 
       - name: Verify outputs
         run: |
@@ -255,14 +261,20 @@ jobs:
         uses: ./terraform-plan
         with:
           path: tests/apply/backend_config_13
-          backend_config: bucket=terraform-github-actions,key=backend_config_13,region=eu-west-2
+          backend_config: |
+            bucket=terraform-github-actions
+            key=backend_config_13
+            region=eu-west-2
 
       - name: Apply
         uses: ./terraform-apply
         id: backend_config_13
         with:
           path: tests/apply/backend_config_13
-          backend_config: bucket=terraform-github-actions,key=backend_config_13,region=eu-west-2
+          backend_config: |
+            bucket=terraform-github-actions
+            key=backend_config_13
+            region=eu-west-2
 
       - name: Verify outputs
         run: |

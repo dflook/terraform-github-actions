@@ -108,23 +108,40 @@ These input values must be the same as any `terraform-plan` for the same configu
 
 * `var_file`
 
-  Comma separated list of tfvars files to use.
+  List of tfvars files to use, one per line.
   Paths should be relative to the GitHub Actions workspace
+  
+  ```yaml
+  with:
+    var_file: |
+      common.tfvars
+      prod.tfvars
+  ```
 
   - Type: string
   - Optional
 
 * `backend_config`
 
-  Comma separated list of terraform backend config values.
+  List of terraform backend config values, one per line.
+
+  ```yaml
+  with:
+    backend_config: token=${{ secrets.BACKEND_TOKEN }}
+  ```
 
   - Type: string
   - Optional
 
 * `backend_config_file`
 
-  Comma separated list of terraform backend config files to use.
+  List of terraform backend config files to use, one per line.
   Paths should be relative to the GitHub Actions workspace
+
+  ```yaml
+  with:
+    backend_config_file: prod.backend.tfvars
+  ```
 
   - Type: string
   - Optional
@@ -139,9 +156,16 @@ These input values must be the same as any `terraform-plan` for the same configu
 
 * `target`
 
-  Comma separated list of targets to apply against, e.g. kubernetes_secret.tls_cert_public,kubernetes_secret.tls_cert_private
-
+  List of resources to apply, one per line.
+  The apply operation will be limited to these resources and their dependencies.
   This only takes effect if auto_approve is also set to `true`.
+
+  ```yaml
+  with:
+    target: |
+      kubernetes_secret.tls_cert_public
+      kubernetes_secret.tls_cert_private
+  ```
 
   - Type: string
   - Optional
@@ -332,7 +356,9 @@ jobs:
         with:
           path: my-terraform-config
           auto_approve: true
-          target: kubernetes_secret.tls_cert_public,kubernetes_secret.tls_cert_private
+          target: |
+            kubernetes_secret.tls_cert_public
+            kubernetes_secret.tls_cert_private
 ```
 
 ### Applying a plan using a comment
@@ -349,7 +375,7 @@ on: [issue_comment]
 
 jobs:
   apply:
-    if: github.event.issue.pull_request && contains(github.event.comment.body, 'terraform apply')
+    if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, 'terraform apply') }}
     runs-on: ubuntu-latest
     name: Apply terraform plan
     env:

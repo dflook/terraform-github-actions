@@ -36,7 +36,7 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   An friendly name for the environment the terraform configuration is for.
   This will be used in the PR comment for easy identification.
 
-  It must be the same as the `label` used in the corresponding `terraform-apply` command.
+  If set, must be the same as the `label` used in the corresponding `terraform-apply` command.
 
   - Type: string
   - Optional
@@ -93,23 +93,40 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `var_file`
 
-  Comma separated list of tfvars files to use.
+  List of tfvars files to use, one per line.
   Paths should be relative to the GitHub Actions workspace
+  
+  ```yaml
+  with:
+    var_file: |
+      common.tfvars
+      prod.tfvars
+  ```
 
   - Type: string
   - Optional
 
 * `backend_config`
 
-  Comma separated list of terraform backend config values.
+  List of terraform backend config values, one per line.
+
+  ```yaml
+  with:
+    backend_config: token=${{ secrets.BACKEND_TOKEN }}
+  ```
 
   - Type: string
   - Optional
 
 * `backend_config_file`
 
-  Comma separated list of terraform backend config files to use.
+  List of terraform backend config files to use, one per line.
   Paths should be relative to the GitHub Actions workspace
+
+  ```yaml
+  with:
+    backend_config_file: prod.backend.tfvars
+  ```
 
   - Type: string
   - Optional
@@ -316,7 +333,7 @@ on: [issue_comment]
 
 jobs:
   plan:
-    if: github.event.issue.pull_request && contains(github.event.comment.body, 'terraform plan')
+    if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, 'terraform plan') }}
     runs-on: ubuntu-latest
     name: Create terraform plan
     env:

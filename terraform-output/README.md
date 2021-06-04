@@ -23,15 +23,25 @@ Retrieve the root-level outputs from a terraform configuration.
 
 * `backend_config`
 
-  Comma separated list of terraform backend config values.
+  List of terraform backend config values, one per line.
+
+  ```yaml
+  with:
+    backend_config: token=${{ secrets.BACKEND_TOKEN }}
+  ```
 
   - Type: string
   - Optional
 
 * `backend_config_file`
 
-  Comma separated list of terraform backend config files to use.
+  List of terraform backend config files to use, one per line.
   Paths should be relative to the GitHub Actions workspace
+
+  ```yaml
+  with:
+    backend_config_file: prod.backend.tfvars
+  ```
 
   - Type: string
   - Optional

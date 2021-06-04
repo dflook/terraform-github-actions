@@ -18,7 +18,10 @@ jobs:
         id: terraform-output
         with:
           backend_type: s3
-          backend_config: bucket=terraform-github-actions,key=terraform-remote-state,region=eu-west-2
+          backend_config: |
+            bucket=terraform-github-actions
+            key=terraform-remote-state
+            region=eu-west-2
 
       - name: Print the outputs
         run: |
