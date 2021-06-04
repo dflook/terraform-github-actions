@@ -193,7 +193,9 @@ jobs:
         with:
           path: my-terraform-config
           auto_approve: true
-          target: acme_certificate.certificate,kubernetes_secret.certificate
+          target: |
+            acme_certificate.certificate
+            kubernetes_secret.certificate
 ```
 
 ### Automatically fixing formatting
