@@ -36,10 +36,10 @@ jobs:
             image
 
           docker tag dflook/terraform-github-actions ghcr.io/dflook/terraform-github-actions:$RELEASE_TAG
-          docker push ghcr.io/dflook/terraform-github-actions:$RELEASE_TAG
+          docker push --quiet ghcr.io/dflook/terraform-github-actions:$RELEASE_TAG
 
           docker tag dflook/terraform-github-actions danielflook/terraform-github-actions:$RELEASE_TAG
-          docker push danielflook/terraform-github-actions:$RELEASE_TAG
+          docker push --quiet danielflook/terraform-github-actions:$RELEASE_TAG
 
           echo "::set-output name=digest::$(docker image inspect --format="{{index .RepoDigests 0}}" "danielflook/terraform-github-actions:$RELEASE_TAG")"
 
@@ -62,11 +62,7 @@ jobs:
               sed -i "s|../image/Dockerfile|docker://danielflook/terraform-github-actions:${RELEASE_TAG}|" $HOME/$action/action.yaml
 
               git -C "$HOME/$action" add -A
-
-              if ! git -C "$HOME/$action" diff --quiet; then
-                git -C "$HOME/$action" commit -m "$RELEASE_TAG"
-              fi
-
+              git -C "$HOME/$action" commit -m "$RELEASE_TAG"
               git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$RELEASE_TAG"
               git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$major"
               git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$major.$minor"
