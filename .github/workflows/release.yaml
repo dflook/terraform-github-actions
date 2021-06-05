@@ -52,7 +52,7 @@ jobs:
           git config --global user.name "Daniel Flook"
           git config --global user.email "daniel@flook.org"
 
-          for action in $(find $GITHUB_WORKSPACE -name action.yaml -printf "%h\n" | sed 's/^.\///'); do
+          for action in $(cd $GITHUB_WORKSPACE && find . -name action.yaml -printf "%h\n" | sed 's/^.\///'); do
 
             if git clone https://dflook:$GITHUB_TOKEN@github.com/dflook/$action.git "$HOME/$action"; then
               echo "Releasing dflook/$action@$RELEASE_TAG"
