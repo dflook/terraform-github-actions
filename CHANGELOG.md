@@ -14,9 +14,6 @@ When using an action you can specify the version as:
 
 ## [1.11.0] - 2021-06-05
 
-⚠️ GitHub broke while this was being released, so it's probably not available.
-I'll try and release it again someday.
-
 ### Added
 
 - The `add_github_comment` input for dflook/terraform-plan may now be set to `changes-only`. This will only add a PR comment
