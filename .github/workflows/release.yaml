@@ -10,19 +10,21 @@ jobs:
     name: Publish Docker Image
     env:
       GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
-      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
       - name: Registry login
+        env:
+          DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
         run: |
           echo $GITHUB_TOKEN | docker login ghcr.io -u dflook --password-stdin
           echo $DOCKER_TOKEN | docker login --username danielflook --password-stdin
 
-      - name: Action image
+      - name: Build action image
+        id: image_build
         run: |
-          RELEASE_TAG=$(cat $GITHUB_EVENT_PATH | jq -r  '.release.tag_name' $GITHUB_EVENT_PATH)
+          RELEASE_TAG="${{ github.event.release.tag_name }}"
 
           docker build --tag dflook/terraform-github-actions \
             --label org.opencontainers.image.created="$(date '+%Y-%m-%dT%H:%M:%S%z')" \
@@ -39,47 +41,39 @@ jobs:
           docker tag dflook/terraform-github-actions danielflook/terraform-github-actions:$RELEASE_TAG
           docker push danielflook/terraform-github-actions:$RELEASE_TAG
 
-  release_actions:
-    runs-on: ubuntu-latest
-    name: Release Actions
-    env:
-      GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
-      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
-    needs: image
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+          echo "::set-output name=digest::$(docker image inspect --format="{{index .RepoDigests 0}}" "danielflook/terraform-github-actions:$RELEASE_TAG")"
 
-      - name: Action image
+      - name: Release actions
         run: |
-          export RELEASE_TAG=$(cat $GITHUB_EVENT_PATH | jq -r  '.release.tag_name' $GITHUB_EVENT_PATH)
+          export RELEASE_TAG="${{ github.event.release.tag_name }}"
+          export major=`echo $RELEASE_TAG | cut -d. -f1`
+          export minor=`echo $RELEASE_TAG | cut -d. -f2`
 
           git config --global user.name "Daniel Flook"
           git config --global user.email "daniel@flook.org"
 
-          for action in $(find . -name action.yaml -printf "%h\n" | sed 's/^.\///'); do
+          for action in $(find $GITHUB_WORKSPACE -name action.yaml -printf "%h\n" | sed 's/^.\///'); do
 
             if git clone https://dflook:$GITHUB_TOKEN@github.com/dflook/$action.git "$HOME/$action"; then
               echo "Releasing dflook/$action@$RELEASE_TAG"
 
-              rsync -r $action/ $HOME/$action
+              rsync -r $GITHUB_WORKSPACE/$action/ $HOME/$action
 
-              sed -i "s|../image/Dockerfile|docker://danielflook/terraform-github-actions:$RELEASE_TAG|" $HOME/$action/action.yaml
+              sed -i "s|../image/Dockerfile|docker://danielflook/terraform-github-actions:${RELEASE_TAG}|" $HOME/$action/action.yaml
 
-              export major=`echo $RELEASE_TAG | cut -d. -f1`
-              export minor=`echo $RELEASE_TAG | cut -d. -f2`
+              git -C "$HOME/$action" add -A
 
-              (cd "$HOME/$action" \
-               && git add -A \
-               && git commit -m "$RELEASE_TAG" \
-               && git tag --force -a -m"$RELEASE_TAG" "$RELEASE_TAG" \
-               && git tag --force -a -m"$RELEASE_TAG" "$major" \
-               && git tag --force -a -m"$RELEASE_TAG" "$major.$minor" \
-               && git push --force \
-               && git push --force --tags
-              )
+              if ! git -C "$HOME/$action" diff --quiet; then
+                git -C "$HOME/$action" commit -m "$RELEASE_TAG"
+              fi
 
-              cat .github/release_template.md \
+              git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$RELEASE_TAG"
+              git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$major"
+              git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$major.$minor"
+              git -C "$HOME/$action" push --force
+              git -C "$HOME/$action" push --force --tags
+
+              cat $GITHUB_WORKSPACE/.github/release_template.md \
                | envsubst \
                | jq --slurp --raw-input --arg RELEASE_TAG "$RELEASE_TAG" '{"tag_name": $RELEASE_TAG, "name": $RELEASE_TAG, "body": . }' \
                | curl -X POST \
