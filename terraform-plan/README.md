@@ -314,7 +314,7 @@ jobs:
           label: production
           workspace: prod
           var_file: env/prod.tfvars
-          variables:
+          variables: |
             turbo_mode=true
           backend_config_file: env/prod.backend
           backend_config: token=${{ secrets.BACKEND_TOKEN }}
