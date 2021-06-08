@@ -51,6 +51,8 @@ else
       echo "Workspace does exist, selecting it"
       (cd "$INPUT_PATH" && terraform workspace select -no-color "$INPUT_WORKSPACE")
     else
+      cat "$WS_TMP_DIR/new_err.txt"
+      cat "$WS_TMP_DIR/new_out.txt"
       exit 1
     fi
   else
