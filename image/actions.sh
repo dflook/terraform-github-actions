@@ -52,13 +52,10 @@ function detect-tfmask() {
 }
 
 function execute_run_commands() {
-  if [[ -n $INPUT_RUN ]]; then
-    echo "Executing init commands specified in 'run' parameter"
-    eval "$INPUT_RUN"
-  fi
-  if [[ -n $TERRAFORM_PRE_RUN ]]
+  if [[ -n $TERRAFORM_PRE_RUN ]]; then
     echo "Executing init commands specified in 'TERRAFORM_PRE_RUN' environment variable"
-    eval "$TERRAFORM_PRE_RUN"
+    printf "%s" "$TERRAFORM_PRE_RUN" > /.prerun.sh
+    bash -x /.prerun.sh
   fi
 }
 

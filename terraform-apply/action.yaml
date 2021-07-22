@@ -45,9 +45,6 @@ inputs:
     description: "Comma separated list of targets to apply against, e.g. 'kubernetes_secret.tls_cert_public,kubernetes_secret.tls_cert_private' NOTE: this argument only takes effect if auto_approve is also set."
     required: false
     default: ""
-  run:
-    description: Executes these shell commands before running terraform
-    required: false
 
 runs:
   using: docker

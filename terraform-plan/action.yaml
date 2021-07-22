@@ -38,9 +38,6 @@ inputs:
     description: Add the plan to a GitHub PR
     required: false
     default: true
-  run:
-    description: Executes these shell commands before running terraform
-    required: false
 
 outputs:
   changes:
