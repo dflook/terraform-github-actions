@@ -11,7 +11,7 @@ inputs:
     required: false
     default: default
   backend_config:
-    description: Comma separated list of backend configs to set, e.g. 'foo=bar'
+    description: List of backend configs to set, one per line
     required: false
     default: ""
   backend_config_file:
@@ -27,7 +27,7 @@ inputs:
     default: ""
     deprecationMessage: Use the variables input instead.
   var_file:
-    description: Comma separated list of var file paths
+    description: List of var file paths, one per line
     required: false
     default: ""
   parallelism:
@@ -42,7 +42,7 @@ inputs:
     description: Automatically approve and apply plan
     default: false
   target:
-    description: "Comma separated list of targets to apply against, e.g. 'kubernetes_secret.tls_cert_public,kubernetes_secret.tls_cert_private' NOTE: this argument only takes effect if auto_approve is also set."
+    description: List of targets to apply against, one per line
     required: false
     default: ""
 

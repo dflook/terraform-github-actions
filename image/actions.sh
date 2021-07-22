@@ -206,8 +206,9 @@ function random_string() {
 
 function write_credentials() {
   format_tf_credentials >> $HOME/.terraformrc
-
+  netrc-credential-actions >> $HOME/.netrc
   echo "$TERRAFORM_SSH_KEY" >> /.ssh/id_rsa
   chmod 600 /.ssh/id_rsa
   chmod 700 /.ssh
+  debug_cmd git config --list
 }

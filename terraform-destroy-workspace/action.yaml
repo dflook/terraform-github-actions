@@ -10,7 +10,7 @@ inputs:
     description: Name of the terraform workspace
     required: true
   backend_config:
-    description: Comma separated list of backend configs to set, e.g. 'foo=bar'
+    description: List of backend configs to set, one per line
     required: false
   backend_config_file:
     description: Path to a backend config file
@@ -23,7 +23,7 @@ inputs:
     required: false
     deprecationMessage: Use the variables input instead.
   var_file:
-    description: Comma separated list of var file paths
+    description: List of var file paths, one per line
     required: false
   parallelism:
     description: Limit the number of concurrent operations

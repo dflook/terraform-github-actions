@@ -36,7 +36,7 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   An friendly name for the environment the terraform configuration is for.
   This will be used in the PR comment for easy identification.
 
-  It must be the same as the `label` used in the corresponding `terraform-apply` command.
+  If set, must be the same as the `label` used in the corresponding `terraform-apply` command.
 
   - Type: string
   - Optional
@@ -93,23 +93,40 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `var_file`
 
-  Comma separated list of tfvars files to use.
+  List of tfvars files to use, one per line.
   Paths should be relative to the GitHub Actions workspace
+  
+  ```yaml
+  with:
+    var_file: |
+      common.tfvars
+      prod.tfvars
+  ```
 
   - Type: string
   - Optional
 
 * `backend_config`
 
-  Comma separated list of terraform backend config values.
+  List of terraform backend config values, one per line.
+
+  ```yaml
+  with:
+    backend_config: token=${{ secrets.BACKEND_TOKEN }}
+  ```
 
   - Type: string
   - Optional
 
 * `backend_config_file`
 
-  Comma separated list of terraform backend config files to use.
+  List of terraform backend config files to use, one per line.
   Paths should be relative to the GitHub Actions workspace
+
+  ```yaml
+  with:
+    backend_config_file: prod.backend.tfvars
+  ```
 
   - Type: string
   - Optional
@@ -124,10 +141,11 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `add_github_comment`
 
-  The default is `true`, which adds a comment to the PR with the generated plan.
+  The default is `true`, which adds a comment to the PR with the results of the plan.
+  Set to `changes-only` to add a comment only when the plan indicates there are changes to apply.
   Set to `false` to disable the comment - the plan will still appear in the workflow log.
 
-  - Type: bool
+  - Type: string
   - Optional
   - Default: true
 
@@ -171,7 +189,7 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `TERRAFORM_SSH_KEY`
 
-  A SSH private key that terraform will use to fetch git module sources.
+  A SSH private key that terraform will use to fetch git/mercurial module sources.
 
   This should be in PEM format.
 
@@ -179,6 +197,31 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   ```yaml
   env:
     TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
+  ```
+
+  - Type: string
+  - Optional
+
+* `TERRAFORM_HTTP_CREDENTIALS`
+
+  Credentials that will be used for fetching modules sources with `git::http://`, `git::https://`, `http://` & `https://` schemes.
+
+  Credentials have the format `<host>=<username>:<password>`. Multiple credentials may be specified, one per line.
+
+  Each credential is evaluated in order, and the first matching credentials are used. 
+
+  Credentials that are used by git (`git::http://`, `git::https://`) allow a path after the hostname.
+  Paths are ignored by `http://` & `https://` schemes.
+  For git module sources, a credential matches if each mentioned path segment is an exact match.
+
+  For example:
+  ```yaml
+  env:
+    TERRAFORM_HTTP_CREDENTIALS: |
+      example.com=dflook:${{ secrets.HTTPS_PASSWORD }}
+      github.com/dflook/terraform-github-actions.git=dflook-actions:${{ secrets.ACTIONS_PAT }}
+      github.com/dflook=dflook:${{ secrets.DFLOOK_PAT }}
+      github.com=graham:${{ secrets.GITHUB_PAT }}  
   ```
 
   - Type: string
@@ -289,7 +332,7 @@ jobs:
           label: production
           workspace: prod
           var_file: env/prod.tfvars
-          variables:
+          variables: |
             turbo_mode=true
           backend_config_file: env/prod.backend
           backend_config: token=${{ secrets.BACKEND_TOKEN }}
@@ -308,7 +351,7 @@ on: [issue_comment]
 
 jobs:
   plan:
-    if: github.event.issue.pull_request && contains(github.event.comment.body, 'terraform plan')
+    if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, 'terraform plan') }}
     runs-on: ubuntu-latest
     name: Create terraform plan
     env:

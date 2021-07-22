@@ -367,15 +367,21 @@ class TerraformComment:
                 summary = line
 
             if line.startswith('Changes to Outputs'):
-                return summary + ' Changes to Outputs.'
+                if summary:
+                    return summary + ' Changes to Outputs.'
+                else:
+                    return 'Changes to Outputs'
 
         return summary
 
-    def update_comment(self):
+    def update_comment(self, only_if_exists=False):
         body = self.collapsable_body()
         debug(body)
 
         if self._comment_url is None:
+            if only_if_exists:
+                debug('Comment doesn\'t already exist - not creating it')
+                return
             # Create a new comment
             debug('Creating comment')
             response = github_api_request('post', self._issue_url, json={'body': body})
@@ -397,10 +403,15 @@ if __name__ == '__main__':
     {sys.argv[0]} get >plan.txt''')
 
     tf_comment = TerraformComment(find_pr())
+    only_if_exists = False
 
     if sys.argv[1] == 'plan':
         tf_comment.plan = sys.stdin.read().strip()
         tf_comment.status = os.environ['STATUS']
+
+        if os.environ['INPUT_ADD_GITHUB_COMMENT'] == 'changes-only' and os.environ.get('TF_CHANGES', 'true') == 'false':
+            only_if_exists = True
+
     elif sys.argv[1] == 'status':
         if tf_comment.plan is None:
             exit(1)
@@ -412,4 +423,4 @@ if __name__ == '__main__':
         print(tf_comment.plan)
         exit(0)
 
-    tf_comment.update_comment()
+    tf_comment.update_comment(only_if_exists)
