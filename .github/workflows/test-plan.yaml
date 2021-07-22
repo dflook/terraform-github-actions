@@ -325,7 +325,7 @@ jobs:
         uses: ./terraform-plan
         with:
           path: tests/plan/plan
-          run: |
-            echo testing command 1
-            echo testing command 2
-
+        env:
+          TERRAFORM_PRE_RUN: |
+            echo "testing command 1"
+            echo "testing command 2"
