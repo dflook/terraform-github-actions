@@ -492,3 +492,33 @@ jobs:
           label: Refresh 2
           path: tests/apply/refresh_15
           variables: len=20
+
+  apply_with_pre_run:
+    runs-on: ubuntu-latest
+    name: Apply with pre-run script
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TERRAFORM_PRE_RUN: |
+        echo "testing command 1"
+        echo "testing command 2"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          path: tests/apply/changes
+
+      - name: Apply
+        uses: ./terraform-apply
+        id: output
+        with:
+          path: tests/apply/changes
+
+      - name: Verify outputs
+        run: |
+          if [[ "${{ steps.output.outputs.output_string }}" != "the_string" ]]; then
+            echo "::error:: output s not set correctly"
+            exit 1
+          fi
