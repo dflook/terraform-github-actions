@@ -55,7 +55,7 @@ function execute_run_commands() {
   if [[ -n $TERRAFORM_PRE_RUN ]]; then
     echo "Executing init commands specified in 'TERRAFORM_PRE_RUN' environment variable"
     printf "%s" "$TERRAFORM_PRE_RUN" > /.prerun.sh
-    bash -x /.prerun.sh
+    bash -xeo pipefail /.prerun.sh
   fi
 }
 
