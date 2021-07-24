@@ -233,6 +233,28 @@ These input values must be the same as any `terraform-plan` for the same configu
   - Type: string
   - Optional
 
+* `TERRAFORM_PRE_RUN`
+
+  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running terraform. 
+  
+  The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
+  
+  The runtime image is currently based on `debian:buster`
+
+  For example:
+  ```yaml
+  env:
+    TERRAFORM_PRE_RUN: |
+      # Install latest Azure CLI
+      curl -skL https://aka.ms/InstallAzureCLIDeb | bash
+      
+      # Install postgres client
+      apt-get install -y --no-install-recommends postgresql-client
+  ```
+
+  - Type: string
+  - Optional
+
 * `TERRAFORM_HTTP_CREDENTIALS`
 
   Credentials that will be used for fetching modules sources with `git::http://`, `git::https://`, `http://` & `https://` schemes.
@@ -248,6 +270,12 @@ These input values must be the same as any `terraform-plan` for the same configu
   For example:
   ```yaml
   env:
+    TERRAFORM_PRE_RUN: |
+      # Install latest Azure CLI
+      curl -skL https://aka.ms/InstallAzureCLIDeb | bash
+      
+      # Install postgres client
+      apt-get install -y --no-install-recommends postgresql-client
     TERRAFORM_HTTP_CREDENTIALS: |
       example.com=dflook:${{ secrets.HTTPS_PASSWORD }}
       github.com/dflook/terraform-github-actions.git=dflook-actions:${{ secrets.ACTIONS_PAT }}
