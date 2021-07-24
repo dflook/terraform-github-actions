@@ -8,9 +8,33 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.12.0` to use an exact release
-- `@v1.12` to use the latest patch release for the specific minor version
+- `@v1.13.0` to use an exact release
+- `@v1.13` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.13.0] - 2021-07-24
+
+### Added
+
+- `TERRAFORM_PRE_RUN` environment variable for customising the environment before running terraform.
+
+  It can be set to a command that will be run prior to `terraform init`.
+
+  The runtime environment for these actions is subject to change in minor version releases.
+  If using this environment variable, specify the minor version of the action to use.
+
+  The runtime image is currently based on `debian:buster`, with the command run using `bash -xeo pipefail`.
+
+  For example:
+  ```yaml
+  env:
+    TERRAFORM_PRE_RUN: |
+      # Install latest Azure CLI
+      curl -skL https://aka.ms/InstallAzureCLIDeb | bash
+
+      # Install postgres client
+      apt-get install -y --no-install-recommends postgresql-client
+  ```
 
 ## [1.12.0] - 2021-06-08
 
@@ -186,6 +210,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.13.0]: https://github.com/dflook/terraform-github-actions/compare/v1.12.0...v1.13.0
 [1.12.0]: https://github.com/dflook/terraform-github-actions/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/dflook/terraform-github-actions/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/dflook/terraform-github-actions/compare/v1.9.3...v1.10.0
