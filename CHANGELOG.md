@@ -35,6 +35,8 @@ When using an action you can specify the version as:
       # Install postgres client
       apt-get install -y --no-install-recommends postgresql-client
   ```
+  
+  Thanks to @alec-pinson and @GiuseppeChiesa-TomTom for working on this feature.
 
 ## [1.12.0] - 2021-06-08
 
