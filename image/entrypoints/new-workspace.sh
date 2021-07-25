@@ -18,11 +18,9 @@ set +e
 readonly TF_WS_LIST_EXIT=${PIPESTATUS[0]}
 set -e
 
-if [[ "$ACTIONS_STEP_DEBUG" == "true" ]]; then
-  echo "terraform workspace list: ${TF_WS_LIST_EXIT}"
-  cat "$WS_TMP_DIR/list_err.txt"
-  cat "$WS_TMP_DIR/list_out.txt"
-fi
+debug_log "terraform workspace list: ${TF_WS_LIST_EXIT}"
+debug_cmd cat "$WS_TMP_DIR/list_err.txt"
+debug_cmd cat "$WS_TMP_DIR/list_out.txt"
 
 if [[ $TF_WS_LIST_EXIT -ne 0 ]]; then
   echo "Error: Failed to list workspaces"
@@ -43,11 +41,9 @@ else
   readonly TF_WS_NEW_EXIT=${PIPESTATUS[0]}
   set -e
 
-  if [[ "$ACTIONS_STEP_DEBUG" == "true" ]]; then
-    echo "terraform workspace new: ${TF_WS_NEW_EXIT}"
-    cat "$WS_TMP_DIR/new_err.txt"
-    cat "$WS_TMP_DIR/new_out.txt"
-  fi
+  debug_log "terraform workspace new: ${TF_WS_NEW_EXIT}"
+  debug_cmd cat "$WS_TMP_DIR/new_err.txt"
+  debug_cmd cat "$WS_TMP_DIR/new_out.txt"
 
   if [[ $TF_WS_NEW_EXIT -ne 0 ]]; then
 

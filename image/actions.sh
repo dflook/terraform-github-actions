@@ -5,16 +5,15 @@ set -eo pipefail
 source /usr/local/workflow_commands.sh
 
 function debug() {
-  if [[ -n "$ACTIONS_STEP_DEBUG" ]]; then
-    start_group "Environment (ACTIONS_STEP_DEBUG)"
-    debug_cmd ls -la /root
-    debug_cmd pwd
-    debug_cmd ls -la
-    debug_cmd ls -la "$HOME"
-    debug_cmd printenv
-    debug_cmd cat "$GITHUB_EVENT_PATH"
-    end_group
-  fi
+  start_group "Environment"
+  echo "When debug logging is enabled, additional information is output here"
+  debug_cmd ls -la /root
+  debug_cmd pwd
+  debug_cmd ls -la
+  debug_cmd ls -la "$HOME"
+  debug_cmd printenv
+  debug_cmd cat "$GITHUB_EVENT_PATH"
+  end_group
 }
 
 function detect-terraform-version() {
