@@ -172,12 +172,6 @@ This action uses the `terraform destroy` command to destroy all resources in a t
   For example:
   ```yaml
   env:
-    TERRAFORM_PRE_RUN: |
-      # Install latest Azure CLI
-      curl -skL https://aka.ms/InstallAzureCLIDeb | bash
-      
-      # Install postgres client
-      apt-get install -y --no-install-recommends postgresql-client
     TERRAFORM_HTTP_CREDENTIALS: |
       example.com=dflook:${{ secrets.HTTPS_PASSWORD }}
       github.com/dflook/terraform-github-actions.git=dflook-actions:${{ secrets.ACTIONS_PAT }}
