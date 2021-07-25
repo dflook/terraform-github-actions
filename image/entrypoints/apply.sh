@@ -115,12 +115,13 @@ else
     if plan_cmp "$PLAN_DIR/plan.txt" "$PLAN_DIR/approved-plan.txt"; then
         apply
     else
-        echo "Plan changes:"
-        diff "$PLAN_DIR/plan.txt" "$PLAN_DIR/approved-plan.txt" || true
-
         echo "Not applying the plan - it has changed from the plan on the PR"
         echo "The plan on the PR must be up to date. Alternatively, set the auto_approve input to 'true' to apply outdated plans"
         update_status "Plan not applied in $(job_markdown_ref) (Plan has changed)"
+
+        echo "Plan changes:"
+        debug_log diff "$PLAN_DIR/plan.txt" "$PLAN_DIR/approved-plan.txt"
+        diff "$PLAN_DIR/plan.txt" "$PLAN_DIR/approved-plan.txt" || true
 
         exit 1
     fi

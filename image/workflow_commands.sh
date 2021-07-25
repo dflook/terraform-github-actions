@@ -99,7 +99,7 @@ function disable_workflow_commands() {
 }
 
 function generate_command_token() {
-  python3 -c "import random; import string; print(''.join(random.choice(string.ascii_lowercase) for i in range(8)))"
+  python3 -c "import random; import string; print(''.join(random.choice(string.ascii_lowercase) for i in range(32)))"
 }
 
 disable_workflow_commands
