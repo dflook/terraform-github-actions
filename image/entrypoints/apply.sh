@@ -3,7 +3,6 @@
 source /usr/local/actions.sh
 
 debug
-
 setup
 init-backend
 select-workspace
@@ -61,7 +60,7 @@ function apply() {
 }
 
 ### Generate a plan
-
+disable_workflow_commands
 plan
 
 if [[ $PLAN_EXIT -eq 1 ]]; then
@@ -79,6 +78,7 @@ fi
 
 if [[ $PLAN_EXIT -eq 1 ]]; then
     cat "$PLAN_DIR/error.txt"
+    enable_workflow_commands
     update_status "Error applying plan in $(job_markdown_ref)"
     exit 1
 fi
@@ -113,16 +113,17 @@ else
     if plan_cmp "$PLAN_DIR/plan.txt" "$PLAN_DIR/approved-plan.txt"; then
         apply
     else
+        echo "Plan changes:"
+        diff "$PLAN_DIR/plan.txt" "$PLAN_DIR/approved-plan.txt" || true
+
+        enable_workflow_commands
         echo "Not applying the plan - it has changed from the plan on the PR"
         echo "The plan on the PR must be up to date. Alternatively, set the auto_approve input to 'true' to apply outdated plans"
         update_status "Plan not applied in $(job_markdown_ref) (Plan has changed)"
-
-        echo "Plan changes:"
-        debug_log diff "$PLAN_DIR/plan.txt" "$PLAN_DIR/approved-plan.txt"
-        diff "$PLAN_DIR/plan.txt" "$PLAN_DIR/approved-plan.txt" || true
 
         exit 1
     fi
 fi
 
+enable_workflow_commands
 output

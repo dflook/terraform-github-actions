@@ -8,6 +8,8 @@ init-backend
 select-workspace
 set-plan-args
 
+disable_workflow_commands
+
 PLAN_DIR=$HOME/$GITHUB_RUN_ID-$(random_string)
 rm -rf "$PLAN_DIR"
 mkdir -p "$PLAN_DIR"
@@ -26,6 +28,8 @@ readonly TF_EXIT=${PIPESTATUS[0]}
 set -e
 
 cat "$PLAN_DIR/error.txt"
+
+enable_workflow_commands
 
 if [[ "$GITHUB_EVENT_NAME" == "pull_request" || "$GITHUB_EVENT_NAME" == "issue_comment" || "$GITHUB_EVENT_NAME" == "pull_request_review_comment" || "$GITHUB_EVENT_NAME" == "pull_request_target" || "$GITHUB_EVENT_NAME" == "pull_request_review" ]]; then
   if [[ "$INPUT_ADD_GITHUB_COMMENT" == "true" || "$INPUT_ADD_GITHUB_COMMENT" == "changes-only" ]]; then

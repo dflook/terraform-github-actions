@@ -12,14 +12,45 @@ function debug_cmd() {
   "$@" | while IFS= read -r line; do echo "::debug::${CMD_NAME}:${line}"; done;
 }
 
+function disable_workflow_commands() {
+  if [[ -n "$WORKFLOW_COMMAND_TOKEN" ]]; then # Token is already set (not null)
+    echo "Tried to disable workflow commands, but they are already disabled"
+    exit 1
+  fi
+
+  WORKFLOW_COMMAND_TOKEN=$(random_string)
+  echo "::stop-commands::${WORKFLOW_COMMAND_TOKEN}"
+}
+
+function enable_workflow_commands() {
+  if [[ -z "$WORKFLOW_COMMAND_TOKEN" ]]; then # Token is NOT set (null)
+    echo "Tried to enable workflow commands, but they are already enabled"
+    exit 1
+  fi
+
+  echo "::${WORKFLOW_COMMAND_TOKEN}::"
+  unset WORKFLOW_COMMAND_TOKEN
+}
+
+function start_group() {
+  echo "::group::$1"
+}
+
+function end_group() {
+  echo "::endgroup::"
+}
+
 function debug() {
-  debug_cmd ls -la /root
-  debug_cmd pwd
-  debug_cmd ls -la
-  debug_cmd ls -la $HOME
-  debug_cmd printenv
-  debug_cmd cat "$GITHUB_EVENT_PATH"
-  echo
+  if [[ "$ACTIONS_STEP_DEBUG" == "true" ]]; then
+    start_group "Environment (ACTIONS_STEP_DEBUG)"
+    debug_cmd ls -la /root
+    debug_cmd pwd
+    debug_cmd ls -la
+    debug_cmd ls -la $HOME
+    debug_cmd printenv
+    debug_cmd cat "$GITHUB_EVENT_PATH"
+    end_group
+  fi
 }
 
 function detect-terraform-version() {
@@ -53,19 +84,34 @@ function detect-tfmask() {
 
 function execute_run_commands() {
   if [[ -n $TERRAFORM_PRE_RUN ]]; then
+    start_group "Executing TERRAFORM_PRE_RUN"
+    disable_workflow_commands
     echo "Executing init commands specified in 'TERRAFORM_PRE_RUN' environment variable"
     printf "%s" "$TERRAFORM_PRE_RUN" > /.prerun.sh
     bash -xeo pipefail /.prerun.sh
+    enable_workflow_commands
+    end_group
   fi
 }
 
 function setup() {
+  if [[ "$INPUT_PATH" == "" ]]; then
+    echo "::error:: input 'path' not set"
+    exit 1
+  fi
+
+  if [[ ! -d "$INPUT_PATH" ]]; then
+    echo "::error:: Path does not exist: \"$INPUT_PATH\""
+    exit 1
+  fi
+
   TERRAFORM_BIN_DIR="$HOME/.dflook-terraform-bin-dir"
   export TF_DATA_DIR="$HOME/.dflook-terraform-data-dir"
   export TF_PLUGIN_CACHE_DIR="$HOME/.terraform.d/plugin-cache"
   unset TF_WORKSPACE
 
   # tfswitch guesses the wrong home directory...
+  start_group "Installing terraform"
   if [[ ! -d $TERRAFORM_BIN_DIR ]]; then
     debug_log "Initializing tfswitch with image default version"
     cp --recursive /root/.terraform.versions.default $TERRAFORM_BIN_DIR
@@ -79,19 +125,10 @@ function setup() {
 
   mkdir -p "$TF_DATA_DIR" "$TF_PLUGIN_CACHE_DIR"
 
-  if [[ "$INPUT_PATH" == "" ]]; then
-    echo "::error:: input 'path' not set"
-    exit 1
-  fi
-
-  if [[ ! -d "$INPUT_PATH" ]]; then
-    echo "::error:: Path does not exist: \"$INPUT_PATH\""
-    exit 1
-  fi
-
   detect-terraform-version
 
   debug_cmd ls -la $TERRAFORM_BIN_DIR
+  end_group
 
   detect-tfmask
 
@@ -99,7 +136,7 @@ function setup() {
 }
 
 function relative_to() {
-  local abspath
+  local absbase
   local relpath
 
   absbase="$1"
@@ -108,13 +145,22 @@ function relative_to() {
 }
 
 function init() {
+  start_group "terraform init"
+  disable_workflow_commands
+
   write_credentials
 
   rm -rf "$TF_DATA_DIR"
   (cd "$INPUT_PATH" && terraform init -input=false -backend=false)
+
+  enable_workflow_commands
+  end_group
 }
 
 function init-backend() {
+  start_group "terraform init"
+  disable_workflow_commands
+
   write_credentials
 
   INIT_ARGS=""
@@ -154,10 +200,17 @@ function init-backend() {
       exit $INIT_EXIT
     fi
   fi
+
+  enable_workflow_commands
+  end_group
 }
 
 function select-workspace() {
+  start_group "Select workspace"
+  disable_workflow_commands
   (cd "$INPUT_PATH" && terraform workspace select "$INPUT_WORKSPACE")
+  enable_workflow_commands
+  end_group
 }
 
 function set-plan-args() {
@@ -188,6 +241,11 @@ function set-plan-args() {
 }
 
 function output() {
+  if [[ -n "$WORKFLOW_COMMAND_TOKEN" ]]; then
+    echo "Workflow commands are disabled, and they should not be"
+    exit 1
+  fi
+
   (cd "$INPUT_PATH" && terraform output -json | convert_output)
 }
 

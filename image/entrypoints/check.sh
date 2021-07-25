@@ -7,7 +7,8 @@ setup
 init-backend
 select-workspace
 set-plan-args
-output
+
+disable_workflow_commands
 
 set +e
 (cd $INPUT_PATH && terraform plan -input=false -detailed-exitcode -lock-timeout=300s $PLAN_ARGS) \
