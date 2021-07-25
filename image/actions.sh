@@ -5,7 +5,7 @@ set -eo pipefail
 source /usr/local/workflow_commands.sh
 
 function debug() {
-  if [[ "$ACTIONS_STEP_DEBUG" == "true" ]]; then
+  if [[ -n "$ACTIONS_STEP_DEBUG" ]]; then
     start_group "Environment (ACTIONS_STEP_DEBUG)"
     debug_cmd ls -la /root
     debug_cmd pwd
@@ -167,7 +167,7 @@ function init-backend() {
 }
 
 function select-workspace() {
-  start_group "Select workspace"
+  start_group "Selecting workspace"
 
   (cd "$INPUT_PATH" && terraform workspace select "$INPUT_WORKSPACE")
 
@@ -221,7 +221,7 @@ function update_status() {
 }
 
 function random_string() {
-  python3 -c "import random; import string; print(''.join(random.choice(string.ascii_lowercase) for i in range(8)))"
+  python3 -c "import random; import string; print(''.join(random.choice(string.ascii_lowercase) for i in range(32)))"
 }
 
 function write_credentials() {
