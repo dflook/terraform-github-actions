@@ -2,43 +2,7 @@
 
 set -eo pipefail
 
-function debug_log() {
-  echo "::debug::" "$@"
-}
-
-function debug_cmd() {
-  local CMD_NAME
-  CMD_NAME=$(echo "$@")
-  "$@" | while IFS= read -r line; do echo "::debug::${CMD_NAME}:${line}"; done;
-}
-
-function disable_workflow_commands() {
-  if [[ -n "$WORKFLOW_COMMAND_TOKEN" ]]; then # Token is already set (not null)
-    echo "Tried to disable workflow commands, but they are already disabled"
-    exit 1
-  fi
-
-  WORKFLOW_COMMAND_TOKEN=$(random_string)
-  echo "::stop-commands::${WORKFLOW_COMMAND_TOKEN}"
-}
-
-function enable_workflow_commands() {
-  if [[ -z "$WORKFLOW_COMMAND_TOKEN" ]]; then # Token is NOT set (null)
-    echo "Tried to enable workflow commands, but they are already enabled"
-    exit 1
-  fi
-
-  echo "::${WORKFLOW_COMMAND_TOKEN}::"
-  unset WORKFLOW_COMMAND_TOKEN
-}
-
-function start_group() {
-  echo "::group::$1"
-}
-
-function end_group() {
-  echo "::endgroup::"
-}
+source /usr/local/workflow_commands.sh
 
 function debug() {
   if [[ "$ACTIONS_STEP_DEBUG" == "true" ]]; then
@@ -46,7 +10,7 @@ function debug() {
     debug_cmd ls -la /root
     debug_cmd pwd
     debug_cmd ls -la
-    debug_cmd ls -la $HOME
+    debug_cmd ls -la "$HOME"
     debug_cmd printenv
     debug_cmd cat "$GITHUB_EVENT_PATH"
     end_group
@@ -85,23 +49,23 @@ function detect-tfmask() {
 function execute_run_commands() {
   if [[ -n $TERRAFORM_PRE_RUN ]]; then
     start_group "Executing TERRAFORM_PRE_RUN"
-    disable_workflow_commands
+
     echo "Executing init commands specified in 'TERRAFORM_PRE_RUN' environment variable"
     printf "%s" "$TERRAFORM_PRE_RUN" > /.prerun.sh
     bash -xeo pipefail /.prerun.sh
-    enable_workflow_commands
+
     end_group
   fi
 }
 
 function setup() {
   if [[ "$INPUT_PATH" == "" ]]; then
-    echo "::error:: input 'path' not set"
+    error_log "input 'path' not set"
     exit 1
   fi
 
   if [[ ! -d "$INPUT_PATH" ]]; then
-    echo "::error:: Path does not exist: \"$INPUT_PATH\""
+    error_log "Path does not exist: \"$INPUT_PATH\""
     exit 1
   fi
 
@@ -111,23 +75,23 @@ function setup() {
   unset TF_WORKSPACE
 
   # tfswitch guesses the wrong home directory...
-  start_group "Installing terraform"
+  start_group "Installing Terraform"
   if [[ ! -d $TERRAFORM_BIN_DIR ]]; then
     debug_log "Initializing tfswitch with image default version"
-    cp --recursive /root/.terraform.versions.default $TERRAFORM_BIN_DIR
+    cp --recursive /root/.terraform.versions.default "$TERRAFORM_BIN_DIR"
   fi
 
-  ln -s $TERRAFORM_BIN_DIR /root/.terraform.versions
+  ln -s "$TERRAFORM_BIN_DIR" /root/.terraform.versions
 
   debug_cmd ls -lad /root/.terraform.versions
-  debug_cmd ls -lad $TERRAFORM_BIN_DIR
-  debug_cmd ls -la $TERRAFORM_BIN_DIR
+  debug_cmd ls -lad "$TERRAFORM_BIN_DIR"
+  debug_cmd ls -la "$TERRAFORM_BIN_DIR"
 
   mkdir -p "$TF_DATA_DIR" "$TF_PLUGIN_CACHE_DIR"
 
   detect-terraform-version
 
-  debug_cmd ls -la $TERRAFORM_BIN_DIR
+  debug_cmd ls -la "$TERRAFORM_BIN_DIR"
   end_group
 
   detect-tfmask
@@ -145,21 +109,18 @@ function relative_to() {
 }
 
 function init() {
-  start_group "terraform init"
-  disable_workflow_commands
+  start_group "Initializing Terraform"
 
   write_credentials
 
   rm -rf "$TF_DATA_DIR"
   (cd "$INPUT_PATH" && terraform init -input=false -backend=false)
 
-  enable_workflow_commands
   end_group
 }
 
 function init-backend() {
-  start_group "terraform init"
-  disable_workflow_commands
+  start_group "Initializing Terraform"
 
   write_credentials
 
@@ -201,15 +162,15 @@ function init-backend() {
     fi
   fi
 
-  enable_workflow_commands
+
   end_group
 }
 
 function select-workspace() {
   start_group "Select workspace"
-  disable_workflow_commands
+
   (cd "$INPUT_PATH" && terraform workspace select "$INPUT_WORKSPACE")
-  enable_workflow_commands
+
   end_group
 }
 
@@ -241,21 +202,22 @@ function set-plan-args() {
 }
 
 function output() {
-  if [[ -n "$WORKFLOW_COMMAND_TOKEN" ]]; then
-    echo "Workflow commands are disabled, and they should not be"
-    exit 1
-  fi
-
+  enable_workflow_commands
   (cd "$INPUT_PATH" && terraform output -json | convert_output)
+  disable_workflow_commands
 }
 
 function update_status() {
-    local status="$1"
+  local status="$1"
 
-    if ! STATUS="$status" github_pr_comment status 2>&1 | sed 's/^/::debug::/'; then
-        echo "$status"
-        echo "Unable to update status on PR"
-    fi
+  enable_workflow_commands
+  if ! STATUS="$status" github_pr_comment status 2>&1 | sed 's/^/::debug::/'; then
+    disable_workflow_commands
+    echo "$status"
+    echo "Unable to update status on PR"
+  else
+    disable_workflow_commands
+  fi
 }
 
 function random_string() {
@@ -263,8 +225,8 @@ function random_string() {
 }
 
 function write_credentials() {
-  format_tf_credentials >> $HOME/.terraformrc
-  netrc-credential-actions >> $HOME/.netrc
+  format_tf_credentials >> "$HOME/.terraformrc"
+  netrc-credential-actions >> "$HOME/.netrc"
   echo "$TERRAFORM_SSH_KEY" >> /.ssh/id_rsa
   chmod 600 /.ssh/id_rsa
   chmod 700 /.ssh

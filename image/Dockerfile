@@ -2,6 +2,7 @@ FROM danielflook/terraform-github-actions-base:latest
 
 COPY entrypoints/ /entrypoints/
 COPY actions.sh /usr/local/actions.sh
+COPY workflow_commands.sh /usr/local/workflow_commands.sh
 
 COPY tools/convert_validate_report.py /usr/local/bin/convert_validate_report
 COPY tools/github_pr_comment.py /usr/local/bin/github_pr_comment

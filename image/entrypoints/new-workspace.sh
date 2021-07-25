@@ -6,14 +6,12 @@ debug
 setup
 init-backend
 
-disable_workflow_commands
-
 WS_TMP_DIR=$HOME/$GITHUB_RUN_ID-$(random_string)
 rm -rf "$WS_TMP_DIR"
 mkdir -p "$WS_TMP_DIR"
 
 set +e
-(cd $INPUT_PATH && terraform workspace list -no-color) \
+(cd "$INPUT_PATH" && terraform workspace list -no-color) \
     2>"$WS_TMP_DIR/list_err.txt" \
      >"$WS_TMP_DIR/list_out.txt"
 
@@ -38,7 +36,7 @@ else
   echo "Workspace does not appear to exist, attempting to create it"
 
   set +e
-  (cd $INPUT_PATH && terraform workspace new -no-color -lock-timeout=300s "$INPUT_WORKSPACE") \
+  (cd "$INPUT_PATH" && terraform workspace new -no-color -lock-timeout=300s "$INPUT_WORKSPACE") \
       2>"$WS_TMP_DIR/new_err.txt" \
        >"$WS_TMP_DIR/new_out.txt"
 

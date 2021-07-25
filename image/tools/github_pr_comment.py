@@ -18,7 +18,7 @@ github.headers['accept'] = 'application/vnd.github.v3+json'
 def github_api_request(method, *args, **kw_args):
     response = github.request(method, *args, **kw_args)
 
-    if response.status_code >= 400 and response.status_code < 500:
+    if 400 <= response.status_code < 500:
         debug(str(response.headers))
 
         try:

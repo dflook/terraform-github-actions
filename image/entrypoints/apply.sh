@@ -33,7 +33,7 @@ function plan() {
     fi
 
     set +e
-    (cd $INPUT_PATH && terraform plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PLAN_OUT_ARG $PLAN_ARGS) \
+    (cd "$INPUT_PATH" && terraform plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PLAN_OUT_ARG $PLAN_ARGS) \
         2>"$PLAN_DIR/error.txt" \
         | $TFMASK \
         | tee /dev/fd/3 \
@@ -47,7 +47,7 @@ function plan() {
 function apply() {
 
     set +e
-    (cd $INPUT_PATH && terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PLAN_OUT) | $TFMASK
+    (cd "$INPUT_PATH" && terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PLAN_OUT) | $TFMASK
     local APPLY_EXIT=${PIPESTATUS[0]}
     set -e
 
@@ -60,7 +60,7 @@ function apply() {
 }
 
 ### Generate a plan
-disable_workflow_commands
+
 plan
 
 if [[ $PLAN_EXIT -eq 1 ]]; then
@@ -78,7 +78,7 @@ fi
 
 if [[ $PLAN_EXIT -eq 1 ]]; then
     cat "$PLAN_DIR/error.txt"
-    enable_workflow_commands
+
     update_status "Error applying plan in $(job_markdown_ref)"
     exit 1
 fi
@@ -103,12 +103,14 @@ else
       exit 1
     fi
 
+    enable_workflow_commands
     if ! github_pr_comment get >"$PLAN_DIR/approved-plan.txt"; then
         echo "Plan not found on PR"
         echo "Generate the plan first using the dflook/terraform-plan action. Alternatively set the auto_approve input to 'true'"
         echo "If dflook/terraform-plan was used with add_github_comment set to changes-only, this may mean the plan has since changed to include changes"
         exit 1
     fi
+    disable_workflow_commands
 
     if plan_cmp "$PLAN_DIR/plan.txt" "$PLAN_DIR/approved-plan.txt"; then
         apply
@@ -116,7 +118,6 @@ else
         echo "Plan changes:"
         diff "$PLAN_DIR/plan.txt" "$PLAN_DIR/approved-plan.txt" || true
 
-        enable_workflow_commands
         echo "Not applying the plan - it has changed from the plan on the PR"
         echo "The plan on the PR must be up to date. Alternatively, set the auto_approve input to 'true' to apply outdated plans"
         update_status "Plan not applied in $(job_markdown_ref) (Plan has changed)"
@@ -125,5 +126,4 @@ else
     fi
 fi
 
-enable_workflow_commands
 output
