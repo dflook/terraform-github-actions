@@ -103,14 +103,13 @@ else
       exit 1
     fi
 
-    enable_workflow_commands
-    if ! github_pr_comment get >"$PLAN_DIR/approved-plan.txt"; then
+    if ! github_pr_comment get "$PLAN_DIR/approved-plan.txt" 2>"$PLAN_DIR/github_pr_comment.error"; then
+        debug_file "$PLAN_DIR/github_pr_comment.error"
         echo "Plan not found on PR"
         echo "Generate the plan first using the dflook/terraform-plan action. Alternatively set the auto_approve input to 'true'"
         echo "If dflook/terraform-plan was used with add_github_comment set to changes-only, this may mean the plan has since changed to include changes"
         exit 1
     fi
-    disable_workflow_commands
 
     if plan_cmp "$PLAN_DIR/plan.txt" "$PLAN_DIR/approved-plan.txt"; then
         apply

@@ -38,9 +38,10 @@ if [[ "$GITHUB_EVENT_NAME" == "pull_request" || "$GITHUB_EVENT_NAME" == "issue_c
     fi
 
     if [[ $TF_EXIT -eq 1 ]]; then
-      enable_workflow_commands
-      STATUS="Failed to generate plan in $(job_markdown_ref)" github_pr_comment plan <"/$PLAN_DIR/error.txt"
-      disable_workflow_commands
+      if ! STATUS="Failed to generate plan in $(job_markdown_ref)" github_pr_comment plan <"$PLAN_DIR/error.txt" 2>"$PLAN_DIR/github_pr_comment.error"; then
+        debug_file "$PLAN_DIR/github_pr_comment.error"
+        exit 1
+      fi
     else
 
       if [[ $TF_EXIT -eq 0 ]]; then
@@ -49,9 +50,10 @@ if [[ "$GITHUB_EVENT_NAME" == "pull_request" || "$GITHUB_EVENT_NAME" == "issue_c
         TF_CHANGES=true
       fi
 
-      enable_workflow_commands
-      TF_CHANGES=$TF_CHANGES STATUS="Plan generated in $(job_markdown_ref)" github_pr_comment plan <"/$PLAN_DIR/plan.txt"
-      disable_workflow_commands
+      if ! TF_CHANGES=$TF_CHANGES STATUS="Plan generated in $(job_markdown_ref)" github_pr_comment plan <"$PLAN_DIR/plan.txt" 2>"$PLAN_DIR/github_pr_comment.error"; then
+        debug_file "$PLAN_DIR/github_pr_comment.error"
+        exit 1
+      fi
     fi
 
   fi

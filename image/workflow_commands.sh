@@ -25,7 +25,6 @@ function error_log() {
   disable_workflow_commands
 }
 
-
 ##
 # Run a command and send the output to the debug log
 #
@@ -35,6 +34,18 @@ function debug_cmd() {
   CMD_NAME=$(echo "$@")
   enable_workflow_commands
   "$@" | while IFS= read -r line; do echo "::debug::${CMD_NAME}:${line}"; done;
+  disable_workflow_commands
+}
+
+##
+# Print a file to the debug log
+#
+# This will be visible in the workflow log if ACTIONS_STEP_DEBUG workflow secret is set.
+function debug_file() {
+  local FILE_PATH
+  FILE_PATH="$1"
+  enable_workflow_commands
+  sed "s|^|::debug $FILE_PATH:|" $FILE_PATH
   disable_workflow_commands
 }
 

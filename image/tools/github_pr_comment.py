@@ -26,26 +26,25 @@ def github_api_request(method, *args, **kw_args):
 
             if response.headers['X-RateLimit-Remaining'] == '0':
                 limit_reset = datetime.datetime.fromtimestamp(int(response.headers['X-RateLimit-Reset']))
-                sys.stderr.write(message)
-                sys.stderr.write(f' Try again when the rate limit resets at {limit_reset} UTC.\n')
+                sys.stdout.write(message)
+                sys.stdout.write(f' Try again when the rate limit resets at {limit_reset} UTC.\n')
                 exit(1)
 
             if message != 'Resource not accessible by integration':
-                sys.stderr.write(message)
-                sys.stderr.write('\n')
+                sys.stdout.write(message)
+                sys.stdout.write('\n')
                 debug(response.content.decode())
 
         except Exception:
-            sys.stderr.write(response.content.decode())
-            sys.stderr.write('\n')
+            sys.stdout.write(response.content.decode())
+            sys.stdout.write('\n')
             raise
 
     return response
 
 def debug(msg: str) -> None:
-    for line in msg.splitlines():
-        sys.stderr.write(f'::debug::{line}\n')
-
+    sys.stderr.write(msg)
+    sys.stderr.write('\n')
 
 def prs(repo: str) -> Iterable[Dict]:
     url = f'https://api.github.com/repos/{repo}/pulls'
@@ -420,7 +419,9 @@ if __name__ == '__main__':
     elif sys.argv[1] == 'get':
         if tf_comment.plan is None:
             exit(1)
-        print(tf_comment.plan)
+
+        with open(sys.argv[2], 'w') as f:
+            f.write(tf_comment.plan)
         exit(0)
 
     tf_comment.update_comment(only_if_exists)

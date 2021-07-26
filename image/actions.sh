@@ -12,7 +12,7 @@ function debug() {
   debug_cmd ls -la
   debug_cmd ls -la "$HOME"
   debug_cmd printenv
-  debug_cmd cat "$GITHUB_EVENT_PATH"
+  debug_file "$GITHUB_EVENT_PATH"
   end_group
 }
 
@@ -166,11 +166,13 @@ function init-backend() {
 }
 
 function select-workspace() {
-  start_group "Selecting workspace"
+  (cd "$INPUT_PATH" && terraform workspace select "$INPUT_WORKSPACE") >/tmp/select-workspace 2>&1
 
-  (cd "$INPUT_PATH" && terraform workspace select "$INPUT_WORKSPACE")
-
-  end_group
+  if [[ -s /tmp/select-workspace ]]; then
+    start_group "Selecting workspace"
+    cat /tmp/select-workspace
+    end_group
+  fi
 }
 
 function set-plan-args() {
@@ -209,13 +211,8 @@ function output() {
 function update_status() {
   local status="$1"
 
-  enable_workflow_commands
-  if ! STATUS="$status" github_pr_comment status 2>&1 | sed 's/^/::debug::/'; then
-    disable_workflow_commands
-    echo "$status"
-    echo "Unable to update status on PR"
-  else
-    disable_workflow_commands
+  if ! STATUS="$status" github_pr_comment status 2>/tmp/github_pr_comment.error; then
+    debug_file /tmp/github_pr_comment.error
   fi
 }
 
