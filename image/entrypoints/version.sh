@@ -6,8 +6,6 @@ debug
 setup
 init
 
-(cd "$INPUT_PATH" && terraform version -no-color | convert_version) >/tmp/version.txt
-
 enable_workflow_commands
-cat /tmp/version.txt
+(cd "$INPUT_PATH" && terraform version -no-color | convert_version)
 disable_workflow_commands

@@ -6,9 +6,8 @@ debug
 setup
 init
 
-if ! (cd "$INPUT_PATH" && terraform validate -json | convert_validate_report "$INPUT_PATH") >/tmp/report.txt; then
-  enable_workflow_commands
-  cat /tmp/report.txt
+enable_workflow_commands
+if ! (cd "$INPUT_PATH" && terraform validate -json | convert_validate_report "$INPUT_PATH"); then
   disable_workflow_commands
 
   (cd "$INPUT_PATH" && terraform validate)

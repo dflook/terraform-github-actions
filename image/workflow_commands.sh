@@ -45,7 +45,7 @@ function debug_file() {
   local FILE_PATH
   FILE_PATH="$1"
   enable_workflow_commands
-  sed "s|^|::debug $FILE_PATH:|" $FILE_PATH
+  sed "s|^|::debug::$FILE_PATH:|" $FILE_PATH
   disable_workflow_commands
 }
 
