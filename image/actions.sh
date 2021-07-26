@@ -51,7 +51,9 @@ function execute_run_commands() {
 
     echo "Executing init commands specified in 'TERRAFORM_PRE_RUN' environment variable"
     printf "%s" "$TERRAFORM_PRE_RUN" > /.prerun.sh
+    disable_workflow_commands
     bash -xeo pipefail /.prerun.sh
+    enable_workflow_commands
 
     end_group
   fi
@@ -203,9 +205,7 @@ function set-plan-args() {
 }
 
 function output() {
-  enable_workflow_commands
   (cd "$INPUT_PATH" && terraform output -json | convert_output)
-  disable_workflow_commands
 }
 
 function update_status() {

@@ -11,18 +11,14 @@
 #
 # This will be visible in the workflow log if ACTIONS_STEP_DEBUG workflow secret is set.
 function debug_log() {
-  enable_workflow_commands
   echo "::debug::" "$@"
-  disable_workflow_commands
 }
 
 ##
 # Send a string to the error log
 #
 function error_log() {
-  enable_workflow_commands
   echo "::error::" "$@"
-  disable_workflow_commands
 }
 
 ##
@@ -32,9 +28,7 @@ function error_log() {
 function debug_cmd() {
   local CMD_NAME
   CMD_NAME=$(echo "$@")
-  enable_workflow_commands
   "$@" | while IFS= read -r line; do echo "::debug::${CMD_NAME}:${line}"; done;
-  disable_workflow_commands
 }
 
 ##
@@ -44,9 +38,7 @@ function debug_cmd() {
 function debug_file() {
   local FILE_PATH
   FILE_PATH="$1"
-  enable_workflow_commands
   sed "s|^|::debug::$FILE_PATH:|" $FILE_PATH
-  disable_workflow_commands
 }
 
 ##
@@ -59,9 +51,7 @@ function set_output() {
   name="$1"
   value="${*:2}"
 
-  enable_workflow_commands
   echo "::set-output name=${name}::${value}"
-  disable_workflow_commands
 }
 
 ##
@@ -69,18 +59,14 @@ function set_output() {
 #
 # All output between this and the next end_group will be collapsed into an expandable group
 function start_group() {
-  enable_workflow_commands
   echo "::group::$1"
-  disable_workflow_commands
 }
 
 ##
 # End a log group
 #
 function end_group() {
-  enable_workflow_commands
   echo "::endgroup::"
-  disable_workflow_commands
 }
 
 ##
@@ -113,4 +99,3 @@ function generate_command_token() {
   python3 -c "import random; import string; print(''.join(random.choice(string.ascii_lowercase) for i in range(32)))"
 }
 
-disable_workflow_commands

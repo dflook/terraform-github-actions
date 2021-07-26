@@ -9,9 +9,7 @@ terraform fmt -recursive -no-color -check -diff "$INPUT_PATH" | while IFS= read 
     echo "$line"
 
     if [[ -f "$line" ]]; then
-        enable_workflow_commands
         echo "::error file=$line::File is not in canonical format (terraform fmt)"
-        disable_workflow_commands
     fi
 done
 
