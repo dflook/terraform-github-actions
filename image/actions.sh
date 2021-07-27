@@ -11,6 +11,7 @@ function debug() {
   debug_cmd ls -la "$HOME"
   debug_cmd printenv
   debug_file "$GITHUB_EVENT_PATH"
+  echo
 }
 
 function detect-terraform-version() {
