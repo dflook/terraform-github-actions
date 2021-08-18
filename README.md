@@ -181,9 +181,9 @@ on:
     - cron:  "0 8 * * *"
 
 jobs:
-  check_drift:
+  rotate_certs:
     runs-on: ubuntu-latest
-    name: Check for drift of example terraform configuration
+    name: Rotate TLS certificates in example terraform configuration
     steps:
       - name: Checkout
         uses: actions/checkout@v2
