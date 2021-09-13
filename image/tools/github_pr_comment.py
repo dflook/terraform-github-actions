@@ -15,6 +15,9 @@ github.headers['authorization'] = f'token {os.environ["GITHUB_TOKEN"]}'
 github.headers['user-agent'] = 'terraform-github-actions'
 github.headers['accept'] = 'application/vnd.github.v3+json'
 
+github_url = os.environ.get('GITHUB_SERVER_URL', 'https://github.com')
+github_api_url = os.environ.get('GITHUB_API_URL', 'https://api.github.com')
+
 def github_api_request(method, *args, **kw_args):
     response = github.request(method, *args, **kw_args)
 
@@ -48,7 +51,7 @@ def debug(msg: str) -> None:
 
 
 def prs(repo: str) -> Iterable[Dict]:
-    url = f'https://api.github.com/repos/{repo}/pulls'
+    url = f'{github_api_url}/repos/{repo}/pulls'
 
     while True:
         response = github_api_request('get', url, params={'state': 'all'})
@@ -112,7 +115,7 @@ def current_user() -> str:
     except Exception as e:
         debug(str(e))
 
-    response = github_api_request('get', 'https://api.github.com/user')
+    response = github_api_request('get', f'{github_api_url}/user')
     if response.status_code != 403:
         user = response.json()
         debug('GITHUB_TOKEN user:')
