@@ -39,7 +39,7 @@ function detect-terraform-version() {
 }
 
 function job_markdown_ref() {
-  echo "[${GITHUB_WORKFLOW} #${GITHUB_RUN_NUMBER}](https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})"
+  echo "[${GITHUB_WORKFLOW} #${GITHUB_RUN_NUMBER}](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})"
 }
 
 function detect-tfmask() {
