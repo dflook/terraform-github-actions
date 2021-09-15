@@ -7,10 +7,9 @@ setup
 init-backend
 select-workspace
 set-plan-args
-output
 
 set +e
-(cd $INPUT_PATH && terraform plan -input=false -detailed-exitcode -lock-timeout=300s $PLAN_ARGS) \
+(cd "$INPUT_PATH" && terraform plan -input=false -detailed-exitcode -lock-timeout=300s $PLAN_ARGS) \
     | $TFMASK
 
 readonly TF_EXIT=${PIPESTATUS[0]}

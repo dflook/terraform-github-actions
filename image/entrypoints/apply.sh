@@ -3,7 +3,6 @@
 source /usr/local/actions.sh
 
 debug
-
 setup
 init-backend
 select-workspace
@@ -34,7 +33,7 @@ function plan() {
     fi
 
     set +e
-    (cd $INPUT_PATH && terraform plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PLAN_OUT_ARG $PLAN_ARGS) \
+    (cd "$INPUT_PATH" && terraform plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PLAN_OUT_ARG $PLAN_ARGS) \
         2>"$PLAN_DIR/error.txt" \
         | $TFMASK \
         | tee /dev/fd/3 \
@@ -48,7 +47,7 @@ function plan() {
 function apply() {
 
     set +e
-    (cd $INPUT_PATH && terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PLAN_OUT) | $TFMASK
+    (cd "$INPUT_PATH" && terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PLAN_OUT) | $TFMASK
     local APPLY_EXIT=${PIPESTATUS[0]}
     set -e
 
@@ -79,6 +78,7 @@ fi
 
 if [[ $PLAN_EXIT -eq 1 ]]; then
     cat "$PLAN_DIR/error.txt"
+
     update_status "Error applying plan in $(job_markdown_ref)"
     exit 1
 fi
@@ -103,7 +103,8 @@ else
       exit 1
     fi
 
-    if ! github_pr_comment get >"$PLAN_DIR/approved-plan.txt"; then
+    if ! github_pr_comment get "$PLAN_DIR/approved-plan.txt" 2>"$PLAN_DIR/github_pr_comment.error"; then
+        debug_file "$PLAN_DIR/github_pr_comment.error"
         echo "Plan not found on PR"
         echo "Generate the plan first using the dflook/terraform-plan action. Alternatively set the auto_approve input to 'true'"
         echo "If dflook/terraform-plan was used with add_github_comment set to changes-only, this may mean the plan has since changed to include changes"

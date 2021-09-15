@@ -15,7 +15,7 @@ mkdir -p "$PLAN_DIR"
 exec 3>&1
 
 set +e
-(cd $INPUT_PATH && terraform plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PLAN_ARGS) \
+(cd "$INPUT_PATH" && terraform plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PLAN_ARGS) \
     2>"$PLAN_DIR/error.txt" \
     | $TFMASK \
     | tee /dev/fd/3 \
@@ -38,7 +38,10 @@ if [[ "$GITHUB_EVENT_NAME" == "pull_request" || "$GITHUB_EVENT_NAME" == "issue_c
     fi
 
     if [[ $TF_EXIT -eq 1 ]]; then
-      STATUS="Failed to generate plan in $(job_markdown_ref)" github_pr_comment plan <"/$PLAN_DIR/error.txt"
+      if ! STATUS="Failed to generate plan in $(job_markdown_ref)" github_pr_comment plan <"$PLAN_DIR/error.txt" 2>"$PLAN_DIR/github_pr_comment.error"; then
+        debug_file "$PLAN_DIR/github_pr_comment.error"
+        exit 1
+      fi
     else
 
       if [[ $TF_EXIT -eq 0 ]]; then
@@ -47,7 +50,10 @@ if [[ "$GITHUB_EVENT_NAME" == "pull_request" || "$GITHUB_EVENT_NAME" == "issue_c
         TF_CHANGES=true
       fi
 
-      TF_CHANGES=$TF_CHANGES STATUS="Plan generated in $(job_markdown_ref)" github_pr_comment plan <"/$PLAN_DIR/plan.txt"
+      if ! TF_CHANGES=$TF_CHANGES STATUS="Plan generated in $(job_markdown_ref)" github_pr_comment plan <"$PLAN_DIR/plan.txt" 2>"$PLAN_DIR/github_pr_comment.error"; then
+        debug_file "$PLAN_DIR/github_pr_comment.error"
+        exit 1
+      fi
     fi
 
   fi
@@ -62,9 +68,9 @@ if [[ $TF_EXIT -eq 1 ]]; then
 
 elif [[ $TF_EXIT -eq 0 ]]; then
     debug_log "No Changes to apply"
-    echo "::set-output name=changes::false"
+    set_output changes false
 
 elif [[ $TF_EXIT -eq 2 ]]; then
     debug_log "Changes to apply"
-    echo "::set-output name=changes::true"
+    set_output changes true
 fi

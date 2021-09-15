@@ -8,7 +8,7 @@ env:
 jobs:
   git_http_full_path_credentials:
     runs-on: ubuntu-latest
-    name: git+http module source
+    name: git+http full path creds
     env:
       TERRAFORM_HTTP_CREDENTIALS: |
         github.com/dflook/hello=dflook:notapassword
@@ -34,7 +34,7 @@ jobs:
 
   git_http_partial_path_credentials:
     runs-on: ubuntu-latest
-    name: git+http module source
+    name: git+http partial path creds
     env:
       TERRAFORM_HTTP_CREDENTIALS: |
         github.com/dflook/hello=dflook:notapassword
@@ -60,7 +60,7 @@ jobs:
 
   git_http_no_path_credentials:
     runs-on: ubuntu-latest
-    name: git+http module source
+    name: git+http no path
     env:
       TERRAFORM_HTTP_CREDENTIALS: |
         github.com/dflook/hello=dflook:notapassword
@@ -86,7 +86,7 @@ jobs:
 
   git_no_credentials:
     runs-on: ubuntu-latest
-    name: git_http module source with no key
+    name: git_http no creds
     steps:
       - name: Checkout
         uses: actions/checkout@v2
