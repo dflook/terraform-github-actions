@@ -33,7 +33,7 @@ RUN apt-get update && apt-get install -y \
 RUN curl -fsL https://github.com/warrensbox/terraform-switcher/releases/download/${TFSWITCH_VERSION}/terraform-switcher_${TFSWITCH_VERSION}_linux_amd64.tar.gz -o tfswitch.tar.gz \
  && tar -xvf tfswitch.tar.gz \
  && mv tfswitch /usr/local/bin \
- && rm -rf README.md LICENSE terraform-switcher \
+ && rm -rf README.md LICENSE terraform-switcher tfswitch.tar.gz \
  && tfswitch $DEFAULT_TF_VERSION \
  && mv /root/.terraform.versions /root/.terraform.versions.default
 RUN mkdir -p $TF_PLUGIN_CACHE_DIR
