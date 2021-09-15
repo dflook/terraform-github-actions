@@ -18,8 +18,8 @@ github.headers['accept'] = 'application/vnd.github.v3+json'
 github_url = os.environ.get('GITHUB_SERVER_URL', 'https://github.com')
 github_api_url = os.environ.get('GITHUB_API_URL', 'https://api.github.com')
 
-def github_api_request(method, *args, **kw_args):
-    response = github.request(method, *args, **kw_args)
+def github_api_request(method, *args, **kwargs):
+    response = github.request(method, *args, **kwargs)
 
     if 400 <= response.status_code < 500:
         debug(str(response.headers))
@@ -49,20 +49,22 @@ def debug(msg: str) -> None:
     sys.stderr.write(msg)
     sys.stderr.write('\n')
 
-def prs(repo: str) -> Iterable[Dict]:
-    url = f'{github_api_url}/repos/{repo}/pulls'
+def paginate(url, *args, **kwargs) -> Iterable[Dict]:
 
     while True:
-        response = github_api_request('get', url, params={'state': 'all'})
+        response = github_api_request('get', url, *args, **kwargs)
         response.raise_for_status()
 
-        for pr in response.json():
-            yield pr
+        yield from response.json()
 
         if 'next' in response.links:
             url = response.links['next']['url']
         else:
             return
+
+def prs(repo: str) -> Iterable[Dict]:
+    url = f'{github_api_url}/repos/{repo}/pulls'
+    yield from paginate(url, params={'state': 'all'})
 
 
 def find_pr() -> str:
@@ -152,13 +154,12 @@ class TerraformComment:
         response.raise_for_status()
 
         self._issue_url = response.json()['_links']['issue']['href'] + '/comments'
-        response = github_api_request('get', self._issue_url)
-        response.raise_for_status()
 
         username = current_user()
 
         debug('Looking for an existing comment:')
-        for comment in response.json():
+
+        for comment in paginate(self._issue_url):
             debug(json.dumps(comment))
             if comment['user']['login'] == username:
                 match = re.match(rf'{re.escape(self._comment_identifier)}.*```(?:hcl)?(.*?)```.*', comment['body'], re.DOTALL)
