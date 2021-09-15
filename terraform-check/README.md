@@ -13,7 +13,8 @@ This is intended to run on a schedule to notify if manual changes to your infras
   Path to the terraform configuration to check
 
   - Type: string
-  - Required
+  - Optional
+  - Default: The action workspace
 
 * `workspace`
 

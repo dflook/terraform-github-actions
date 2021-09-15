@@ -12,7 +12,8 @@ This action uses the `terraform destroy` command to destroy all resources in a t
   Path to the terraform configuration
 
   - Type: string
-  - Required
+  - Optional
+  - Default: The action workspace
 
 * `workspace`
 

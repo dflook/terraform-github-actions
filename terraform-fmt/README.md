@@ -11,7 +11,8 @@ This action uses the `terraform fmt` command to reformat files in a directory in
   Path to the terraform configuration
 
   - Type: string
-  - Required
+  - Optional
+  - Default: The action workspace
 
 ## Example usage
 

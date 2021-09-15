@@ -11,7 +11,8 @@ Retrieve the root-level outputs from a terraform configuration.
   Path to the terraform configuration
 
   - Type: string
-  - Required
+  - Optional
+  - Default: The action workspace
 
 * `workspace`
 

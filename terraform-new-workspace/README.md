@@ -11,7 +11,8 @@ Creates a new terraform workspace. If the workspace already exists, succeeds wit
   Path to the terraform configuration
 
   - Type: string
-  - Required
+  - Optional
+  - Default: The action workspace
 
 * `workspace`
 

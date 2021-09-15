@@ -329,3 +329,20 @@ jobs:
           TERRAFORM_PRE_RUN: |
             echo "testing command 1"
             echo "testing command 2"
+
+  default_path:
+    runs-on: ubuntu-latest
+    name: Default path
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Copy
+        run: cp tests/plan/plan/main.tf ./main.tf
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          label: Optional path

@@ -5,7 +5,8 @@ author: Daniel Flook
 inputs:
   path:
     description: Path to the terraform configuration
-    required: true
+    required: false
+    default: .
 
 runs:
   using: docker

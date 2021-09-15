@@ -20,7 +20,8 @@ If the terraform configuration is not valid, the build is failed.
   Path to the terraform configuration
 
   - Type: string
-  - Required
+  - Optional
+  - Default: The action workspace
 
 ## Environment Variables
 
