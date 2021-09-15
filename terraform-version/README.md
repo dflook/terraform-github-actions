@@ -25,7 +25,8 @@ outputs yourself.
   Path to the terraform configuration to apply
 
   - Type: string
-  - Required
+  - Optional
+  - Default: The action workspace
 
 ## Environment Variables
 

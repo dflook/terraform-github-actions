@@ -21,7 +21,8 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   Path to the terraform configuration
 
   - Type: string
-  - Required
+  - Optional
+  - Default: The action workspace
 
 * `workspace`
 

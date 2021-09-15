@@ -14,7 +14,8 @@ If any files are not correctly formatted a failing GitHub check will be added fo
   Path to the terraform configuration
 
   - Type: string
-  - Required
+  - Optional
+  - Default: The action workspace
 
 ## Example usage
 

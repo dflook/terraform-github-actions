@@ -38,7 +38,8 @@ These input values must be the same as any `terraform-plan` for the same configu
   Path to the terraform configuration to apply
 
   - Type: string
-  - Required
+  - Optional
+  - Default: The action workspace
 
 * `workspace`
 
