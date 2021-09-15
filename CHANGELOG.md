@@ -8,14 +8,25 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.13.0` to use an exact release
-- `@v1.13` to use the latest patch release for the specific minor version
+- `@v1.14.0` to use an exact release
+- `@v1.14` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.14.0] - 2021-09-15
+
+### Added
+-  Support for self-hosted GitHub Enterprise deployments. Thanks [f0rkz](https://github.com/f0rkz)!
+
+### Changed
+- The `path` input variable is now optional, defaulting to the Action workspace.
+- Uninteresting workflow log output is now grouped and collapsed by default.
+
+### Fixed
+- Applying PR approved plans where the plan comment is not within the first 30 comments.
 
 ## [1.13.0] - 2021-07-24
 
 ### Added
-
 - `TERRAFORM_PRE_RUN` environment variable for customising the environment before running terraform.
 
   It can be set to a command that will be run prior to `terraform init`.
@@ -36,23 +47,20 @@ When using an action you can specify the version as:
       apt-get install -y --no-install-recommends postgresql-client
   ```
   
-  Thanks to @alec-pinson and @GiuseppeChiesa-TomTom for working on this feature.
+  Thanks to [alec-pinson](https://github.com/alec-pinson) and [GiuseppeChiesa-TomTom](https://github.com/GiuseppeChiesa-TomTom) for working on this feature.
 
 ## [1.12.0] - 2021-06-08
 
 ### Changed
-
 - [terraform-fmt-check](https://github.com/dflook/terraform-github-actions/tree/master/terraform-fmt-check) now shows a diff in the workflow log when it finds files in non-canonical format
 
 ## [1.11.0] - 2021-06-05
 
 ### Added
-
 - The `add_github_comment` input for [terraform-plan](https://github.com/dflook/terraform-github-actions/tree/master/terraform-plan) may now be set to `changes-only`. This will only add a PR comment
   for plans that result in changes to apply - no comment will be added for plans with no changes.
 
 ### Changed
-
 - Improved messaging in the workflow log when [terraform-apply](https://github.com/dflook/terraform-github-actions/tree/master/terraform-apply) is aborted because the plan has changed
 - Update documentation for `backend_config`, `backend_config_file`, `var_file` & `target` inputs to use separate lines for multiple values. 
   Multiple values may still be separated by commas if preferred.
@@ -60,7 +68,6 @@ When using an action you can specify the version as:
 ## [1.10.0] - 2021-05-30
 
 ### Added
-
 - `TERRAFORM_HTTP_CREDENTIALS` environment variable for configuring the username and password to use for
   `git::https://` & `https://` module sources.
 
@@ -212,6 +219,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.14.0]: https://github.com/dflook/terraform-github-actions/compare/v1.13.0...v1.14.0
 [1.13.0]: https://github.com/dflook/terraform-github-actions/compare/v1.12.0...v1.13.0
 [1.12.0]: https://github.com/dflook/terraform-github-actions/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/dflook/terraform-github-actions/compare/v1.10.0...v1.11.0
