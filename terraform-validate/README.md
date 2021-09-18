@@ -23,6 +23,14 @@ If the terraform configuration is not valid, the build is failed.
   - Optional
   - Default: The action workspace
 
+## Outputs
+
+* `failure-reason`
+
+  When the job outcome is `failure` because the validation failed, this will be set to 'validate-failed'.
+  If the job fails for any other reason this will not be set.
+  This can be used with the Actions expression syntax to conditionally run a step when the validate fails.
+
 ## Environment Variables
 
 * `TERRAFORM_CLOUD_TOKENS`
@@ -129,4 +137,28 @@ jobs:
         uses: dflook/terraform-validate@v1
         with:
           path: my-terraform-config
+```
+
+This example executes a run step only if the validation failed.
+
+```yaml
+on: [push]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    name: Validate terraform
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: terraform validate
+        uses: dflook/terraform-validate@v1
+        id: validate
+        with:
+          path: my-terraform-config
+
+      - name: Validate failed
+        if: ${{ failure() && steps.validate.outputs.failure-reason == 'validate-failed' }}
+        run: echo "terraform validate failed"
 ```

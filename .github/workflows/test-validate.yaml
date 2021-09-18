@@ -12,8 +12,16 @@ jobs:
 
       - name: validate
         uses: ./terraform-validate
+        id: validate
         with:
           path: tests/validate/valid
+
+      - name: Check valid
+        run: |
+          if [[ "${{ steps.validate.outputs.failure-reason }}" != "" ]]; then
+            echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
 
   invalid:
     runs-on: ubuntu-latest
@@ -33,5 +41,10 @@ jobs:
         run: |
           if [[ "${{ steps.validate.outcome }}" != "failure" ]]; then
             echo "Validate did not fail correctly"
+            exit 1
+          fi
+
+          if [[ "${{ steps.validate.outputs.failure-reason }}" != "validate-failed" ]]; then
+            echo "::error:: failure-reason not set correctly"
             exit 1
           fi

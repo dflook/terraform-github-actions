@@ -19,9 +19,17 @@ def convert_to_github(report: Dict, base_path: str) -> Iterable[str]:
             if 'start' in diag['range']:
                 params['line'] = diag['range']['start']['line']
                 params['col'] = diag['range']['start']['column']
+            if 'end' in diag['range']:
+                params['endLine'] = diag['range']['end']['line']
+                params['endColumn'] = diag['range']['end']['column']
 
         summary = diag['summary'].split('\n')[0]
         params = ','.join(f'{k}={v}' for k, v in params.items())
+
+        if summary == 'Module not installed':
+            # This is most likely because other errors prevented init from running properly, and not an error in itself.
+            continue
+
         yield f"::{diag['severity']} {params}::{summary}"
 
 
@@ -39,4 +47,8 @@ if __name__ == '__main__':
     for line in convert_to_github(report, sys.argv[1]):
         print(line)
 
-    exit(0 if report.get('valid', False) is True else 1)
+    if report.get('valid', False) is True:
+        exit(0)
+    else:
+        print('::set-output name=failure-reason::validate-failed')
+        exit(1)

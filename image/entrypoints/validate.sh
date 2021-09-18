@@ -4,7 +4,12 @@ source /usr/local/actions.sh
 
 debug
 setup
-init
+
+# You can't properly validate without initializing.
+# You can't initialize without having valid terraform.
+# How do you get a full validation report? You can't.
+
+init || true
 
 if ! (cd "$INPUT_PATH" && terraform validate -json | convert_validate_report "$INPUT_PATH"); then
   (cd "$INPUT_PATH" && terraform validate)
