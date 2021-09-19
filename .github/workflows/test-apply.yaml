@@ -49,6 +49,48 @@ jobs:
             exit 1
           fi
 
+          if [[ "${{ steps.apply.outputs.failure-reason }}" != "" ]]; then
+            echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+  apply_apply_error:
+    runs-on: ubuntu-latest
+    name: Auto Approve apply phase error
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          label: Apply Error
+          path: tests/apply/apply-error
+
+      - name: Apply
+        uses: ./terraform-apply
+        id: apply
+        continue-on-error: true
+        with:
+          label: Apply Error
+          path: tests/apply/apply-error
+
+      - name: Check failed to apply
+        run: |
+          if [[ "${{ steps.apply.outcome }}" != "failure" ]]; then
+            echo "Apply did not fail correctly"
+            exit 1
+          fi
+
+          if [[ "${{ steps.apply.outputs.failure-reason }}" != "apply-failed" ]]; then
+            echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
   apply_no_token:
     runs-on: ubuntu-latest
     name: Apply without token
@@ -67,6 +109,11 @@ jobs:
         run: |
           if [[ "${{ steps.apply.outcome }}" != "failure" ]]; then
             echo "Apply did not fail correctly"
+            exit 1
+          fi
+
+          if [[ "${{ steps.apply.outputs.failure-reason }}" != "" ]]; then
+            echo "::error:: failure-reason not set correctly"
             exit 1
           fi
 

@@ -54,6 +54,7 @@ function apply() {
     if [[ $APPLY_EXIT -eq 0 ]]; then
         update_status "Plan applied in $(job_markdown_ref)"
     else
+        set_output failure-reason apply-failed
         update_status "Error applying plan in $(job_markdown_ref)"
         exit 1
     fi
