@@ -94,6 +94,14 @@ This action uses the `terraform destroy` command to destroy all resources in a t
   - Optional
   - Default: 10
 
+## Outputs
+
+* `failure-reason`
+
+  When the job outcome is `failure` because the terraform destroy operation failed, this is set to `destroy-failed`.
+  If the job fails for any other reason this will not be set.
+  This can be used with the Actions expression syntax to conditionally run a step when the destroy fails.
+
 ## Environment Variables
 
 * `TERRAFORM_CLOUD_TOKENS`
@@ -201,6 +209,39 @@ jobs:
 
       - name: terraform destroy
         uses: dflook/terraform-destroy@v1
+        with:
+          path: my-terraform-config
+          workspace: ${{ github.head_ref }}
+```
+
+This example retries the terraform destroy operation if it fails.
+
+```yaml
+name: Cleanup
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  destroy_workspace:
+    runs-on: ubuntu-latest
+    name: Destroy terraform workspace
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: terraform destroy
+        uses: dflook/terraform-destroy@v1
+        id: first_try
+        continue-on-error: true
+        with:
+          path: my-terraform-config
+          workspace: ${{ github.head_ref }}
+
+      - name: Retry failed destroy
+        uses: dflook/terraform-destroy@v1
+        if: ${{ steps.first_try.outputs.failure-reason == 'destroy-failed' }}
         with:
           path: my-terraform-config
           workspace: ${{ github.head_ref }}
