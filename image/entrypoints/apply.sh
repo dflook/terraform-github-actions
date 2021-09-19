@@ -109,6 +109,8 @@ else
         echo "Plan not found on PR"
         echo "Generate the plan first using the dflook/terraform-plan action. Alternatively set the auto_approve input to 'true'"
         echo "If dflook/terraform-plan was used with add_github_comment set to changes-only, this may mean the plan has since changed to include changes"
+
+        set_output failure-reason plan-changed
         exit 1
     fi
 
@@ -123,6 +125,7 @@ else
         debug_log diff "$PLAN_DIR/plan.txt" "$PLAN_DIR/approved-plan.txt"
         diff "$PLAN_DIR/plan.txt" "$PLAN_DIR/approved-plan.txt" || true
 
+        set_output failure-reason plan-changed
         exit 1
     fi
 fi
