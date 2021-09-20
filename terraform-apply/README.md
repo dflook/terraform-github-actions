@@ -455,7 +455,7 @@ jobs:
           path: terraform
 
       - name: Retry failed apply
-        uses: dflook/terraform-apply@1
+        uses: dflook/terraform-apply@v1
         if: ${{ steps.first_try.outputs.failure-reason == 'apply-failed' }}
         with:
           path: terraform
