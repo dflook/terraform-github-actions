@@ -73,7 +73,7 @@ outputs yourself.
   
   The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
   
-  The runtime image is currently based on `debian:buster`
+  The runtime image is currently based on `debian:bullseye`, with the command run using `bash -xeo pipefail`.
 
   For example:
   ```yaml
