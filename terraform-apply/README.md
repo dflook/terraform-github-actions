@@ -181,6 +181,32 @@ These input values must be the same as any `terraform-plan` for the same configu
   - Optional
   - Default: false
 
+## Outputs
+
+* Terraform Outputs
+
+  An action output will be created for each output of the terraform configuration.
+
+  For example, with the terraform config:
+  ```hcl
+  output "service_hostname" {
+    value = "example.com"
+  }
+  ```
+
+  Running this action will produce a `service_hostname` output with the same value.
+  See [terraform-output](https://github.com/dflook/terraform-github-actions/tree/master/terraform-output) for details.
+
+* `failure-reason`
+
+  When the job outcome is `failure`, this output may be set. The value may be one of:
+
+  - `apply-failed` - The terraform apply operation failed.
+  - `plan-changed` - The approved plan is no longer accurate, so the apply will not be attempted.
+
+  If the job fails for any other reason this will not be set.
+  This can be used with the Actions expression syntax to conditionally run steps.
+
 ## Environment Variables
 
 * `GITHUB_TOKEN`
@@ -280,20 +306,6 @@ These input values must be the same as any `terraform-plan` for the same configu
 
   - Type: string
   - Optional
-
-## Outputs
-
-An action output will be created for each output of the terraform configuration.
-
-For example, with the terraform config:
-```hcl
-output "service_hostname" {
-  value = "example.com"
-}
-```
-
-Running this action will produce a `service_hostname` output with the same value.
-See [terraform-output](https://github.com/dflook/terraform-github-actions/tree/master/terraform-output) for details.
 
 ## Example usage
 
@@ -413,4 +425,39 @@ jobs:
         uses: dflook/terraform-apply@v1
         with:
           path: my-terraform-config
+```
+
+This example retries the terraform apply operation if it fails.
+
+```yaml
+name: Apply plan
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    name: Apply terraform plan
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: terraform apply
+        uses: dflook/terraform-apply@v1
+        continue-on-error: true
+        id: first_try
+        with:
+          path: terraform
+
+      - name: Retry failed apply
+        uses: dflook/terraform-apply@v1
+        if: ${{ steps.first_try.outputs.failure-reason == 'apply-failed' }}
+        with:
+          path: terraform
+          auto_approve: true
 ```

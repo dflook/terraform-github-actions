@@ -12,10 +12,23 @@ When using an action you can specify the version as:
 - `@v1.14` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
 
+## Unreleased
+
+### Added
+- Actions that intentionally cause a build failure now set a `failure-reason` output to enable safely responding to those failures.
+
+  Possible failure reasons are:
+  - [dflook/terraform-validate](terraform-validate): validate-failed
+  - [dflook/terraform-fmt-check](terraform-fmt-check): check-failed
+  - [dflook/terraform-check](terraform-check): changes-to-apply
+  - [dflook/terraform-apply](terraform-apply): apply-failed, plan-changed
+  - [dflook/terraform-destroy](terraform-destroy): destroy-failed
+  - [dflook/terraform-destroy-workspace](terraform-destroy-workspace): destroy-failed
+
 ## [1.14.0] - 2021-09-15
 
 ### Added
--  Support for self-hosted GitHub Enterprise deployments. Thanks [f0rkz](https://github.com/f0rkz)!
+- Support for self-hosted GitHub Enterprise deployments. Thanks [f0rkz](https://github.com/f0rkz)!
 
 ### Changed
 - The `path` input variable is now optional, defaulting to the Action workspace.

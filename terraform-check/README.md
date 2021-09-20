@@ -97,6 +97,14 @@ This is intended to run on a schedule to notify if manual changes to your infras
   - Optional
   - Default: 10
 
+## Outputs
+
+* `failure-reason`
+
+  When the job outcome is `failure` because the there are outstanding changes to apply, this will be set to 'changes-to-apply'.
+  If the job fails for any other reason this will not be set.
+  This can be used with the Actions expression syntax to conditionally run a step when there are changes to apply.
+
 ## Environment Variables
 
 * `TERRAFORM_CLOUD_TOKENS`
@@ -207,4 +215,32 @@ jobs:
         uses: dflook/terraform-check@v1
         with:
           path: my-terraform-configuration
+```
+
+This example executes a run step only if there are changes to apply.
+
+```yaml
+name: Check for infrastructure drift
+
+on:
+  schedule:
+    - cron:  "0 8 * * *"
+
+jobs:
+  check_drift:
+    runs-on: ubuntu-latest
+    name: Check for drift of terraform configuration
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Check
+        uses: dflook/terraform-check@v1
+        id: check
+        with:
+          path: my-terraform-configuration
+
+      - name: Changes detected
+        if: ${{ failure() && steps.check.outputs.failure-reason == 'changes-to-apply' }}
+        run: echo "There are outstanding terraform changes to apply"
 ```

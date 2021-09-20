@@ -22,6 +22,7 @@ if [[ $TF_EXIT -eq 1 ]]; then
 elif [[ $TF_EXIT -eq 2 ]]; then
 
     echo "Changes detected!"
+    set_output failure-reason changes-to-apply
     exit 1
 
 fi
