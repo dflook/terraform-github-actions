@@ -3,7 +3,7 @@ FROM golang:1.12.6 AS tfmask
 RUN git clone https://github.com/cloudposse/tfmask.git
 RUN cd tfmask && make && make go/build
 
-FROM debian:buster-slim as base
+FROM debian:bullseye-slim as base
 
 ARG DEFAULT_TF_VERSION=0.14.4
 ARG TFSWITCH_VERSION=0.8.832
