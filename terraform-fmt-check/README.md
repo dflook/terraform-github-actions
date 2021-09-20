@@ -70,7 +70,7 @@ jobs:
         with:
           path: my-terraform-config
 
-      - name: Validate failed
+      - name: Wrong formatting found
         if: ${{ failure() && steps.fmt-check.outputs.failure-reason == 'check-failed' }}
         run: echo "terraform formatting check failed"
 ```
