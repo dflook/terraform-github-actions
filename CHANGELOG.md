@@ -8,22 +8,26 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.14.0` to use an exact release
-- `@v1.14` to use the latest patch release for the specific minor version
+- `@v1.15.0` to use an exact release
+- `@v1.15` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
 
-## Unreleased
+## [1.15.0] - 2021-09-20
 
 ### Added
 - Actions that intentionally cause a build failure now set a `failure-reason` output to enable safely responding to those failures.
 
   Possible failure reasons are:
-  - [dflook/terraform-validate](terraform-validate): validate-failed
-  - [dflook/terraform-fmt-check](terraform-fmt-check): check-failed
-  - [dflook/terraform-check](terraform-check): changes-to-apply
-  - [dflook/terraform-apply](terraform-apply): apply-failed, plan-changed
-  - [dflook/terraform-destroy](terraform-destroy): destroy-failed
-  - [dflook/terraform-destroy-workspace](terraform-destroy-workspace): destroy-failed
+  - [dflook/terraform-validate](https://github.com/dflook/terraform-github-actions/tree/master/terraform-validate#outputs): validate-failed
+  - [dflook/terraform-fmt-check](https://github.com/dflook/terraform-github-actions/tree/master/terraform-fmt-check#outputs): check-failed
+  - [dflook/terraform-check](https://github.com/dflook/terraform-github-actions/tree/master/terraform-check#outputs): changes-to-apply
+  - [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/master/terraform-apply#outputs): apply-failed, plan-changed
+  - [dflook/terraform-destroy](https://github.com/dflook/terraform-github-actions/tree/master/terraform-destroy#outputs): destroy-failed
+  - [dflook/terraform-destroy-workspace](https://github.com/dflook/terraform-github-actions/tree/master/terraform-destroy-workspace#outputs): destroy-failed
+
+### Fixed
+- [dflook/terraform-validate](https://github.com/dflook/terraform-github-actions/tree/master/terraform-validate) was
+  sometimes unable to create detailed check failures.
 
 ## [1.14.0] - 2021-09-15
 
@@ -232,6 +236,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.15.0]: https://github.com/dflook/terraform-github-actions/compare/v1.14.0...v1.15.0
 [1.14.0]: https://github.com/dflook/terraform-github-actions/compare/v1.13.0...v1.14.0
 [1.13.0]: https://github.com/dflook/terraform-github-actions/compare/v1.12.0...v1.13.0
 [1.12.0]: https://github.com/dflook/terraform-github-actions/compare/v1.11.0...v1.12.0
