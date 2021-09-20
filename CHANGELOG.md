@@ -18,12 +18,16 @@ When using an action you can specify the version as:
 - Actions that intentionally cause a build failure now set a `failure-reason` output to enable safely responding to those failures.
 
   Possible failure reasons are:
-  - [dflook/terraform-validate](terraform-validate): validate-failed
-  - [dflook/terraform-fmt-check](terraform-fmt-check): check-failed
-  - [dflook/terraform-check](terraform-check): changes-to-apply
-  - [dflook/terraform-apply](terraform-apply): apply-failed, plan-changed
-  - [dflook/terraform-destroy](terraform-destroy): destroy-failed
-  - [dflook/terraform-destroy-workspace](terraform-destroy-workspace): destroy-failed
+  - [dflook/terraform-validate](https://github.com/dflook/terraform-github-actions/tree/master/terraform-validate#outputs): validate-failed
+  - [dflook/terraform-fmt-check](https://github.com/dflook/terraform-github-actions/tree/master/terraform-fmt-check#outputs): check-failed
+  - [dflook/terraform-check](https://github.com/dflook/terraform-github-actions/tree/master/terraform-check#outputs): changes-to-apply
+  - [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/master/terraform-apply#outputs): apply-failed, plan-changed
+  - [dflook/terraform-destroy](https://github.com/dflook/terraform-github-actions/tree/master/terraform-destroy#outputs): destroy-failed
+  - [dflook/terraform-destroy-workspace](https://github.com/dflook/terraform-github-actions/tree/master/terraform-destroy-workspace#outputs): destroy-failed
+
+### Fixed
+- [dflook/terraform-validate](https://github.com/dflook/terraform-github-actions/tree/master/terraform-validate) was
+  sometimes unable to create detailed check failures.
 
 ## [1.14.0] - 2021-09-15
 
