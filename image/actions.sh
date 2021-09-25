@@ -35,6 +35,8 @@ function detect-terraform-version() {
   TERRAFORM_VER_MAJOR=`echo $TF_VERSION | cut -d. -f1`
   TERRAFORM_VER_MINOR=`echo $TF_VERSION | cut -d. -f2`
   TERRAFORM_VER_PATCH=`echo $TF_VERSION | cut -d. -f3`
+
+  debug_log "Terraform version major $TERRAFORM_VER_MAJOR minor $TERRAFORM_VER_MINOR patch $TERRAFORM_VER_PATCH"
 }
 
 function job_markdown_ref() {
