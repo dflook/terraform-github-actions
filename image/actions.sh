@@ -30,7 +30,7 @@ function detect-terraform-version() {
   debug_cmd ls -la "$(which terraform)"
 
   local TF_VERSION
-  TF_VERSION=$(terraform --version | grep 'Terraform v' | sed 's/Terraform v//')
+  TF_VERSION=$(terraform version -json | jq -r '.terraform_version' 2>/dev/null || terraform version | grep 'Terraform v' | sed 's/Terraform v//')
 
   TERRAFORM_VER_MAJOR=`echo $TF_VERSION | cut -d. -f1`
   TERRAFORM_VER_MINOR=`echo $TF_VERSION | cut -d. -f2`
