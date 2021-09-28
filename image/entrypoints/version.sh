@@ -6,4 +6,4 @@ debug
 setup
 init
 
-(cd "$INPUT_PATH" && terraform version -no-color -json | convert_version)
+(cd "$INPUT_PATH" && terraform version -json | convert_version)
