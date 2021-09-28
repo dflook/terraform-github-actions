@@ -26,8 +26,7 @@ When using an action you can specify the version as:
   - [dflook/terraform-destroy-workspace](https://github.com/dflook/terraform-github-actions/tree/master/terraform-destroy-workspace#outputs): destroy-failed
 
 ### Fixed
-- [dflook/terraform-validate](https://github.com/dflook/terraform-github-actions/tree/master/terraform-validate) was
-  sometimes unable to create detailed check failures.
+- [dflook/terraform-validate](https://github.com/dflook/terraform-github-actions/tree/master/terraform-validate) was sometimes unable to create detailed check failures.
 
 ## [1.14.0] - 2021-09-15
 

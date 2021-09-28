@@ -28,6 +28,15 @@ function detect-terraform-version() {
   fi
 
   debug_cmd ls -la "$(which terraform)"
+
+  local TF_VERSION
+  TF_VERSION=$(terraform version -json | jq -r '.terraform_version' 2>/dev/null || terraform version | grep 'Terraform v' | sed 's/Terraform v//')
+
+  TERRAFORM_VER_MAJOR=`echo $TF_VERSION | cut -d. -f1`
+  TERRAFORM_VER_MINOR=`echo $TF_VERSION | cut -d. -f2`
+  TERRAFORM_VER_PATCH=`echo $TF_VERSION | cut -d. -f3`
+
+  debug_log "Terraform version major $TERRAFORM_VER_MAJOR minor $TERRAFORM_VER_MINOR patch $TERRAFORM_VER_PATCH"
 }
 
 function job_markdown_ref() {
