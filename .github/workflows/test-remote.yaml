@@ -48,12 +48,25 @@ jobs:
 
       - name: Plan workspace
         uses: ./terraform-plan
+        id: plan
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           path: tests/terraform-cloud
           workspace: ${{ github.head_ref }}-2
           backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+
+      - name: Verify plan outputs
+        run: |
+          if [[ "${{ steps.plan.outputs.changes }}" != "true" ]]; then
+            echo "::error:: output changes not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "Terraform will perform the following actions" '${{ steps.plan.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
 
       - name: Apply workspace
         uses: ./terraform-apply

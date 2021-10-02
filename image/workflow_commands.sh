@@ -11,14 +11,14 @@
 #
 # This will be visible in the workflow log if ACTIONS_STEP_DEBUG workflow secret is set.
 function debug_log() {
-  echo "::debug::" "$@"
+    echo "::debug::" "$@"
 }
 
 ##
 # Send a string to the error log
 #
 function error_log() {
-  echo "::error::" "$@"
+    echo "::error::" "$@"
 }
 
 ##
@@ -26,9 +26,9 @@ function error_log() {
 #
 # This will be visible in the workflow log if ACTIONS_STEP_DEBUG workflow secret is set.
 function debug_cmd() {
-  local CMD_NAME
-  CMD_NAME=$(echo "$@")
-  "$@" | while IFS= read -r line; do echo "::debug::${CMD_NAME}:${line}"; done;
+    local CMD_NAME
+    CMD_NAME="$*"
+    "$@" | while IFS= read -r line; do echo "::debug::${CMD_NAME}:${line}"; done
 }
 
 ##
@@ -36,22 +36,22 @@ function debug_cmd() {
 #
 # This will be visible in the workflow log if ACTIONS_STEP_DEBUG workflow secret is set.
 function debug_file() {
-  local FILE_PATH
-  FILE_PATH="$1"
-  sed "s|^|::debug::$FILE_PATH:|" $FILE_PATH
+    local FILE_PATH
+    FILE_PATH="$1"
+    sed "s|^|::debug::$FILE_PATH:|" "$FILE_PATH"
 }
 
 ##
 # Set an output value
 #
 function set_output() {
-  local name
-  local value
+    local name
+    local value
 
-  name="$1"
-  value="${*:2}"
+    name="$1"
+    value="${*:2}"
 
-  echo "::set-output name=${name}::${value}"
+    echo "::set-output name=${name}::${value}"
 }
 
 ##
@@ -59,43 +59,42 @@ function set_output() {
 #
 # All output between this and the next end_group will be collapsed into an expandable group
 function start_group() {
-  echo "::group::$1"
+    echo "::group::$1"
 }
 
 ##
 # End a log group
 #
 function end_group() {
-  echo "::endgroup::"
+    echo "::endgroup::"
 }
 
 ##
 # Enable to processing of workflow commands
 #
 function enable_workflow_commands() {
-  if [[ -z "$WORKFLOW_COMMAND_TOKEN" ]]; then
-    echo "Tried to enable workflow commands, but they are already enabled"
-    exit 1
-  fi
+    if [[ ! -v WORKFLOW_COMMAND_TOKEN ]]; then
+        echo "Tried to enable workflow commands, but they are already enabled"
+        exit 1
+    fi
 
-  echo "::${WORKFLOW_COMMAND_TOKEN}::"
-  unset WORKFLOW_COMMAND_TOKEN
+    echo "::${WORKFLOW_COMMAND_TOKEN}::"
+    unset WORKFLOW_COMMAND_TOKEN
 }
 
 ##
 # Disable the processing of workflow commands
 #
 function disable_workflow_commands() {
-  if [[ -n "$WORKFLOW_COMMAND_TOKEN" ]]; then
-    echo "Tried to disable workflow commands, but they are already disabled"
-    exit 1
-  fi
+    if [[ -v WORKFLOW_COMMAND_TOKEN ]]; then
+        echo "Tried to disable workflow commands, but they are already disabled"
+        exit 1
+    fi
 
-  WORKFLOW_COMMAND_TOKEN=$(generate_command_token)
-  echo "::stop-commands::${WORKFLOW_COMMAND_TOKEN}"
+    WORKFLOW_COMMAND_TOKEN=$(generate_command_token)
+    echo "::stop-commands::${WORKFLOW_COMMAND_TOKEN}"
 }
 
 function generate_command_token() {
-  python3 -c "import random; import string; print(''.join(random.choice(string.ascii_lowercase) for i in range(64)))"
+    python3 -c "import random; import string; print(''.join(random.choice(string.ascii_lowercase) for i in range(64)))"
 }
-

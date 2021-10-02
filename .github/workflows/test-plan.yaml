@@ -27,6 +27,17 @@ jobs:
             exit 1
           fi
 
+          cat '${{ steps.plan.outputs.json_plan_path }}'
+          if [[ $(jq -r .format_version "${{ steps.plan.outputs.json_plan_path }}") != "0.2" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "No changes" '${{ steps.plan.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
+
   no_changes_no_comment:
     runs-on: ubuntu-latest
     name: No changes without comment
@@ -38,9 +49,23 @@ jobs:
 
       - name: Plan
         uses: ./terraform-plan
+        id: plan
         with:
           path: tests/plan/no_changes
           add_github_comment: false
+
+      - name: Verify outputs
+        run: |
+          cat '${{ steps.plan.outputs.json_plan_path }}'
+          if [[ $(jq -r .format_version "${{ steps.plan.outputs.json_plan_path }}") != "0.2" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "No changes" '${{ steps.plan.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
 
   plan_change_comment_11:
     runs-on: ubuntu-latest
@@ -63,6 +88,16 @@ jobs:
 
           if [[ "${{ steps.plan.outputs.changes }}" != "true" ]]; then
             echo "::error:: output changes not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.plan.outputs.json_plan_path }}" ]]; then
+            echo "::error:: json_plan_path should not be set - not available with terraform 11"
+            exit 1
+          fi
+
+          if ! grep -q "Terraform will perform the following actions" '${{ steps.plan.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
 
@@ -90,6 +125,17 @@ jobs:
             exit 1
           fi
 
+          cat '${{ steps.plan.outputs.json_plan_path }}'
+          if [[ $(jq -r .output_changes.s.actions[0] "${{ steps.plan.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "Terraform will perform the following actions" '${{ steps.plan.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
+
   plan_change_comment_13:
     runs-on: ubuntu-latest
     name: Change terraform 13
@@ -111,6 +157,17 @@ jobs:
 
           if [[ "${{ steps.plan.outputs.changes }}" != "true" ]]; then
             echo "::error:: output changes not set correctly"
+            exit 1
+          fi
+
+          cat '${{ steps.plan.outputs.json_plan_path }}'
+          if [[ $(jq -r .output_changes.s.actions[0] "${{ steps.plan.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "Terraform will perform the following actions" '${{ steps.plan.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
 
@@ -139,6 +196,17 @@ jobs:
             exit 1
           fi
 
+          cat '${{ steps.plan.outputs.json_plan_path }}'
+          if [[ $(jq -r .output_changes.s.actions[0] "${{ steps.plan.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "Terraform will perform the following actions" '${{ steps.plan.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
+
   plan_change_comment_15:
     runs-on: ubuntu-latest
     name: Change terraform 15
@@ -161,6 +229,17 @@ jobs:
 
           if [[ "${{ steps.plan.outputs.changes }}" != "true" ]]; then
             echo "::error:: output changes not set correctly"
+            exit 1
+          fi
+
+          cat '${{ steps.plan.outputs.json_plan_path }}'
+          if [[ $(jq -r .output_changes.s.actions[0] "${{ steps.plan.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "Terraform will perform the following actions" '${{ steps.plan.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
 
@@ -188,6 +267,17 @@ jobs:
             exit 1
           fi
 
+          cat '${{ steps.plan.outputs.json_plan_path }}'
+          if [[ $(jq -r .output_changes.s.actions[0] "${{ steps.plan.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "Terraform will perform the following actions" '${{ steps.plan.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
+
   plan_change_comment_latest:
     runs-on: ubuntu-latest
     name: Change latest terraform
@@ -212,6 +302,23 @@ jobs:
             exit 1
           fi
 
+          cat '${{ steps.plan.outputs.json_plan_path }}'
+          if [[ $(jq -r .output_changes.s.actions[0] "${{ steps.plan.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "Terraform will perform the following actions" '${{ steps.plan.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
+
+      - name: Checkov
+        run: |
+          cat '${{ steps.plan.outputs.json_plan_path }}'
+          pip3 install checkov
+          checkov -f '${{ steps.plan.outputs.json_plan_path }}'
+
   plan_change_no_comment:
     runs-on: ubuntu-latest
     name: Change without github comment
@@ -223,9 +330,23 @@ jobs:
 
       - name: Plan
         uses: ./terraform-plan
+        id: plan
         with:
           path: tests/plan/plan
           add_github_comment: false
+
+      - name: Verify outputs
+        run: |
+          cat '${{ steps.plan.outputs.json_plan_path }}'
+          if [[ $(jq -r .output_changes.s.actions[0] "${{ steps.plan.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "Terraform will perform the following actions" '${{ steps.plan.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
 
   error:
     runs-on: ubuntu-latest
@@ -247,6 +368,16 @@ jobs:
         run: |
           if [[ "${{ steps.plan.outcome }}" != "failure" ]]; then
             echo "Plan did not fail correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.plan.outputs.json_plan_path }}" ]]; then
+            echo "::error:: json_plan_path should not be set"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.plan.outputs.text_plan_path }}" ]]; then
+            echo "::error:: text_plan_path should not be set"
             exit 1
           fi
 
@@ -274,6 +405,16 @@ jobs:
             exit 1
           fi
 
+          if [[ -n "${{ steps.plan.outputs.json_plan_path }}" ]]; then
+            echo "::error:: json_plan_path should not be set"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.plan.outputs.text_plan_path }}" ]]; then
+            echo "::error:: text_plan_path should not be set"
+            exit 1
+          fi
+
   plan_without_token:
     runs-on: ubuntu-latest
     name: Add comment without token
@@ -292,6 +433,16 @@ jobs:
         run: |
           if [[ "${{ steps.plan.outcome }}" != "failure" ]]; then
             echo "Plan did not fail correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.plan.outputs.json_plan_path }}" ]]; then
+            echo "::error:: json_plan_path should not be set"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.plan.outputs.text_plan_path }}" ]]; then
+            echo "::error:: text_plan_path should not be set"
             exit 1
           fi
 

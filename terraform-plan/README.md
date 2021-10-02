@@ -283,6 +283,19 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   resources would change. With terraform >=0.13 this is correctly set to 'true' whenever an apply
   needs to be run.
 
+* `json_plan_path`
+
+  This is the path to the generated plan in [JSON Output Format](https://www.terraform.io/docs/internals/json-format.html)
+  The path is relative to the Actions workspace.
+
+  This is not available when using terraform 0.11 or earlier.
+  This also won't be set if the backend type is `remote` - Terraform does not support saving remote plans.
+
+* `text_plan_path`
+
+  This is the path to the generated plan in a human readable format.
+  The path is relative to the Actions workspace.
+
 ## Example usage
 
 ### Automatically generating a plan

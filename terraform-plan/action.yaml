@@ -42,7 +42,9 @@ inputs:
 
 outputs:
   changes:
-    description: If the plan changes any resources - 'true' or 'false'
+    description: If the generated plan would update any resources or outputs this is set to `true`, otherwise it's set to `false`.
+  json_plan_path:
+    description: Path to the generated plan in JSON format. This won't be set if the backend type is `remote`.
 
 runs:
   using: docker
