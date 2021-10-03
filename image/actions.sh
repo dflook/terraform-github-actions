@@ -205,6 +205,7 @@ function set-plan-args() {
 
   if [[ -n "$INPUT_VARIABLES" ]]; then
     echo "$INPUT_VARIABLES" > /.terraform-variables.tfvars
+    echo "$INPUT_VARIABLES" > /.terraform-github-actions.auto.tfvars
     PLAN_ARGS="$PLAN_ARGS -var-file=/.terraform-variables.tfvars"
   fi
 
