@@ -13,36 +13,17 @@ PLAN_OUT="$STEP_TMP_DIR/plan.out"
 
 exec 3>&1
 
-function plan() {
-
-    local PLAN_OUT_ARG
-    if [[ -n "$PLAN_OUT" ]]; then
-        PLAN_OUT_ARG="-out=$PLAN_OUT"
-    else
-        PLAN_OUT_ARG=""
-    fi
-
-    set +e
-    # shellcheck disable=SC2086
-    (cd "$INPUT_PATH" && terraform plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PLAN_OUT_ARG $PLAN_ARGS) \
-        2>"$STEP_TMP_DIR/terraform_plan.stderr" \
-        | $TFMASK \
-        | tee /dev/fd/3 \
-        | compact_plan \
-            >"$STEP_TMP_DIR/plan.txt"
-
-    PLAN_EXIT=${PIPESTATUS[0]}
-    set -e
-}
-
 ### Generate a plan
 
 plan
 
 if [[ $PLAN_EXIT -eq 1 ]]; then
     if grep -q "Saving a generated plan is currently not supported" "$STEP_TMP_DIR/terraform_plan.stderr"; then
+        # This terraform module is using the remote backend, which is deficient.
+        set-remote-plan-args
         PLAN_OUT=""
         plan
+        find "$INPUT_PATH" -regex '.*/zzzz-dflook-terraform-github-actions-[0-9]+\.auto\.tfvars' -delete
     fi
 fi
 

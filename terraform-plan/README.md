@@ -57,37 +57,9 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   ```
 
   Variables set here override any given in `var_file`s.
+  This **can** be used with remote backends such as Terraform Cloud/Enterprise, with variables set in the remote workspace having precedence.
 
   > :warning: Secret values are not masked in the PR comment. Set a `label` to avoid revealing the variables in the PR.
-
-  - Type: string
-  - Optional
-
-* ~~`var`~~
-
-  > :warning: **Deprecated**: Use the `variables` input instead.
-
-  Comma separated list of terraform vars to set.
-
-  This is deprecated due to the following limitations:
-  - Only primitive types can be set with `var` - number, bool and string.
-  - String values may not contain a comma.
-  - Values set with `var` will be overridden by values contained in `var_file`s
-
-  You can change from `var` to `variables` by putting each variable on a separate line and ensuring each string value is quoted.
-
-  For example:
-  ```yaml
-  with:
-    var: instance_type=m5.xlarge,nat_type=instance
-  ```
-  Becomes:
-  ```yaml
-  with:
-    variables: |
-      instance_type="m5.xlarge"
-      nat_type="instance"
-  ```
 
   - Type: string
   - Optional
@@ -103,6 +75,8 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
       common.tfvars
       prod.tfvars
   ```
+
+  This **can** be used with remote backends such as Terraform Cloud/Enterprise, with variables set in the remote workspace having precedence.
 
   - Type: string
   - Optional
@@ -149,6 +123,36 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   - Type: string
   - Optional
   - Default: true
+
+* ~~`var`~~
+
+  > :warning: **Deprecated**: Use the `variables` input instead.
+
+  Comma separated list of terraform vars to set.
+
+  This is deprecated due to the following limitations:
+  - Only primitive types can be set with `var` - number, bool and string.
+  - String values may not contain a comma.
+  - Values set with `var` will be overridden by values contained in `var_file`s
+  - Does not work with the `remote` backend
+
+  You can change from `var` to `variables` by putting each variable on a separate line and ensuring each string value is quoted.
+
+  For example:
+  ```yaml
+  with:
+    var: instance_type=m5.xlarge,nat_type=instance
+  ```
+  Becomes:
+  ```yaml
+  with:
+    variables: |
+      instance_type="m5.xlarge"
+      nat_type="instance"
+  ```
+
+  - Type: string
+  - Optional
 
 ## Environment Variables
 

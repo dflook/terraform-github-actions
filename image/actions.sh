@@ -214,6 +214,32 @@ function set-plan-args() {
     export PLAN_ARGS
 }
 
+function set-remote-plan-args() {
+    PLAN_ARGS=""
+
+    if [[ "$INPUT_PARALLELISM" -ne 0 ]]; then
+        PLAN_ARGS="$PLAN_ARGS -parallelism=$INPUT_PARALLELISM"
+    fi
+
+    local AUTO_TFVARS_COUNTER=0
+
+    if [[ -n "$INPUT_VAR_FILE" ]]; then
+        for file in $(echo "$INPUT_VAR_FILE" | tr ',' '\n'); do
+            cp "$file" "$INPUT_PATH/zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.auto.tfvars"
+            AUTO_TFVARS_COUNTER=$(( AUTO_TFVARS_COUNTER + 1 ))
+        done
+    fi
+
+    if [[ -n "$INPUT_VARIABLES" ]]; then
+        echo "$INPUT_VARIABLES" >"$STEP_TMP_DIR/variables.tfvars"
+        cp "$STEP_TMP_DIR/variables.tfvars" "$INPUT_PATH/zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.auto.tfvars"
+    fi
+
+    debug_cmd ls -la "$INPUT_PATH"
+
+    export PLAN_ARGS
+}
+
 function output() {
     (cd "$INPUT_PATH" && terraform output -json | convert_output)
 }
@@ -241,6 +267,28 @@ function write_credentials() {
     fi
 
     debug_cmd git config --list
+}
+
+function plan() {
+
+    local PLAN_OUT_ARG
+    if [[ -n "$PLAN_OUT" ]]; then
+        PLAN_OUT_ARG="-out=$PLAN_OUT"
+    else
+        PLAN_OUT_ARG=""
+    fi
+
+    set +e
+    # shellcheck disable=SC2086
+    (cd "$INPUT_PATH" && terraform plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PLAN_OUT_ARG $PLAN_ARGS) \
+        2>"$STEP_TMP_DIR/terraform_plan.stderr" \
+        | $TFMASK \
+        | tee /dev/fd/3 \
+        | compact_plan \
+            >"$STEP_TMP_DIR/plan.txt"
+
+    PLAN_EXIT=${PIPESTATUS[0]}
+    set -e
 }
 
 # Every file written to disk should use one of these directories
