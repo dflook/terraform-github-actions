@@ -214,6 +214,30 @@ function set-plan-args() {
     export PLAN_ARGS
 }
 
+function set-remote-plan-args() {
+    PLAN_ARGS=""
+
+    if [[ "$INPUT_PARALLELISM" -ne 0 ]]; then
+        PLAN_ARGS="$PLAN_ARGS -parallelism=$INPUT_PARALLELISM"
+    fi
+
+    local AUTO_TFVARS_COUNTER=0
+
+    if [[ -n "$INPUT_VAR_FILE" ]]; then
+        for file in $(echo "$INPUT_VAR_FILE" | tr ',' '\n'); do
+            cp "$file" "$INPUT_PATH/zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.auto.tfvars"
+            AUTO_TFVARS_COUNTER=$(( AUTO_TFVARS_COUNTER + 1 ))
+        done
+    fi
+
+    if [[ -n "$INPUT_VARIABLES" ]]; then
+        echo "$INPUT_VARIABLES" >"$STEP_TMP_DIR/variables.tfvars"
+        cp "$file" "$INPUT_PATH/zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.auto.tfvars"
+    fi
+
+    export PLAN_ARGS
+}
+
 function output() {
     (cd "$INPUT_PATH" && terraform output -json | convert_output)
 }

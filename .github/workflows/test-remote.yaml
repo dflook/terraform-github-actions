@@ -33,11 +33,33 @@ jobs:
 
       - name: Auto apply workspace
         uses: ./terraform-apply
+        id: auto_apply
         with:
           path: tests/terraform-cloud
           workspace: ${{ github.head_ref }}-1
           backend_config: "token=${{ secrets.TF_API_TOKEN }}"
           auto_approve: true
+          var_file: |
+            tests/terraform-cloud/my_variable.tfvars
+          variables: |
+            from_variables="from_variables"
+
+      - name: Verify auto_apply terraform outputs
+        run: |
+          if [[ "${{ steps.auto_apply.outputs.default }}" != "default" ]]; then
+            echo "::error:: Variables not set correctly"
+            exit 1
+          fi
+
+          if [[ "${{ steps.auto_apply.outputs.from_tfvars }}" != "from_tfvars" ]]; then
+            echo "::error:: Variables not set correctly"
+            exit 1
+          fi
+
+          if [[ "${{ steps.auto_apply.outputs.from_variables }}" != "from_variables" ]]; then
+            echo "::error:: Variables not set correctly"
+            exit 1
+          fi
 
       - name: Destroy workspace
         uses: ./terraform-destroy-workspace
@@ -55,6 +77,10 @@ jobs:
           path: tests/terraform-cloud
           workspace: ${{ github.head_ref }}-2
           backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          var_file: |
+            tests/terraform-cloud/my_variable.tfvars
+          variables: |
+            from_variables="from_variables"
 
       - name: Verify plan outputs
         run: |
@@ -70,12 +96,34 @@ jobs:
 
       - name: Apply workspace
         uses: ./terraform-apply
+        id: apply
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           path: tests/terraform-cloud
           workspace: ${{ github.head_ref }}-2
           backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          var_file: |
+            tests/terraform-cloud/my_variable.tfvars
+          variables: |
+            from_variables="from_variables"
+
+      - name: Verify apply terraform outputs
+        run: |
+          if [[ "${{ steps.apply.outputs.default }}" != "default" ]]; then
+            echo "::error:: Variables not set correctly"
+            exit 1
+          fi
+
+          if [[ "${{ steps.apply.outputs.from_tfvars }}" != "from_tfvars" ]]; then
+            echo "::error:: Variables not set correctly"
+            exit 1
+          fi
+
+          if [[ "${{ steps.apply.outputs.from_variables }}" != "from_variables" ]]; then
+            echo "::error:: Variables not set correctly"
+            exit 1
+          fi
 
       - name: Destroy the last workspace
         uses: ./terraform-destroy-workspace
