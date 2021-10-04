@@ -43,8 +43,10 @@ inputs:
 outputs:
   changes:
     description: If the generated plan would update any resources or outputs this is set to `true`, otherwise it's set to `false`.
+  text_plan_path:
+    description: Path to a file in the workspace containing the generated plan in human readble format.
   json_plan_path:
-    description: Path to the generated plan in JSON format. This won't be set if the backend type is `remote`.
+    description: Path to a file in the workspace containing the generated plan in JSON format. This won't be set if the backend type is `remote`.
 
 runs:
   using: docker
