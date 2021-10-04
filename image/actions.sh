@@ -221,8 +221,6 @@ function set-remote-plan-args() {
         PLAN_ARGS="$PLAN_ARGS -parallelism=$INPUT_PARALLELISM"
     fi
 
-    set -x
-
     local AUTO_TFVARS_COUNTER=0
 
     if [[ -n "$INPUT_VAR_FILE" ]]; then
@@ -269,6 +267,28 @@ function write_credentials() {
     fi
 
     debug_cmd git config --list
+}
+
+function plan() {
+
+    local PLAN_OUT_ARG
+    if [[ -n "$PLAN_OUT" ]]; then
+        PLAN_OUT_ARG="-out=$PLAN_OUT"
+    else
+        PLAN_OUT_ARG=""
+    fi
+
+    set +e
+    # shellcheck disable=SC2086
+    (cd "$INPUT_PATH" && terraform plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PLAN_OUT_ARG $PLAN_ARGS) \
+        2>"$STEP_TMP_DIR/terraform_plan.stderr" \
+        | $TFMASK \
+        | tee /dev/fd/3 \
+        | compact_plan \
+            >"$STEP_TMP_DIR/plan.txt"
+
+    PLAN_EXIT=${PIPESTATUS[0]}
+    set -e
 }
 
 # Every file written to disk should use one of these directories

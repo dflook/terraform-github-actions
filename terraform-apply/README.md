@@ -74,35 +74,7 @@ These input values must be the same as any `terraform-plan` for the same configu
   ```
 
   Variables set here override any given in `var_file`s.
-
-  - Type: string
-  - Optional
-
-* ~~`var`~~
-
-  > :warning: **Deprecated**: Use the `variables` input instead.
-
-  Comma separated list of terraform vars to set.
-
-  This is deprecated due to the following limitations:
-  - Only primitive types can be set with `var` - number, bool and string.
-  - String values may not contain a comma.
-  - Values set with `var` will be overridden by values contained in `var_file`s
-
-  You can change from `var` to `variables` by putting each variable on a separate line and ensuring each string value is quoted.
-
-  For example:
-  ```yaml
-  with:
-    var: instance_type=m5.xlarge,nat_type=instance
-  ```
-  Becomes:
-  ```yaml
-  with:
-    variables: |
-      instance_type="m5.xlarge"
-      nat_type="instance"
-  ```
+  This **can** be used with remote backends such as Terraform Cloud/Enterprise, with variables set in the remote workspace having precedence.
 
   - Type: string
   - Optional
@@ -118,6 +90,8 @@ These input values must be the same as any `terraform-plan` for the same configu
       common.tfvars
       prod.tfvars
   ```
+
+  This **can** be used with remote backends such as Terraform Cloud/Enterprise, with variables set in the remote workspace having precedence.
 
   - Type: string
   - Optional
@@ -180,6 +154,36 @@ These input values must be the same as any `terraform-plan` for the same configu
   - Type: bool
   - Optional
   - Default: false
+
+* ~~`var`~~
+
+  > :warning: **Deprecated**: Use the `variables` input instead.
+
+  Comma separated list of terraform vars to set.
+
+  This is deprecated due to the following limitations:
+  - Only primitive types can be set with `var` - number, bool and string.
+  - String values may not contain a comma.
+  - Values set with `var` will be overridden by values contained in `var_file`s
+  - Does not work with the `remote` backend
+
+  You can change from `var` to `variables` by putting each variable on a separate line and ensuring each string value is quoted.
+
+  For example:
+  ```yaml
+  with:
+    var: instance_type=m5.xlarge,nat_type=instance
+  ```
+  Becomes:
+  ```yaml
+  with:
+    variables: |
+      instance_type="m5.xlarge"
+      nat_type="instance"
+  ```
+
+  - Type: string
+  - Optional
 
 ## Outputs
 

@@ -9,19 +9,27 @@ init-backend
 select-workspace
 set-plan-args
 
-set +e
-# shellcheck disable=SC2086
-(cd "$INPUT_PATH" && terraform plan -input=false -detailed-exitcode -lock-timeout=300s $PLAN_ARGS) \
-    | $TFMASK
+PLAN_OUT="$STEP_TMP_DIR/plan.out"
 
-readonly TF_EXIT=${PIPESTATUS[0]}
-set -e
+exec 3>&1
 
-if [[ $TF_EXIT -eq 1 ]]; then
+plan
+
+if [[ $PLAN_EXIT -eq 1 ]]; then
+    if grep -q "Saving a generated plan is currently not supported" "$STEP_TMP_DIR/terraform_plan.stderr"; then
+        # This terraform module is using the remote backend, which is deficient.
+        set-remote-plan-args
+        PLAN_OUT=""
+        plan
+        find "$INPUT_PATH" -regex '.*/zzzz-dflook-terraform-github-actions-[0-9]+\.auto\.tfvars' -delete
+    fi
+fi
+
+if [[ $PLAN_EXIT -eq 1 ]]; then
     echo "Error running terraform"
     exit 1
 
-elif [[ $TF_EXIT -eq 2 ]]; then
+elif [[ $PLAN_EXIT -eq 2 ]]; then
 
     echo "Changes detected!"
     set_output failure-reason changes-to-apply

@@ -39,15 +39,7 @@ This is intended to run on a schedule to notify if manual changes to your infras
   ```
 
   Variables set here override any given in `var_file`s.
-
-  - Type: string
-  - Optional
-
-* ~~`var`~~
-
-  > :warning: **Deprecated**: Use the `variables` input instead.
-
-  Comma separated list of terraform vars to set
+  This **can** be used with remote backends such as Terraform Cloud/Enterprise, with variables set in the remote workspace having precedence.
 
   - Type: string
   - Optional
@@ -63,6 +55,11 @@ This is intended to run on a schedule to notify if manual changes to your infras
       common.tfvars
       prod.tfvars
   ```
+
+  This **can** be used with remote backends such as Terraform Cloud/Enterprise, with variables set in the remote workspace having precedence.
+
+  - Type: string
+  - Optional
 
 * `backend_config`
 
@@ -96,6 +93,15 @@ This is intended to run on a schedule to notify if manual changes to your infras
   - Type: number
   - Optional
   - Default: 10
+
+* ~~`var`~~
+
+  > :warning: **Deprecated**: Use the `variables` input instead.
+
+  Comma separated list of terraform vars to set
+
+  - Type: string
+  - Optional
 
 ## Outputs
 
