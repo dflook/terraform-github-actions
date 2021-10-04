@@ -8,9 +8,18 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.15.0` to use an exact release
-- `@v1.15` to use the latest patch release for the specific minor version
+- `@v1.16.0` to use an exact release
+- `@v1.16` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.16.0] - 2021-10-04
+
+### Added
+- [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/master/terraform-plan) has gained two new outputs:
+  - `json_plan_path` is a path to the generated plan in a JSON format file
+  - `text_plan_path` is a path to the generated plan in a human readable text file
+
+  These paths are relative to the GitHub Actions workspace and can be read by other steps in the same job.
 
 ## [1.15.0] - 2021-09-20
 
