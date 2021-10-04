@@ -221,6 +221,8 @@ function set-remote-plan-args() {
         PLAN_ARGS="$PLAN_ARGS -parallelism=$INPUT_PARALLELISM"
     fi
 
+    set -x
+
     local AUTO_TFVARS_COUNTER=0
 
     if [[ -n "$INPUT_VAR_FILE" ]]; then
@@ -232,8 +234,10 @@ function set-remote-plan-args() {
 
     if [[ -n "$INPUT_VARIABLES" ]]; then
         echo "$INPUT_VARIABLES" >"$STEP_TMP_DIR/variables.tfvars"
-        cp "$file" "$INPUT_PATH/zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.auto.tfvars"
+        cp "$STEP_TMP_DIR/variables.tfvars" "$INPUT_PATH/zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.auto.tfvars"
     fi
+
+    debug_cmd ls -la "$INPUT_PATH"
 
     export PLAN_ARGS
 }
