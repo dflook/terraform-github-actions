@@ -1,14 +1,15 @@
 #!/bin/bash
 
+# shellcheck source=../actions.sh
 source /usr/local/actions.sh
 
 debug
 
-INPUT_PATH="$HOME/.dflook-terraform-remote-state"
+INPUT_PATH="$STEP_TMP_DIR/remote-state"
 rm -rf "$INPUT_PATH"
 mkdir -p "$INPUT_PATH"
 
-cat > "$INPUT_PATH/backend.tf" <<EOF
+cat >"$INPUT_PATH/backend.tf" <<EOF
 terraform {
   backend "$INPUT_BACKEND_TYPE" {}
 }

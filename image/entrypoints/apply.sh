@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# shellcheck source=../actions.sh
 source /usr/local/actions.sh
 
 debug
@@ -8,10 +9,7 @@ init-backend
 select-workspace
 set-plan-args
 
-PLAN_DIR=$HOME/$GITHUB_RUN_ID-$(random_string)
-rm -rf "$PLAN_DIR"
-mkdir -p "$PLAN_DIR"
-PLAN_OUT="$PLAN_DIR/plan.out"
+PLAN_OUT="$STEP_TMP_DIR/plan.out"
 
 if [[ "$INPUT_AUTO_APPROVE" == "true" && -n "$INPUT_TARGET" ]]; then
     for target in $(echo "$INPUT_TARGET" | tr ',' '\n'); do
@@ -19,8 +17,8 @@ if [[ "$INPUT_AUTO_APPROVE" == "true" && -n "$INPUT_TARGET" ]]; then
     done
 fi
 
-if [[ -n "$GITHUB_TOKEN" ]]; then
-  update_status "Applying plan in $(job_markdown_ref)"
+if [[ -v GITHUB_TOKEN ]]; then
+    update_status "Applying plan in $(job_markdown_ref)"
 fi
 
 exec 3>&1
@@ -29,16 +27,19 @@ function plan() {
 
     local PLAN_OUT_ARG
     if [[ -n "$PLAN_OUT" ]]; then
-      PLAN_OUT_ARG=-out="$PLAN_OUT"
+        PLAN_OUT_ARG="-out=$PLAN_OUT"
+    else
+        PLAN_OUT_ARG=""
     fi
 
     set +e
+    # shellcheck disable=SC2086
     (cd "$INPUT_PATH" && terraform plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PLAN_OUT_ARG $PLAN_ARGS) \
-        2>"$PLAN_DIR/error.txt" \
+        2>"$STEP_TMP_DIR/terraform_plan.stderr" \
         | $TFMASK \
         | tee /dev/fd/3 \
         | compact_plan \
-            >"$PLAN_DIR/plan.txt"
+            >"$STEP_TMP_DIR/plan.txt"
 
     PLAN_EXIT=${PIPESTATUS[0]}
     set -e
@@ -47,6 +48,7 @@ function plan() {
 function apply() {
 
     set +e
+    # shellcheck disable=SC2086
     (cd "$INPUT_PATH" && terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PLAN_OUT) | $TFMASK
     local APPLY_EXIT=${PIPESTATUS[0]}
     set -e
@@ -65,20 +67,20 @@ function apply() {
 plan
 
 if [[ $PLAN_EXIT -eq 1 ]]; then
-    if grep -q "Saving a generated plan is currently not supported" "$PLAN_DIR/error.txt"; then
+    if grep -q "Saving a generated plan is currently not supported" "$STEP_TMP_DIR/terraform_plan.stderr"; then
         PLAN_OUT=""
 
         if [[ "$INPUT_AUTO_APPROVE" == "true" ]]; then
-          # The apply will have to generate the plan, so skip doing it now
-          PLAN_EXIT=2
+            # The apply will have to generate the plan, so skip doing it now
+            PLAN_EXIT=2
         else
-          plan
+            plan
         fi
     fi
 fi
 
 if [[ $PLAN_EXIT -eq 1 ]]; then
-    cat "$PLAN_DIR/error.txt"
+    cat "$STEP_TMP_DIR/terraform_plan.stderr"
 
     update_status "Error applying plan in $(job_markdown_ref)"
     exit 1
@@ -97,15 +99,15 @@ else
         exit 1
     fi
 
-    if [[ -z "$GITHUB_TOKEN" ]]; then
-      echo "GITHUB_TOKEN environment variable must be set to get plan approval from a PR"
-      echo "Either set the GITHUB_TOKEN environment variable or automatically approve by setting the auto_approve input to 'true'"
-      echo "See https://github.com/dflook/terraform-github-actions/ for details."
-      exit 1
+    if [[ ! -v GITHUB_TOKEN ]]; then
+        echo "GITHUB_TOKEN environment variable must be set to get plan approval from a PR"
+        echo "Either set the GITHUB_TOKEN environment variable or automatically approve by setting the auto_approve input to 'true'"
+        echo "See https://github.com/dflook/terraform-github-actions/ for details."
+        exit 1
     fi
 
-    if ! github_pr_comment get "$PLAN_DIR/approved-plan.txt" 2>"$PLAN_DIR/github_pr_comment.error"; then
-        debug_file "$PLAN_DIR/github_pr_comment.error"
+    if ! github_pr_comment get "$STEP_TMP_DIR/approved-plan.txt" 2>"$STEP_TMP_DIR/github_pr_comment.stderr"; then
+        debug_file "$STEP_TMP_DIR/github_pr_comment.stderr"
         echo "Plan not found on PR"
         echo "Generate the plan first using the dflook/terraform-plan action. Alternatively set the auto_approve input to 'true'"
         echo "If dflook/terraform-plan was used with add_github_comment set to changes-only, this may mean the plan has since changed to include changes"
@@ -114,7 +116,7 @@ else
         exit 1
     fi
 
-    if plan_cmp "$PLAN_DIR/plan.txt" "$PLAN_DIR/approved-plan.txt"; then
+    if plan_cmp "$STEP_TMP_DIR/plan.txt" "$STEP_TMP_DIR/approved-plan.txt"; then
         apply
     else
         echo "Not applying the plan - it has changed from the plan on the PR"
@@ -122,8 +124,8 @@ else
         update_status "Plan not applied in $(job_markdown_ref) (Plan has changed)"
 
         echo "Plan changes:"
-        debug_log diff "$PLAN_DIR/plan.txt" "$PLAN_DIR/approved-plan.txt"
-        diff "$PLAN_DIR/plan.txt" "$PLAN_DIR/approved-plan.txt" || true
+        debug_log diff "$STEP_TMP_DIR/plan.txt" "$STEP_TMP_DIR/approved-plan.txt"
+        diff "$STEP_TMP_DIR/plan.txt" "$STEP_TMP_DIR/approved-plan.txt" || true
 
         set_output failure-reason plan-changed
         exit 1

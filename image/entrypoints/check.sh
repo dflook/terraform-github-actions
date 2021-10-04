@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# shellcheck source=../actions.sh
 source /usr/local/actions.sh
 
 debug
@@ -9,6 +10,7 @@ select-workspace
 set-plan-args
 
 set +e
+# shellcheck disable=SC2086
 (cd "$INPUT_PATH" && terraform plan -input=false -detailed-exitcode -lock-timeout=300s $PLAN_ARGS) \
     | $TFMASK
 

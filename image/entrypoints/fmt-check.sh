@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# shellcheck source=../actions.sh
 source /usr/local/actions.sh
 
 debug
@@ -9,7 +10,7 @@ terraform fmt -recursive -no-color -check -diff "$INPUT_PATH" | while IFS= read 
     echo "$line"
 
     if [[ -f "$line" ]]; then
-        if [[ -z "$FAILURE_REASON_SET" ]]; then
+        if [[ ! -v FAILURE_REASON_SET ]]; then
             FAILURE_REASON_SET=yes
             set_output failure-reason check-failed
         fi
