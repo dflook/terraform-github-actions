@@ -313,12 +313,6 @@ jobs:
             exit 1
           fi
 
-      - name: Checkov
-        run: |
-          cat '${{ steps.plan.outputs.json_plan_path }}'
-          pip3 install checkov
-          checkov -f '${{ steps.plan.outputs.json_plan_path }}'
-
   plan_change_no_comment:
     runs-on: ubuntu-latest
     name: Change without github comment
