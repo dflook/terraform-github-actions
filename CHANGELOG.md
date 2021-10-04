@@ -8,9 +8,17 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.16.0` to use an exact release
-- `@v1.16` to use the latest patch release for the specific minor version
+- `@v1.17.0` to use an exact release
+- `@v1.17` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.17.0] - 2021-10-04
+
+### Added
+- `variables` and `var_file` support for remote operations in Terraform Cloud/Enterprise.
+
+  The Terraform CLI & Terraform Cloud/Enterprise do not support using variables or variable files with remote plans or applies.
+  We can do better. `variables` and `var_file` input variables for the plan, apply & check actions now work, with the expected behavior.
 
 ## [1.16.0] - 2021-10-04
 
@@ -244,6 +252,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.17.0]: https://github.com/dflook/terraform-github-actions/compare/v1.16.0...v1.17.0
 [1.16.0]: https://github.com/dflook/terraform-github-actions/compare/v1.15.0...v1.16.0
 [1.15.0]: https://github.com/dflook/terraform-github-actions/compare/v1.14.0...v1.15.0
 [1.14.0]: https://github.com/dflook/terraform-github-actions/compare/v1.13.0...v1.14.0
