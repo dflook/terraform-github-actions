@@ -23,7 +23,6 @@ if [[ $PLAN_EXIT -eq 1 ]]; then
         set-remote-plan-args
         PLAN_OUT=""
         plan
-        find "$INPUT_PATH" -regex '.*/zzzz-dflook-terraform-github-actions-[0-9]+\.auto\.tfvars' -delete
     fi
 fi
 
@@ -41,7 +40,10 @@ if [[ "$GITHUB_EVENT_NAME" == "pull_request" || "$GITHUB_EVENT_NAME" == "issue_c
             if ! STATUS="Failed to generate plan in $(job_markdown_ref)" github_pr_comment plan <"$STEP_TMP_DIR/terraform_plan.stderr" 2>"$STEP_TMP_DIR/github_pr_comment.stderr"; then
                 debug_file "$STEP_TMP_DIR/github_pr_comment.stderr"
                 exit 1
+            else
+                debug_file "$STEP_TMP_DIR/github_pr_comment.stderr"
             fi
+
         else
 
             if [[ $PLAN_EXIT -eq 0 ]]; then
@@ -53,6 +55,8 @@ if [[ "$GITHUB_EVENT_NAME" == "pull_request" || "$GITHUB_EVENT_NAME" == "issue_c
             if ! TF_CHANGES=$TF_CHANGES STATUS="Plan generated in $(job_markdown_ref)" github_pr_comment plan <"$STEP_TMP_DIR/plan.txt" 2>"$STEP_TMP_DIR/github_pr_comment.stderr"; then
                 debug_file "$STEP_TMP_DIR/github_pr_comment.stderr"
                 exit 1
+            else
+                debug_file "$STEP_TMP_DIR/github_pr_comment.stderr"
             fi
         fi
 
