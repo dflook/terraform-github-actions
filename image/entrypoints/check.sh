@@ -21,7 +21,6 @@ if [[ $PLAN_EXIT -eq 1 ]]; then
         set-remote-plan-args
         PLAN_OUT=""
         plan
-        find "$INPUT_PATH" -regex '.*/zzzz-dflook-terraform-github-actions-[0-9]+\.auto\.tfvars' -delete
     fi
 fi
 

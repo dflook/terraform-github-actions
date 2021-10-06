@@ -18,6 +18,8 @@ github.headers['accept'] = 'application/vnd.github.v3+json'
 github_url = os.environ.get('GITHUB_SERVER_URL', 'https://github.com')
 github_api_url = os.environ.get('GITHUB_API_URL', 'https://api.github.com')
 
+job_tmp_dir = os.environ.get('JOB_TMP_DIR', '.')
+
 def github_api_request(method, *args, **kwargs):
     response = github.request(method, *args, **kwargs)
 
@@ -109,7 +111,7 @@ def current_user() -> str:
     token_hash = hashlib.sha256(os.environ["GITHUB_TOKEN"].encode()).hexdigest()
 
     try:
-        with open(f'.dflook-terraform/token-cache/{token_hash}') as f:
+        with open(os.path.join(job_tmp_dir, 'token-cache', token_hash)) as f:
             username = f.read()
             debug(f'GITHUB_TOKEN username: {username}')
             return username
@@ -128,8 +130,8 @@ def current_user() -> str:
         username = 'github-actions[bot]'
 
     try:
-        os.makedirs('.dflook-terraform/token-cache', exist_ok=True)
-        with open(f'.dflook-terraform/token-cache/{token_hash}', 'w') as f:
+        os.makedirs(os.path.join(job_tmp_dir, 'token-cache'), exist_ok=True)
+        with open(os.path.join(job_tmp_dir, 'token-cache', token_hash), 'w') as f:
             f.write(username)
     except Exception as e:
         debug(str(e))

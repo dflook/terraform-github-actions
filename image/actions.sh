@@ -249,6 +249,8 @@ function update_status() {
 
     if ! STATUS="$status" github_pr_comment status 2>"$STEP_TMP_DIR/github_pr_comment.stderr"; then
         debug_file "$STEP_TMP_DIR/github_pr_comment.stderr"
+    else
+        debug_file "$STEP_TMP_DIR/github_pr_comment.stderr"
     fi
 }
 
@@ -258,7 +260,9 @@ function random_string() {
 
 function write_credentials() {
     format_tf_credentials >>"$HOME/.terraformrc"
+    chown -R --reference "$HOME" "$HOME/.terraformrc"
     netrc-credential-actions >>"$HOME/.netrc"
+    chown -R --reference "$HOME" "$HOME/.netrc"
 
     chmod 700 /.ssh
     if [[ -v TERRAFORM_SSH_KEY ]]; then
@@ -295,3 +299,28 @@ function plan() {
 readonly STEP_TMP_DIR="/tmp"
 readonly JOB_TMP_DIR="$HOME/.dflook-terraform-github-actions"
 readonly WORKSPACE_TMP_DIR=".dflook-terraform-github-actions/$(random_string)"
+export STEP_TMP_DIR JOB_TMP_DIR WORKSPACE_TMP_DIR
+
+function fix_owners() {
+    debug_cmd ls -la "$GITHUB_WORKSPACE"
+    if [[ -d "$GITHUB_WORKSPACE/.dflook-terraform-github-actions" ]]; then
+        chown -R --reference "$GITHUB_WORKSPACE" "$GITHUB_WORKSPACE/.dflook-terraform-github-actions" || true
+        debug_cmd ls -la "$GITHUB_WORKSPACE/.dflook-terraform-github-actions"
+    fi
+
+    debug_cmd ls -la "$HOME"
+    if [[ -d "$HOME/.dflook-terraform-github-actions" ]]; then
+        chown -R --reference "$HOME" "$HOME/.dflook-terraform-github-actions" || true
+        debug_cmd ls -la "$HOME/.dflook-terraform-github-actions"
+    fi
+    if [[ -d "$HOME/.terraform.d" ]]; then
+        chown -R --reference "$HOME" "$HOME/.terraform.d" || true
+        debug_cmd ls -la "$HOME/.terraform.d"
+    fi
+
+    if [[ -d "$INPUT_PATH" ]]; then
+        debug_cmd find "$INPUT_PATH" -regex '.*/zzzz-dflook-terraform-github-actions-[0-9]+\.auto\.tfvars' -print -delete || true
+    fi
+}
+
+trap fix_owners EXIT
