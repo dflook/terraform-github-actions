@@ -8,9 +8,17 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.17.0` to use an exact release
+- `@v1.17.1` to use an exact release
 - `@v1.17` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.17.1] - 2021-10-06
+
+### Fixed
+- Fix ownership of files created in runner mounted directories
+
+  As the container is run as root, it can cause issues when root owned files are leftover that the runner can't cleanup.
+  This would only affect self-hosted, non-ephemeral, non-root runners.
 
 ## [1.17.0] - 2021-10-04
 
@@ -252,6 +260,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.17.1]: https://github.com/dflook/terraform-github-actions/compare/v1.17.0...v1.17.1
 [1.17.0]: https://github.com/dflook/terraform-github-actions/compare/v1.16.0...v1.17.0
 [1.16.0]: https://github.com/dflook/terraform-github-actions/compare/v1.15.0...v1.16.0
 [1.15.0]: https://github.com/dflook/terraform-github-actions/compare/v1.14.0...v1.15.0
