@@ -39,6 +39,10 @@ inputs:
     description: Add the plan to a GitHub PR
     required: false
     default: true
+  lock_during_plan:
+    description: Specify whether the state should be locked during terraform plan
+    required: false
+    default: true
 
 outputs:
   changes:

@@ -154,6 +154,13 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   - Type: string
   - Optional
 
+* `lock_during_plan`
+
+  The default is `true`, which locks the state during plan.
+    - Type: string
+    - Optional
+    - Default: true
+
 ## Environment Variables
 
 * `GITHUB_TOKEN`

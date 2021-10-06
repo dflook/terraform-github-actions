@@ -211,6 +211,10 @@ function set-plan-args() {
         PLAN_ARGS="$PLAN_ARGS -var-file=$STEP_TMP_DIR/variables.tfvars"
     fi
 
+    if [[ -n "$INPUT_LOCK_DURING_PLAN" ]]; then
+        PLAN_ARGS="$PLAN_ARGS -lock=$INPUT_LOCK_DURING_PLAN"
+    fi
+
     export PLAN_ARGS
 }
 
