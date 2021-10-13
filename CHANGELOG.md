@@ -12,6 +12,11 @@ When using an action you can specify the version as:
 - `@v1.17` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
 
+## Unreleased
+
+### Fixed
+- Add `terraform plan` output that was missing from the workflow log
+
 ## [1.17.1] - 2021-10-06
 
 ### Fixed

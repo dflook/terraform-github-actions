@@ -26,6 +26,9 @@ if [[ $PLAN_EXIT -eq 1 ]]; then
     fi
 fi
 
+cat "$STEP_TMP_DIR/plan.txt"
+cat "$STEP_TMP_DIR/terraform_plan.stderr"
+
 if [[ "$GITHUB_EVENT_NAME" == "pull_request" || "$GITHUB_EVENT_NAME" == "issue_comment" || "$GITHUB_EVENT_NAME" == "pull_request_review_comment" || "$GITHUB_EVENT_NAME" == "pull_request_target" || "$GITHUB_EVENT_NAME" == "pull_request_review" ]]; then
     if [[ "$INPUT_ADD_GITHUB_COMMENT" == "true" || "$INPUT_ADD_GITHUB_COMMENT" == "changes-only" ]]; then
 
