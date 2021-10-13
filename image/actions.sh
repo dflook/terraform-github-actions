@@ -260,9 +260,9 @@ function random_string() {
 
 function write_credentials() {
     format_tf_credentials >>"$HOME/.terraformrc"
-    chown -R --reference "$HOME" "$HOME/.terraformrc"
+    chown --reference "$HOME" "$HOME/.terraformrc"
     netrc-credential-actions >>"$HOME/.netrc"
-    chown -R --reference "$HOME" "$HOME/.netrc"
+    chown --reference "$HOME" "$HOME/.netrc"
 
     chmod 700 /.ssh
     if [[ -v TERRAFORM_SSH_KEY ]]; then
