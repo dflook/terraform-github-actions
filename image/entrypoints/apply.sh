@@ -11,12 +11,6 @@ set-plan-args
 
 PLAN_OUT="$STEP_TMP_DIR/plan.out"
 
-if [[ "$INPUT_AUTO_APPROVE" == "true" && -n "$INPUT_TARGET" ]]; then
-    for target in $(echo "$INPUT_TARGET" | tr ',' '\n'); do
-        PLAN_ARGS="$PLAN_ARGS -target $target"
-    done
-fi
-
 if [[ -v GITHUB_TOKEN ]]; then
     update_status "Applying plan in $(job_markdown_ref)"
 fi
@@ -24,6 +18,8 @@ fi
 exec 3>&1
 
 function apply() {
+
+    debug_log terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PLAN_OUT
 
     set +e
     # shellcheck disable=SC2086

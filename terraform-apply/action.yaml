@@ -43,7 +43,11 @@ inputs:
     description: Automatically approve and apply plan
     default: false
   target:
-    description: List of targets to apply against, one per line
+    description: List of resources to target for the apply, one per line
+    required: false
+    default: ""
+  replace:
+    description: List of resources to replace if an update is required, one per line
     required: false
     default: ""
 

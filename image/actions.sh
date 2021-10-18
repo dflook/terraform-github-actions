@@ -40,6 +40,13 @@ function detect-terraform-version() {
     debug_log "Terraform version major $TERRAFORM_VER_MAJOR minor $TERRAFORM_VER_MINOR patch $TERRAFORM_VER_PATCH"
 }
 
+function test-terraform-version() {
+    local OP="$1"
+    local VER="$2"
+
+    python3 -c "exit(0 if ($TERRAFORM_VER_MAJOR, $TERRAFORM_VER_MINOR, $TERRAFORM_VER_PATCH) $OP tuple(int(v) for v in '$VER'.split('.')) else 1)"
+}
+
 function job_markdown_ref() {
     echo "[${GITHUB_WORKFLOW} #${GITHUB_RUN_NUMBER}](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})"
 }
@@ -187,12 +194,33 @@ function select-workspace() {
     fi
 }
 
-function set-plan-args() {
+function set-common-plan-args() {
     PLAN_ARGS=""
 
     if [[ "$INPUT_PARALLELISM" -ne 0 ]]; then
         PLAN_ARGS="$PLAN_ARGS -parallelism=$INPUT_PARALLELISM"
     fi
+
+    if [[ -v INPUT_TARGET ]]; then
+        if [[ -n "$INPUT_TARGET" ]]; then
+            for target in $(echo "$INPUT_TARGET" | tr ',' '\n'); do
+                PLAN_ARGS="$PLAN_ARGS -target $target"
+            done
+        fi
+    fi
+
+    if [[ -v INPUT_REPLACE ]]; then
+      if [[ -n "$INPUT_REPLACE" ]]; then
+          for target in $(echo "$INPUT_REPLACE" | tr ',' '\n'); do
+              PLAN_ARGS="$PLAN_ARGS -replace $target"
+          done
+      fi
+    fi
+}
+
+
+function set-plan-args() {
+    set-common-plan-args
 
     if [[ -n "$INPUT_VAR" ]]; then
         for var in $(echo "$INPUT_VAR" | tr ',' '\n'); do
@@ -215,11 +243,7 @@ function set-plan-args() {
 }
 
 function set-remote-plan-args() {
-    PLAN_ARGS=""
-
-    if [[ "$INPUT_PARALLELISM" -ne 0 ]]; then
-        PLAN_ARGS="$PLAN_ARGS -parallelism=$INPUT_PARALLELISM"
-    fi
+    set-common-plan-args
 
     local AUTO_TFVARS_COUNTER=0
 
@@ -281,6 +305,8 @@ function plan() {
     else
         PLAN_OUT_ARG=""
     fi
+
+    debug_log terraform plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PLAN_OUT_ARG $PLAN_ARGS
 
     set +e
     # shellcheck disable=SC2086
