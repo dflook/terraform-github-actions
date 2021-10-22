@@ -15,7 +15,8 @@ outputs:
 runs:
   using: docker
   image: ../image/Dockerfile
-  entrypoint: /entrypoints/version.sh
+  entrypoint:
+  - /entrypoints/version.sh
 
 branding:
   icon: globe
