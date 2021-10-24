@@ -1,236 +1,66 @@
 #!/usr/bin/python3
 
+import datetime
+import hashlib
 import json
 import os
 import re
 import sys
-import datetime
-import hashlib
-from typing import Optional, Dict, Iterable
+from typing import Optional, Dict, Iterable, cast, NewType, TypedDict, Tuple, Any
 
 import requests
 
-github = requests.Session()
-github.headers['authorization'] = f'token {os.environ["GITHUB_TOKEN"]}'
-github.headers['user-agent'] = 'terraform-github-actions'
-github.headers['accept'] = 'application/vnd.github.v3+json'
+GitHubUrl = NewType('GitHubUrl', str)
+PrUrl = NewType('PrUrl', GitHubUrl)
+IssueUrl = NewType('IssueUrl', GitHubUrl)
+CommentUrl = NewType('CommentUrl', GitHubUrl)
+Plan = NewType('Plan', str)
+Status = NewType('Status', str)
 
-github_url = os.environ.get('GITHUB_SERVER_URL', 'https://github.com')
-github_api_url = os.environ.get('GITHUB_API_URL', 'https://api.github.com')
+
+class GitHubActionsEnv(TypedDict):
+    GITHUB_API_URL: str
+    GITHUB_TOKEN: str
+    GITHUB_EVENT_PATH: str
+    GITHUB_EVENT_NAME: str
+    GITHUB_REPOSITORY: str
+    GITHUB_SHA: str
+
 
 job_tmp_dir = os.environ.get('JOB_TMP_DIR', '.')
 
-def github_api_request(method, *args, **kwargs):
-    response = github.request(method, *args, **kwargs)
-
-    if 400 <= response.status_code < 500:
-        debug(str(response.headers))
-
-        try:
-            message = response.json()['message']
-
-            if response.headers['X-RateLimit-Remaining'] == '0':
-                limit_reset = datetime.datetime.fromtimestamp(int(response.headers['X-RateLimit-Reset']))
-                sys.stdout.write(message)
-                sys.stdout.write(f' Try again when the rate limit resets at {limit_reset} UTC.\n')
-                exit(1)
-
-            if message != 'Resource not accessible by integration':
-                sys.stdout.write(message)
-                sys.stdout.write('\n')
-                debug(response.content.decode())
-
-        except Exception:
-            sys.stdout.write(response.content.decode())
-            sys.stdout.write('\n')
-            raise
-
-    return response
-
-def debug(msg: str) -> None:
-    sys.stderr.write(msg)
-    sys.stderr.write('\n')
-
-def paginate(url, *args, **kwargs) -> Iterable[Dict]:
-
-    while True:
-        response = github_api_request('get', url, *args, **kwargs)
-        response.raise_for_status()
-
-        yield from response.json()
-
-        if 'next' in response.links:
-            url = response.links['next']['url']
-        else:
-            return
-
-def prs(repo: str) -> Iterable[Dict]:
-    url = f'{github_api_url}/repos/{repo}/pulls'
-    yield from paginate(url, params={'state': 'all'})
+env = cast(GitHubActionsEnv, os.environ)
 
 
-def find_pr() -> str:
+def github_session(github_env: GitHubActionsEnv) -> requests.Session:
+    session = requests.Session()
+    session.headers['authorization'] = f'token {github_env["GITHUB_TOKEN"]}'
+    session.headers['user-agent'] = 'terraform-github-actions'
+    session.headers['accept'] = 'application/vnd.github.v3+json'
+    return session
+
+
+github = github_session(env)
+
+
+class ActionInputs(TypedDict):
     """
-    Find the pull request this event is related to
-
-    >>> find_pr()
-    'https://api.github.com/repos/dflook/terraform-github-actions/pulls/8'
-
+    Information used to identify a plan
     """
+    INPUT_BACKEND_CONFIG: str
+    INPUT_BACKEND_CONFIG_FILE: str
+    INPUT_VARIABLES: str
+    INPUT_VAR: str
+    INPUT_VAR_FILE: str
+    INPUT_PATH: str
+    INPUT_WORKSPACE: str
+    INPUT_LABEL: str
+    INPUT_ADD_GITHUB_COMMENT: str
 
-    with open(os.environ['GITHUB_EVENT_PATH']) as f:
-        event = json.load(f)
 
-    event_type = os.environ['GITHUB_EVENT_NAME']
-
-    if event_type in ['pull_request', 'pull_request_review_comment', 'pull_request_target', 'pull_request_review']:
-        return event['pull_request']['url']
-
-    elif event_type == 'issue_comment':
-
-        if 'pull_request' in event['issue']:
-            return event['issue']['pull_request']['url']
-        else:
-            raise Exception(f'This comment is not for a PR. Add a filter of `if: github.event.issue.pull_request`')
-
-    elif event_type == 'push':
-        repo = os.environ['GITHUB_REPOSITORY']
-        commit = os.environ['GITHUB_SHA']
-
-        for pr in prs(repo):
-            if pr['merge_commit_sha'] == commit:
-                return pr['url']
-
-        raise Exception(f'No PR found in {repo} for commit {commit} (was it pushed directly to the target branch?)')
-
-    else:
-        raise Exception(f"The {event_type} event doesn\'t relate to a Pull Request.")
-
-def current_user() -> str:
-
-    token_hash = hashlib.sha256(os.environ["GITHUB_TOKEN"].encode()).hexdigest()
-
-    try:
-        with open(os.path.join(job_tmp_dir, 'token-cache', token_hash)) as f:
-            username = f.read()
-            debug(f'GITHUB_TOKEN username: {username}')
-            return username
-    except Exception as e:
-        debug(str(e))
-
-    response = github_api_request('get', f'{github_api_url}/user')
-    if response.status_code != 403:
-        user = response.json()
-        debug('GITHUB_TOKEN user:')
-        debug(json.dumps(user))
-
-        username = user['login']
-    else:
-        # Assume this is the github actions app token
-        username = 'github-actions[bot]'
-
-    try:
-        os.makedirs(os.path.join(job_tmp_dir, 'token-cache'), exist_ok=True)
-        with open(os.path.join(job_tmp_dir, 'token-cache', token_hash), 'w') as f:
-            f.write(username)
-    except Exception as e:
-        debug(str(e))
-
-    debug(f'GITHUB_TOKEN username: {username}')
-    return username
-
-class TerraformComment:
-    """
-    The GitHub comment for this specific terraform plan
-    """
-
-    def __init__(self, pr_url: str=None):
-        self._plan = None
-        self._status = None
-        self._comment_url = None
-
-        if pr_url is None:
-            return
-
-        response = github_api_request('get', pr_url)
-        response.raise_for_status()
-
-        self._issue_url = response.json()['_links']['issue']['href'] + '/comments'
-
-        username = current_user()
-
-        debug('Looking for an existing comment:')
-
-        for comment in paginate(self._issue_url):
-            debug(json.dumps(comment))
-            if comment['user']['login'] == username:
-                match = re.match(rf'{re.escape(self._comment_identifier)}.*```(?:hcl)?(.*?)```.*', comment['body'], re.DOTALL)
-
-                if not match:
-                    match = re.match(rf'{re.escape(self._old_comment_identifier)}\n```(.*?)```.*', comment['body'], re.DOTALL)
-
-                if match:
-                    self._comment_url = comment['url']
-                    self._plan = match.group(1).strip()
-                    return
-
-    @property
-    def _comment_identifier(self):
-        if self.label:
-            return f'Terraform plan for __{self.label}__'
-
-        label = f'Terraform plan in __{self.path}__'
-
-        if self.workspace != 'default':
-            label += f' in the __{self.workspace}__ workspace'
-
-        if self.backend_config:
-            label += f'\nWith backend config: `{self.backend_config}`'
-
-        if self.backend_config_files:
-            label += f'\nWith backend config files: `{self.backend_config_files}`'
-
-        if self.vars:
-            label += f'\nWith vars: `{self.vars}`'
-
-        if self.var_files:
-            label += f'\nWith var files: `{self.var_files}`'
-
-        if self.variables:
-            stripped_vars = self.variables.strip()
-            if '\n' in stripped_vars:
-                label += f'''<details><summary>With variables</summary>
-
-```hcl
-{stripped_vars}
-```
-</details>
-'''
-            else:
-                label += f'\nWith variables: `{stripped_vars}`'
-
-        return label
-
-    @property
-    def _old_comment_identifier(self):
-        if self.label:
-            return f'Terraform plan for __{self.label}__'
-
-        label = f'Terraform plan in __{self.path}__'
-
-        if self.workspace != 'default':
-            label += f' in the __{self.workspace}__ workspace'
-
-        if self.init_args:
-            label += f'\nUsing init args: `{self.init_args}`'
-        if self.plan_args:
-            label += f'\nUsing plan args: `{self.plan_args}`'
-
-        return label
-
-    @property
-    def backend_config(self) -> Optional[str]:
-        if os.environ.get('INPUT_BACKEND_CONFIG') is None:
+def plan_identifier(action_inputs: ActionInputs) -> str:
+    def mask_backend_config() -> Optional[str]:
+        if action_inputs.get('INPUT_BACKEND_CONFIG') is None:
             return None
 
         bad_words = [
@@ -259,7 +89,7 @@ class TerraformComment:
 
         clean = []
 
-        for field in os.environ.get('INPUT_BACKEND_CONFIG', '').split(','):
+        for field in action_inputs.get('INPUT_BACKEND_CONFIG', '').split(','):
             if not field:
                 continue
 
@@ -268,166 +98,319 @@ class TerraformComment:
 
         return ','.join(clean)
 
-    @property
-    def backend_config_files(self) -> str:
-        return os.environ.get('INPUT_BACKEND_CONFIG_FILE')
+    if action_inputs['INPUT_LABEL']:
+        return f'Terraform plan for __{action_inputs["INPUT_LABEL"]}__'
 
-    @property
-    def variables(self) -> str:
-        return os.environ.get('INPUT_VARIABLES')
+    label = f'Terraform plan in __{action_inputs["INPUT_PATH"]}__'
 
-    @property
-    def vars(self) -> str:
-        return os.environ.get('INPUT_VAR')
+    if action_inputs["INPUT_WORKSPACE"] != 'default':
+        label += f' in the __{action_inputs["INPUT_WORKSPACE"]}__ workspace'
 
-    @property
-    def var_files(self) -> str:
-        return os.environ.get('INPUT_VAR_FILE')
+    backend_config = mask_backend_config()
+    if backend_config:
+        label += f'\nWith backend config: `{backend_config}`'
 
-    @property
-    def path(self) -> str:
-        return os.environ['INPUT_PATH']
+    if action_inputs["INPUT_BACKEND_CONFIG_FILE"]:
+        label += f'\nWith backend config files: `{action_inputs["INPUT_BACKEND_CONFIG_FILE"]}`'
 
-    @property
-    def workspace(self) -> str:
-        return os.environ.get('INPUT_WORKSPACE')
+    if action_inputs["INPUT_VAR"]:
+        label += f'\nWith vars: `{action_inputs["INPUT_VAR"]}`'
 
-    @property
-    def label(self) -> str:
-        return os.environ.get('INPUT_LABEL')
+    if action_inputs["INPUT_VAR_FILE"]:
+        label += f'\nWith var files: `{action_inputs["INPUT_VAR_FILE"]}`'
 
-    @property
-    def init_args(self) -> str:
-        return os.environ['INIT_ARGS']
+    if action_inputs["INPUT_VARIABLES"]:
+        stripped_vars = action_inputs["INPUT_VARIABLES"].strip()
+        if '\n' in stripped_vars:
+            label += f'''<details><summary>With variables</summary>
 
-    @property
-    def plan_args(self) -> str:
-        return os.environ['PLAN_ARGS']
+    ```hcl
+    {stripped_vars}
+    ```
+    </details>
+    '''
+        else:
+            label += f'\nWith variables: `{stripped_vars}`'
 
-    @property
-    def plan(self) -> Optional[str]:
-        return self._plan
+    return label
 
-    @plan.setter
-    def plan(self, plan: str) -> None:
-        self._plan = plan.strip()
 
-    @property
-    def status(self) -> Optional[str]:
-        return self._status
+def github_api_request(method: str, *args, **kwargs) -> requests.Response:
+    response = github.request(method, *args, **kwargs)
 
-    @status.setter
-    def status(self, status: str) -> None:
-        self._status = status.strip()
-
-    def body(self) -> str:
-        body = f'{self._comment_identifier}\n```hcl\n{self.plan}\n```'
-
-        if self.status:
-            body += '\n' + self.status
-
-        return body
-
-    def collapsable_body(self) -> str:
+    if 400 <= response.status_code < 500:
+        debug(str(response.headers))
 
         try:
-            collapse_threshold = int(os.environ['TF_PLAN_COLLAPSE_LENGTH'])
-        except (ValueError, KeyError):
-            collapse_threshold = 10
+            message = response.json()['message']
 
-        open = ''
-        highlighting = ''
+            if response.headers['X-RateLimit-Remaining'] == '0':
+                limit_reset = datetime.datetime.fromtimestamp(int(response.headers['X-RateLimit-Reset']))
+                sys.stdout.write(message)
+                sys.stdout.write(f' Try again when the rate limit resets at {limit_reset} UTC.\n')
+                exit(1)
 
-        if self.plan.startswith('Error'):
-            open = ' open'
-        elif 'Plan:' in self.plan:
-            highlighting = 'hcl'
-            num_lines = len(self.plan.splitlines())
-            if num_lines < collapse_threshold:
-                open = ' open'
+            if message != 'Resource not accessible by integration':
+                sys.stdout.write(message)
+                sys.stdout.write('\n')
+                debug(response.content.decode())
 
-        body = f'''{self._comment_identifier}
-<details{open}>
-  <summary>{self.summary()}</summary>
+        except Exception:
+            sys.stdout.write(response.content.decode())
+            sys.stdout.write('\n')
+            raise
+
+    return response
+
+
+def debug(msg: str) -> None:
+    sys.stderr.write(msg)
+    sys.stderr.write('\n')
+
+
+def paginate(url: GitHubUrl, *args, **kwargs) -> Iterable[Dict[str, Any]]:
+    while True:
+        response = github_api_request('get', url, *args, **kwargs)
+        response.raise_for_status()
+
+        yield from response.json()
+
+        if 'next' in response.links:
+            url = response.links['next']['url']
+        else:
+            return
+
+
+def find_pr(env: GitHubActionsEnv) -> PrUrl:
+    """
+    Find the pull request this event is related to
+
+    >>> find_pr()
+    'https://api.github.com/repos/dflook/terraform-github-actions/pulls/8'
+
+    """
+
+    with open(env['GITHUB_EVENT_PATH']) as f:
+        event = json.load(f)
+
+    event_type = env['GITHUB_EVENT_NAME']
+
+    if event_type in ['pull_request', 'pull_request_review_comment', 'pull_request_target', 'pull_request_review']:
+        return cast(PrUrl, event['pull_request']['url'])
+
+    elif event_type == 'issue_comment':
+
+        if 'pull_request' in event['issue']:
+            return cast(PrUrl, event['issue']['pull_request']['url'])
+        else:
+            raise Exception('This comment is not for a PR. Add a filter of `if: github.event.issue.pull_request`')
+
+    elif event_type == 'push':
+        repo = env['GITHUB_REPOSITORY']
+        commit = env['GITHUB_SHA']
+
+        def prs() -> Iterable[Dict[str, Any]]:
+            url = f'{env.get("GITHUB_API_URL", "https://api.github.com")}/repos/{repo}/pulls'
+            yield from paginate(cast(PrUrl, url), params={'state': 'all'})
+
+        for pr in prs():
+            if pr['merge_commit_sha'] == commit:
+                return cast(PrUrl, pr['url'])
+
+        raise Exception(f'No PR found in {repo} for commit {commit} (was it pushed directly to the target branch?)')
+
+    else:
+        raise Exception(f"The {event_type} event doesn\'t relate to a Pull Request.")
+
+
+def current_user(github_env: GitHubActionsEnv) -> str:
+    token_hash = hashlib.sha256(github_env['GITHUB_TOKEN'].encode()).hexdigest()
+
+    try:
+        with open(os.path.join(job_tmp_dir, 'token-cache', token_hash)) as f:
+            username = f.read()
+            debug(f'GITHUB_TOKEN username: {username}')
+            return username
+    except Exception as e:
+        debug(str(e))
+
+    response = github_api_request('get', f'{github_env["GITHUB_API_URL"]}/user')
+    if response.status_code != 403:
+        user = response.json()
+        debug('GITHUB_TOKEN user:')
+        debug(json.dumps(user))
+
+        username = user['login']
+    else:
+        # Assume this is the github actions app token
+        username = 'github-actions[bot]'
+
+    try:
+        os.makedirs(os.path.join(job_tmp_dir, 'token-cache'), exist_ok=True)
+        with open(os.path.join(job_tmp_dir, 'token-cache', token_hash), 'w') as f:
+            f.write(username)
+    except Exception as e:
+        debug(str(e))
+
+    debug(f'GITHUB_TOKEN username: {username}')
+    return username
+
+
+def create_summary(plan) -> Optional[str]:
+    summary = None
+
+    for line in plan.splitlines():
+        if line.startswith('No changes') or line.startswith('Error'):
+            return line
+
+        if line.startswith('Plan:'):
+            summary = line
+
+        if line.startswith('Changes to Outputs'):
+            if summary:
+                return summary + ' Changes to Outputs.'
+            else:
+                return 'Changes to Outputs'
+
+    return summary
+
+
+def format_body(action_inputs: ActionInputs, plan: Plan, status: Status, collapse_threshold: int) -> str:
+
+    details_open = ''
+    highlighting = ''
+
+    summary_line = create_summary(plan)
+
+    if plan.startswith('Error'):
+        details_open = ' open'
+    elif 'Plan:' in plan:
+        highlighting = 'hcl'
+        num_lines = len(plan.splitlines())
+        if num_lines < collapse_threshold:
+            details_open = ' open'
+
+    if summary_line is None:
+        details_open = ' open'
+
+    body = f'''{plan_identifier(action_inputs)}
+<details{details_open}>
+{ f'<summary>{summary_line}</summary>' if summary_line is not None else '' }
 
 ```{highlighting}
-{self.plan}
+{plan}
 ```
 </details>
 '''
 
-        if self.status:
-            body += '\n' + self.status
+    if status:
+        body += '\n' + status
 
-        return body
-
-    def summary(self) -> str:
-        summary = None
-
-        for line in self.plan.splitlines():
-            if line.startswith('No changes') or line.startswith('Error'):
-                return line
-
-            if line.startswith('Plan:'):
-                summary = line
-
-            if line.startswith('Changes to Outputs'):
-                if summary:
-                    return summary + ' Changes to Outputs.'
-                else:
-                    return 'Changes to Outputs'
-
-        return summary
-
-    def update_comment(self, only_if_exists=False):
-        body = self.collapsable_body()
-        debug(body)
-
-        if self._comment_url is None:
-            if only_if_exists:
-                debug('Comment doesn\'t already exist - not creating it')
-                return
-            # Create a new comment
-            debug('Creating comment')
-            response = github_api_request('post', self._issue_url, json={'body': body})
-        else:
-            # Update existing comment
-            debug('Updating existing comment')
-            response = github_api_request('patch', self._comment_url, json={'body': body})
-
-        debug(response.content.decode())
-        response.raise_for_status()
-        self._comment_url = response.json()['url']
+    return body
 
 
-if __name__ == '__main__':
+def update_comment(issue_url: IssueUrl,
+                   comment_url: Optional[CommentUrl],
+                   body: str,
+                   only_if_exists: bool = False) -> Optional[CommentUrl]:
+    """
+    Update (or create) a comment
+
+    :param issue_url: The url of the issue to create or update the comment in
+    :param comment_url: The url of the comment to update
+    :param body: The new comment body
+    :param only_if_exists: Only update an existing comment - don't create it
+    """
+
+    debug(body)
+
+    if comment_url is None:
+        if only_if_exists:
+            debug('Comment doesn\'t already exist - not creating it')
+            return None
+        # Create a new comment
+        debug('Creating comment')
+        response = github_api_request('post', issue_url, json={'body': body})
+    else:
+        # Update existing comment
+        debug('Updating existing comment')
+        response = github_api_request('patch', comment_url, json={'body': body})
+
+    debug(response.content.decode())
+    response.raise_for_status()
+    return cast(CommentUrl, response.json()['url'])
+
+
+def find_issue_url(pr_url: str) -> IssueUrl:
+    response = github_api_request('get', pr_url)
+    response.raise_for_status()
+
+    return cast(IssueUrl, response.json()['_links']['issue']['href'] + '/comments')
+
+
+def find_comment(issue_url: IssueUrl, username: str, action_inputs: ActionInputs) -> Tuple[
+    Optional[CommentUrl], Optional[Plan]]:
+    debug('Looking for an existing comment:')
+
+    plan_id = plan_identifier(action_inputs)
+
+    for comment in paginate(issue_url):
+        debug(json.dumps(comment))
+        if comment['user']['login'] == username:
+            match = re.match(rf'{re.escape(plan_id)}.*```(?:hcl)?(.*?)```.*', comment['body'], re.DOTALL)
+
+            if match:
+                return comment['url'], cast(Plan, match.group(1).strip())
+
+    return None, None
+
+
+def main() -> None:
     if len(sys.argv) < 2:
         print(f'''Usage:
     STATUS="<status>" {sys.argv[0]} plan <plan.txt
     STATUS="<status>" {sys.argv[0]} status
     {sys.argv[0]} get >plan.txt''')
 
-    tf_comment = TerraformComment(find_pr())
+    action_inputs = cast(ActionInputs, os.environ)
+
+    try:
+        collapse_threshold = int(os.environ['TF_PLAN_COLLAPSE_LENGTH'])
+    except (ValueError, KeyError):
+        collapse_threshold = 10
+
+    pr_url = find_pr(env)
+    issue_url = find_issue_url(pr_url)
+    username = current_user(env)
+    comment_url, plan = find_comment(issue_url, username, action_inputs)
+    status = cast(Status, os.environ.get('STATUS', ''))
+
     only_if_exists = False
 
     if sys.argv[1] == 'plan':
-        tf_comment.plan = sys.stdin.read().strip()
-        tf_comment.status = os.environ['STATUS']
+        plan = cast(Plan, sys.stdin.read().strip())
 
-        if os.environ['INPUT_ADD_GITHUB_COMMENT'] == 'changes-only' and os.environ.get('TF_CHANGES', 'true') == 'false':
+        if action_inputs['INPUT_ADD_GITHUB_COMMENT'] == 'changes-only' and os.environ.get('TF_CHANGES',
+                                                                                          'true') == 'false':
             only_if_exists = True
 
+        body = format_body(action_inputs, plan, status, collapse_threshold)
+        update_comment(issue_url, comment_url, body, only_if_exists)
+
     elif sys.argv[1] == 'status':
-        if tf_comment.plan is None:
+        if plan is None:
             exit(1)
         else:
-            tf_comment.status = os.environ['STATUS']
+            body = format_body(action_inputs, plan, status, collapse_threshold)
+            update_comment(issue_url, comment_url, body, only_if_exists)
+
     elif sys.argv[1] == 'get':
-        if tf_comment.plan is None:
+        if plan is None:
             exit(1)
 
         with open(sys.argv[2], 'w') as f:
-            f.write(tf_comment.plan)
-        exit(0)
+            f.write(plan)
 
-    tf_comment.update_comment(only_if_exists)
+
+if __name__ == '__main__':
+    main()
