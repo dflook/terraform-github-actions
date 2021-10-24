@@ -102,22 +102,20 @@ Testing'''
 def test_variables_multi_line():
     inputs = action_inputs(
         path='/test/terraform',
-        variables='''
-            var1="value"
-            var2="value2"
-        '''
+        variables='''var1="value"
+var2="value2"'''
     )
 
     status = 'Testing'
 
     expected = '''Terraform plan in __/test/terraform__<details><summary>With variables</summary>
 
-    ```hcl
-    var1="value"
-            var2="value2"
-    ```
-    </details>
-    
+```hcl
+var1="value"
+var2="value2"
+```
+</details>
+
 <details open>
 <summary>Plan: 1 to add, 0 to change, 0 to destroy.</summary>
 

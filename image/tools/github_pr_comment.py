@@ -124,11 +124,11 @@ def plan_identifier(action_inputs: ActionInputs) -> str:
         if '\n' in stripped_vars:
             label += f'''<details><summary>With variables</summary>
 
-    ```hcl
-    {stripped_vars}
-    ```
-    </details>
-    '''
+```hcl
+{stripped_vars}
+```
+</details>
+'''
         else:
             label += f'\nWith variables: `{stripped_vars}`'
 
