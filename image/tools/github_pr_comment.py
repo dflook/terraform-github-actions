@@ -19,6 +19,9 @@ Status = NewType('Status', str)
 
 
 class GitHubActionsEnv(TypedDict):
+    """
+    Environment variables that are set by the actions runner
+    """
     GITHUB_API_URL: str
     GITHUB_TOKEN: str
     GITHUB_EVENT_PATH: str
@@ -28,11 +31,15 @@ class GitHubActionsEnv(TypedDict):
 
 
 job_tmp_dir = os.environ.get('JOB_TMP_DIR', '.')
+step_tmp_dir = os.environ.get('STEP_TMP_DIR', '.')
 
 env = cast(GitHubActionsEnv, os.environ)
 
 
 def github_session(github_env: GitHubActionsEnv) -> requests.Session:
+    """
+    A request session that is configured for the github API
+    """
     session = requests.Session()
     session.headers['authorization'] = f'token {github_env["GITHUB_TOKEN"]}'
     session.headers['user-agent'] = 'terraform-github-actions'
@@ -45,7 +52,7 @@ github = github_session(env)
 
 class ActionInputs(TypedDict):
     """
-    Information used to identify a plan
+    Actions input environment variables that are set by the runner
     """
     INPUT_BACKEND_CONFIG: str
     INPUT_BACKEND_CONFIG_FILE: str
@@ -60,8 +67,6 @@ class ActionInputs(TypedDict):
 
 def plan_identifier(action_inputs: ActionInputs) -> str:
     def mask_backend_config() -> Optional[str]:
-        if action_inputs.get('INPUT_BACKEND_CONFIG') is None:
-            return None
 
         bad_words = [
             'token',
@@ -181,7 +186,7 @@ def paginate(url: GitHubUrl, *args, **kwargs) -> Iterable[Dict[str, Any]]:
             return
 
 
-def find_pr(env: GitHubActionsEnv) -> PrUrl:
+def find_pr(actions_env: GitHubActionsEnv) -> PrUrl:
     """
     Find the pull request this event is related to
 
@@ -190,10 +195,10 @@ def find_pr(env: GitHubActionsEnv) -> PrUrl:
 
     """
 
-    with open(env['GITHUB_EVENT_PATH']) as f:
+    with open(actions_env['GITHUB_EVENT_PATH']) as f:
         event = json.load(f)
 
-    event_type = env['GITHUB_EVENT_NAME']
+    event_type = actions_env['GITHUB_EVENT_NAME']
 
     if event_type in ['pull_request', 'pull_request_review_comment', 'pull_request_target', 'pull_request_review']:
         return cast(PrUrl, event['pull_request']['url'])
@@ -206,11 +211,11 @@ def find_pr(env: GitHubActionsEnv) -> PrUrl:
             raise Exception('This comment is not for a PR. Add a filter of `if: github.event.issue.pull_request`')
 
     elif event_type == 'push':
-        repo = env['GITHUB_REPOSITORY']
-        commit = env['GITHUB_SHA']
+        repo = actions_env['GITHUB_REPOSITORY']
+        commit = actions_env['GITHUB_SHA']
 
         def prs() -> Iterable[Dict[str, Any]]:
-            url = f'{env.get("GITHUB_API_URL", "https://api.github.com")}/repos/{repo}/pulls'
+            url = f'{actions_env["GITHUB_API_URL"]}/repos/{repo}/pulls'
             yield from paginate(cast(PrUrl, url), params={'state': 'all'})
 
         for pr in prs():
@@ -223,21 +228,20 @@ def find_pr(env: GitHubActionsEnv) -> PrUrl:
         raise Exception(f"The {event_type} event doesn\'t relate to a Pull Request.")
 
 
-def current_user(github_env: GitHubActionsEnv) -> str:
-    token_hash = hashlib.sha256(github_env['GITHUB_TOKEN'].encode()).hexdigest()
+def current_user(actions_env: GitHubActionsEnv) -> str:
+    token_hash = hashlib.sha256(actions_env['GITHUB_TOKEN'].encode()).hexdigest()
 
     try:
         with open(os.path.join(job_tmp_dir, 'token-cache', token_hash)) as f:
             username = f.read()
-            debug(f'GITHUB_TOKEN username: {username}')
+            debug(f'GITHUB_TOKEN username from token-cache: {username}')
             return username
     except Exception as e:
         debug(str(e))
 
-    response = github_api_request('get', f'{github_env["GITHUB_API_URL"]}/user')
+    response = github_api_request('get', f'{actions_env["GITHUB_API_URL"]}/user')
     if response.status_code != 403:
         user = response.json()
-        debug('GITHUB_TOKEN user:')
         debug(json.dumps(user))
 
         username = user['login']
@@ -252,7 +256,7 @@ def current_user(github_env: GitHubActionsEnv) -> str:
     except Exception as e:
         debug(str(e))
 
-    debug(f'GITHUB_TOKEN username: {username}')
+    debug(f'discovered GITHUB_TOKEN username: {username}')
     return username
 
 
@@ -322,8 +326,6 @@ def update_comment(issue_url: IssueUrl,
     :param only_if_exists: Only update an existing comment - don't create it
     """
 
-    debug(body)
-
     if comment_url is None:
         if only_if_exists:
             debug('Comment doesn\'t already exist - not creating it')
@@ -336,20 +338,40 @@ def update_comment(issue_url: IssueUrl,
         debug('Updating existing comment')
         response = github_api_request('patch', comment_url, json={'body': body})
 
+    debug(body)
     debug(response.content.decode())
     response.raise_for_status()
     return cast(CommentUrl, response.json()['url'])
 
 
 def find_issue_url(pr_url: str) -> IssueUrl:
+    pr_hash = hashlib.sha256(pr_url.encode()).hexdigest()
+
+    try:
+        with open(os.path.join(job_tmp_dir, 'issue-href-cache', pr_hash)) as f:
+            issue_url = f.read()
+            debug(f'issue_url from issue-href-cache: {issue_url}')
+            return cast(IssueUrl, issue_url)
+    except Exception as e:
+        debug(str(e))
+
     response = github_api_request('get', pr_url)
     response.raise_for_status()
 
-    return cast(IssueUrl, response.json()['_links']['issue']['href'] + '/comments')
+    issue_url = cast(IssueUrl, response.json()['_links']['issue']['href'] + '/comments')
+
+    try:
+        os.makedirs(os.path.join(job_tmp_dir, 'issue-href-cache'), exist_ok=True)
+        with open(os.path.join(job_tmp_dir, 'issue-href-cache', pr_hash), 'w') as f:
+            f.write(issue_url)
+    except Exception as e:
+        debug(str(e))
+
+    debug(f'discovered issue_url: {issue_url}')
+    return cast(IssueUrl, issue_url)
 
 
-def find_comment(issue_url: IssueUrl, username: str, action_inputs: ActionInputs) -> Tuple[
-    Optional[CommentUrl], Optional[Plan]]:
+def find_comment(issue_url: IssueUrl, username: str, action_inputs: ActionInputs) -> Tuple[Optional[CommentUrl], Optional[Plan]]:
     debug('Looking for an existing comment:')
 
     plan_id = plan_identifier(action_inputs)
@@ -364,6 +386,22 @@ def find_comment(issue_url: IssueUrl, username: str, action_inputs: ActionInputs
 
     return None, None
 
+def read_step_cache() -> Dict[str, str]:
+    try:
+        with open(os.path.join(step_tmp_dir, 'github_pr_comment.cache')) as f:
+            debug('step cache loaded')
+            return json.load(f)
+    except Exception as e:
+        debug(str(e))
+        return {}
+
+def save_step_cache(**kwargs) -> None:
+    try:
+        with open(os.path.join(step_tmp_dir, 'github_pr_comment.cache'), 'w') as f:
+            json.dump(kwargs, f)
+            debug('step cache saved')
+    except Exception as e:
+        debug(str(e))
 
 def main() -> None:
     if len(sys.argv) < 2:
@@ -372,6 +410,8 @@ def main() -> None:
     STATUS="<status>" {sys.argv[0]} status
     {sys.argv[0]} get >plan.txt''')
 
+    debug(repr(sys.argv))
+
     action_inputs = cast(ActionInputs, os.environ)
 
     try:
@@ -379,10 +419,34 @@ def main() -> None:
     except (ValueError, KeyError):
         collapse_threshold = 10
 
-    pr_url = find_pr(env)
-    issue_url = find_issue_url(pr_url)
+    step_cache = read_step_cache()
+
+    if step_cache.get('pr_url') is not None:
+        pr_url = step_cache['pr_url']
+        debug(f'pr_url from step cache: {pr_url}')
+    else:
+        pr_url = find_pr(env)
+        debug(f'discovered pr_url: {pr_url}')
+
+    if step_cache.get('pr_url') == pr_url and step_cache.get('issue_url') is not None:
+        issue_url = step_cache['issue_url']
+        debug(f'issue_url from step cache: {issue_url}')
+    else:
+        issue_url = find_issue_url(pr_url)
+
+    # Username is cached in the job tmp dir
     username = current_user(env)
-    comment_url, plan = find_comment(issue_url, username, action_inputs)
+
+    if step_cache.get('comment_url') is not None and step_cache.get('plan') is not None:
+        comment_url = step_cache['comment_url']
+        plan = step_cache['plan']
+        debug(f'comment_url from step cache: {comment_url}')
+        debug(f'plan from step cache: {plan}')
+    else:
+        comment_url, plan = find_comment(issue_url, username, action_inputs)
+        debug(f'discovered comment_url: {comment_url}')
+        debug(f'discovered plan: {plan}')
+
     status = cast(Status, os.environ.get('STATUS', ''))
 
     only_if_exists = False
@@ -390,19 +454,18 @@ def main() -> None:
     if sys.argv[1] == 'plan':
         plan = cast(Plan, sys.stdin.read().strip())
 
-        if action_inputs['INPUT_ADD_GITHUB_COMMENT'] == 'changes-only' and os.environ.get('TF_CHANGES',
-                                                                                          'true') == 'false':
+        if action_inputs['INPUT_ADD_GITHUB_COMMENT'] == 'changes-only' and os.environ.get('TF_CHANGES', 'true') == 'false':
             only_if_exists = True
 
         body = format_body(action_inputs, plan, status, collapse_threshold)
-        update_comment(issue_url, comment_url, body, only_if_exists)
+        comment_url = update_comment(issue_url, comment_url, body, only_if_exists)
 
     elif sys.argv[1] == 'status':
         if plan is None:
             exit(1)
         else:
             body = format_body(action_inputs, plan, status, collapse_threshold)
-            update_comment(issue_url, comment_url, body, only_if_exists)
+            comment_url = update_comment(issue_url, comment_url, body, only_if_exists)
 
     elif sys.argv[1] == 'get':
         if plan is None:
@@ -411,6 +474,7 @@ def main() -> None:
         with open(sys.argv[2], 'w') as f:
             f.write(plan)
 
+    save_step_cache(pr_url=pr_url, issue_url=issue_url, comment_url=comment_url, plan=plan)
 
 if __name__ == '__main__':
     main()
