@@ -18,13 +18,23 @@ fi
 exec 3>&1
 
 function apply() {
-
-    debug_log terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PLAN_OUT
+    local APPLY_EXIT
 
     set +e
-    # shellcheck disable=SC2086
-    (cd "$INPUT_PATH" && terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PLAN_OUT) | $TFMASK
-    local APPLY_EXIT=${PIPESTATUS[0]}
+    if [[ -n "$PLAN_OUT" ]]; then
+        debug_log terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT
+        # shellcheck disable=SC2086
+        (cd "$INPUT_PATH" && terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT) | $TFMASK
+        APPLY_EXIT=${PIPESTATUS[0]}
+    else
+        # There is no plan file to apply, since the remote backend can't produce them.
+        # Instead we need to do an auto approved apply using the arguments we would normally use for the plan
+
+        debug_log terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS
+        # shellcheck disable=SC2086
+        (cd "$INPUT_PATH" && terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS) | $TFMASK
+        APPLY_EXIT=${PIPESTATUS[0]}
+    fi
     set -e
 
     if [[ $APPLY_EXIT -eq 0 ]]; then

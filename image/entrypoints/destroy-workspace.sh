@@ -9,8 +9,10 @@ init-backend
 select-workspace
 set-plan-args
 
+debug_log terraform destroy -input=false -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS
+
 # shellcheck disable=SC2086
-if ! (cd "$INPUT_PATH" && terraform destroy -input=false -auto-approve -lock-timeout=300s $PLAN_ARGS); then
+if ! (cd "$INPUT_PATH" && terraform destroy -input=false -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS); then
     set_output failure-reason destroy-failed
     exit 1
 fi
