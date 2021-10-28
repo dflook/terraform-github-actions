@@ -164,7 +164,7 @@ function init-backend() {
     if [[ $INIT_EXIT -eq 0 ]]; then
         cat "$STEP_TMP_DIR/terraform_init.stderr" >&2
     else
-        if grep -q "No existing workspaces." "$STEP_TMP_DIR/terraform_init.stderr" || grep -q "Failed to select workspace" "$STEP_TMP_DIR/terraform_init.stderr"; then
+        if grep -q "No existing workspaces." "$STEP_TMP_DIR/terraform_init.stderr" || grep -q "Failed to select workspace" "$STEP_TMP_DIR/terraform_init.stderr" || grep -q "Currently selected workspace.*does not exist" "$STEP_TMP_DIR/terraform_init.stderr"; then
             # Couldn't select workspace, but we don't really care.
             # select-workspace will give a better error if the workspace is required to exist
             :
