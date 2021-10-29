@@ -65,7 +65,7 @@ if [[ $PLAN_EXIT -eq 1 ]]; then
 fi
 
 if [[ $PLAN_EXIT -eq 1 ]]; then
-    cat "$STEP_TMP_DIR/terraform_plan.stderr"
+    cat >&2 "$STEP_TMP_DIR/terraform_plan.stderr"
 
     update_status "Error applying plan in $(job_markdown_ref)"
     exit 1

@@ -21,6 +21,7 @@ if [[ $DESTROY_EXIT -eq 1 ]]; then
 fi
 
 if [[ $DESTROY_EXIT -eq 1 ]]; then
+    cat >&2 "$STEP_TMP_DIR/terraform_destroy.stderr"
     set_output failure-reason destroy-failed
     exit 1
 fi
