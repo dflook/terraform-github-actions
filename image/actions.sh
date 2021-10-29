@@ -322,6 +322,19 @@ function plan() {
     set -e
 }
 
+function destroy() {
+    debug_log terraform destroy -input=false -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS
+
+    set +e
+    (cd "$INPUT_PATH" && terraform destroy -input=false -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS) \
+      2>"$STEP_TMP_DIR/terraform_destroy.stderr" \
+      | tee /dev/fd/3 \
+        >"$STEP_TMP_DIR/terraform_destroy.stdout"
+
+    DESTROY_EXIT=${PIPESTATUS[0]}
+    set -e
+}
+
 # Every file written to disk should use one of these directories
 readonly STEP_TMP_DIR="/tmp"
 readonly JOB_TMP_DIR="$HOME/.dflook-terraform-github-actions"
