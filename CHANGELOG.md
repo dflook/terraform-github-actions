@@ -15,7 +15,7 @@ When using an action you can specify the version as:
 ## [1.17.3] - 2021-10-29
 
 ### Fixed
-- [dflook/terraform-new-workspace](https://github.com/dflook/terraform-github-actions/tree/master/terraform-new-workspace) compatability with Terraform v1.0.10 - Thanks [kylewlacy ](https://github.com/kylewlacy )!
+- Compatability with Terraform v1.0.10 - Thanks [kylewlacy](https://github.com/kylewlacy)!
 - Now makes even fewer github api requests to avoid rate limiting.
 
 ## [1.17.2] - 2021-10-13
