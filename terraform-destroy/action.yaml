@@ -24,6 +24,7 @@ inputs:
   var:
     description: Comma separated list of vars to set, e.g. 'foo=bar'
     required: false
+    deprecationMessage: Use the variables input instead.
   var_file:
     description: List of var file paths, one per line
     required: false
