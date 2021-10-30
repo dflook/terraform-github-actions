@@ -17,7 +17,7 @@ If the terraform configuration is not valid, the build is failed.
 
 * `path`
 
-  Path to the terraform configuration
+  Path to the terraform root module
 
   - Type: string
   - Optional

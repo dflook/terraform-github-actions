@@ -8,7 +8,7 @@ Retrieve the root-level outputs from a terraform configuration.
 
 * `path`
 
-  Path to the terraform configuration
+  Path to the terraform root module
 
   - Type: string
   - Optional

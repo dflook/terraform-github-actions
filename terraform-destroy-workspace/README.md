@@ -8,7 +8,7 @@ This action uses the `terraform destroy` command to destroy all resources in a t
 
 * `path`
 
-  Path to the terraform configuration
+  Path to the terraform root module
 
   - Type: string
   - Optional
@@ -36,15 +36,6 @@ This action uses the `terraform destroy` command to destroy all resources in a t
   ```
 
   Variables set here override any given in `var_file`s.
-
-  - Type: string
-  - Optional
-
-* ~~`var`~~
-
-  > :warning: **Deprecated**: Use the `variables` input instead.
-
-  Comma separated list of terraform vars to set
 
   - Type: string
   - Optional
@@ -95,7 +86,16 @@ This action uses the `terraform destroy` command to destroy all resources in a t
 
   - Type: number
   - Optional
-  - Default: 10
+  - Default: The terraform default (10)
+
+* ~~`var`~~
+
+  > :warning: **Deprecated**: Use the `variables` input instead.
+
+  Comma separated list of terraform vars to set
+
+  - Type: string
+  - Optional
 
 ## Outputs
 

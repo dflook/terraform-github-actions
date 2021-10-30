@@ -35,7 +35,7 @@ These input values must be the same as any `terraform-plan` for the same configu
 
 * `path`
 
-  Path to the terraform configuration to apply
+  Path to the terraform root module to apply
 
   - Type: string
   - Optional
@@ -121,14 +121,6 @@ These input values must be the same as any `terraform-plan` for the same configu
   - Type: string
   - Optional
 
-* `parallelism`
-
-  Limit the number of concurrent operations
-
-  - Type: number
-  - Optional
-  - Default: 10
-
 * `replace`
 
   List of resources to replace if any update to them is required.
@@ -169,6 +161,14 @@ These input values must be the same as any `terraform-plan` for the same configu
   - Type: bool
   - Optional
   - Default: false
+
+* `parallelism`
+
+  Limit the number of concurrent operations
+
+  - Type: number
+  - Optional
+  - Default: The terraform default (10)
 
 * ~~`var`~~
 

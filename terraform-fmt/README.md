@@ -8,7 +8,7 @@ This action uses the `terraform fmt` command to reformat files in a directory in
 
 * `path`
 
-  Path to the terraform configuration
+  Path containing terraform files
 
   - Type: string
   - Optional

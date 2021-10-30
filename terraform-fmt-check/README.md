@@ -11,7 +11,7 @@ If any files are not correctly formatted a failing GitHub check will be added fo
 
 * `path`
 
-  Path to the terraform configuration
+  Path containing terraform files
 
   - Type: string
   - Optional

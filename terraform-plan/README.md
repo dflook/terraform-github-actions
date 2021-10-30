@@ -18,7 +18,7 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `path`
 
-  Path to the terraform configuration
+  Path to the terraform root module to apply
 
   - Type: string
   - Optional
@@ -34,7 +34,7 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `label`
 
-  An friendly name for the environment the terraform configuration is for.
+  A friendly name for the environment the terraform configuration is for.
   This will be used in the PR comment for easy identification.
 
   If set, must be the same as the `label` used in the corresponding `terraform-apply` command.
@@ -106,14 +106,6 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   - Type: string
   - Optional
 
-* `parallelism`
-
-  Limit the number of concurrent operations
-
-  - Type: number
-  - Optional
-  - Default: 10
-
 * `replace`
 
   List of resources to replace if any update to them is required, one per line.
@@ -153,6 +145,14 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   - Type: string
   - Optional
   - Default: true
+
+* `parallelism`
+
+  Limit the number of concurrent operations
+
+  - Type: number
+  - Optional
+  - Default: The terraform default (10)
 
 * ~~`var`~~
 

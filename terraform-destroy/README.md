@@ -9,7 +9,7 @@ This action uses the `terraform destroy` command to destroy all resources in a t
 
 * `path`
 
-  Path to the terraform configuration
+  Path to the terraform root module
 
   - Type: string
   - Optional
@@ -38,28 +38,29 @@ This action uses the `terraform destroy` command to destroy all resources in a t
   ```
 
   Variables set here override any given in `var_file`s.
+  This **can** be used with remote backends such as Terraform Cloud/Enterprise, with variables set in the remote workspace having precedence.
+
+  > :warning: Secret values are not masked in the PR comment. Set a `label` to avoid revealing the variables in the PR.
 
   - Type: string
   - Optional
 
-* ~~`var`~~
-
-  > :warning: **Deprecated**: Use the `variables` input instead.
-
-  Comma separated list of terraform vars to set
-
-  - Type: string
-  - Optional
+* `var_file`
 
   List of tfvars files to use, one per line.
   Paths should be relative to the GitHub Actions workspace
-
+  
   ```yaml
   with:
     var_file: |
       common.tfvars
       prod.tfvars
   ```
+
+  This **can** be used with remote backends such as Terraform Cloud/Enterprise, with variables set in the remote workspace having precedence.
+
+  - Type: string
+  - Optional
 
 * `backend_config`
 
@@ -92,7 +93,16 @@ This action uses the `terraform destroy` command to destroy all resources in a t
 
   - Type: number
   - Optional
-  - Default: 10
+  - Default: The terraform default (10)
+
+* ~~`var`~~
+
+  > :warning: **Deprecated**: Use the `variables` input instead.
+
+  Comma separated list of terraform vars to set
+
+  - Type: string
+  - Optional
 
 ## Outputs
 

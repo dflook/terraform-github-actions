@@ -8,7 +8,7 @@ Creates a new terraform workspace. If the workspace already exists, succeeds wit
 
 * `path`
 
-  Path to the terraform configuration
+  Path to the terraform root module
 
   - Type: string
   - Optional

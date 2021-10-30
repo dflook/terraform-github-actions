@@ -10,7 +10,7 @@ This is intended to run on a schedule to notify if manual changes to your infras
 
 * `path`
 
-  Path to the terraform configuration to check
+  Path to the terraform root module to check
 
   - Type: string
   - Optional
@@ -92,7 +92,7 @@ This is intended to run on a schedule to notify if manual changes to your infras
 
   - Type: number
   - Optional
-  - Default: 10
+  - Default: The terraform default (10)
 
 * ~~`var`~~
 
