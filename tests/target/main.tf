@@ -2,12 +2,18 @@ resource "random_string" "count" {
   count = 1
 
   length = var.length
+
+  special = false
+  min_special = 0
 }
 
 resource "random_string" "foreach" {
   for_each = toset(["hello"])
 
   length = var.length
+
+  special = false
+  min_special = 0
 }
 
 variable "length" {

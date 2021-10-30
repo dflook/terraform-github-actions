@@ -39,7 +39,7 @@ if [[ "$GITHUB_EVENT_NAME" == "pull_request" || "$GITHUB_EVENT_NAME" == "issue_c
         fi
 
         if [[ $PLAN_EXIT -eq 1 ]]; then
-            if ! STATUS="Failed to generate plan in $(job_markdown_ref)" github_pr_comment plan <"$STEP_TMP_DIR/terraform_plan.stderr" 2>"$STEP_TMP_DIR/github_pr_comment.stderr"; then
+            if ! STATUS=":x: Failed to generate plan in $(job_markdown_ref)" github_pr_comment plan <"$STEP_TMP_DIR/terraform_plan.stderr" 2>"$STEP_TMP_DIR/github_pr_comment.stderr"; then
                 debug_file "$STEP_TMP_DIR/github_pr_comment.stderr"
                 exit 1
             else
@@ -54,7 +54,7 @@ if [[ "$GITHUB_EVENT_NAME" == "pull_request" || "$GITHUB_EVENT_NAME" == "issue_c
                 TF_CHANGES=true
             fi
 
-            if ! TF_CHANGES=$TF_CHANGES STATUS="Plan generated in $(job_markdown_ref)" github_pr_comment plan <"$STEP_TMP_DIR/plan.txt" 2>"$STEP_TMP_DIR/github_pr_comment.stderr"; then
+            if ! TF_CHANGES=$TF_CHANGES STATUS=":memo: Plan generated in $(job_markdown_ref)" github_pr_comment plan <"$STEP_TMP_DIR/plan.txt" 2>"$STEP_TMP_DIR/github_pr_comment.stderr"; then
                 debug_file "$STEP_TMP_DIR/github_pr_comment.stderr"
                 exit 1
             else

@@ -30,12 +30,15 @@ def convert_to_github(outputs: Dict) -> Iterable[str]:
             yield f'::set-output name={name}::{value}'
 
 if __name__ == '__main__':
+
+    input_string = sys.stdin.read()
     try:
-        outputs = json.load(sys.stdin)
+        outputs = json.loads(input_string)
         if not isinstance(outputs, dict):
             raise Exception('Unable to parse outputs')
     except:
-        exit(1)
+        sys.stderr.write(input_string)
+        raise
 
     for line in convert_to_github(outputs):
         print(line)

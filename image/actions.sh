@@ -85,6 +85,10 @@ function setup() {
         exit 1
     fi
 
+    if ! github_comment_react +1 2>"$STEP_TMP_DIR/github_comment_react.stderr"; then
+        debug_file "$STEP_TMP_DIR/github_comment_react.stderr"
+    fi
+
     local TERRAFORM_BIN_DIR
     TERRAFORM_BIN_DIR="$JOB_TMP_DIR/terraform-bin-dir"
     # tfswitch guesses the wrong home directory...
@@ -185,12 +189,21 @@ function init-backend() {
 }
 
 function select-workspace() {
+    local WORKSPACE_EXIT
+
+    set +e
     (cd "$INPUT_PATH" && terraform workspace select "$INPUT_WORKSPACE") >"$STEP_TMP_DIR/workspace_select" 2>&1
+    WORKSPACE_EXIT=$?
+    set -e
 
     if [[ -s "$STEP_TMP_DIR/workspace_select" ]]; then
         start_group "Selecting workspace"
         cat "$STEP_TMP_DIR/workspace_select"
         end_group
+    fi
+
+    if [[ $WORKSPACE_EXIT -ne 0 ]]; then
+        exit $WORKSPACE_EXIT
     fi
 }
 

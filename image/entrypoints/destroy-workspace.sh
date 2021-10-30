@@ -31,4 +31,5 @@ workspace=$INPUT_WORKSPACE
 INPUT_WORKSPACE=default
 init-backend
 
+debug_log terraform workspace delete -no-color -lock-timeout=300s "$workspace"
 (cd "$INPUT_PATH" && terraform workspace delete -no-color -lock-timeout=300s "$workspace")
