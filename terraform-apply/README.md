@@ -129,11 +129,26 @@ These input values must be the same as any `terraform-plan` for the same configu
   - Optional
   - Default: 10
 
+* `replace`
+
+  List of resources to replace if any update to them is required.
+
+  Only available with supported terraform versions (v0.15.2 onwards).
+
+  ```yaml
+  with:
+    replace: |
+      kubernetes_secret.tls_cert_public
+      kubernetes_secret.tls_cert_private
+  ```
+
+  - Type: string
+  - Optional
+
 * `target`
 
   List of resources to apply, one per line.
   The apply operation will be limited to these resources and their dependencies.
-  This only takes effect if auto_approve is also set to `true`.
 
   ```yaml
   with:

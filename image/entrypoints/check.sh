@@ -26,6 +26,7 @@ fi
 
 if [[ $PLAN_EXIT -eq 1 ]]; then
     echo "Error running terraform"
+    cat >&2 "$STEP_TMP_DIR/terraform_plan.stderr"
     exit 1
 
 elif [[ $PLAN_EXIT -eq 2 ]]; then

@@ -31,6 +31,14 @@ inputs:
     description: Limit the number of concurrent operations
     required: false
     default: 0
+  target:
+    description: List of resources to target for the plan, one per line
+    required: false
+    default: ""
+  replace:
+    description: List of resources to replace if an update is required, one per line
+    required: false
+    default: ""
   label:
     description: A friendly name for this plan
     required: false

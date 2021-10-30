@@ -11,12 +11,6 @@ set-plan-args
 
 PLAN_OUT="$STEP_TMP_DIR/plan.out"
 
-if [[ "$INPUT_AUTO_APPROVE" == "true" && -n "$INPUT_TARGET" ]]; then
-    for target in $(echo "$INPUT_TARGET" | tr ',' '\n'); do
-        PLAN_ARGS="$PLAN_ARGS -target $target"
-    done
-fi
-
 if [[ -v GITHUB_TOKEN ]]; then
     update_status "Applying plan in $(job_markdown_ref)"
 fi
@@ -24,11 +18,25 @@ fi
 exec 3>&1
 
 function apply() {
+    local APPLY_EXIT
 
     set +e
-    # shellcheck disable=SC2086
-    (cd "$INPUT_PATH" && terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PLAN_OUT) | $TFMASK
-    local APPLY_EXIT=${PIPESTATUS[0]}
+    if [[ -n "$PLAN_OUT" ]]; then
+        # shellcheck disable=SC2086
+        debug_log terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT
+        # shellcheck disable=SC2086
+        (cd "$INPUT_PATH" && terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT) | $TFMASK
+        APPLY_EXIT=${PIPESTATUS[0]}
+    else
+        # There is no plan file to apply, since the remote backend can't produce them.
+        # Instead we need to do an auto approved apply using the arguments we would normally use for the plan
+
+        # shellcheck disable=SC2086
+        debug_log terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS
+        # shellcheck disable=SC2086
+        (cd "$INPUT_PATH" && terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS) | $TFMASK
+        APPLY_EXIT=${PIPESTATUS[0]}
+    fi
     set -e
 
     if [[ $APPLY_EXIT -eq 0 ]]; then
@@ -59,7 +67,7 @@ if [[ $PLAN_EXIT -eq 1 ]]; then
 fi
 
 if [[ $PLAN_EXIT -eq 1 ]]; then
-    cat "$STEP_TMP_DIR/terraform_plan.stderr"
+    cat >&2 "$STEP_TMP_DIR/terraform_plan.stderr"
 
     update_status "Error applying plan in $(job_markdown_ref)"
     exit 1

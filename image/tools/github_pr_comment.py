@@ -63,6 +63,8 @@ class ActionInputs(TypedDict):
     INPUT_WORKSPACE: str
     INPUT_LABEL: str
     INPUT_ADD_GITHUB_COMMENT: str
+    INPUT_TARGET: str
+    INPUT_REPLACE: str
 
 
 def plan_identifier(action_inputs: ActionInputs) -> str:
@@ -110,6 +112,14 @@ def plan_identifier(action_inputs: ActionInputs) -> str:
 
     if action_inputs["INPUT_WORKSPACE"] != 'default':
         label += f' in the __{action_inputs["INPUT_WORKSPACE"]}__ workspace'
+
+    if action_inputs["INPUT_TARGET"]:
+        label += '\nTargeting resources: '
+        label += ', '.join(f'`{res.strip()}`' for res in action_inputs['INPUT_TARGET'].splitlines())
+
+    if action_inputs["INPUT_REPLACE"]:
+        label += '\nReplacing resources: '
+        label += ', '.join(f'`{res.strip()}`' for res in action_inputs['INPUT_REPLACE'].splitlines())
 
     backend_config = mask_backend_config()
     if backend_config:

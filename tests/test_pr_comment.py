@@ -13,7 +13,10 @@ def action_inputs(*,
                   variables='',
                   var='',
                   var_file='',
-                  label='', ) -> ActionInputs:
+                  label='',
+                  target='',
+                  replace=''
+                  ) -> ActionInputs:
     return ActionInputs(
         INPUT_WORKSPACE=workspace,
         INPUT_PATH=path,
@@ -23,7 +26,9 @@ def action_inputs(*,
         INPUT_VAR=var,
         INPUT_VAR_FILE=var_file,
         INPUT_LABEL=label,
-        INPUT_ADD_GITHUB_COMMENT='true'
+        INPUT_ADD_GITHUB_COMMENT='true',
+        INPUT_TARGET=target,
+        INPUT_REPLACE=replace
     )
 
 
@@ -229,6 +234,55 @@ Testing'''
 
     assert format_body(inputs, plan, status, 10).splitlines() == expected.splitlines()
 
+def test_target():
+    inputs = action_inputs(
+        path='/test/terraform',
+        target='''kubernetes_secret.tls_cert_public[0]
+kubernetes_secret.tls_cert_private'''
+    )
+
+    status = 'Testing'
+
+    expected = '''Terraform plan in __/test/terraform__
+Targeting resources: `kubernetes_secret.tls_cert_public[0]`, `kubernetes_secret.tls_cert_private`
+<details open>
+<summary>Plan: 1 to add, 0 to change, 0 to destroy.</summary>
+
+```hcl
+An execution plan has been generated and is shown below.
+...
+Plan: 1 to add, 0 to change, 0 to destroy.
+```
+</details>
+
+Testing'''
+
+    assert format_body(inputs, plan, status, 10).splitlines() == expected.splitlines()
+
+def test_replace():
+    inputs = action_inputs(
+        path='/test/terraform',
+        replace='''kubernetes_secret.tls_cert_public[0]
+kubernetes_secret.tls_cert_private'''
+    )
+
+    status = 'Testing'
+
+    expected = '''Terraform plan in __/test/terraform__
+Replacing resources: `kubernetes_secret.tls_cert_public[0]`, `kubernetes_secret.tls_cert_private`
+<details open>
+<summary>Plan: 1 to add, 0 to change, 0 to destroy.</summary>
+
+```hcl
+An execution plan has been generated and is shown below.
+...
+Plan: 1 to add, 0 to change, 0 to destroy.
+```
+</details>
+
+Testing'''
+
+    assert format_body(inputs, plan, status, 10).splitlines() == expected.splitlines()
 
 def test_backend_config_file():
     inputs = action_inputs(
@@ -262,12 +316,18 @@ def test_all():
         var='myvar=hello',
         var_file='vars.tf',
         backend_config='bucket=mybucket,password=secret',
-        backend_config_file='backend.tf'
+        backend_config_file='backend.tf',
+        target = '''kubernetes_secret.tls_cert_public[0]
+kubernetes_secret.tls_cert_private''',
+        replace='''kubernetes_secret.tls_cert_public[0]
+kubernetes_secret.tls_cert_private'''
     )
 
     status = 'Testing'
 
     expected = '''Terraform plan in __/test/terraform__ in the __test__ workspace
+Targeting resources: `kubernetes_secret.tls_cert_public[0]`, `kubernetes_secret.tls_cert_private`
+Replacing resources: `kubernetes_secret.tls_cert_public[0]`, `kubernetes_secret.tls_cert_private`
 With backend config: `bucket=mybucket`
 With backend config files: `backend.tf`
 With vars: `myvar=hello`

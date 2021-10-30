@@ -9,7 +9,7 @@ If the triggering event relates to a PR it will add a comment on the PR containi
     <img src="plan.png" width="600">
 </p>
 
-The `GITHUB_TOKEN` environment variable is must be set for the PR comment to be added.
+The `GITHUB_TOKEN` environment variable must be set for the PR comment to be added.
 The action can be run on other events, which prints the plan to the workflow log.
 
 The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/master/terraform-apply) action can be used to apply the generated plan.
@@ -113,6 +113,36 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   - Type: number
   - Optional
   - Default: 10
+
+* `replace`
+
+  List of resources to replace if any update to them is required, one per line.
+
+  Only available with terraform versions that support replace (v0.15.2 onwards).
+
+  ```yaml
+  with:
+    replace: |
+      random_password.database
+  ```
+
+  - Type: string
+  - Optional
+
+* `target`
+
+  List of resources to apply, one per line.
+  The plan will be limited to these resources and their dependencies.
+
+  ```yaml
+  with:
+    target: |
+      kubernetes_secret.tls_cert_public
+      kubernetes_secret.tls_cert_private
+  ```
+
+  - Type: string
+  - Optional
 
 * `add_github_comment`
 

@@ -9,8 +9,19 @@ init-backend
 select-workspace
 set-plan-args
 
-# shellcheck disable=SC2086
-if ! (cd "$INPUT_PATH" && terraform destroy -input=false -auto-approve -lock-timeout=300s $PLAN_ARGS); then
+exec 3>&1
+
+destroy
+
+if [[ $DESTROY_EXIT -eq 1 ]]; then
+    if grep -q "Run variables are currently not supported" "$STEP_TMP_DIR/terraform_destroy.stderr"; then
+        set-remote-plan-args
+        destroy
+    fi
+fi
+
+if [[ $DESTROY_EXIT -eq 1 ]]; then
+    cat >&2 "$STEP_TMP_DIR/terraform_destroy.stderr"
     set_output failure-reason destroy-failed
     exit 1
 fi
