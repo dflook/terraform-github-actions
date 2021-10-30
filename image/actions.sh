@@ -211,14 +211,13 @@ function set-common-plan-args() {
     fi
 
     if [[ -v INPUT_REPLACE ]]; then
-      if [[ -n "$INPUT_REPLACE" ]]; then
-          for target in $(echo "$INPUT_REPLACE" | tr ',' '\n'); do
-              PLAN_ARGS="$PLAN_ARGS -replace $target"
-          done
-      fi
+        if [[ -n "$INPUT_REPLACE" ]]; then
+            for target in $(echo "$INPUT_REPLACE" | tr ',' '\n'); do
+                PLAN_ARGS="$PLAN_ARGS -replace $target"
+            done
+        fi
     fi
 }
-
 
 function set-plan-args() {
     set-common-plan-args
@@ -251,7 +250,7 @@ function set-remote-plan-args() {
     if [[ -n "$INPUT_VAR_FILE" ]]; then
         for file in $(echo "$INPUT_VAR_FILE" | tr ',' '\n'); do
             cp "$file" "$INPUT_PATH/zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.auto.tfvars"
-            AUTO_TFVARS_COUNTER=$(( AUTO_TFVARS_COUNTER + 1 ))
+            AUTO_TFVARS_COUNTER=$((AUTO_TFVARS_COUNTER + 1))
         done
     fi
 
@@ -291,8 +290,8 @@ function write_credentials() {
 
     chmod 700 /.ssh
     if [[ -v TERRAFORM_SSH_KEY ]]; then
-      echo "$TERRAFORM_SSH_KEY" >>/.ssh/id_rsa
-      chmod 600 /.ssh/id_rsa
+        echo "$TERRAFORM_SSH_KEY" >>/.ssh/id_rsa
+        chmod 600 /.ssh/id_rsa
     fi
 
     debug_cmd git config --list
@@ -331,9 +330,9 @@ function destroy() {
     set +e
     # shellcheck disable=SC2086
     (cd "$INPUT_PATH" && terraform destroy -input=false -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS) \
-      2>"$STEP_TMP_DIR/terraform_destroy.stderr" \
-      | tee /dev/fd/3 \
-        >"$STEP_TMP_DIR/terraform_destroy.stdout"
+        2>"$STEP_TMP_DIR/terraform_destroy.stderr" \
+        | tee /dev/fd/3 \
+            >"$STEP_TMP_DIR/terraform_destroy.stdout"
 
     # shellcheck disable=SC2034
     DESTROY_EXIT=${PIPESTATUS[0]}
