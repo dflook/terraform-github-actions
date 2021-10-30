@@ -108,7 +108,7 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `replace`
 
-  List of resources to replace if any update to them is required, one per line.
+  List of resources to replace, one per line.
 
   Only available with terraform versions that support replace (v0.15.2 onwards).
 

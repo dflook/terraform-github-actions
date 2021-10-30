@@ -123,9 +123,9 @@ These input values must be the same as any `terraform-plan` for the same configu
 
 * `replace`
 
-  List of resources to replace if any update to them is required.
+  List of resources to replace, one per line.
 
-  Only available with supported terraform versions (v0.15.2 onwards).
+  Only available with terraform versions that support replace (v0.15.2 onwards).
 
   ```yaml
   with:

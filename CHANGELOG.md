@@ -8,15 +8,33 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.17.3` to use an exact release
-- `@v1.17` to use the latest patch release for the specific minor version
+- `@v1.18.0` to use an exact release
+- `@v1.18` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
 
-## [1.17.3] - 2021-10-29
+## [1.18.0] - 2021-10-30
 
-### Fixed
-- Compatability with Terraform v1.0.10 - Thanks [kylewlacy](https://github.com/kylewlacy)!
-- Now makes even fewer github api requests to avoid rate limiting.
+### Added
+- A new `replace` input for [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/master/terraform-plan#inputs) and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/master/terraform-apply#inputs)
+
+  This instructs terraform to replace the specified resources, and is available with terraform versions that support replace (v0.15.2 onwards).
+
+  ```yaml
+  with:
+    replace: |
+      random_password.database
+  ```
+
+- A `target` input for [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/master/terraform-plan#inputs) to match [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/master/terraform-apply#inputs)
+
+  `target` limits the plan to the specified resources and their dependencies. This change removes the restriction that `target` can only be used with `auto_approve`.
+
+  ```yaml
+  with:
+    target: |
+      kubernetes_secret.tls_cert_public
+      kubernetes_secret.tls_cert_private
+  ```
 
 ## [1.17.2] - 2021-10-13
 
@@ -271,6 +289,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.18.0]: https://github.com/dflook/terraform-github-actions/compare/v1.17.3...v1.18.0
 [1.17.3]: https://github.com/dflook/terraform-github-actions/compare/v1.17.2...v1.17.3
 [1.17.2]: https://github.com/dflook/terraform-github-actions/compare/v1.17.1...v1.17.2
 [1.17.1]: https://github.com/dflook/terraform-github-actions/compare/v1.17.0...v1.17.1
