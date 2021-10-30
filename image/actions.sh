@@ -307,6 +307,7 @@ function plan() {
         PLAN_OUT_ARG=""
     fi
 
+    # shellcheck disable=SC2086
     debug_log terraform plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT_ARG $PLAN_ARGS
 
     set +e
@@ -318,27 +319,32 @@ function plan() {
         | compact_plan \
             >"$STEP_TMP_DIR/plan.txt"
 
+    # shellcheck disable=SC2034
     PLAN_EXIT=${PIPESTATUS[0]}
     set -e
 }
 
 function destroy() {
+    # shellcheck disable=SC2086
     debug_log terraform destroy -input=false -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS
 
     set +e
+    # shellcheck disable=SC2086
     (cd "$INPUT_PATH" && terraform destroy -input=false -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS) \
       2>"$STEP_TMP_DIR/terraform_destroy.stderr" \
       | tee /dev/fd/3 \
         >"$STEP_TMP_DIR/terraform_destroy.stdout"
 
+    # shellcheck disable=SC2034
     DESTROY_EXIT=${PIPESTATUS[0]}
     set -e
 }
 
 # Every file written to disk should use one of these directories
-readonly STEP_TMP_DIR="/tmp"
-readonly JOB_TMP_DIR="$HOME/.dflook-terraform-github-actions"
-readonly WORKSPACE_TMP_DIR=".dflook-terraform-github-actions/$(random_string)"
+STEP_TMP_DIR="/tmp"
+JOB_TMP_DIR="$HOME/.dflook-terraform-github-actions"
+WORKSPACE_TMP_DIR=".dflook-terraform-github-actions/$(random_string)"
+readonly STEP_TMP_DIR JOB_TMP_DIR WORKSPACE_TMP_DIR
 export STEP_TMP_DIR JOB_TMP_DIR WORKSPACE_TMP_DIR
 
 function fix_owners() {

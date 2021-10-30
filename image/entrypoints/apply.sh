@@ -22,6 +22,7 @@ function apply() {
 
     set +e
     if [[ -n "$PLAN_OUT" ]]; then
+        # shellcheck disable=SC2086
         debug_log terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT
         # shellcheck disable=SC2086
         (cd "$INPUT_PATH" && terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT) | $TFMASK
@@ -30,6 +31,7 @@ function apply() {
         # There is no plan file to apply, since the remote backend can't produce them.
         # Instead we need to do an auto approved apply using the arguments we would normally use for the plan
 
+        # shellcheck disable=SC2086
         debug_log terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS
         # shellcheck disable=SC2086
         (cd "$INPUT_PATH" && terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS) | $TFMASK
