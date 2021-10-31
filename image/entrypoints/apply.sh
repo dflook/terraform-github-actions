@@ -12,7 +12,7 @@ set-plan-args
 PLAN_OUT="$STEP_TMP_DIR/plan.out"
 
 if [[ -v GITHUB_TOKEN ]]; then
-    update_status "Applying plan in $(job_markdown_ref)"
+    update_status ":orange_circle: Applying plan in $(job_markdown_ref)"
 fi
 
 exec 3>&1
@@ -40,10 +40,10 @@ function apply() {
     set -e
 
     if [[ $APPLY_EXIT -eq 0 ]]; then
-        update_status "Plan applied in $(job_markdown_ref)"
+        update_status ":white_check_mark: Plan applied in $(job_markdown_ref)"
     else
         set_output failure-reason apply-failed
-        update_status "Error applying plan in $(job_markdown_ref)"
+        update_status ":x: Error applying plan in $(job_markdown_ref)"
         exit 1
     fi
 }
@@ -69,7 +69,7 @@ fi
 if [[ $PLAN_EXIT -eq 1 ]]; then
     cat >&2 "$STEP_TMP_DIR/terraform_plan.stderr"
 
-    update_status "Error applying plan in $(job_markdown_ref)"
+    update_status ":x: Error applying plan in $(job_markdown_ref)"
     exit 1
 fi
 
@@ -110,7 +110,7 @@ else
     else
         echo "Not applying the plan - it has changed from the plan on the PR"
         echo "The plan on the PR must be up to date. Alternatively, set the auto_approve input to 'true' to apply outdated plans"
-        update_status "Plan not applied in $(job_markdown_ref) (Plan has changed)"
+        update_status ":x: Plan not applied in $(job_markdown_ref) (Plan has changed)"
 
         echo "Plan changes:"
         debug_log diff "$STEP_TMP_DIR/plan.txt" "$STEP_TMP_DIR/approved-plan.txt"

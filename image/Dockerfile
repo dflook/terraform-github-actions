@@ -13,6 +13,7 @@ COPY tools/convert_version.py /usr/local/bin/convert_version
 COPY tools/workspace_exists.py /usr/local/bin/workspace_exists
 COPY tools/compact_plan.py /usr/local/bin/compact_plan
 COPY tools/format_tf_credentials.py /usr/local/bin/format_tf_credentials
+COPY tools/github_comment_react.py /usr/local/bin/github_comment_react
 
 RUN echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config \
  && echo "IdentityFile /.ssh/id_rsa" >> /etc/ssh/ssh_config \

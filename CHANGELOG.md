@@ -12,6 +12,12 @@ When using an action you can specify the version as:
 - `@v1.18` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
 
+## Unreleased
+
+### Changed
+- When triggered by `issue_comment` or `pull_request_review_comment` events, the action will first add a :+1: reaction to the comment
+- PR comment status messages lead with a single emoji that gives a progress update at a glance
+
 ## [1.18.0] - 2021-10-30
 
 ### Added
