@@ -8,15 +8,16 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.18.0` to use an exact release
-- `@v1.18` to use the latest patch release for the specific minor version
+- `@v1.19.0` to use an exact release
+- `@v1.19` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
 
-## Unreleased
+## [1.19.0] - 2021-11-01
 
 ### Changed
 - When triggered by `issue_comment` or `pull_request_review_comment` events, the action will first add a :+1: reaction to the comment
-- PR comment status messages lead with a single emoji that gives a progress update at a glance
+- PR comment status messages include a single emoji that shows progress at a glance
+- Actions that don't write to the terraform state no longer lock it.
 
 ## [1.18.0] - 2021-10-30
 
@@ -295,6 +296,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.19.0]: https://github.com/dflook/terraform-github-actions/compare/v1.18.0...v1.19.0
 [1.18.0]: https://github.com/dflook/terraform-github-actions/compare/v1.17.3...v1.18.0
 [1.17.3]: https://github.com/dflook/terraform-github-actions/compare/v1.17.2...v1.17.3
 [1.17.2]: https://github.com/dflook/terraform-github-actions/compare/v1.17.1...v1.17.2
