@@ -9,10 +9,10 @@ init-backend
 select-workspace
 set-plan-args
 
-PLAN_OUT="$STEP_TMP_DIR/plan.out"
-
 exec 3>&1
 
+PLAN_OUT="$STEP_TMP_DIR/plan.out"
+PLAN_ARGS="$PLAN_ARGS -lock=false"
 plan
 
 if [[ $PLAN_EXIT -eq 1 ]]; then
@@ -20,6 +20,7 @@ if [[ $PLAN_EXIT -eq 1 ]]; then
         # This terraform module is using the remote backend, which is deficient.
         set-remote-plan-args
         PLAN_OUT=""
+        PLAN_ARGS="$PLAN_ARGS -lock=false"
         plan
     fi
 fi
