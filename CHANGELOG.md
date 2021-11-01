@@ -12,6 +12,7 @@ When using an action you can specify the version as:
 - `@v1.19` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
 
+
 ## [1.19.0] - 2021-11-01
 
 ### Changed
