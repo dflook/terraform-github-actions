@@ -361,6 +361,8 @@ function output_state() {
     cp "$STEP_TMP_DIR/terraform_state_list.stdout" "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/state-list.txt"
     set_output state_list_path "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/state-list.txt"
 
+    local SHOW_EXIT
+
     set +e
     debug_log terraform show -no-color -json
     (cd "$INPUT_PATH" && terraform show -no-color -json) \
@@ -370,18 +372,17 @@ function output_state() {
     SHOW_EXIT=$?
     set -e
 
-    if [[ $SHOW_EXIT -ne 0 ]]; then
+    if [[ $SHOW_EXIT -eq 0 ]]; then
+        cp "$STEP_TMP_DIR/terraform_show.stdout" "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/state.json"
+        set_output state_json_path "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/state.json"
+    else
         if grep -Fq "Usage: terraform show " "$STEP_TMP_DIR/terraform_show.stderr"; then
             debug_file "$STEP_TMP_DIR/terraform_show.stderr"
-            exit 0
         else
             cat "$STEP_TMP_DIR/terraform_show.stderr" >&2
             exit $SHOW_EXIT
         fi
     fi
-
-    cp "$STEP_TMP_DIR/terraform_show.stdout" "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/state.json"
-    set_output state_json_path "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/state.json"
 }
 
 # Every file written to disk should use one of these directories
