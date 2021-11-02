@@ -354,7 +354,7 @@ function destroy() {
 
 function output_state() {
     debug_log terraform show -no-color -json
-    (cd "$INPUT_PATH" && terraform terraform show -no-color -json) \
+    (cd "$INPUT_PATH" && terraform show -no-color -json) \
         >"$STEP_TMP_DIR/terraform_state_list.stdout"
 
     mkdir -p "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR"
@@ -373,6 +373,7 @@ function output_state() {
     set -e
 
     if [[ $SHOW_EXIT -eq 0 ]]; then
+        cat "$STEP_TMP_DIR/terraform_show.stderr" >&2
         cp "$STEP_TMP_DIR/terraform_show.stdout" "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/state.json"
         set_output state_json_path "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/state.json"
     else
