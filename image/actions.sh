@@ -352,6 +352,38 @@ function destroy() {
     set -e
 }
 
+function output_state() {
+    debug_log terraform show -no-color -json
+    (cd "$INPUT_PATH" && terraform terraform show -no-color -json) \
+        >"$STEP_TMP_DIR/terraform_state_list.stdout"
+
+    mkdir -p "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR"
+    cp "$STEP_TMP_DIR/terraform_state_list.stdout" "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/state-list.txt"
+    set_output state_list_path "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/state-list.txt"
+
+    set +e
+    debug_log terraform show -no-color -json
+    (cd "$INPUT_PATH" && terraform show -no-color -json) \
+        2>"$STEP_TMP_DIR/terraform_show.stderr" \
+        >"$STEP_TMP_DIR/terraform_show.stdout"
+
+    SHOW_EXIT=$?
+    set -e
+
+    if [[ $SHOW_EXIT -ne 0 ]]; then
+        if grep -Fq "Usage: terraform show " "$STEP_TMP_DIR/terraform_show.stderr"; then
+            debug_file "$STEP_TMP_DIR/terraform_show.stderr"
+            exit 0
+        else
+            cat "$STEP_TMP_DIR/terraform_show.stderr" >&2
+            exit $SHOW_EXIT
+        fi
+    fi
+
+    cp "$STEP_TMP_DIR/terraform_show.stdout" "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/state.json"
+    set_output state_json_path "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/state.json"
+}
+
 # Every file written to disk should use one of these directories
 STEP_TMP_DIR="/tmp"
 JOB_TMP_DIR="$HOME/.dflook-terraform-github-actions"

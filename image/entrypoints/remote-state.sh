@@ -19,3 +19,4 @@ setup
 init-backend
 select-workspace
 output
+output_state
