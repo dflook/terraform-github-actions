@@ -67,7 +67,7 @@ class ActionInputs(TypedDict):
     INPUT_REPLACE: str
 
 
-def plan_identifier(action_inputs: ActionInputs) -> str:
+def plan_identifier(pr_url: PrUrl, action_inputs: ActionInputs) -> Tuple[str, str]:
     def mask_backend_config() -> Optional[str]:
 
         bad_words = [
@@ -105,8 +105,33 @@ def plan_identifier(action_inputs: ActionInputs) -> str:
 
         return ','.join(clean)
 
+    def calculate_plan_hash(pr_url: PrUrl, plan_id: Dict[str, str]) -> str:
+        plan_hash = hashlib.sha256(pr_url.encode())
+
+        if plan_id['label']:
+            plan_hash.update(plan_id['label'].encode())
+        else:
+            plan_hash.update(str(plan_id).encode())
+
+        return plan_hash.hexdigest()
+
+    ####
+
+    plan_hash = calculate_plan_hash(pr_url, {
+        'label': action_inputs['INPUT_LABEL'],
+        'path': action_inputs['INPUT_PATH'],
+        'workspace': action_inputs['INPUT_WORKSPACE'],
+        'backend_config': action_inputs['INPUT_BACKEND_CONFIG'],
+        'backend_config_file': action_inputs['INPUT_BACKEND_CONFIG_FILE'],
+        'variables': action_inputs['INPUT_VARIABLES'],
+        'var': action_inputs['INPUT_VAR'],
+        'var_file': action_inputs['INPUT_VAR_FILE'],
+        'target': action_inputs['INPUT_TARGET'],
+        'replace': action_inputs['INPUT_REPLACE'],
+    })
+
     if action_inputs['INPUT_LABEL']:
-        return f'Terraform plan for __{action_inputs["INPUT_LABEL"]}__'
+        return plan_hash, f'Terraform plan for __{action_inputs["INPUT_LABEL"]}__'
 
     label = f'Terraform plan in __{action_inputs["INPUT_PATH"]}__'
 
@@ -147,7 +172,7 @@ def plan_identifier(action_inputs: ActionInputs) -> str:
         else:
             label += f'\nWith variables: `{stripped_vars}`'
 
-    return label
+    return plan_hash, label
 
 
 def github_api_request(method: str, *args, **kwargs) -> requests.Response:
@@ -289,8 +314,7 @@ def create_summary(plan) -> Optional[str]:
     return summary
 
 
-def format_body(action_inputs: ActionInputs, plan: Plan, status: Status, collapse_threshold: int) -> str:
-
+def format_body(pr_url: PrUrl, action_inputs: ActionInputs, plan: Plan, status: Status, collapse_threshold: int) -> str:
     details_open = ''
     highlighting = ''
 
@@ -307,9 +331,12 @@ def format_body(action_inputs: ActionInputs, plan: Plan, status: Status, collaps
     if summary_line is None:
         details_open = ' open'
 
-    body = f'''{plan_identifier(action_inputs)}
-<details{details_open}>
-{ f'<summary>{summary_line}</summary>' if summary_line is not None else '' }
+    plan_hash, plan_label = plan_identifier(pr_url, action_inputs)
+
+    body = f'''<!--{plan_hash}-->
+{plan_label}
+<details {details_open}>
+{f'<summary>{summary_line}</summary>' if summary_line is not None else ''}
 
 ```{highlighting}
 {plan}
@@ -381,20 +408,24 @@ def find_issue_url(pr_url: str) -> IssueUrl:
     return cast(IssueUrl, issue_url)
 
 
-def find_comment(issue_url: IssueUrl, username: str, action_inputs: ActionInputs) -> Tuple[Optional[CommentUrl], Optional[Plan]]:
+def find_comment(pr_url: PrUrl, issue_url: IssueUrl, username: str, action_inputs: ActionInputs) -> Tuple[Optional[CommentUrl], Optional[Plan]]:
     debug('Looking for an existing comment:')
 
-    plan_id = plan_identifier(action_inputs)
+    plan_hash, plan_label = plan_identifier(pr_url, action_inputs)
 
     for comment in paginate(issue_url):
         debug(json.dumps(comment))
         if comment['user']['login'] == username:
-            match = re.match(rf'{re.escape(plan_id)}.*```(?:hcl)?(.*?)```.*', comment['body'], re.DOTALL)
+            match = re.match(rf'<!--{plan_hash}-->.*```(?:hcl)?(.*?)```.*', comment['body'], re.DOTALL)
+            if match:
+                return comment['url'], cast(Plan, match.group(1).strip())
 
+            match = re.match(rf'{re.escape(plan_label)}.*```(?:hcl)?(.*?)```.*', comment['body'], re.DOTALL)
             if match:
                 return comment['url'], cast(Plan, match.group(1).strip())
 
     return None, None
+
 
 def read_step_cache() -> Dict[str, str]:
     try:
@@ -405,6 +436,7 @@ def read_step_cache() -> Dict[str, str]:
         debug(str(e))
         return {}
 
+
 def save_step_cache(**kwargs) -> None:
     try:
         with open(os.path.join(step_tmp_dir, 'github_pr_comment.cache'), 'w') as f:
@@ -412,6 +444,7 @@ def save_step_cache(**kwargs) -> None:
             debug('step cache saved')
     except Exception as e:
         debug(str(e))
+
 
 def main() -> None:
     if len(sys.argv) < 2:
@@ -453,7 +486,7 @@ def main() -> None:
         debug(f'comment_url from step cache: {comment_url}')
         debug(f'plan from step cache: {plan}')
     else:
-        comment_url, plan = find_comment(issue_url, username, action_inputs)
+        comment_url, plan = find_comment(pr_url, issue_url, username, action_inputs)
         debug(f'discovered comment_url: {comment_url}')
         debug(f'discovered plan: {plan}')
 
@@ -467,14 +500,14 @@ def main() -> None:
         if action_inputs['INPUT_ADD_GITHUB_COMMENT'] == 'changes-only' and os.environ.get('TF_CHANGES', 'true') == 'false':
             only_if_exists = True
 
-        body = format_body(action_inputs, plan, status, collapse_threshold)
+        body = format_body(pr_url, action_inputs, plan, status, collapse_threshold)
         comment_url = update_comment(issue_url, comment_url, body, only_if_exists)
 
     elif sys.argv[1] == 'status':
         if plan is None:
             exit(1)
         else:
-            body = format_body(action_inputs, plan, status, collapse_threshold)
+            body = format_body(pr_url, action_inputs, plan, status, collapse_threshold)
             comment_url = update_comment(issue_url, comment_url, body, only_if_exists)
 
     elif sys.argv[1] == 'get':
@@ -485,6 +518,7 @@ def main() -> None:
             f.write(plan)
 
     save_step_cache(pr_url=pr_url, issue_url=issue_url, comment_url=comment_url, plan=plan)
+
 
 if __name__ == '__main__':
     main()
