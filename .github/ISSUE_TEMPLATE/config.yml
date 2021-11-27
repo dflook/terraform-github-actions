@@ -1,0 +1,4 @@
+contact_links:
+  - name: Question
+    url: https://github.com/dflook/terraform-github-actions/discussions
+    about: Please ask questions as a new discussion if others would benefit from seeing the answer
