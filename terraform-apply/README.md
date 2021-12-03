@@ -202,6 +202,30 @@ These input values must be the same as any `terraform-plan` for the same configu
 
 ## Outputs
 
+* `json_plan_path`
+
+  This is the path to the generated plan in [JSON Output Format](https://www.terraform.io/docs/internals/json-format.html)
+  The path is relative to the Actions workspace.
+
+  This is not available when using terraform 0.11 or earlier.
+  This also won't be set if the backend type is `remote` - Terraform does not support saving remote plans.
+
+* `text_plan_path`
+
+  This is the path to the generated plan in a human-readable format.
+  The path is relative to the Actions workspace.
+  This won't be set if `auto_approve` is true while using a `remote` backend.
+
+* `failure-reason`
+
+  When the job outcome is `failure`, this output may be set. The value may be one of:
+
+  - `apply-failed` - The Terraform apply operation failed.
+  - `plan-changed` - The approved plan is no longer accurate, so the apply will not be attempted.
+
+  If the job fails for any other reason this will not be set.
+  This can be used with the Actions expression syntax to conditionally run steps.
+
 * Terraform Outputs
 
   An action output will be created for each output of the terraform configuration.
@@ -215,16 +239,6 @@ These input values must be the same as any `terraform-plan` for the same configu
 
   Running this action will produce a `service_hostname` output with the same value.
   See [terraform-output](https://github.com/dflook/terraform-github-actions/tree/master/terraform-output) for details.
-
-* `failure-reason`
-
-  When the job outcome is `failure`, this output may be set. The value may be one of:
-
-  - `apply-failed` - The terraform apply operation failed.
-  - `plan-changed` - The approved plan is no longer accurate, so the apply will not be attempted.
-
-  If the job fails for any other reason this will not be set.
-  This can be used with the Actions expression syntax to conditionally run steps.
 
 ## Environment Variables
 

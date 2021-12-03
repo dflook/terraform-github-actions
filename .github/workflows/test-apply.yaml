@@ -26,6 +26,16 @@ jobs:
             echo "::error:: output my_string not set correctly"
             exit 1
           fi
+          
+          if [[ $(jq -r .output_changes.my_string.actions[0] "${{ steps.output.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "No changes" '${{ steps.output.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi          
 
   apply_error:
     runs-on: ubuntu-latest
@@ -53,6 +63,17 @@ jobs:
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
+          
+          if [[ -n "${{ steps.apply.outputs.json_plan_path }}" ]]; then
+            echo "::error:: json_plan_path should not be set"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.apply.outputs.text_plan_path }}" ]]; then
+            echo "::error:: text_plan_path should not be set"
+            exit 1
+          fi   
+          
 
   apply_apply_error:
     runs-on: ubuntu-latest
@@ -88,6 +109,16 @@ jobs:
 
           if [[ "${{ steps.apply.outputs.failure-reason }}" != "apply-failed" ]]; then
             echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+          
+          if [[ $(jq -r .format_version "${{ steps.apply.outputs.json_plan_path }}") != "0.2" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "Terraform will perform the following actions" '${{ steps.apply.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
 
@@ -141,6 +172,39 @@ jobs:
         run: |
           if [[ "${{ steps.output.outputs.output_string }}" != "the_string" ]]; then
             echo "::error:: output s not set correctly"
+            exit 1
+          fi
+          
+          if [[ $(jq -r .output_changes.output_string.actions[0] "${{ steps.output.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "Terraform will perform the following actions" '${{ steps.output.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi          
+
+      - name: Apply
+        uses: ./terraform-apply
+        id: output
+        with:
+          path: tests/apply/changes
+
+      - name: Verify outputs
+        run: |
+          if [[ "${{ steps.output.outputs.output_string }}" != "the_string" ]]; then
+            echo "::error:: output s not set correctly"
+            exit 1
+          fi
+
+          if [[ $(jq -r .format_version "${{ steps.output.outputs.json_plan_path }}") != "0.2" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "No changes" '${{ steps.output.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
 
@@ -215,6 +279,16 @@ jobs:
             echo "::error:: output complex_output not set correctly"
             exit 1
           fi
+          
+          if [[ $(jq -r .output_changes.output_string.actions[0] "${{ steps.output.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "Terraform will perform the following actions" '${{ steps.output.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi                    
 
   backend_config_12:
     runs-on: ubuntu-latest
@@ -246,6 +320,16 @@ jobs:
             echo "::error:: output from backend_config file not set correctly"
             exit 1
           fi
+          
+          if [[ $(jq -r .output_changes.test.actions[0] "${{ steps.backend_config_file_12.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "No changes" '${{ steps.backend_config_file_12.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
 
       - name: Plan
         uses: ./terraform-plan
@@ -270,6 +354,16 @@ jobs:
         run: |
           if [[ "${{ steps.backend_config_12.outputs.test }}" != "hello" ]]; then
             echo "::error:: Output from backend_config not set correctly"
+            exit 1
+          fi
+          
+          if [[ $(jq -r .output_changes.test.actions[0] "${{ steps.backend_config_12.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "No changes" '${{ steps.backend_config_file_12.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
 
@@ -303,6 +397,16 @@ jobs:
             echo "::error:: output from backend_config file not set correctly"
             exit 1
           fi
+          
+          if [[ $(jq -r .output_changes.test.actions[0] "${{ steps.backend_config_file_13.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "No changes" '${{ steps.backend_config_file_13.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
 
       - name: Plan
         uses: ./terraform-plan
@@ -327,6 +431,16 @@ jobs:
         run: |
           if [[ "${{ steps.backend_config_13.outputs.test }}" != "hello" ]]; then
             echo "::error:: Output from backend_config not set correctly"
+            exit 1
+          fi
+          
+          if [[ $(jq -r .output_changes.test.actions[0] "${{ steps.backend_config_13.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "No changes" '${{ steps.backend_config_13.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
 
@@ -362,30 +476,16 @@ jobs:
             echo "::error:: output s not set correctly"
             exit 1
           fi
-
-  apply_changes_already_applied:
-    runs-on: ubuntu-latest
-    name: Apply when changes are already applied
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    needs:
-      - apply
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Apply
-        uses: ./terraform-apply
-        id: output
-        with:
-          path: tests/apply/changes
-
-      - name: Verify outputs
-        run: |
-          if [[ "${{ steps.output.outputs.output_string }}" != "the_string" ]]; then
-            echo "::error:: output s not set correctly"
+          
+          if [[ $(jq -r .output_changes.output_string.actions[0] "${{ steps.output.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json_plan_path not set correctly"
             exit 1
           fi
+
+          if ! grep -q "Terraform will perform the following actions" '${{ steps.output.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi          
 
   apply_no_changes:
     runs-on: ubuntu-latest
@@ -410,6 +510,16 @@ jobs:
             echo "::error:: output my_string not set correctly"
             exit 1
           fi
+          
+          if [[ $(jq -r .format_version "${{ steps.output.outputs.json_plan_path }}") != "0.2" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "No changes" '${{ steps.output.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi          
 
   apply_no_plan:
     runs-on: ubuntu-latest
@@ -433,6 +543,16 @@ jobs:
             echo "Apply did not fail correctly"
             exit 1
           fi
+          
+          if [[ $(jq -r .format_version "${{ steps.apply.outputs.json_plan_path }}") != "0.2" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "Terraform will perform the following actions" '${{ steps.apply.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi          
 
   apply_user_token:
     runs-on: ubuntu-latest
@@ -462,6 +582,16 @@ jobs:
             echo "::error:: output s not set correctly"
             exit 1
           fi
+
+          if [[ $(jq -r .output_changes.output_string.actions[0] "${{ steps.output.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "Terraform will perform the following actions" '${{ steps.output.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi          
 
   apply_vars:
     runs-on: ubuntu-latest

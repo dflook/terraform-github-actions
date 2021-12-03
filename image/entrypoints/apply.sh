@@ -73,6 +73,24 @@ if [[ $PLAN_EXIT -eq 1 ]]; then
     exit 1
 fi
 
+if [[ -z "$PLAN_OUT" && "$INPUT_AUTO_APPROVE" == "true" ]]; then
+    # Since we are doing an auto approved remote apply there is no point in planning beforehand
+    # No text_plan_path output for this run
+    :
+else
+    mkdir -p "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR"
+    cp "$STEP_TMP_DIR/plan.txt" "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/plan.txt"
+    set_output text_plan_path "$WORKSPACE_TMP_DIR/plan.txt"
+fi
+
+if [[ -n "$PLAN_OUT" ]]; then
+    if (cd "$INPUT_PATH" && terraform show -json "$PLAN_OUT") >"$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/plan.json" 2>"$STEP_TMP_DIR/terraform_show.stderr"; then
+        set_output json_plan_path "$WORKSPACE_TMP_DIR/plan.json"
+    else
+        debug_file "$STEP_TMP_DIR/terraform_show.stderr"
+    fi
+fi
+
 ### Apply the plan
 
 if [[ "$INPUT_AUTO_APPROVE" == "true" || $PLAN_EXIT -eq 0 ]]; then

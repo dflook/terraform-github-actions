@@ -127,7 +127,7 @@ jobs:
 
           cat '${{ steps.plan.outputs.json_plan_path }}'
           if [[ $(jq -r .output_changes.s.actions[0] "${{ steps.plan.outputs.json_plan_path }}") != "create" ]]; then
-            echo "::error:: json not set correctly"
+            echo "::error:: json_plan_path not set correctly"
             exit 1
           fi
 
@@ -162,7 +162,7 @@ jobs:
 
           cat '${{ steps.plan.outputs.json_plan_path }}'
           if [[ $(jq -r .output_changes.s.actions[0] "${{ steps.plan.outputs.json_plan_path }}") != "create" ]]; then
-            echo "::error:: json not set correctly"
+            echo "::error:: json_plan_path not set correctly"
             exit 1
           fi
 
@@ -198,7 +198,7 @@ jobs:
 
           cat '${{ steps.plan.outputs.json_plan_path }}'
           if [[ $(jq -r .output_changes.s.actions[0] "${{ steps.plan.outputs.json_plan_path }}") != "create" ]]; then
-            echo "::error:: json not set correctly"
+            echo "::error:: json_plan_path not set correctly"
             exit 1
           fi
 
@@ -234,7 +234,7 @@ jobs:
 
           cat '${{ steps.plan.outputs.json_plan_path }}'
           if [[ $(jq -r .output_changes.s.actions[0] "${{ steps.plan.outputs.json_plan_path }}") != "create" ]]; then
-            echo "::error:: json not set correctly"
+            echo "::error:: json_plan_path not set correctly"
             exit 1
           fi
 
@@ -269,7 +269,7 @@ jobs:
 
           cat '${{ steps.plan.outputs.json_plan_path }}'
           if [[ $(jq -r .output_changes.s.actions[0] "${{ steps.plan.outputs.json_plan_path }}") != "create" ]]; then
-            echo "::error:: json not set correctly"
+            echo "::error:: json_plan_path not set correctly"
             exit 1
           fi
 
@@ -304,7 +304,7 @@ jobs:
 
           cat '${{ steps.plan.outputs.json_plan_path }}'
           if [[ $(jq -r .output_changes.s.actions[0] "${{ steps.plan.outputs.json_plan_path }}") != "create" ]]; then
-            echo "::error:: json not set correctly"
+            echo "::error:: json_plan_path not set correctly"
             exit 1
           fi
 
@@ -333,7 +333,7 @@ jobs:
         run: |
           cat '${{ steps.plan.outputs.json_plan_path }}'
           if [[ $(jq -r .output_changes.s.actions[0] "${{ steps.plan.outputs.json_plan_path }}") != "create" ]]; then
-            echo "::error:: json not set correctly"
+            echo "::error:: json_plan_path not set correctly"
             exit 1
           fi
 
