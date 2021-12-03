@@ -51,6 +51,14 @@ inputs:
     required: false
     default: ""
 
+outputs:
+  text_plan_path:
+    description: Path to a file in the workspace containing the generated plan in human readble format. This won't be set if the backend type is `remote` and `auto_approve` is `true`
+  json_plan_path:
+    description: Path to a file in the workspace containing the generated plan in JSON format. This won't be set if the backend type is `remote`.
+  failure-reason:
+    description: The reason for the build failure. May be `apply-failed` or `plan-changed`.
+
 runs:
   using: docker
   image: ../image/Dockerfile

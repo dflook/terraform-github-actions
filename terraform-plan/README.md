@@ -327,7 +327,7 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `text_plan_path`
 
-  This is the path to the generated plan in a human readable format.
+  This is the path to the generated plan in a human-readable format.
   The path is relative to the Actions workspace.
 
 ## Example usage
