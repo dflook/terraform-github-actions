@@ -23,6 +23,14 @@ If the terraform configuration is not valid, the build is failed.
   - Optional
   - Default: The action workspace
 
+* `workspace`
+
+  Terraform workspace to use for the `terraform.workspace` value while validating.
+
+  - Type: string
+  - Optional
+  - Default: `default`
+
 ## Outputs
 
 * `failure-reason`

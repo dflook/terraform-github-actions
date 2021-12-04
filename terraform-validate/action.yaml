@@ -7,6 +7,10 @@ inputs:
     description: Path to the terraform configuration
     required: false
     default: .
+  workspace:
+    description: Name of the workspace to use for the `terraform.workspace` value while validating.
+    required: false
+    default: default
 
 runs:
   using: docker
