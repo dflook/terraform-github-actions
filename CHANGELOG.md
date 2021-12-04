@@ -8,9 +8,14 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.20.0` to use an exact release
+- `@v1.20.1` to use an exact release
 - `@v1.20` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.20.1] - 2021-12-04
+
+### Fixed
+- There was a problem selecting the workspace when using the `remote` backend with a full workspace `name` in the backend block.
 
 ## [1.20.0] - 2021-12-03
 
@@ -307,6 +312,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.20.1]: https://github.com/dflook/terraform-github-actions/compare/v1.20.0...v1.20.1
 [1.20.0]: https://github.com/dflook/terraform-github-actions/compare/v1.19.0...v1.20.0
 [1.19.0]: https://github.com/dflook/terraform-github-actions/compare/v1.18.0...v1.19.0
 [1.18.0]: https://github.com/dflook/terraform-github-actions/compare/v1.17.3...v1.18.0
