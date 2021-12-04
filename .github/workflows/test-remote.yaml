@@ -79,9 +79,28 @@ jobs:
           workspace: ${{ github.head_ref }}-1
           backend_config: "token=${{ secrets.TF_API_TOKEN }}"
 
-      - name: Verify auto_apply terraform outputs
+      - name: Verify auto_apply terraform outputs with workspace prefix
         run: |
           if [[ "${{ steps.output.outputs.default }}" != "default" ]]; then
+            echo "::error:: Variables not set correctly"
+            exit 1
+          fi
+
+      - name: Setup terraform with workspace name
+        run: |
+          mkdir fixed-workspace-name
+          sed -e 's/prefix.*/name = "github-actions-${{ github.head_ref }}-1"/' tests/terraform-cloud/main.tf > fixed-workspace-name/main.tf
+
+      - name: Get outputs
+        uses: ./terraform-output
+        id: name-output
+        with:
+          path: fixed-workspace-name
+          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+
+      - name: Verify auto_apply terraform outputs with workspace name
+        run: |
+          if [[ "${{ steps.name-output.outputs.default }}" != "default" ]]; then
             echo "::error:: Variables not set correctly"
             exit 1
           fi
