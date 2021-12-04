@@ -8,9 +8,18 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.20.1` to use an exact release
-- `@v1.20` to use the latest patch release for the specific minor version
+- `@v1.21.0` to use an exact release
+- `@v1.21` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.21.0] - 2021-12-04
+
+### Added
+- A new `workspace` input for [dflook/terraform-validate](https://github.com/dflook/terraform-github-actions/tree/master/terraform-validate) 
+  allows validating usage of `terraform.workspace` in the terraform code.
+
+  Terraform doesn't initialize `terraform.workspace` based on the backend configuration when running a validate operation.
+  This new input allows setting the full name of the workspace to use while validating, even when you wouldn't normally do so for a plan/apply (e.g. when using the `remote` backend)
 
 ## [1.20.1] - 2021-12-04
 
@@ -312,6 +321,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.21.0]: https://github.com/dflook/terraform-github-actions/compare/v1.20.1...v1.21.0
 [1.20.1]: https://github.com/dflook/terraform-github-actions/compare/v1.20.0...v1.20.1
 [1.20.0]: https://github.com/dflook/terraform-github-actions/compare/v1.19.0...v1.20.0
 [1.19.0]: https://github.com/dflook/terraform-github-actions/compare/v1.18.0...v1.19.0
