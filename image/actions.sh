@@ -198,16 +198,19 @@ function select-workspace() {
 
     if [[ -s "$STEP_TMP_DIR/workspace_select" ]]; then
         start_group "Selecting workspace"
-        cat "$STEP_TMP_DIR/workspace_select"
+
+        if [[ $WORKSPACE_EXIT -ne 0 ]] && grep -q "workspaces not supported" "$STEP_TMP_DIR/workspace_select" && [[ $INPUT_WORKSPACE == "default" ]]; then
+            echo "The full name of a remote workspace is set by the terraform configuration, selecting a different one is not supported"
+            WORKSPACE_EXIT=0
+        else
+            cat "$STEP_TMP_DIR/workspace_select"
+        fi
+
         end_group
     fi
 
     if [[ $WORKSPACE_EXIT -ne 0 ]]; then
-        if grep -q "workspaces not supported" "$STEP_TMP_DIR/workspace_select" && [[ $INPUT_WORKSPACE == "default" ]]; then
-            echo "The full name of a remote workspace is set by the terraform configuration, selecting a different one is not supported"
-        else
-            exit $WORKSPACE_EXIT
-        fi
+        exit $WORKSPACE_EXIT
     fi
 }
 
