@@ -30,7 +30,7 @@ inputs:
   parallelism:
     description: Limit the number of concurrent operations
     required: false
-    default: 0
+    default: "0"
   target:
     description: List of resources to target for the plan, one per line
     required: false
@@ -46,7 +46,7 @@ inputs:
   add_github_comment:
     description: Add the plan to a GitHub PR
     required: false
-    default: true
+    default: "true"
 
 outputs:
   changes:

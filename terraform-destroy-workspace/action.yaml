@@ -29,7 +29,7 @@ inputs:
   parallelism:
     description: Limit the number of concurrent operations
     required: false
-    default: 0
+    default: "0"
 
 runs:
   using: docker
