@@ -1,6 +1,7 @@
 name: Test terraform-new/destroy-workspace
 
-on: [pull_request]
+on:
+  - pull_request
 
 jobs:
   create_workspace_12:

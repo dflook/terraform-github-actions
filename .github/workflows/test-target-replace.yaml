@@ -1,6 +1,7 @@
 name: Test plan target and replace
 
-on: [pull_request]
+on:
+  - pull_request
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -240,7 +241,7 @@ jobs:
         with:
           path: tests/target
           workspace: ${{ github.head_ref }}
-          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Plan with no changes in targets
         uses: ./terraform-plan
@@ -253,7 +254,7 @@ jobs:
           variables: |
             length = 5
           workspace: ${{ github.head_ref }}
-          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Verify outputs
         run: |
@@ -272,7 +273,7 @@ jobs:
           variables: |
             length = 5
           workspace: ${{ github.head_ref }}
-          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Verify outputs
         run: |
@@ -291,7 +292,7 @@ jobs:
           variables: |
             length = 5
           workspace: ${{ github.head_ref }}
-          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Verify outputs
         run: |
@@ -310,7 +311,7 @@ jobs:
           variables: |
             length = 6
           workspace: ${{ github.head_ref }}
-          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Verify outputs
         run: |
@@ -329,7 +330,7 @@ jobs:
           variables: |
             length = 6
           workspace: ${{ github.head_ref }}
-          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Verify outputs
         run: |
@@ -355,7 +356,7 @@ jobs:
             length = 10
           auto_approve: true
           workspace: ${{ github.head_ref }}
-          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Verify outputs
         run: |
@@ -382,7 +383,7 @@ jobs:
           variables: |
             length = 10
           workspace: ${{ github.head_ref }}
-          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Verify outputs
         run: |
@@ -404,7 +405,7 @@ jobs:
           variables: |
             length = 10
           workspace: ${{ github.head_ref }}
-          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Verify outputs
         run: |
@@ -429,7 +430,7 @@ jobs:
           variables: |
             length = 10
           workspace: ${{ github.head_ref }}
-          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Verify outputs
         run: |
@@ -449,7 +450,7 @@ jobs:
           variables: |
             length = 10
           workspace: ${{ github.head_ref }}
-          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Verify outputs
         run: |
@@ -470,4 +471,4 @@ jobs:
           workspace: ${{ github.head_ref }}
           variables: |
             length = 10
-          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          backend_config: token=${{ secrets.TF_API_TOKEN }}

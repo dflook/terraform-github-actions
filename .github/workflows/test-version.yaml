@@ -1,6 +1,7 @@
 name: Test terraform-version
 
-on: [pull_request]
+on:
+  - pull_request
 
 jobs:
   required_version:

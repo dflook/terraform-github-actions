@@ -1,6 +1,7 @@
 name: Test workflow command supression
 
-on: [ pull_request ]
+on:
+  - pull_request
 
 jobs:
   workflow_command_injection:
