@@ -2,7 +2,8 @@ name: Release
 
 on:
   release:
-    types: [released]
+    types:
+      - released
 
 jobs:
   image:

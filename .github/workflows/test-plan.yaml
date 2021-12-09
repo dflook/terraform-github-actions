@@ -1,6 +1,7 @@
 name: Test terraform-plan
 
-on: [pull_request]
+on:
+  - pull_request
 
 jobs:
   no_changes:

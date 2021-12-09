@@ -1,6 +1,7 @@
 name: pull_request_review test
 
-on: [pull_request_review]
+on:
+  - pull_request_review
 
 jobs:
   apply:

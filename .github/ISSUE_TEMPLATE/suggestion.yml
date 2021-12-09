@@ -1,6 +1,7 @@
 name: Suggestion
 description: I have a suggestion for an enhancement
-labels: ["enhancement"]
+labels:
+  - enhancement
 body:
   - type: textarea
     id: suggestion

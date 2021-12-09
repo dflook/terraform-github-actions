@@ -34,14 +34,15 @@ inputs:
   parallelism:
     description: Limit the number of concurrent operations
     required: false
-    default: 0
+    default: "0"
   label:
     description: A friendly name for this plan
     required: false
     default: ""
   auto_approve:
     description: Automatically approve and apply plan
-    default: false
+    required: false
+    default: "false"
   target:
     description: List of resources to target for the apply, one per line
     required: false

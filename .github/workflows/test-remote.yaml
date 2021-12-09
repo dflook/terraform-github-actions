@@ -1,6 +1,7 @@
 name: Test remote backend
 
-on: [pull_request]
+on:
+  - pull_request
 
 jobs:
   workspaces:
@@ -15,21 +16,21 @@ jobs:
         with:
           path: tests/terraform-cloud
           workspace: ${{ github.head_ref }}-1
-          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Create a new workspace when it doesn't exist
         uses: ./terraform-new-workspace
         with:
           path: tests/terraform-cloud
           workspace: ${{ github.head_ref }}-2
-          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Create a new workspace when it already exists
         uses: ./terraform-new-workspace
         with:
           path: tests/terraform-cloud
           workspace: ${{ github.head_ref }}-2
-          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Auto apply workspace
         uses: ./terraform-apply
@@ -37,7 +38,7 @@ jobs:
         with:
           path: tests/terraform-cloud
           workspace: ${{ github.head_ref }}-1
-          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
           auto_approve: true
           var_file: |
             tests/terraform-cloud/my_variable.tfvars
@@ -60,12 +61,12 @@ jobs:
             echo "::error:: Variables not set correctly"
             exit 1
           fi
-          
+
           if [[ -n "${{ steps.auto_apply.outputs.text_plan_path }}" ]]; then
             echo "::error:: text_plan_path should not be set"
             exit 1
           fi
-          
+
           if [[ -n "${{ steps.auto_apply.outputs.json_plan_path }}" ]]; then
             echo "::error:: json_plan_path should not be set"
             exit 1
@@ -77,7 +78,7 @@ jobs:
         with:
           path: tests/terraform-cloud
           workspace: ${{ github.head_ref }}-1
-          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Verify auto_apply terraform outputs with workspace prefix
         run: |
@@ -96,7 +97,7 @@ jobs:
         id: name-output
         with:
           path: fixed-workspace-name
-          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Verify auto_apply terraform outputs with workspace name
         run: |
@@ -110,7 +111,7 @@ jobs:
         with:
           path: tests/terraform-cloud
           workspace: ${{ github.head_ref }}-1
-          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
           var_file: |
             tests/terraform-cloud/my_variable.tfvars
           variables: |
@@ -123,7 +124,7 @@ jobs:
         with:
           path: tests/terraform-cloud
           workspace: ${{ github.head_ref }}-1
-          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
           var_file: |
             tests/terraform-cloud/my_variable.tfvars
           variables: |
@@ -146,7 +147,7 @@ jobs:
         with:
           path: tests/terraform-cloud
           workspace: ${{ github.head_ref }}-1
-          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Plan workspace
         uses: ./terraform-plan
@@ -156,7 +157,7 @@ jobs:
         with:
           path: tests/terraform-cloud
           workspace: ${{ github.head_ref }}-2
-          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
           var_file: |
             tests/terraform-cloud/my_variable.tfvars
           variables: |
@@ -182,7 +183,7 @@ jobs:
         with:
           path: tests/terraform-cloud
           workspace: ${{ github.head_ref }}-2
-          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
           var_file: |
             tests/terraform-cloud/my_variable.tfvars
           variables: |
@@ -204,23 +205,23 @@ jobs:
             echo "::error:: Variables not set correctly"
             exit 1
           fi
-          
+
           if ! grep -q "Terraform will perform the following actions" '${{ steps.apply.outputs.text_plan_path }}'; then
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
-          
+
           if [[ -n "${{ steps.apply.outputs.json_plan_path }}" ]]; then
             echo "::error:: json_plan_path should not be set"
             exit 1
-          fi          
+          fi
 
       - name: Destroy the last workspace
         uses: ./terraform-destroy-workspace
         with:
           path: tests/terraform-cloud
           workspace: ${{ github.head_ref }}-2
-          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Destroy non-existant workspace
         uses: ./terraform-destroy-workspace
@@ -229,7 +230,7 @@ jobs:
         with:
           path: tests/terraform-cloud
           workspace: ${{ github.head_ref }}-1
-          backend_config: "token=${{ secrets.TF_API_TOKEN }}"
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
       - name: Check failed to destroy
         run: |
           if [[ "${{ steps.destroy-non-existant-workspace.outcome }}" != "failure" ]]; then

@@ -1,6 +1,7 @@
 name: Test changes-only PR comment
 
-on: [pull_request]
+on:
+  - pull_request
 
 jobs:
   no_changes:

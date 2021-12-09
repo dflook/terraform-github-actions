@@ -2,7 +2,7 @@ name: Retain images
 
 on:
   schedule:
-    - cron: "0 0 1 * *"
+    - cron: 0 0 1 * *
 
 jobs:
   pull_image:
