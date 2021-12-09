@@ -11,6 +11,9 @@ set +e
 (cd "$INPUT_PATH" && terraform workspace list -no-color) \
     2>"$STEP_TMP_DIR/terraform_workspace_list.stderr" \
     >"$STEP_TMP_DIR/terraform_workspace_list.stdout"
+    
+cat $STEP_TMP_DIR/terraform_workspace_list.stderr
+cat $STEP_TMP_DIR/terraform_workspace_list.stdout
 
 readonly TF_WS_LIST_EXIT=${PIPESTATUS[0]}
 set -e
