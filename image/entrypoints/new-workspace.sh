@@ -12,6 +12,7 @@ set +e
     2>"$STEP_TMP_DIR/terraform_workspace_list.stderr" \
     >"$STEP_TMP_DIR/terraform_workspace_list.stdout"
     
+echo test
 cat $STEP_TMP_DIR/terraform_workspace_list.stderr
 cat $STEP_TMP_DIR/terraform_workspace_list.stdout
 
