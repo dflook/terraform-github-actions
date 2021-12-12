@@ -233,6 +233,7 @@ jobs:
                 prefix = "github-actions-replace-"
               }
             }
+            required_version = "~> 1.0.4"
           }
           EOF
 

@@ -6,7 +6,11 @@ on:
 jobs:
   workspaces:
     runs-on: ubuntu-latest
-    name: Workspace management
+    name: Terraform Cloud
+    strategy:
+      fail-fast: false
+      matrix:
+        tf_version: ['0.13', '1.0']
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -14,21 +18,21 @@ jobs:
       - name: Create a new workspace with no existing workspaces
         uses: ./terraform-new-workspace
         with:
-          path: tests/terraform-cloud
+          path: tests/terraform-cloud/${{ matrix.tf_version }}
           workspace: ${{ github.head_ref }}-1
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Create a new workspace when it doesn't exist
         uses: ./terraform-new-workspace
         with:
-          path: tests/terraform-cloud
+          path: tests/terraform-cloud/${{ matrix.tf_version }}
           workspace: ${{ github.head_ref }}-2
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Create a new workspace when it already exists
         uses: ./terraform-new-workspace
         with:
-          path: tests/terraform-cloud
+          path: tests/terraform-cloud/${{ matrix.tf_version }}
           workspace: ${{ github.head_ref }}-2
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
@@ -36,12 +40,12 @@ jobs:
         uses: ./terraform-apply
         id: auto_apply
         with:
-          path: tests/terraform-cloud
+          path: tests/terraform-cloud/${{ matrix.tf_version }}
           workspace: ${{ github.head_ref }}-1
           backend_config: token=${{ secrets.TF_API_TOKEN }}
           auto_approve: true
           var_file: |
-            tests/terraform-cloud/my_variable.tfvars
+            tests/terraform-cloud/${{ matrix.tf_version }}/my_variable.tfvars
           variables: |
             from_variables="from_variables"
 
@@ -76,7 +80,7 @@ jobs:
         uses: ./terraform-output
         id: output
         with:
-          path: tests/terraform-cloud
+          path: tests/terraform-cloud/${{ matrix.tf_version }}
           workspace: ${{ github.head_ref }}-1
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
@@ -90,7 +94,11 @@ jobs:
       - name: Setup terraform with workspace name
         run: |
           mkdir fixed-workspace-name
-          sed -e 's/prefix.*/name = "github-actions-${{ github.head_ref }}-1"/' tests/terraform-cloud/main.tf > fixed-workspace-name/main.tf
+          if [[ "${{ matrix.tf_version }}" == "0.13" ]]; then
+            sed -e 's/prefix.*/name = "github-actions-0-13-${{ github.head_ref }}-1"/' tests/terraform-cloud/${{ matrix.tf_version }}/main.tf > fixed-workspace-name/main.tf
+          else
+            sed -e 's/prefix.*/name = "github-actions-1-1-${{ github.head_ref }}-1"/' tests/terraform-cloud/${{ matrix.tf_version }}/main.tf > fixed-workspace-name/main.tf
+          fi
 
       - name: Get outputs
         uses: ./terraform-output
@@ -109,11 +117,11 @@ jobs:
       - name: Check no changes
         uses: ./terraform-check
         with:
-          path: tests/terraform-cloud
+          path: tests/terraform-cloud/${{ matrix.tf_version }}
           workspace: ${{ github.head_ref }}-1
           backend_config: token=${{ secrets.TF_API_TOKEN }}
           var_file: |
-            tests/terraform-cloud/my_variable.tfvars
+            tests/terraform-cloud/${{ matrix.tf_version }}/my_variable.tfvars
           variables: |
             from_variables="from_variables"
 
@@ -122,11 +130,11 @@ jobs:
         id: check
         continue-on-error: true
         with:
-          path: tests/terraform-cloud
+          path: tests/terraform-cloud/${{ matrix.tf_version }}
           workspace: ${{ github.head_ref }}-1
           backend_config: token=${{ secrets.TF_API_TOKEN }}
           var_file: |
-            tests/terraform-cloud/my_variable.tfvars
+            tests/terraform-cloud/${{ matrix.tf_version }}/my_variable.tfvars
           variables: |
             from_variables="Changed!"
 
@@ -145,7 +153,7 @@ jobs:
       - name: Destroy workspace
         uses: ./terraform-destroy-workspace
         with:
-          path: tests/terraform-cloud
+          path: tests/terraform-cloud/${{ matrix.tf_version }}
           workspace: ${{ github.head_ref }}-1
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
@@ -155,11 +163,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          path: tests/terraform-cloud
+          path: tests/terraform-cloud/${{ matrix.tf_version }}
           workspace: ${{ github.head_ref }}-2
           backend_config: token=${{ secrets.TF_API_TOKEN }}
           var_file: |
-            tests/terraform-cloud/my_variable.tfvars
+            tests/terraform-cloud/${{ matrix.tf_version }}/my_variable.tfvars
           variables: |
             from_variables="from_variables"
 
@@ -181,11 +189,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          path: tests/terraform-cloud
+          path: tests/terraform-cloud/${{ matrix.tf_version }}
           workspace: ${{ github.head_ref }}-2
           backend_config: token=${{ secrets.TF_API_TOKEN }}
           var_file: |
-            tests/terraform-cloud/my_variable.tfvars
+            tests/terraform-cloud/${{ matrix.tf_version }}/my_variable.tfvars
           variables: |
             from_variables="from_variables"
 
@@ -219,7 +227,7 @@ jobs:
       - name: Destroy the last workspace
         uses: ./terraform-destroy-workspace
         with:
-          path: tests/terraform-cloud
+          path: tests/terraform-cloud/${{ matrix.tf_version }}
           workspace: ${{ github.head_ref }}-2
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
@@ -228,7 +236,7 @@ jobs:
         continue-on-error: true
         id: destroy-non-existant-workspace
         with:
-          path: tests/terraform-cloud
+          path: tests/terraform-cloud/${{ matrix.tf_version }}
           workspace: ${{ github.head_ref }}-1
           backend_config: token=${{ secrets.TF_API_TOKEN }}
       - name: Check failed to destroy

@@ -3,10 +3,10 @@ terraform {
     organization = "flooktech"
 
     workspaces {
-      prefix = "github-actions-"
+      prefix = "github-actions-1-1-"
     }
   }
-  required_version = "0.13.0"
+  required_version = "~> 1.0.0"
 }
 
 resource "random_id" "the_id" {

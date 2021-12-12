@@ -112,7 +112,7 @@ jobs:
             exit 1
           fi
 
-          if [[ $(jq -r .format_version "${{ steps.apply.outputs.json_plan_path }}") != "0.2" ]]; then
+          if [[ $(jq -r .format_version "${{ steps.apply.outputs.json_plan_path }}") != "1.0" ]]; then
             echo "::error:: json_plan_path not set correctly"
             exit 1
           fi
@@ -164,46 +164,46 @@ jobs:
 
       - name: Apply
         uses: ./terraform-apply
-        id: output
+        id: first-apply
         with:
           path: tests/apply/changes
 
       - name: Verify outputs
         run: |
-          if [[ "${{ steps.output.outputs.output_string }}" != "the_string" ]]; then
+          if [[ "${{ steps.first-apply.outputs.output_string }}" != "the_string" ]]; then
             echo "::error:: output s not set correctly"
             exit 1
           fi
 
-          if [[ $(jq -r .output_changes.output_string.actions[0] "${{ steps.output.outputs.json_plan_path }}") != "create" ]]; then
+          if [[ $(jq -r .output_changes.output_string.actions[0] "${{ steps.first-apply.outputs.json_plan_path }}") != "create" ]]; then
             echo "::error:: json_plan_path not set correctly"
             exit 1
           fi
 
-          if ! grep -q "Terraform will perform the following actions" '${{ steps.output.outputs.text_plan_path }}'; then
+          if ! grep -q "Terraform will perform the following actions" '${{ steps.first-apply.outputs.text_plan_path }}'; then
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
 
       - name: Apply
         uses: ./terraform-apply
-        id: output
+        id: second-apply
         with:
           path: tests/apply/changes
 
       - name: Verify outputs
         run: |
-          if [[ "${{ steps.output.outputs.output_string }}" != "the_string" ]]; then
+          if [[ "${{ steps.second-apply.outputs.output_string }}" != "the_string" ]]; then
             echo "::error:: output s not set correctly"
             exit 1
           fi
 
-          if [[ $(jq -r .format_version "${{ steps.output.outputs.json_plan_path }}") != "0.2" ]]; then
+          if [[ $(jq -r .format_version "${{ steps.second-apply.outputs.json_plan_path }}") != "1.0" ]]; then
             echo "::error:: json_plan_path not set correctly"
             exit 1
           fi
 
-          if ! grep -q "No changes" '${{ steps.output.outputs.text_plan_path }}'; then
+          if ! grep -q "No changes" '${{ steps.second-apply.outputs.text_plan_path }}'; then
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
@@ -511,7 +511,8 @@ jobs:
             exit 1
           fi
 
-          if [[ $(jq -r .format_version "${{ steps.output.outputs.json_plan_path }}") != "0.2" ]]; then
+          cat "${{ steps.output.outputs.json_plan_path }}"
+          if [[ $(jq -r .format_version "${{ steps.output.outputs.json_plan_path }}") != "0.1" ]]; then
             echo "::error:: json_plan_path not set correctly"
             exit 1
           fi
@@ -544,7 +545,7 @@ jobs:
             exit 1
           fi
 
-          if [[ $(jq -r .format_version "${{ steps.apply.outputs.json_plan_path }}") != "0.2" ]]; then
+          if [[ $(jq -r .format_version "${{ steps.apply.outputs.json_plan_path }}") != "1.0" ]]; then
             echo "::error:: json_plan_path not set correctly"
             exit 1
           fi

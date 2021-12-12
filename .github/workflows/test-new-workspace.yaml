@@ -4,9 +4,13 @@ on:
   - pull_request
 
 jobs:
-  create_workspace_12:
+  workspace_management:
     runs-on: ubuntu-latest
-    name: Workspace tests 0.12
+    name: Workspace management
+    strategy:
+      fail-fast: false
+      matrix:
+        tf_version: ['~> 0.12.0', '~> 0.13.0', '~> 0.14.0', '~> 1.0.0', '~> 1.1.0']
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -14,190 +18,36 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Create first workspace
-        uses: ./terraform-new-workspace
-        with:
-          path: tests/new-workspace/remote_12
-          workspace: my-first-workspace
-
-      - name: Create first workspace again
-        uses: ./terraform-new-workspace
-        with:
-          path: tests/new-workspace/remote_12
-          workspace: my-first-workspace
-
-      - name: Apply in first workspace
-        uses: ./terraform-apply
-        with:
-          path: tests/new-workspace/remote_12
-          workspace: my-first-workspace
-          variables: my_string="hello"
-          auto_approve: true
-
-      - name: Create a second workspace
-        uses: ./terraform-new-workspace
-        with:
-          path: tests/new-workspace/remote_12
-          workspace: ${{ github.head_ref }}
-
-      - name: Apply in second workspace
-        uses: ./terraform-apply
-        with:
-          path: tests/new-workspace/remote_12
-          workspace: ${{ github.head_ref }}
-          variables: my_string="world"
-          auto_approve: true
-
-      - name: Get first workspace outputs
-        uses: ./terraform-output
-        id: first_12
-        with:
-          path: tests/new-workspace/remote_12
-          workspace: my-first-workspace
-
-      - name: Get second workspace outputs
-        uses: ./terraform-output
-        id: second_12
-        with:
-          path: tests/new-workspace/remote_12
-          workspace: ${{ github.head_ref }}
-
-      - name: Verify outputs
+      - name: Setup remote backend
         run: |
-          if [[ "${{ steps.first_12.outputs.my_string }}" != "hello" ]]; then
-            echo "::error:: output my_string not set correctly for first workspace"
-            exit 1
-          fi
-
-          if [[ "${{ steps.second_12.outputs.my_string }}" != "world" ]]; then
-            echo "::error:: output my_string not set correctly for second workspace"
-            exit 1
-          fi
-
-      - name: Destroy first workspace
-        uses: ./terraform-destroy-workspace
-        with:
-          path: tests/new-workspace/remote_12
-          workspace: my-first-workspace
-          variables: my_string="hello"
-
-      - name: Destroy second workspace
-        uses: ./terraform-destroy-workspace
-        with:
-          path: tests/new-workspace/remote_12
-          workspace: ${{ github.head_ref }}
-          variables: my_string="world"
-
-  create_workspace_13:
-    runs-on: ubuntu-latest
-    name: Workspace tests 0.13
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+          cat >tests/new-workspace/backend.tf <<EOF
+          terraform {
+            backend "s3" {
+              bucket = "terraform-github-actions"
+              key    = "terraform-new-workspace-${{ matrix.tf_version }}"
+              region = "eu-west-2"
+            }
+          
+            required_version = "${{ matrix.tf_version }}"
+          }
+          EOF
 
       - name: Create first workspace
         uses: ./terraform-new-workspace
         with:
-          path: tests/new-workspace/remote_13
-          workspace: my-first-workspace
-
-      - name: Create first workspace again
-        uses: ./terraform-new-workspace
-        with:
-          path: tests/new-workspace/remote_13
-          workspace: my-first-workspace
-
-      - name: Apply in first workspace
-        uses: ./terraform-apply
-        with:
-          path: tests/new-workspace/remote_13
-          workspace: my-first-workspace
-          variables: my_string="hello"
-          auto_approve: true
-
-      - name: Create a second workspace
-        uses: ./terraform-new-workspace
-        with:
-          path: tests/new-workspace/remote_13
-          workspace: ${{ github.head_ref }}
-
-      - name: Apply in second workspace
-        uses: ./terraform-apply
-        with:
-          path: tests/new-workspace/remote_13
-          workspace: ${{ github.head_ref }}
-          variables: my_string="world"
-          auto_approve: true
-
-      - name: Get first workspace outputs
-        uses: ./terraform-output
-        id: first_13
-        with:
-          path: tests/new-workspace/remote_13
-          workspace: my-first-workspace
-
-      - name: Get second workspace outputs
-        uses: ./terraform-output
-        id: second_13
-        with:
-          path: tests/new-workspace/remote_13
-          workspace: ${{ github.head_ref }}
-
-      - name: Verify outputs
-        run: |
-          if [[ "${{ steps.first_13.outputs.my_string }}" != "hello" ]]; then
-            echo "::error:: output my_string not set correctly for first workspace"
-            exit 1
-          fi
-
-          if [[ "${{ steps.second_13.outputs.my_string }}" != "world" ]]; then
-            echo "::error:: output my_string not set correctly for second workspace"
-            exit 1
-          fi
-
-      - name: Destroy first workspace
-        uses: ./terraform-destroy-workspace
-        with:
-          path: tests/new-workspace/remote_13
-          workspace: my-first-workspace
-          variables: my_string="hello"
-
-      - name: Destroy second workspace
-        uses: ./terraform-destroy-workspace
-        with:
-          path: tests/new-workspace/remote_13
-          workspace: ${{ github.head_ref }}
-          variables: my_string="world"
-
-  create_workspace_14:
-    runs-on: ubuntu-latest
-    name: Workspace tests 0.14
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Create first workspace
-        uses: ./terraform-new-workspace
-        with:
-          path: tests/new-workspace/remote_14
+          path: tests/new-workspace
           workspace: test-workspace
 
       - name: Create first workspace again
         uses: ./terraform-new-workspace
         with:
-          path: tests/new-workspace/remote_14
+          path: tests/new-workspace
           workspace: test-workspace
 
       - name: Apply in first workspace
         uses: ./terraform-apply
         with:
-          path: tests/new-workspace/remote_14
+          path: tests/new-workspace
           workspace: test-workspace
           variables: my_string="hello"
           auto_approve: true
@@ -205,39 +55,39 @@ jobs:
       - name: Create a second workspace
         uses: ./terraform-new-workspace
         with:
-          path: tests/new-workspace/remote_14
+          path: tests/new-workspace
           workspace: ${{ github.head_ref }}
 
       - name: Apply in second workspace
         uses: ./terraform-apply
         with:
-          path: tests/new-workspace/remote_14
+          path: tests/new-workspace
           workspace: ${{ github.head_ref }}
           variables: my_string="world"
           auto_approve: true
 
       - name: Get first workspace outputs
         uses: ./terraform-output
-        id: first_14
+        id: first
         with:
-          path: tests/new-workspace/remote_14
+          path: tests/new-workspace
           workspace: test-workspace
 
       - name: Get second workspace outputs
         uses: ./terraform-output
-        id: second_14
+        id: second
         with:
-          path: tests/new-workspace/remote_14
+          path: tests/new-workspace
           workspace: ${{ github.head_ref }}
 
       - name: Verify outputs
         run: |
-          if [[ "${{ steps.first_14.outputs.my_string }}" != "hello" ]]; then
+          if [[ "${{ steps.first.outputs.my_string }}" != "hello" ]]; then
             echo "::error:: output my_string not set correctly for first workspace"
             exit 1
           fi
 
-          if [[ "${{ steps.second_14.outputs.my_string }}" != "world" ]]; then
+          if [[ "${{ steps.second.outputs.my_string }}" != "world" ]]; then
             echo "::error:: output my_string not set correctly for second workspace"
             exit 1
           fi
@@ -245,97 +95,13 @@ jobs:
       - name: Destroy first workspace
         uses: ./terraform-destroy-workspace
         with:
-          path: tests/new-workspace/remote_14
+          path: tests/new-workspace
           workspace: test-workspace
           variables: my_string="hello"
 
       - name: Destroy second workspace
         uses: ./terraform-destroy-workspace
         with:
-          path: tests/new-workspace/remote_14
-          workspace: ${{ github.head_ref }}
-          variables: my_string="world"
-
-  create_workspace_1_0_10:
-    runs-on: ubuntu-latest
-    name: Workspace tests 1.0.10
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Create first workspace
-        uses: ./terraform-new-workspace
-        with:
-          path: tests/new-workspace/remote_1_0_10
-          workspace: test-workspace
-
-      - name: Create first workspace again
-        uses: ./terraform-new-workspace
-        with:
-          path: tests/new-workspace/remote_1_0_10
-          workspace: test-workspace
-
-      - name: Apply in first workspace
-        uses: ./terraform-apply
-        with:
-          path: tests/new-workspace/remote_1_0_10
-          workspace: test-workspace
-          variables: my_string="hello"
-          auto_approve: true
-
-      - name: Create a second workspace
-        uses: ./terraform-new-workspace
-        with:
-          path: tests/new-workspace/remote_1_0_10
-          workspace: ${{ github.head_ref }}
-
-      - name: Apply in second workspace
-        uses: ./terraform-apply
-        with:
-          path: tests/new-workspace/remote_1_0_10
-          workspace: ${{ github.head_ref }}
-          variables: my_string="world"
-          auto_approve: true
-
-      - name: Get first workspace outputs
-        uses: ./terraform-output
-        id: first_1_0_10
-        with:
-          path: tests/new-workspace/remote_1_0_10
-          workspace: test-workspace
-
-      - name: Get second workspace outputs
-        uses: ./terraform-output
-        id: second_1_0_10
-        with:
-          path: tests/new-workspace/remote_1_0_10
-          workspace: ${{ github.head_ref }}
-
-      - name: Verify outputs
-        run: |
-          if [[ "${{ steps.first_1_0_10.outputs.my_string }}" != "hello" ]]; then
-            echo "::error:: output my_string not set correctly for first workspace"
-            exit 1
-          fi
-
-          if [[ "${{ steps.second_1_0_10.outputs.my_string }}" != "world" ]]; then
-            echo "::error:: output my_string not set correctly for second workspace"
-            exit 1
-          fi
-
-      - name: Destroy first workspace
-        uses: ./terraform-destroy-workspace
-        with:
-          path: tests/new-workspace/remote_1_0_10
-          workspace: test-workspace
-          variables: my_string="hello"
-
-      - name: Destroy second workspace
-        uses: ./terraform-destroy-workspace
-        with:
-          path: tests/new-workspace/remote_1_0_10
+          path: tests/new-workspace
           workspace: ${{ github.head_ref }}
           variables: my_string="world"
