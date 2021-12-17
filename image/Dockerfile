@@ -1,4 +1,11 @@
-FROM danielflook/terraform-github-actions-base:latest
+FROM danielflook/terraform-github-actions-base:terraform-version
+
+COPY src/ /tmp/src/
+COPY setup.py /tmp
+RUN pip install /tmp \
+ && rm -rf /tmp/src /tmp/setup.py \
+ && TERRAFORM_BIN_DIR="/usr/local/bin/terraform" terraform-version 0.9.0 \
+ && TERRAFORM_BIN_DIR="/usr/local/bin/terraform" terraform-version 0.12.0
 
 COPY entrypoints/ /entrypoints/
 COPY actions.sh /usr/local/actions.sh
@@ -6,7 +13,6 @@ COPY workflow_commands.sh /usr/local/workflow_commands.sh
 
 COPY tools/convert_validate_report.py /usr/local/bin/convert_validate_report
 COPY tools/github_pr_comment.py /usr/local/bin/github_pr_comment
-COPY tools/latest_terraform_version.py /usr/local/bin/latest_terraform_version
 COPY tools/convert_output.py /usr/local/bin/convert_output
 COPY tools/plan_cmp.py /usr/local/bin/plan_cmp
 COPY tools/convert_version.py /usr/local/bin/convert_version

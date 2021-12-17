@@ -1,0 +1,1166 @@
+{
+  "artifactory": {
+    "terraform": [
+      ">=0.9.0"
+    ],
+    "config_variables": {
+      "password": [
+        ">=0.9.0"
+      ],
+      "repo": [
+        ">=0.9.0"
+      ],
+      "subpath": [
+        ">=0.9.0"
+      ],
+      "url": [
+        ">=0.9.0"
+      ],
+      "username": [
+        ">=0.9.0"
+      ]
+    },
+    "environment_variables": {
+      "ARTIFACTORY_PASSWORD": [
+        ">=0.9.0"
+      ],
+      "ARTIFACTORY_URL": [
+        ">=0.9.0"
+      ],
+      "ARTIFACTORY_USERNAME": [
+        ">=0.9.0"
+      ]
+    }
+  },
+  "atlas": {
+    "terraform": [
+      ">=0.9.0",
+      "<=0.14.11"
+    ],
+    "config_variables": {
+      "access_token": [
+        ">=0.9.0",
+        "<=0.14.11"
+      ],
+      "address": [
+        ">=0.9.0",
+        "<=0.14.11"
+      ],
+      "name": [
+        ">=0.9.0",
+        "<=0.14.11"
+      ]
+    },
+    "environment_variables": {
+      "ATLAS_ADDRESS": [
+        ">=0.9.1",
+        "<=0.14.11"
+      ],
+      "ATLAS_TOKEN": [
+        ">=0.9.0",
+        "<=0.14.11"
+      ]
+    }
+  },
+  "azure": {
+    "terraform": [
+      ">=0.9.0"
+    ],
+    "config_variables": {
+      "access_key": [
+        ">=0.9.0"
+      ],
+      "arm_client_id": [
+        ">=0.9.0",
+        "<=0.14.11"
+      ],
+      "arm_client_secret": [
+        ">=0.9.0",
+        "<=0.14.11"
+      ],
+      "arm_subscription_id": [
+        ">=0.9.0",
+        "<=0.14.11"
+      ],
+      "arm_tenant_id": [
+        ">=0.9.0",
+        "<=0.14.11"
+      ],
+      "client_certificate_password": [
+        ">=0.13.1"
+      ],
+      "client_certificate_path": [
+        ">=0.13.1"
+      ],
+      "client_id": [
+        ">=0.12.0"
+      ],
+      "client_secret": [
+        ">=0.12.0"
+      ],
+      "container_name": [
+        ">=0.9.0"
+      ],
+      "endpoint": [
+        ">=0.12.0"
+      ],
+      "environment": [
+        ">=0.9.0"
+      ],
+      "key": [
+        ">=0.9.0"
+      ],
+      "lease_id": [
+        ">=0.9.0",
+        "<=0.10.2"
+      ],
+      "metadata_host": [
+        ">=0.13.1"
+      ],
+      "msi_endpoint": [
+        ">=0.12.0"
+      ],
+      "resource_group_name": [
+        ">=0.9.0"
+      ],
+      "sas_token": [
+        ">=0.12.0"
+      ],
+      "snapshot": [
+        ">=0.13.0"
+      ],
+      "storage_account_name": [
+        ">=0.9.0"
+      ],
+      "subscription_id": [
+        ">=0.12.0"
+      ],
+      "tenant_id": [
+        ">=0.12.0"
+      ],
+      "use_azuread_auth": [
+        ">=0.15.0"
+      ],
+      "use_microsoft_graph": [
+        ">=1.1.0"
+      ],
+      "use_msi": [
+        ">=0.12.0"
+      ]
+    },
+    "environment_variables": {
+      "ARM_ACCESS_KEY": [
+        ">=0.9.0"
+      ],
+      "ARM_CLIENT_CERTIFICATE_PASSWORD": [
+        ">=0.13.1"
+      ],
+      "ARM_CLIENT_CERTIFICATE_PATH": [
+        ">=0.13.1"
+      ],
+      "ARM_CLIENT_ID": [
+        ">=0.9.0"
+      ],
+      "ARM_CLIENT_SECRET": [
+        ">=0.9.0"
+      ],
+      "ARM_ENDPOINT": [
+        ">=0.12.0"
+      ],
+      "ARM_ENVIRONMENT": [
+        ">=0.9.0"
+      ],
+      "ARM_MSI_ENDPOINT": [
+        ">=0.12.0"
+      ],
+      "ARM_SAS_TOKEN": [
+        ">=0.12.0"
+      ],
+      "ARM_SNAPSHOT": [
+        ">=0.13.0"
+      ],
+      "ARM_SUBSCRIPTION_ID": [
+        ">=0.9.0"
+      ],
+      "ARM_TENANT_ID": [
+        ">=0.9.0"
+      ],
+      "ARM_USE_AZUREAD": [
+        ">=0.15.0"
+      ],
+      "ARM_USE_MSI": [
+        ">=0.12.0"
+      ],
+      "ARM_LEASE_ID": [
+        ">=0.9.0",
+        "<=0.10.2"
+      ]
+    }
+  },
+  "consul": {
+    "terraform": [
+      ">=0.9.0"
+    ],
+    "config_variables": {
+      "access_token": [
+        ">=0.9.0"
+      ],
+      "address": [
+        ">=0.9.0"
+      ],
+      "ca_file": [
+        ">=0.10.3"
+      ],
+      "cert_file": [
+        ">=0.10.3"
+      ],
+      "datacenter": [
+        ">=0.9.0"
+      ],
+      "gzip": [
+        ">=0.9.0"
+      ],
+      "http_auth": [
+        ">=0.9.0"
+      ],
+      "key_file": [
+        ">=0.10.3"
+      ],
+      "lock": [
+        ">=0.9.0"
+      ],
+      "path": [
+        ">=0.9.0"
+      ],
+      "scheme": [
+        ">=0.9.0"
+      ]
+    },
+    "environment_variables": {
+      "CONSUL_CACERT": [
+        ">=0.10.3"
+      ],
+      "CONSUL_CLIENT_CERT": [
+        ">=0.10.3"
+      ],
+      "CONSUL_CLIENT_KEY": [
+        ">=0.10.3"
+      ],
+      "CONSUL_HTTP_ADDR": [
+        ">=0.9.0"
+      ],
+      "CONSUL_HTTP_AUTH": [
+        ">=0.9.0"
+      ],
+      "CONSUL_HTTP_SSL": [
+        ">=0.9.0"
+      ],
+      "CONSUL_HTTP_TOKEN": [
+        ">=0.9.0"
+      ]
+    }
+  },
+  "cos": {
+    "terraform": [
+      ">=0.12.21"
+    ],
+    "config_variables": {
+      "acl": [
+        ">=0.12.21"
+      ],
+      "bucket": [
+        ">=0.12.21"
+      ],
+      "encrypt": [
+        ">=0.12.21"
+      ],
+      "key": [
+        ">=0.12.21"
+      ],
+      "prefix": [
+        ">=0.12.21"
+      ],
+      "region": [
+        ">=0.12.21"
+      ],
+      "secret_id": [
+        ">=0.12.21"
+      ],
+      "secret_key": [
+        ">=0.12.21"
+      ]
+    },
+    "environment_variables": {
+      "TENCENTCLOUD_REGION": [
+        ">=0.12.21"
+      ],
+      "TENCENTCLOUD_SECRET_ID": [
+        ">=0.12.21"
+      ],
+      "TENCENTCLOUD_SECRET_KEY": [
+        ">=0.12.21"
+      ]
+    }
+  },
+  "etcd": {
+    "terraform": [
+      ">=0.9.0"
+    ],
+    "config_variables": {
+      "endpoints": [
+        ">=0.9.0"
+      ],
+      "password": [
+        ">=0.9.0"
+      ],
+      "path": [
+        ">=0.9.0"
+      ],
+      "username": [
+        ">=0.9.0"
+      ]
+    }
+  },
+  "etcdv3": {
+    "terraform": [
+      ">=0.10.8"
+    ],
+    "config_variables": {
+      "cacert_path": [
+        ">=0.10.8"
+      ],
+      "cert_path": [
+        ">=0.10.8"
+      ],
+      "endpoints": [
+        ">=0.10.8"
+      ],
+      "key_path": [
+        ">=0.10.8"
+      ],
+      "lock": [
+        ">=0.10.8"
+      ],
+      "max_request_bytes": [
+        ">=1.0.3"
+      ],
+      "password": [
+        ">=0.10.8"
+      ],
+      "prefix": [
+        ">=0.10.8"
+      ],
+      "username": [
+        ">=0.10.8"
+      ]
+    },
+    "environment_variables": {
+      "ETCDV3_PASSWORD": [
+        ">=0.10.8"
+      ],
+      "ETCDV3_USERNAME": [
+        ">=0.10.8"
+      ]
+    }
+  },
+  "gcs": {
+    "terraform": [
+      ">=0.9.0"
+    ],
+    "config_variables": {
+      "access_token": [
+        ">=0.12.10"
+      ],
+      "bucket": [
+        ">=0.9.0"
+      ],
+      "credentials": [
+        ">=0.9.0"
+      ],
+      "encryption_key": [
+        ">=0.11.2"
+      ],
+      "impersonate_service_account": [
+        ">=0.14.0"
+      ],
+      "impersonate_service_account_delegates": [
+        ">=0.14.0"
+      ],
+      "path": [
+        ">=0.9.0",
+        "<=0.14.11"
+      ],
+      "prefix": [
+        ">=0.11.0"
+      ],
+      "project": [
+        ">=0.11.0",
+        "<=0.15.3"
+      ],
+      "region": [
+        ">=0.11.0",
+        "<=0.15.3"
+      ]
+    },
+    "environment_variables": {
+      "GOOGLE_BACKEND_CREDENTIALS": [
+        ">=0.9.0"
+      ],
+      "GOOGLE_CREDENTIALS": [
+        ">=0.9.0"
+      ],
+      "GOOGLE_ENCRYPTION_KEY": [
+        ">=0.11.2"
+      ],
+      "GOOGLE_IMPERSONATE_SERVICE_ACCOUNT": [
+        ">=0.14.0"
+      ]
+    }
+  },
+  "http": {
+    "terraform": [
+      ">=0.9.0"
+    ],
+    "config_variables": {
+      "address": [
+        ">=0.9.0"
+      ],
+      "lock_address": [
+        ">=0.10.3"
+      ],
+      "lock_method": [
+        ">=0.10.3"
+      ],
+      "password": [
+        ">=0.9.0"
+      ],
+      "retry_max": [
+        ">=0.11.15",
+        "!=0.12.0",
+        "!=0.12.1"
+      ],
+      "retry_wait_max": [
+        ">=0.11.15",
+        "!=0.12.0",
+        "!=0.12.1"
+      ],
+      "retry_wait_min": [
+        ">=0.11.15",
+        "!=0.12.0",
+        "!=0.12.1"
+      ],
+      "skip_cert_verification": [
+        ">=0.9.0"
+      ],
+      "unlock_address": [
+        ">=0.10.3"
+      ],
+      "unlock_method": [
+        ">=0.10.3"
+      ],
+      "update_method": [
+        ">=0.10.3"
+      ],
+      "username": [
+        ">=0.9.0"
+      ]
+    },
+    "environment_variables": {
+      "TF_HTTP_ADDRESS": [
+        ">=0.13.2"
+      ],
+      "TF_HTTP_LOCK_ADDRESS": [
+        ">=0.13.2"
+      ],
+      "TF_HTTP_LOCK_METHOD": [
+        ">=0.13.2"
+      ],
+      "TF_HTTP_PASSWORD": [
+        ">=0.13.2"
+      ],
+      "TF_HTTP_RETRY_MAX": [
+        ">=0.13.2"
+      ],
+      "TF_HTTP_RETRY_WAIT_MAX": [
+        ">=0.13.2"
+      ],
+      "TF_HTTP_RETRY_WAIT_MIN": [
+        ">=0.13.2"
+      ],
+      "TF_HTTP_UNLOCK_ADDRESS": [
+        ">=0.13.2"
+      ],
+      "TF_HTTP_UNLOCK_METHOD": [
+        ">=0.13.2"
+      ],
+      "TF_HTTP_UPDATE_METHOD": [
+        ">=0.13.2"
+      ],
+      "TF_HTTP_USERNAME": [
+        ">=0.13.2"
+      ]
+    }
+  },
+  "kubernetes": {
+    "terraform": [
+      ">=0.13.0"
+    ],
+    "config_variables": {
+      "client_certificate": [
+        ">=0.13.0"
+      ],
+      "client_key": [
+        ">=0.13.0"
+      ],
+      "cluster_ca_certificate": [
+        ">=0.13.0"
+      ],
+      "config_context": [
+        ">=0.13.0"
+      ],
+      "config_context_auth_info": [
+        ">=0.13.0"
+      ],
+      "config_context_cluster": [
+        ">=0.13.0"
+      ],
+      "config_path": [
+        ">=0.13.0"
+      ],
+      "config_paths": [
+        ">=1.1.0"
+      ],
+      "exec": [
+        ">=0.13.0"
+      ],
+      "host": [
+        ">=0.13.0"
+      ],
+      "in_cluster_config": [
+        ">=0.13.0"
+      ],
+      "insecure": [
+        ">=0.13.0"
+      ],
+      "labels": [
+        ">=0.13.0"
+      ],
+      "load_config_file": [
+        ">=0.13.0"
+      ],
+      "namespace": [
+        ">=0.13.0"
+      ],
+      "password": [
+        ">=0.13.0"
+      ],
+      "secret_suffix": [
+        ">=0.13.0"
+      ],
+      "token": [
+        ">=0.13.0"
+      ],
+      "username": [
+        ">=0.13.0"
+      ]
+    },
+    "environment_variables": {
+      "KUBE_CLIENT_CERT_DATA": [
+        ">=0.13.0"
+      ],
+      "KUBE_CLIENT_KEY_DATA": [
+        ">=0.13.0"
+      ],
+      "KUBE_CLUSTER_CA_CERT_DATA": [
+        ">=0.13.0"
+      ],
+      "KUBE_CONFIG_PATH": [
+        ">=1.1.0"
+      ],
+      "KUBE_CONFIG_PATHS": [
+        ">=1.1.0"
+      ],
+      "KUBE_CTX": [
+        ">=0.13.0"
+      ],
+      "KUBE_CTX_AUTH_INFO": [
+        ">=0.13.0"
+      ],
+      "KUBE_CTX_CLUSTER": [
+        ">=0.13.0"
+      ],
+      "KUBE_HOST": [
+        ">=0.13.0"
+      ],
+      "KUBE_INSECURE": [
+        ">=0.13.0"
+      ],
+      "KUBE_IN_CLUSTER_CONFIG": [
+        ">=0.13.0"
+      ],
+      "KUBE_NAMESPACE": [
+        ">=0.13.0"
+      ],
+      "KUBE_PASSWORD": [
+        ">=0.13.0"
+      ],
+      "KUBE_TOKEN": [
+        ">=0.13.0"
+      ],
+      "KUBE_USER": [
+        ">=0.13.0"
+      ],
+      "KUBE_LOAD_CONFIG_FILE": [
+        ">=0.13.0"
+      ]
+    }
+  },
+  "manta": {
+    "terraform": [
+      ">=0.9.0"
+    ],
+    "config_variables": {
+      "account": [
+        ">=0.11.0"
+      ],
+      "insecure_skip_tls_verify": [
+        ">=0.11.0"
+      ],
+      "key_id": [
+        ">=0.11.0"
+      ],
+      "key_material": [
+        ">=0.11.0"
+      ],
+      "objectName": [
+        ">=0.9.0",
+        "<=0.11.15"
+      ],
+      "object_name": [
+        ">=0.11.9"
+      ],
+      "path": [
+        ">=0.9.0"
+      ],
+      "url": [
+        ">=0.11.0"
+      ],
+      "user": [
+        ">=0.11.2"
+      ]
+    },
+    "environment_variables": {
+      "MANTA_URL": [
+        ">=0.11.0"
+      ],
+      "SDC_ACCOUNT": [
+        ">=0.11.0"
+      ],
+      "SDC_KEY_ID": [
+        ">=0.11.0"
+      ],
+      "SDC_KEY_MATERIAL": [
+        ">=0.11.0"
+      ],
+      "SDC_USER": [
+        ">=0.11.2"
+      ],
+      "TRITON_ACCOUNT": [
+        ">=0.11.0"
+      ],
+      "TRITON_KEY_ID": [
+        ">=0.11.0"
+      ],
+      "TRITON_KEY_MATERIAL": [
+        ">=0.11.0"
+      ],
+      "TRITON_USER": [
+        ">=0.11.2"
+      ],
+      "TRITON_SKIP_TLS_VERIFY": [
+        ">=0.11.0"
+      ]
+    }
+  },
+  "oss": {
+    "terraform": [
+      ">=0.12.2"
+    ],
+    "config_variables": {
+      "access_key": [
+        ">=0.12.2"
+      ],
+      "acl": [
+        ">=0.12.2"
+      ],
+      "assume_role": [
+        ">=0.12.6"
+      ],
+      "assume_role_policy": [
+        ">=1.1.0"
+      ],
+      "assume_role_role_arn": [
+        ">=1.1.0"
+      ],
+      "assume_role_session_expiration": [
+        ">=1.1.0"
+      ],
+      "assume_role_session_name": [
+        ">=1.1.0"
+      ],
+      "bucket": [
+        ">=0.12.2"
+      ],
+      "ecs_role_name": [
+        ">=1.1.0"
+      ],
+      "encrypt": [
+        ">=0.12.2"
+      ],
+      "endpoint": [
+        ">=1.1.0"
+      ],
+      "key": [
+        ">=0.12.2"
+      ],
+      "prefix": [
+        ">=0.12.2"
+      ],
+      "profile": [
+        ">=1.1.0"
+      ],
+      "region": [
+        ">=0.12.2"
+      ],
+      "secret_key": [
+        ">=0.12.2"
+      ],
+      "security_token": [
+        ">=0.12.2"
+      ],
+      "shared_credentials_file": [
+        ">=1.1.0"
+      ],
+      "sts_endpoint": [
+        ">=1.1.0"
+      ],
+      "tablestore_endpoint": [
+        ">=1.1.0"
+      ],
+      "tablestore_table": [
+        ">=1.1.0"
+      ]
+    },
+    "environment_variables": {
+      "ALICLOUD_ACCESS_KEY_ID": [
+        ">=0.12.2"
+      ],
+      "ALICLOUD_ACCESS_KEY_SECRET": [
+        ">=0.12.2"
+      ],
+      "ALICLOUD_ACCESS_KEY": [
+        ">=0.12.2"
+      ],
+      "ALICLOUD_ASSUME_ROLE_ARN": [
+        ">=1.1.0"
+      ],
+      "ALICLOUD_ASSUME_ROLE_SESSION_EXPIRATION": [
+        ">=1.1.0"
+      ],
+      "ALICLOUD_ASSUME_ROLE_SESSION_NAME": [
+        ">=1.1.0"
+      ],
+      "ALICLOUD_DEFAULT_REGION": [
+        ">=0.12.2"
+      ],
+      "ALICLOUD_OSS_ENDPOINT": [
+        ">=1.1.0"
+      ],
+      "ALICLOUD_PROFILE": [
+        ">=1.1.0"
+      ],
+      "ALICLOUD_REGION": [
+        ">=0.12.2"
+      ],
+      "ALICLOUD_SECRET_KEY": [
+        ">=0.12.2"
+      ],
+      "ALICLOUD_SECURITY_TOKEN": [
+        ">=0.12.2"
+      ],
+      "ALICLOUD_SHARED_CREDENTIALS_FILE": [
+        ">=1.1.0"
+      ],
+      "ALICLOUD_STS_ENDPOINT": [
+        ">=1.1.0"
+      ],
+      "ALICLOUD_TABLESTORE_ENDPOINT": [
+        ">=1.1.0"
+      ],
+      "OSS_ENDPOINT": [
+        ">=1.1.0"
+      ]
+    }
+  },
+  "pg": {
+    "terraform": [
+      ">=0.12.0"
+    ],
+    "config_variables": {
+      "conn_str": [
+        ">=0.12.0"
+      ],
+      "schema_name": [
+        ">=0.12.0"
+      ],
+      "skip_index_creation": [
+        ">=0.14.0"
+      ],
+      "skip_schema_creation": [
+        ">=0.12.8"
+      ],
+      "skip_table_creation": [
+        ">=0.14.0"
+      ]
+    }
+  },
+  "s3": {
+    "terraform": [
+      ">=0.9.0"
+    ],
+    "config_variables": {
+      "access_key": [
+        ">=0.9.0"
+      ],
+      "acl": [
+        ">=0.9.0"
+      ],
+      "assume_role_duration_seconds": [
+        ">=0.13.0"
+      ],
+      "assume_role_policy": [
+        ">=0.9.3"
+      ],
+      "assume_role_policy_arns": [
+        ">=0.13.0"
+      ],
+      "assume_role_tags": [
+        ">=0.13.0"
+      ],
+      "assume_role_transitive_tag_keys": [
+        ">=0.13.0"
+      ],
+      "bucket": [
+        ">=0.9.0"
+      ],
+      "dynamodb_endpoint": [
+        ">=0.11.14"
+      ],
+      "dynamodb_table": [
+        ">=0.9.7"
+      ],
+      "encrypt": [
+        ">=0.9.0"
+      ],
+      "endpoint": [
+        ">=0.9.0"
+      ],
+      "external_id": [
+        ">=0.9.3"
+      ],
+      "force_path_style": [
+        ">=0.11.2"
+      ],
+      "iam_endpoint": [
+        ">=0.11.14"
+      ],
+      "key": [
+        ">=0.9.0"
+      ],
+      "kms_key_id": [
+        ">=0.9.0"
+      ],
+      "lock_table": [
+        ">=0.9.0",
+        "<=0.12.31"
+      ],
+      "max_retries": [
+        ">=0.11.14"
+      ],
+      "profile": [
+        ">=0.9.0"
+      ],
+      "region": [
+        ">=0.9.0"
+      ],
+      "role_arn": [
+        ">=0.9.0"
+      ],
+      "secret_key": [
+        ">=0.9.0"
+      ],
+      "session_name": [
+        ">=0.9.3"
+      ],
+      "shared_credentials_file": [
+        ">=0.9.0"
+      ],
+      "skip_credentials_validation": [
+        ">=0.10.8"
+      ],
+      "skip_get_ec2_platforms": [
+        ">=0.10.8",
+        "<=0.12.31"
+      ],
+      "skip_metadata_api_check": [
+        ">=0.10.8"
+      ],
+      "skip_region_validation": [
+        ">=0.11.2"
+      ],
+      "skip_requesting_account_id": [
+        ">=0.10.8",
+        "<=0.12.31"
+      ],
+      "sse_customer_key": [
+        ">=0.12.8"
+      ],
+      "sts_endpoint": [
+        ">=0.11.14"
+      ],
+      "token": [
+        ">=0.9.0"
+      ],
+      "workspace_key_prefix": [
+        ">=0.10.0"
+      ]
+    },
+    "environment_variables": {
+      "AWS_ACCESS_KEY_ID": [
+        ">=0.9.0"
+      ],
+      "AWS_DEFAULT_REGION": [
+        ">=0.9.0"
+      ],
+      "AWS_IAM_ENDPOINT": [
+        ">=0.11.14"
+      ],
+      "AWS_PROFILE": [
+        ">=0.9.0"
+      ],
+      "AWS_REGION": [
+        ">=0.9.0"
+      ],
+      "AWS_S3_ENDPOINT": [
+        ">=0.9.0"
+      ],
+      "AWS_SECRET_ACCESS_KEY": [
+        ">=0.9.0"
+      ],
+      "AWS_SESSION_TOKEN": [
+        ">=0.9.0"
+      ],
+      "AWS_SSE_CUSTOMER_KEY": [
+        ">=0.12.8"
+      ],
+      "AWS_STS_ENDPOINT": [
+        ">=0.11.14"
+      ],
+      "AWS_DYNAMODB_ENDPOINT": [
+        ">=0.11.14"
+      ]
+    }
+  },
+  "swift": {
+    "terraform": [
+      ">=0.9.0"
+    ],
+    "config_variables": {
+      "allow_reauth": [
+        ">=0.13.0"
+      ],
+      "application_credential_id": [
+        ">=0.12.2"
+      ],
+      "application_credential_name": [
+        ">=0.12.2"
+      ],
+      "application_credential_secret": [
+        ">=0.12.2"
+      ],
+      "archive_container": [
+        ">=0.10.0"
+      ],
+      "archive_path": [
+        ">=0.9.0"
+      ],
+      "auth_url": [
+        ">=0.9.0"
+      ],
+      "cacert_file": [
+        ">=0.9.0"
+      ],
+      "cert": [
+        ">=0.9.0"
+      ],
+      "cloud": [
+        ">=0.12.2"
+      ],
+      "container": [
+        ">=0.10.0"
+      ],
+      "default_domain": [
+        ">=0.12.2"
+      ],
+      "disable_no_cache_header": [
+        ">=0.13.0"
+      ],
+      "domain_id": [
+        ">=0.9.0"
+      ],
+      "domain_name": [
+        ">=0.9.0"
+      ],
+      "endpoint_type": [
+        ">=0.10.0"
+      ],
+      "expire_after": [
+        ">=0.9.0"
+      ],
+      "insecure": [
+        ">=0.9.0"
+      ],
+      "key": [
+        ">=0.9.0"
+      ],
+      "lock": [
+        ">=0.12.0"
+      ],
+      "max_retries": [
+        ">=0.13.0"
+      ],
+      "password": [
+        ">=0.9.0"
+      ],
+      "path": [
+        ">=0.9.0"
+      ],
+      "project_domain_id": [
+        ">=0.12.2"
+      ],
+      "project_domain_name": [
+        ">=0.12.2"
+      ],
+      "region_name": [
+        ">=0.9.0"
+      ],
+      "state_name": [
+        ">=0.12.4"
+      ],
+      "swauth": [
+        ">=0.13.0"
+      ],
+      "tenant_id": [
+        ">=0.9.0"
+      ],
+      "tenant_name": [
+        ">=0.9.0"
+      ],
+      "token": [
+        ">=0.9.0"
+      ],
+      "user_domain_id": [
+        ">=0.12.2"
+      ],
+      "user_domain_name": [
+        ">=0.12.2"
+      ],
+      "user_id": [
+        ">=0.9.0"
+      ],
+      "user_name": [
+        ">=0.9.0"
+      ]
+    },
+    "environment_variables": {
+      "OS_ALLOW_REAUTH": [
+        ">=0.13.0"
+      ],
+      "DEFAULT_DOMAIN": [
+        ">=0.9.0"
+      ],
+      "OS_AUTH_TOKEN": [
+        ">=0.9.0"
+      ],
+      "OS_AUTH_URL": [
+        ">=0.9.0"
+      ],
+      "OS_CACERT": [
+        ">=0.9.0"
+      ],
+      "OS_CERT": [
+        ">=0.9.0"
+      ],
+      "OS_DEFAULT_DOMAIN": [
+        ">=0.10.0"
+      ],
+      "OS_DOMAIN_ID": [
+        ">=0.9.0"
+      ],
+      "OS_DOMAIN_NAME": [
+        ">=0.9.0"
+      ],
+      "OS_ENDPOINT_TYPE": [
+        ">=0.10.0"
+      ],
+      "OS_INSECURE": [
+        ">=0.9.0"
+      ],
+      "OS_KEY": [
+        ">=0.9.0"
+      ],
+      "OS_PASSWORD": [
+        ">=0.9.0"
+      ],
+      "OS_PROJECT_DOMAIN_ID": [
+        ">=0.9.0"
+      ],
+      "OS_PROJECT_DOMAIN_NAME": [
+        ">=0.9.0"
+      ],
+      "OS_PROJECT_ID": [
+        ">=0.9.0"
+      ],
+      "OS_PROJECT_NAME": [
+        ">=0.9.0"
+      ],
+      "OS_REGION_NAME": [
+        ">=0.9.0"
+      ],
+      "OS_SWAUTH": [
+        ">=0.13.0"
+      ],
+      "OS_TENANT_ID": [
+        ">=0.9.0"
+      ],
+      "OS_TENANT_NAME": [
+        ">=0.9.0"
+      ],
+      "OS_TOKEN": [
+        ">=0.12.2"
+      ],
+      "OS_USERNAME": [
+        ">=0.9.0"
+      ],
+      "OS_USER_DOMAIN_ID": [
+        ">=0.9.0"
+      ],
+      "OS_USER_DOMAIN_NAME": [
+        ">=0.9.0"
+      ],
+      "OS_USER_ID": [
+        ">=0.9.0"
+      ]
+    }
+  }
+}

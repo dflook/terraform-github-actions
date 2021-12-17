@@ -5,7 +5,13 @@ source /usr/local/actions.sh
 
 debug
 setup
-init-backend
+
+if [[ "$TERRAFORM_BACKEND_TYPE" == "remote" ]]; then
+    TERRAFORM_VERSION="$TERRAFORM_VER_MAJOR.$TERRAFORM_VER_MINOR.$TERRAFORM_VER_PATCH" terraform-cloud-workspace new "$INPUT_WORKSPACE"
+    exit 0
+fi
+
+init-backend-default-workspace
 
 set +e
 (cd "$INPUT_PATH" && terraform workspace list -no-color) \

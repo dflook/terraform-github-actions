@@ -16,18 +16,8 @@ function debug() {
 }
 
 function detect-terraform-version() {
-    local TF_SWITCH_OUTPUT
-
-    debug_cmd tfswitch --version
-
-    TF_SWITCH_OUTPUT=$(cd "$INPUT_PATH" && echo "" | tfswitch | grep -e Switched -e Reading | sed 's/^.*Switched/Switched/')
-    if echo "$TF_SWITCH_OUTPUT" | grep Reading >/dev/null; then
-        echo "$TF_SWITCH_OUTPUT"
-    else
-        echo "Reading latest terraform version"
-        tfswitch "$(latest_terraform_version)"
-    fi
-
+    debug_cmd ls -la "/usr/local/bin/terraform" "$JOB_TMP_DIR/terraform-bin-dir"
+    TERRAFORM_BIN_DIR="/usr/local/bin/terraform:$JOB_TMP_DIR/terraform-bin-dir" terraform-version
     debug_cmd ls -la "$(which terraform)"
 
     local TF_VERSION
@@ -89,31 +79,23 @@ function setup() {
         debug_file "$STEP_TMP_DIR/github_comment_react.stderr"
     fi
 
-    local TERRAFORM_BIN_DIR
-    TERRAFORM_BIN_DIR="$JOB_TMP_DIR/terraform-bin-dir"
-    # tfswitch guesses the wrong home directory...
-    start_group "Installing Terraform"
-    if [[ ! -d $TERRAFORM_BIN_DIR ]]; then
-        debug_log "Initializing tfswitch with image default version"
-        mkdir -p "$TERRAFORM_BIN_DIR"
-        cp --recursive /root/.terraform.versions.default "$TERRAFORM_BIN_DIR"
-    fi
-
-    ln -s "$TERRAFORM_BIN_DIR" /root/.terraform.versions
-
-    debug_cmd ls -lad /root/.terraform.versions
-    debug_cmd ls -lad "$TERRAFORM_BIN_DIR"
-    debug_cmd ls -la "$TERRAFORM_BIN_DIR"
-
     export TF_DATA_DIR="$STEP_TMP_DIR/terraform-data-dir"
     export TF_PLUGIN_CACHE_DIR="$HOME/.terraform.d/plugin-cache"
-    mkdir -p "$TF_DATA_DIR" "$TF_PLUGIN_CACHE_DIR"
+    mkdir -p "$TF_DATA_DIR" "$TF_PLUGIN_CACHE_DIR" "$JOB_TMP_DIR/terraform-bin-dir"
 
     unset TF_WORKSPACE
 
+    write_credentials
+
+    start_group "Installing Terraform"
+
     detect-terraform-version
 
-    debug_cmd ls -la "$TERRAFORM_BIN_DIR"
+    readonly TERRAFORM_BACKEND_TYPE=$(terraform-backend)
+    if [[ "$TERRAFORM_BACKEND_TYPE" != "" ]]; then
+        echo "Detected $TERRAFORM_BACKEND_TYPE backend"
+    fi
+
     end_group
 
     detect-tfmask
@@ -130,22 +112,21 @@ function relative_to() {
     realpath --no-symlinks --canonicalize-missing --relative-to="$absbase" "$relpath"
 }
 
+##
+# Initialize terraform without a backend
+#
+# This only validates and installs plugins
 function init() {
     start_group "Initializing Terraform"
 
-    write_credentials
-
     rm -rf "$TF_DATA_DIR"
+    debug_log terraform init -input=false -backend=false
     (cd "$INPUT_PATH" && terraform init -input=false -backend=false)
 
     end_group
 }
 
-function init-backend() {
-    start_group "Initializing Terraform"
-
-    write_credentials
-
+function set-init-args() {
     INIT_ARGS=""
 
     if [[ -n "$INPUT_BACKEND_CONFIG_FILE" ]]; then
@@ -161,9 +142,60 @@ function init-backend() {
     fi
 
     export INIT_ARGS
+}
+
+##
+# Initialize the backend for a specific workspace
+#
+# The workspace must already exist, or the job will be failed
+function init-backend-workspace() {
+    start_group "Initializing Terraform"
+
+    set-init-args
 
     rm -rf "$TF_DATA_DIR"
 
+    debug_log TF_WORKSPACE=$INPUT_WORKSPACE terraform init -input=false $INIT_ARGS
+
+    set +e
+    # shellcheck disable=SC2086
+    (cd "$INPUT_PATH" && TF_WORKSPACE=$INPUT_WORKSPACE terraform init -input=false $INIT_ARGS \
+        2>"$STEP_TMP_DIR/terraform_init.stderr")
+
+    local INIT_EXIT=$?
+    set -e
+
+    if [[ $INIT_EXIT -eq 0 ]]; then
+        cat "$STEP_TMP_DIR/terraform_init.stderr" >&2
+    else
+        if grep -q "No existing workspaces." "$STEP_TMP_DIR/terraform_init.stderr" || grep -q "Failed to select workspace" "$STEP_TMP_DIR/terraform_init.stderr" || grep -q "Currently selected workspace.*does not exist" "$STEP_TMP_DIR/terraform_init.stderr"; then
+            # Couldn't select workspace, but we don't really care.
+            # select-workspace will give a better error if the workspace is required to exist
+            cat "$STEP_TMP_DIR/terraform_init.stderr"
+        else
+            cat "$STEP_TMP_DIR/terraform_init.stderr" >&2
+            exit $INIT_EXIT
+        fi
+    fi
+
+    end_group
+
+    select-workspace
+}
+
+##
+# Initialize terraform to use the default workspace
+#
+# This can be used to initialize when you don't know if a given workspace exists
+# This can NOT be used with remote backend, as they have no default workspace
+function init-backend-default-workspace() {
+    start_group "Initializing Terraform"
+
+    set-init-args
+
+    rm -rf "$TF_DATA_DIR"
+
+    debug_log terraform init -input=false $INIT_ARGS
     set +e
     # shellcheck disable=SC2086
     (cd "$INPUT_PATH" && terraform init -input=false $INIT_ARGS \
@@ -191,6 +223,7 @@ function init-backend() {
 function select-workspace() {
     local WORKSPACE_EXIT
 
+    debug_log terraform workspace select "$INPUT_WORKSPACE"
     set +e
     (cd "$INPUT_PATH" && terraform workspace select "$INPUT_WORKSPACE") >"$STEP_TMP_DIR/workspace_select" 2>&1
     WORKSPACE_EXIT=$?
@@ -285,6 +318,7 @@ function set-remote-plan-args() {
 }
 
 function output() {
+    debug_log terraform output -json
     (cd "$INPUT_PATH" && terraform output -json | convert_output)
 }
 

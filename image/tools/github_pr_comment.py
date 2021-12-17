@@ -6,7 +6,8 @@ import json
 import os
 import re
 import sys
-from typing import Optional, Dict, Iterable, cast, NewType, TypedDict, Tuple, Any
+from typing import (Any, Dict, Iterable, NewType, Optional, Tuple, TypedDict,
+                    cast)
 
 import requests
 

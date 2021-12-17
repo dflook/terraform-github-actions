@@ -16,6 +16,5 @@ terraform {
 EOF
 
 setup
-init-backend
-select-workspace
+init-backend-workspace
 output

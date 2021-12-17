@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-import sys
 import os
 import re
-from typing import Dict, List, Iterable, Optional
+import sys
 from dataclasses import dataclass
+from typing import Dict, Iterable, List, Optional
 
 
 @dataclass

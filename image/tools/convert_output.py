@@ -4,6 +4,7 @@ import json
 import sys
 from typing import Dict, Iterable
 
+
 def convert_to_github(outputs: Dict) -> Iterable[str]:
     for name, output in outputs.items():
 

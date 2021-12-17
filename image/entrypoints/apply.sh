@@ -5,8 +5,7 @@ source /usr/local/actions.sh
 
 debug
 setup
-init-backend
-select-workspace
+init-backend-workspace
 set-plan-args
 
 PLAN_OUT="$STEP_TMP_DIR/plan.out"

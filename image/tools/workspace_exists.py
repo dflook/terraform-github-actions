@@ -2,6 +2,7 @@
 
 import sys
 
+
 def debug(msg: str) -> None:
     for line in msg.splitlines():
         sys.stderr.write(f'::debug::{line}\n')

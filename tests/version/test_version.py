@@ -1,4 +1,8 @@
+import os
+
 from convert_version import convert_version, convert_version_from_json
+
+from terraform.cloud import get_workspaces, new_workspace, delete_workspace
 
 
 def test_convert_version():
