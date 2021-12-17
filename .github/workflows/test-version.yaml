@@ -96,6 +96,290 @@ jobs:
             exit 1
           fi
 
+  asdf:
+    runs-on: ubuntu-latest
+    name: asdf
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Test terraform-version
+        uses: ./terraform-version
+        id: terraform-version
+        with:
+          path: tests/version/asdf
+
+      - name: Print the version
+        run: echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
+
+      - name: Check the version
+        run: |
+          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "0.12.11" ]]; then
+            echo "::error:: Terraform version not set from .terraform-version"
+            exit 1
+          fi
+
+  env:
+    runs-on: ubuntu-latest
+    name: TERRAFORM_VERSION range
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Test terraform-version
+        uses: ./terraform-version
+        id: terraform-version
+        env:
+          TERRAFORM_VERSION: ">=0.12.0,<=0.12.5"
+        with:
+          path: tests/version/empty
+
+      - name: Print the version
+        run: echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
+
+      - name: Check the version
+        run: |
+          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "0.12.5" ]]; then
+            echo "::error:: Terraform version not set from required_version range"
+            exit 1
+          fi
+
+  tfc_workspace:
+    runs-on: ubuntu-latest
+    name: TFC Workspace
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Create workspace
+        uses: ./terraform-new-workspace
+        env:
+          TERRAFORM_VERSION: 0.12.13
+        with:
+          path: tests/version/terraform-cloud
+          workspace: test-1
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
+
+      - name: Test terraform-version
+        uses: ./terraform-version
+        id: terraform-version
+        with:
+          path: tests/version/terraform-cloud
+          workspace: test-1
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
+
+      - name: Destroy workspace
+        uses: ./terraform-destroy-workspace
+        with:
+          path: tests/version/terraform-cloud
+          workspace: test-1
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
+
+      - name: Print the version
+        run: |
+          echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
+
+          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "0.12.13" ]]; then
+            echo "::error:: Terraform version not set from remote workspace"
+            exit 1
+          fi
+
+  tfc_cloud_workspace:
+    runs-on: ubuntu-latest
+    name: TFC Cloud Configuration
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Create workspace
+        uses: ./terraform-new-workspace
+        env:
+          TERRAFORM_VERSION: 1.1.2
+          TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_API_TOKEN }}
+        with:
+          path: tests/version/cloud
+          workspace: tfc_cloud_workspace-1
+
+      - name: Test terraform-version
+        uses: ./terraform-version
+        id: terraform-version
+        env:
+          TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_API_TOKEN }}
+        with:
+          path: tests/version/cloud
+          workspace: tfc_cloud_workspace-1
+
+      - name: Destroy workspace
+        uses: ./terraform-destroy-workspace
+        env:
+          TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_API_TOKEN }}
+        with:
+          path: tests/version/cloud
+          workspace: tfc_cloud_workspace-1
+
+      - name: Print the version
+        run: |
+          echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
+
+          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "1.1.2" ]]; then
+            echo "::error:: Terraform version not set from remote workspace"
+            exit 1
+          fi
+
+  local_state:
+    runs-on: ubuntu-latest
+    name: Local State file
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Test terraform-version
+        uses: ./terraform-version
+        id: terraform-version
+        with:
+          path: tests/version/local
+
+      - name: Print the version
+        run: |
+          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "0.15.4" ]]; then
+            echo "::error:: Terraform version not set from state file"
+            exit 1
+          fi
+
+  remote_state:
+    runs-on: ubuntu-latest
+    name: Remote State file
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Apply default workspace
+        uses: ./terraform-apply
+        env:
+          TERRAFORM_VERSION: 0.12.9
+        with:
+          variables: my_variable="hello"
+          path: tests/version/state
+          auto_approve: true
+
+      - name: Test terraform-version
+        uses: ./terraform-version
+        id: terraform-version
+        with:
+          path: tests/version/state
+
+      - name: Destroy default workspace
+        uses: ./terraform-destroy
+        with:
+          path: tests/version/state
+          variables: my_variable="goodbye"
+
+      - name: Print the version
+        run: |
+          echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
+
+          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "0.12.9" ]]; then
+            echo "::error:: Terraform version not set from state file"
+            exit 1
+          fi
+
+      - name: Create second workspace
+        uses: ./terraform-new-workspace
+        env:
+          TERRAFORM_VERSION: 1.1.0
+        with:
+          path: tests/version/state
+          workspace: second
+
+      - name: Apply second workspace
+        uses: ./terraform-apply
+        with:
+          variables: my_variable="goodbye"
+          path: tests/version/state
+          workspace: second
+          auto_approve: true
+
+      - name: Test terraform-version
+        uses: ./terraform-version
+        id: terraform-version-second
+        with:
+          path: tests/version/state
+          workspace: second
+
+      - name: Destroy second workspace
+        uses: ./terraform-destroy-workspace
+        with:
+          path: tests/version/state
+          workspace: second
+          variables: my_variable="goodbye"
+
+      - name: Print the version
+        run: |
+          echo "The terraform version was ${{ steps.terraform-version-second.outputs.terraform }}"
+
+          if [[ "${{ steps.terraform-version-second.outputs.terraform }}" != "1.1.0" ]]; then
+            echo "::error:: Terraform version not set from state file"
+            exit 1
+          fi
+
+      - name: Create third workspace
+        uses: ./terraform-new-workspace
+        env:
+          TERRAFORM_VERSION: 0.13.0
+        with:
+          path: tests/version/state
+          workspace: third
+
+      - name: Apply third workspace
+        uses: ./terraform-apply
+        with:
+          variables: my_variable="goodbye"
+          path: tests/version/state
+          workspace: third
+          auto_approve: true
+
+      - name: Test terraform-version
+        uses: ./terraform-version
+        id: terraform-version-third
+        with:
+          path: tests/version/state
+          workspace: third
+
+      - name: Destroy third workspace
+        uses: ./terraform-destroy-workspace
+        with:
+          path: tests/version/state
+          workspace: third
+          variables: my_variable="goodbye"
+
+      - name: Print the version
+        run: |
+          echo "The terraform version was ${{ steps.terraform-version-third.outputs.terraform }}"
+
+          if [[ "${{ steps.terraform-version-third.outputs.terraform }}" != "0.13.0" ]]; then
+            echo "::error:: Terraform version not set from state file"
+            exit 1
+          fi
+
+      - name: Test terraform-version
+        uses: ./terraform-version
+        id: terraform-version-fourth
+        with:
+          path: tests/version/state
+          workspace: fourth
+
+      - name: Print the version
+        run: |
+          echo "The terraform version was ${{ steps.terraform-version-fourth.outputs.terraform }}"
+
+          if [[ "${{ steps.terraform-version-fourth.outputs.terraform }}" != "1."* ]]; then
+            echo "::error:: Terraform version not set to latest when no existing state"
+            exit 1
+          fi
+
   empty_path:
     runs-on: ubuntu-latest
     name: latest
@@ -114,7 +398,7 @@ jobs:
 
       - name: Check the version
         run: |
-          if [[ "${{ steps.terraform-version.outputs.terraform }}" != *"1.0"* ]]; then
+          if [[ "${{ steps.terraform-version.outputs.terraform }}" != *"1.1"* ]]; then
             echo "::error:: Latest version was not used"
             exit 1
           fi

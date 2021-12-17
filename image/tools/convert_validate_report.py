@@ -1,9 +1,10 @@
 #!/usr/bin/python3
 
 import json
+import os.path
 import sys
 from typing import Dict, Iterable
-import os.path
+
 
 def relative_to_base(file_path: str, base_path: str):
     return os.path.normpath(os.path.join(base_path, file_path))

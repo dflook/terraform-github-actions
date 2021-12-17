@@ -25,11 +25,41 @@ If the terraform configuration is not valid, the build is failed.
 
 * `workspace`
 
-  Terraform workspace to use for the `terraform.workspace` value while validating.
+  Terraform workspace to use for the `terraform.workspace` value while validating. Note that for remote operations in Terraform Cloud/Enterprise, this is always `default`.
+
+  Also used for discovering the terraform version to use, if not otherwise specified. 
+  See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/master/terraform-version#terraform-version-action) for details. 
 
   - Type: string
   - Optional
   - Default: `default`
+
+* `backend_config`
+
+  List of terraform backend config values, one per line. This is used for discovering the terraform version to use, if not otherwise specified. 
+  See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/master/terraform-version#terraform-version-action) for details.
+
+  ```yaml
+  with:
+    backend_config: token=${{ secrets.BACKEND_TOKEN }}
+  ```
+
+  - Type: string
+  - Optional
+
+* `backend_config_file`
+
+  List of terraform backend config files to use, one per line. This is used for discovering the terraform version to use, if not otherwise specified. 
+  See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/master/terraform-version#terraform-version-action) for details.
+  Paths should be relative to the GitHub Actions workspace
+
+  ```yaml
+  with:
+    backend_config_file: prod.backend.tfvars
+  ```
+
+  - Type: string
+  - Optional
 
 ## Outputs
 
@@ -44,7 +74,7 @@ If the terraform configuration is not valid, the build is failed.
 * `TERRAFORM_CLOUD_TOKENS`
 
   API tokens for terraform cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
-  These tokens may be used for fetching required modules from the registry.
+  These tokens may be used for fetching required modules from the registry, and discovering the terraform version to use from a TFC/E workspace.
 
   e.g for terraform cloud:
   ```yaml
@@ -80,7 +110,7 @@ If the terraform configuration is not valid, the build is failed.
 
 * `TERRAFORM_PRE_RUN`
 
-  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running terraform. 
+  A set of commands that will be run prior to `terraform init`. This can be used to customise the environment before running terraform. 
   
   The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
   

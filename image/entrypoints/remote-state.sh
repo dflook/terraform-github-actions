@@ -6,6 +6,8 @@ source /usr/local/actions.sh
 debug
 
 INPUT_PATH="$STEP_TMP_DIR/remote-state"
+export INPUT_PATH
+
 rm -rf "$INPUT_PATH"
 mkdir -p "$INPUT_PATH"
 
@@ -16,6 +18,5 @@ terraform {
 EOF
 
 setup
-init-backend
-select-workspace
+init-backend-workspace
 output

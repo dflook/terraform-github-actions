@@ -52,7 +52,7 @@ jobs:
 
   validate_workspace:
     runs-on: ubuntu-latest
-    name: Invalid terraform configuration
+    name: Use workspace name during validationg
     steps:
       - name: Checkout
         uses: actions/checkout@v2

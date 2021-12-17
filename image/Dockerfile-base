@@ -5,16 +5,14 @@ RUN cd tfmask && make && make go/build
 
 FROM debian:bullseye-slim as base
 
-ARG DEFAULT_TF_VERSION=0.14.4
-ARG TFSWITCH_VERSION=0.8.832
-
 # Terraform environment variables
 ENV CHECKPOINT_DISABLE=true
-ENV TF_IN_AUTOMATION=yep
+ENV TF_IN_AUTOMATION=true
 ENV TF_INPUT=false
 ENV TF_PLUGIN_CACHE_DIR=/usr/local/share/terraform/plugin-cache
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update  \
+ && apt-get install --no-install-recommends -y \
     git \
     ssh \
     tar \
@@ -23,19 +21,12 @@ RUN apt-get update && apt-get install -y \
     curl \
     unzip \
     jq \
-    python2 \
     python3 \
     python3-requests \
     python3-pip \
     wget \
  && rm -rf /var/lib/apt/lists/*
 
-RUN curl -fsL https://github.com/warrensbox/terraform-switcher/releases/download/${TFSWITCH_VERSION}/terraform-switcher_${TFSWITCH_VERSION}_linux_amd64.tar.gz -o tfswitch.tar.gz \
- && tar -xvf tfswitch.tar.gz \
- && mv tfswitch /usr/local/bin \
- && rm -rf README.md LICENSE terraform-switcher tfswitch.tar.gz \
- && tfswitch $DEFAULT_TF_VERSION \
- && mv /root/.terraform.versions /root/.terraform.versions.default
 RUN mkdir -p $TF_PLUGIN_CACHE_DIR
 
 COPY --from=tfmask /go/tfmask/release/tfmask /usr/local/bin/tfmask

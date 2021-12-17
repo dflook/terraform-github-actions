@@ -2,15 +2,20 @@
 
 This is one of a suite of terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
-This action determines the terraform and provider versions to use for a terraform configuration directory.
+This action determines the terraform and provider versions to use for a Terraform root module.
+
+The best way to specify the version is using a [`required_version`](https://www.terraform.io/docs/configuration/terraform.html#specifying-a-required-terraform-version) constraint.
 
 The version to use is discovered from the first of:
-1. A [`required_version`](https://www.terraform.io/docs/configuration/terraform.html#specifying-a-required-terraform-version)
-   constraint in the terraform configuration.
-2. A [tfswitch](https://warrensbox.github.io/terraform-switcher/) `.tfswitchrc` file
-3. A [tfenv](https://github.com/tfutils/tfenv) `.terraform-version` file in path of the terraform
-   configuration.
-4. The latest terraform version
+1. The version set in the TFC/TFE workspace if the module uses a `remote` backend or `cloud` configuration, and the remote workspace exists.
+2. A [`required_version`](https://www.terraform.io/docs/configuration/terraform.html#specifying-a-required-terraform-version)
+   constraint in the terraform configuration. If the constraint is range, the latest matching version is used.
+3. A [tfswitch](https://warrensbox.github.io/terraform-switcher/) `.tfswitchrc` file in the module path
+4. A [tfenv](https://github.com/tfutils/tfenv) `.terraform-version` file in the module path
+5. An [asdf](https://asdf-vm.com/) `.tool-versions` file in the module path or any parent path
+6. A `TERRAFORM_VERSION` environment variable containing a [version constraint](https://www.terraform.io/language/expressions/version-constraints).  If the constraint allows multiple versions, the latest matching version is used.
+7. The Terraform version that created the current state file (best effort).
+8. The latest terraform version
 
 The version of terraform and all required providers will be output to the workflow log.
 
@@ -22,11 +27,50 @@ outputs yourself.
 
 * `path`
 
-  Path to the terraform configuration to apply
+  Path to the terraform root module
 
   - Type: string
   - Optional
   - Default: The action workspace
+
+* `workspace`
+
+  The workspace to determine the Terraform version for.
+
+  - Type: string
+  - Optional
+  - Default: `default`
+
+* `backend_config`
+
+  List of terraform backend config values, one per line.
+
+  This will be used to fetch the Terraform version set in the TFC/TFE workspace if using the `remote` backend.
+  For other backend types, this is used to fetch the version that most recently wrote to the terraform state.
+
+  ```yaml
+  with:
+    backend_config: token=${{ secrets.BACKEND_TOKEN }}
+  ```
+
+  - Type: string
+  - Optional
+
+* `backend_config_file`
+
+  List of terraform backend config files to use, one per line.
+  Paths should be relative to the GitHub Actions workspace
+
+  This will be used to fetch the Terraform version set in the TFC/TFE workspace if using the `remote` backend.
+  For other backend types, this is used to fetch the version that most recently wrote to the terraform state.
+
+  ```yaml
+  with:
+    backend_config_file: prod.backend.tfvars
+  ```
+
+  - Type: string
+  - Optional
 
 ## Environment Variables
 

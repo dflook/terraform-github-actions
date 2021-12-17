@@ -14,9 +14,11 @@ inputs:
   backend_config:
     description: List of backend config values to set, one per line
     required: false
+    default: ""
   backend_config_file:
     description: Path to a backend config file
     required: false
+    default: ""
   variables:
     description: Variable definitions
     required: false

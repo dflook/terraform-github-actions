@@ -3,7 +3,7 @@
 import json
 import re
 import sys
-from typing import Iterable, Dict
+from typing import Dict, Iterable
 
 
 def convert_version(tf_output: str) -> Iterable[str]:
