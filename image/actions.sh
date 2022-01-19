@@ -16,8 +16,8 @@ function debug() {
 }
 
 function detect-terraform-version() {
-    debug_cmd ls -la "/usr/local/bin/terraform" "$JOB_TMP_DIR/terraform-bin-dir"
-    TERRAFORM_BIN_DIR="/usr/local/bin/terraform:$JOB_TMP_DIR/terraform-bin-dir" terraform-version
+    debug_cmd ls -la "/usr/local/bin" "$JOB_TMP_DIR/terraform-bin-dir"
+    TERRAFORM_BIN_DIR="/usr/local/bin:$JOB_TMP_DIR/terraform-bin-dir" terraform-version
     debug_cmd ls -la "$(which terraform)"
 
     local TF_VERSION

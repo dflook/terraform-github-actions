@@ -4,8 +4,8 @@ COPY src/ /tmp/src/
 COPY setup.py /tmp
 RUN pip install /tmp \
  && rm -rf /tmp/src /tmp/setup.py \
- && TERRAFORM_BIN_DIR="/usr/local/bin/terraform" terraform-version 0.9.0 \
- && TERRAFORM_BIN_DIR="/usr/local/bin/terraform" terraform-version 0.12.0
+ && TERRAFORM_BIN_DIR="/usr/local/bin" terraform-version 0.9.0 \
+ && TERRAFORM_BIN_DIR="/usr/local/bin" terraform-version 0.12.0
 
 COPY entrypoints/ /entrypoints/
 COPY actions.sh /usr/local/actions.sh
