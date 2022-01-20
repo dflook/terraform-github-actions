@@ -184,6 +184,46 @@ jobs:
             exit 1
           fi
 
+  tfc_cloud_workspace:
+    runs-on: ubuntu-latest
+    name: TFC Cloud Configuration
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Create workspace
+        uses: ./terraform-new-workspace
+        env:
+          TERRAFORM_VERSION: 0.12.13
+        with:
+          path: tests/version/cloud
+          workspace: tfc_cloud_workspace-1
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
+
+      - name: Test terraform-version
+        uses: ./terraform-version
+        id: terraform-version
+        with:
+          path: tests/version/cloud
+          workspace: tfc_cloud_workspace-1
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
+
+      - name: Destroy workspace
+        uses: ./terraform-destroy-workspace
+        with:
+          path: tests/version/cloud
+          workspace: tfc_cloud_workspace-1
+          backend_config: token=${{ secrets.TF_API_TOKEN }}
+
+      - name: Print the version
+        run: |
+          echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
+
+          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "0.12.13" ]]; then
+            echo "::error:: Terraform version not set from .terraform-version"
+            exit 1
+          fi
+
   state:
     runs-on: ubuntu-latest
     name: State file

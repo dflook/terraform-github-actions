@@ -145,8 +145,6 @@ def try_init(terraform: Version, init_args: list[str], workspace: str, backend_t
     - None: There is no remote state
     """
 
-    debug(f'try_init {terraform=}, {init_args=}, {workspace=}, {backend_tf=}')
-
     terraform_path = get_executable(terraform)
     module_dir = tempfile.mkdtemp()
 
@@ -160,7 +158,7 @@ def try_init(terraform: Version, init_args: list[str], workspace: str, backend_t
         capture_output=True,
         cwd=module_dir
     )
-    debug(f'{result.args=}')
+    debug(f'{result.args=}')  # TODO: mask
     debug(f'{result.returncode=}')
     debug(result.stdout.decode())
     debug(result.stderr.decode())
