@@ -14,11 +14,11 @@ def init_args(inputs: InitInputs) -> list[str]:
 
     args = []
 
-    for path in inputs['INPUT_BACKEND_CONFIG_FILE'].replace(',', '\n').splitlines():
+    for path in inputs.get('INPUT_BACKEND_CONFIG_FILE', '').replace(',', '\n').splitlines():
         if path.strip():
             args.append(f'-backend-config={os.path.relpath(path.strip(), start=inputs["INPUT_PATH"])}')
 
-    for config in inputs['INPUT_BACKEND_CONFIG'].replace(',', '\n').splitlines():
+    for config in inputs.get('INPUT_BACKEND_CONFIG', '').replace(',', '\n').splitlines():
         if stripped := config.strip():
             args.append(f'-backend-config={stripped}')
 

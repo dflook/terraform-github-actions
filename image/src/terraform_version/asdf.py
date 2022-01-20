@@ -26,7 +26,7 @@ def parse_asdf(tool_versions: str, versions: Iterable[Version]) -> Version:
 def try_read_asdf(inputs: InitInputs, workspace_path: str, versions: Iterable[Version]) -> Optional[Version]:
     """Return the version from an asdf .tool-versions file if possible."""
 
-    module_path = os.path.abspath(inputs['INPUT_PATH'])
+    module_path = os.path.abspath(inputs.get('INPUT_PATH', '.'))
 
     while module_path not in ['/', workspace_path]:
         asdf_path = os.path.join(module_path, '.tool-versions')

@@ -47,7 +47,7 @@ def try_read_tfenv(inputs: InitInputs, versions: Iterable[Version]) -> Optional[
     :returns: The terraform version specified by any .terraform-version file, which may be None.
     """
 
-    tfenv_path = os.path.join(inputs['INPUT_PATH'], '.terraform-version')
+    tfenv_path = os.path.join(inputs.get('INPUT_PATH', '.'), '.terraform-version')
 
     if not os.path.exists(tfenv_path):
         return None

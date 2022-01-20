@@ -54,11 +54,7 @@ def determine_version(inputs: InitInputs, cli_config_path: Path, actions_env: Ac
 
     versions = list(get_terraform_versions())
 
-    if 'INPUT_PATH' not in inputs:
-        sys.stdout.write('Using latest terraform version\n')
-        return latest_version(versions)
-
-    module = load_module(Path(inputs['INPUT_PATH']))
+    module = load_module(Path(inputs.get('INPUT_PATH', '.')))
 
     version: Optional[Version]
 
@@ -102,7 +98,7 @@ def determine_version(inputs: InitInputs, cli_config_path: Path, actions_env: Ac
             return version
 
     if backend_type == 'local':
-        if version := read_local_state(Path(inputs['INPUT_PATH'])):
+        if version := read_local_state(Path(inputs.get('INPUT_PATH', '.'))):
             sys.stdout.write('Using the same terraform version that wrote the existing local terraform.tfstate\n')
             return version
 

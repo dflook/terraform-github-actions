@@ -29,7 +29,7 @@ def try_read_tfswitch(inputs: InitInputs) -> Optional[Version]:
     :returns: The terraform version specified by the file, which may be None.
     """
 
-    tfswitch_path = os.path.join(inputs['INPUT_PATH'], '.tfswitchrc')
+    tfswitch_path = os.path.join(inputs.get('INPUT_PATH', '.'), '.tfswitchrc')
 
     if not os.path.exists(tfswitch_path):
         return None

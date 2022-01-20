@@ -189,6 +189,10 @@ def latest_version(versions: Iterable[Version]) -> Version:
 
     return sorted(versions, reverse=True)[0]
 
+def earliest_version(versions: Iterable[Version]) -> Version:
+    """Return the earliest version of the given versions."""
+
+    return sorted(versions)[0]
 
 def get_terraform_versions() -> Iterable[Version]:
     """Return the currently available terraform versions."""

@@ -16,7 +16,7 @@ from github_actions.inputs import InitInputs
 from terraform.download import get_executable
 from terraform.exec import init_args
 from terraform.module import load_backend_config_file, TerraformModule
-from terraform.versions import apply_constraints, Constraint, Version
+from terraform.versions import apply_constraints, Constraint, Version, earliest_version
 
 
 def read_backend_config_vars(init_args: InitInputs) -> dict[str, str]:
@@ -145,6 +145,8 @@ def try_init(terraform: Version, init_args: list[str], workspace: str, backend_t
     - None: There is no remote state
     """
 
+    debug(f'try_init {terraform=}, {init_args=}, {workspace=}, {backend_tf=}')
+
     terraform_path = get_executable(terraform)
     module_dir = tempfile.mkdtemp()
 
@@ -215,8 +217,7 @@ def try_guess_state_version(inputs: InitInputs, module: TerraformModule, version
     candidate_versions = list(versions)
 
     while candidate_versions:
-        earliest_version = candidate_versions[0]
-        result = try_init(earliest_version, args, inputs['INPUT_WORKSPACE'], backend_tf)
+        result = try_init(earliest_version(candidate_versions), args, inputs.get('INPUT_WORKSPACE', 'default'), backend_tf)
         if isinstance(result, Version):
             return result
         elif isinstance(result, Constraint):
