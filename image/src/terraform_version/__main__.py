@@ -8,9 +8,10 @@ import sys
 from pathlib import Path
 from typing import Optional, Iterable, cast
 
+from github_actions.debug import debug
 from github_actions.env import ActionsEnv, GithubEnv
 from github_actions.inputs import InitInputs
-from terraform.cloud import get_workspace
+from terraform.cloud import get_workspace, CloudException
 from terraform.download import get_executable
 from terraform.module import get_version_constraints, load_module, TerraformModule, get_remote_backend_config, get_cloud_config, get_backend_type
 from terraform.versions import apply_constraints, Constraint, get_terraform_versions, latest_version, Version
@@ -23,28 +24,32 @@ from terraform_version.tfswitch import try_read_tfswitch
 def get_remote_workspace_version(inputs: InitInputs, module: TerraformModule, cli_config_path: Path, versions: Iterable[Version]) -> Optional[Version]:
     """Get the terraform version set in a terraform cloud/enterprise workspace."""
 
-    backend_config = get_remote_backend_config(
-        module,
-        backend_config_files=inputs.get('INPUT_BACKEND_CONFIG_FILE', ''),
-        backend_config_vars=inputs.get('INPUT_BACKEND_CONFIG', ''),
-        cli_config_path=cli_config_path
-    )
-
-    if backend_config is None:
-        backend_config = get_cloud_config(
+    try:
+        backend_config = get_remote_backend_config(
             module,
+            backend_config_files=inputs.get('INPUT_BACKEND_CONFIG_FILE', ''),
+            backend_config_vars=inputs.get('INPUT_BACKEND_CONFIG', ''),
             cli_config_path=cli_config_path
         )
 
-    if backend_config is None:
-        return None
+        if backend_config is None:
+            backend_config = get_cloud_config(
+                module,
+                cli_config_path=cli_config_path
+            )
 
-    if workspace_info := get_workspace(backend_config, inputs['INPUT_WORKSPACE']):
-        version = str(workspace_info['attributes']['terraform-version'])  # type: ignore
-        if version == 'latest':
-            return latest_version(versions)
-        else:
-            return Version(version)
+        if backend_config is None:
+            return None
+
+        if workspace_info := get_workspace(backend_config, inputs['INPUT_WORKSPACE']):
+            version = str(workspace_info['attributes']['terraform-version'])  # type: ignore
+            if version == 'latest':
+                return latest_version(versions)
+            else:
+                return Version(version)
+
+    except Exception as exception:
+        debug(str(exception))
 
     return None
 

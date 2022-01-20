@@ -194,7 +194,7 @@ jobs:
       - name: Create workspace
         uses: ./terraform-new-workspace
         env:
-          TERRAFORM_VERSION: 0.12.13
+          TERRAFORM_VERSION: 1.1.2
           TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_API_TOKEN }}
         with:
           path: tests/version/cloud
