@@ -49,6 +49,18 @@ def main() -> None:
         sys.stdout.write('Current directory doesn\'t use terraform cloud\n')
         sys.exit(1)
 
+    if backend_config.get('token') is None:
+        sys.stdout.write(f'No token found for {backend_config["hostname"]}\n')
+        sys.exit(1)
+
+    if not backend_config.get('workspaces'):
+        sys.stdout.write('No required workspaces option found in backend block\n')
+        sys.exit(1)
+
+    if len([k for k in backend_config['workspaces'] if k in ['tags', 'prefix', 'name']]) != 1:
+        sys.stdout.write('name or prefix required for remote backend. cloud config requires tags.\n')
+        sys.exit(1)
+
     try:
         if sys.argv[1] == 'list':
             for workspace in get_workspaces(backend_config):

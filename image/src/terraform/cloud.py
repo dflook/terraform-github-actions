@@ -139,6 +139,7 @@ def new_workspace(backend_config: BackendConfig, workspace_name: str) -> None:
                 raise
 
             # A workspace with this name already exists
+            debug(f'A workspace named {workspace_name} already exists')
 
             if 'tags' not in backend_config['workspaces']:
                 # We are done, the workspace exists
@@ -150,7 +151,7 @@ def new_workspace(backend_config: BackendConfig, workspace_name: str) -> None:
                 return None
 
             raise CloudException(
-                f'A workspace with the name {workspace_name} already exists, but without the correct tags. You must manually migrate from the remote backend.',
+                f'A workspace with the name {workspace_name} already exists, but without the correct tags. You must manually migrate this workspace by adding the correct tags.',
                 cloud_exception.response
             )
 

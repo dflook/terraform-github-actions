@@ -145,10 +145,10 @@ def get_remote_backend_config(
     """
 
     found = False
-    backend_config = {
+    backend_config = cast(BackendConfig, {
         'hostname': 'app.terraform.io',
         'workspaces': {}
-    }
+    })
 
     for terraform in module.get('terraform', []):
         for backend in terraform.get('backend', []):
@@ -186,9 +186,9 @@ def get_remote_backend_config(
             backend_config['token'] = token
         else:
             debug(f'No token found for {backend_config["hostname"]}')
-            return None
+            return backend_config
 
-    return cast(BackendConfig, backend_config)
+    return backend_config
 
 
 def get_cloud_config(module: TerraformModule, cli_config_path: Path) -> Optional[BackendConfig]:
@@ -225,9 +225,6 @@ def get_cloud_config(module: TerraformModule, cli_config_path: Path) -> Optional
     if backend_config.get('token') is None and cli_config_path:
         if token := get_cli_credentials(cli_config_path, backend_config['hostname']):
             backend_config['token'] = token
-        else:
-            debug(f'No token found for {backend_config["hostname"]}')
-            return None
 
     return backend_config
 
