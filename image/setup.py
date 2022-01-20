@@ -5,6 +5,7 @@ setup(
     version='1.0.0',
     packages=find_packages('src'),
     package_dir={'': 'src'},
+    package_data={'terraform_version': ['backend_constraints.json']},
     entry_points={
         'console_scripts': [
             'terraform-backend=terraform_backend.__main__:main',
