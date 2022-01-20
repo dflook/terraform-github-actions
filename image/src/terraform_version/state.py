@@ -170,7 +170,11 @@ def try_init(terraform: Version, init_args: list[str], workspace: str, backend_t
             return Version(match.group(1).decode())
         elif b'does not support state version 4' in result.stderr:
             return Constraint('>=0.12.0')
-        raise Exception(result.stderr)
+        elif b'Failed to select workspace' in result.stderr:
+            return None
+        else:
+            debug(str(result.stderr))
+            return None
 
     result = subprocess.run(
         [terraform_path, 'state', 'pull'],
