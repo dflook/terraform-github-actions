@@ -124,10 +124,13 @@ def dump_backend_hcl(module: TerraformModule) -> str:
 def read_local_state(module_dir: Path) -> Optional[Version]:
     """Return the terraform version that wrote a local terraform.tfstate file."""
 
-    with open(os.path.join(module_dir, 'terraform.tfstate')) as f:
-        state = json.load(f)
-        if state.get('serial') > 0:
-            return Version(state.get('terraform_version'))
+    try:
+        with open(os.path.join(module_dir, 'terraform.tfstate')) as f:
+            state = json.load(f)
+            if state.get('serial') > 0:
+                return Version(state.get('terraform_version'))
+    except Exception as e:
+        debug(str(e))
 
     return None
 
