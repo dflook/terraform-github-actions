@@ -234,8 +234,6 @@ jobs:
 
       - name: Apply second workspace
         uses: ./terraform-apply
-        env:
-          TERRAFORM_VERSION: 1.1.0
         with:
           variables: my_variable="goodbye"
           path: tests/version/state
@@ -275,8 +273,6 @@ jobs:
 
       - name: Apply third workspace
         uses: ./terraform-apply
-        env:
-          TERRAFORM_VERSION: 0.13.0
         with:
           variables: my_variable="goodbye"
           path: tests/version/state

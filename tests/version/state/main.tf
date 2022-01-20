@@ -6,7 +6,7 @@ output "out" {
 terraform {
   backend "s3" {
     bucket = "terraform-github-actions"
-    key    = "terraform-version-11"
+    key    = "terraform-version"
     region = "eu-west-2"
   }
 }
