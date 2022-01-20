@@ -39,17 +39,8 @@ def get_remote_workspace_version(inputs: InitInputs, module: TerraformModule, cl
     if backend_config is None:
         return None
 
-    if 'name' in backend_config['workspaces']:
-        workspace = backend_config['workspaces']['name']
-    elif 'prefix' in backend_config['workspaces']:
-        workspace = backend_config['workspaces']['prefix'] + inputs['INPUT_WORKSPACE']
-    elif 'tags' in backend_config['workspaces']:
-        workspace = inputs['INPUT_WORKSPACE']
-    else:
-        raise ValueError('Invalid workspace')
-
-    if workspace_info := get_workspace(backend_config, workspace):
-        version = str(workspace_info['terraform-version'])  # type: ignore
+    if workspace_info := get_workspace(backend_config, inputs['INPUT_WORKSPACE']):
+        version = str(workspace_info['attributes']['terraform-version'])  # type: ignore
         if version == 'latest':
             return latest_version(versions)
         else:

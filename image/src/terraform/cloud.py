@@ -229,4 +229,4 @@ def get_workspace(backend_config: BackendConfig, workspace_name: str) -> Optiona
         if not all(tag in workspace['attributes']['tag-names'] for tag in backend_config['workspaces']['tags']):
             return None
 
-    return cast(Workspace, response.json()['data'])
+    return cast(Workspace, workspace)

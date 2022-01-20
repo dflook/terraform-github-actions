@@ -22,5 +22,9 @@ jobs:
           pip install -r tests/requirements.txt
 
       - name: Run tests
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          GITHUB_TOKEN: No
         run: |
-          GITHUB_TOKEN=No PYTHONPATH=image/tools:image/src pytest tests
+           PYTHONPATH=image/tools:image/src pytest tests
