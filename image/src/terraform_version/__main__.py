@@ -11,7 +11,7 @@ from typing import Optional, Iterable, cast
 from github_actions.debug import debug
 from github_actions.env import ActionsEnv, GithubEnv
 from github_actions.inputs import InitInputs
-from terraform.cloud import get_workspace, CloudException
+from terraform.cloud import get_workspace
 from terraform.download import get_executable
 from terraform.module import get_version_constraints, load_module, TerraformModule, get_remote_backend_config, get_cloud_config, get_backend_type
 from terraform.versions import apply_constraints, Constraint, get_terraform_versions, latest_version, Version
@@ -42,7 +42,7 @@ def get_remote_workspace_version(inputs: InitInputs, module: TerraformModule, cl
             return None
 
         if workspace_info := get_workspace(backend_config, inputs['INPUT_WORKSPACE']):
-            version = str(workspace_info['attributes']['terraform-version'])  # type: ignore
+            version = str(workspace_info['attributes']['terraform-version'])
             if version == 'latest':
                 return latest_version(versions)
             else:

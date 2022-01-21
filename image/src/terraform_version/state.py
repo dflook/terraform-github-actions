@@ -26,7 +26,7 @@ def read_backend_config_vars(init_args: InitInputs) -> dict[str, str]:
 
     for path in init_args.get('INPUT_BACKEND_CONFIG_FILE', '').replace(',', '\n').splitlines():
         try:
-            config |= load_backend_config_file(Path(path))
+            config |= load_backend_config_file(Path(path))  # type: ignore
         except Exception as e:
             debug(f'Failed to load backend config file {path}')
             debug(str(e))
@@ -38,7 +38,7 @@ def read_backend_config_vars(init_args: InitInputs) -> dict[str, str]:
     return config
 
 
-def backend_config(module: TerraformModule) -> Tuple[Optional[str], dict[str, Any]]:
+def backend_config(module: TerraformModule) -> Tuple[str, dict[str, Any]]:
     """Return the backend config specified in the terraform module."""
 
     for terraform in module.get('terraform', []):

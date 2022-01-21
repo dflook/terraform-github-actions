@@ -169,14 +169,16 @@ def get_remote_backend_config(
         return None
 
     def read_backend_files() -> None:
+        """Read backend config files specified in env var"""
         for file in backend_config_files.replace(',', '\n').splitlines():
             for key, value in load_backend_config_file(Path(file)).items():
-                backend_config[key] = value[0] if isinstance(value, list) else value
+                backend_config[key] = value[0] if isinstance(value, list) else value  # type: ignore
 
     def read_backend_vars() -> None:
+        """Read backend config values specified in env var"""
         for line in backend_config_vars.replace(',', '\n').splitlines():
             key, value = line.split('=', maxsplit=1)
-            backend_config[key] = value
+            backend_config[key] = value  # type: ignore
 
     read_backend_files()
     read_backend_vars()
@@ -196,7 +198,7 @@ def get_cloud_config(module: TerraformModule, cli_config_path: Path) -> Optional
     Get a complete backend config for a module using terraform cloud
 
     :param module: The terraform module to get the cloud config from.
-    :param cli_config: A Terraform CLI config file to use.
+    :param cli_config_path: A Terraform CLI config file to use.
     """
 
     found = False

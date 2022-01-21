@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import datetime
-import json
 import os
 from typing import Iterable, Optional, TypedDict, Any, cast
 
@@ -15,22 +14,27 @@ from terraform.module import BackendConfig
 
 session = requests.Session()
 
+
 class Workspace(TypedDict):
     """A Terraform cloud workspace"""
     id: str
     attributes: dict[str, Any]
 
+
 class CloudException(Exception):
+    """Raised when there is an error interacting with terraform cloud."""
+
     def __init__(self, msg: str, response: Optional[Response]):
         super().__init__(msg)
         self.response = response
 
-class TerraformCloudApi():
+
+class TerraformCloudApi:
     def __init__(self, host: str, token: str):
         self._host = host
         self._token = token
 
-    def api_request(self, method: str, path: str, /, headers: dict[str, str]=None, **kwargs) -> Response:
+    def api_request(self, method: str, path: str, /, headers: Optional[dict[str, str]] = None, **kwargs: Any) -> Response:
         if headers is None:
             headers = {}
 
@@ -52,16 +56,16 @@ class TerraformCloudApi():
 
         return response
 
-    def get(self, path: str, **kwargs) -> Response:
+    def get(self, path: str, **kwargs: Any) -> Response:
         return self.api_request('GET', path, **kwargs)
 
-    def delete(self, path: str, **kwargs) -> Response:
+    def delete(self, path: str, **kwargs: Any) -> Response:
         return self.api_request('DELETE', path, **kwargs)
 
-    def post(self, path: str, body: dict[str, Any], **kwargs) -> Response:
+    def post(self, path: str, body: dict[str, Any], **kwargs: Any) -> Response:
         return self.api_request('POST', path, headers={'Content-Type': 'application/vnd.api+json'}, json=body, **kwargs)
 
-    def paged_get(self, path: str, **kwargs) -> Iterable[Any]:
+    def paged_get(self, path: str, **kwargs: Any) -> Iterable[Any]:
 
         page_num = 1
         while page_num is not None:
@@ -71,6 +75,7 @@ class TerraformCloudApi():
             yield from body.get('data', {})
 
             page_num = body['meta']['pagination']['next-page']
+
 
 def get_workspaces(backend_config: BackendConfig) -> Iterable[Workspace]:
     """
@@ -132,6 +137,9 @@ def new_workspace(backend_config: BackendConfig, workspace_name: str) -> None:
     try:
         response = terraform_cloud.post(f'/organizations/{backend_config["organization"]}/workspaces', body)
     except CloudException as cloud_exception:
+        if cloud_exception.response is None:
+            raise
+
         content = cloud_exception.response.json()
 
         for error in content.get('errors', []):
@@ -195,9 +203,10 @@ def delete_workspace(backend_config: BackendConfig, workspace_name: str) -> None
     try:
         terraform_cloud.delete(f'/organizations/{backend_config["organization"]}/workspaces/{full_workspace_name}')
     except CloudException as cloud_exception:
-        if cloud_exception.response.status_code == 404:
+        if cloud_exception.response and cloud_exception.response.status_code == 404:
             raise CloudException(f'No such workspace {workspace_name}', cloud_exception.response)
         raise
+
 
 def get_workspace(backend_config: BackendConfig, workspace_name: str) -> Optional[Workspace]:
     """
@@ -220,7 +229,7 @@ def get_workspace(backend_config: BackendConfig, workspace_name: str) -> Optiona
             f'/organizations/{backend_config["organization"]}/workspaces/{full_workspace_name}'
         )
     except CloudException as cloud_exception:
-        if cloud_exception.response.status_code == 404:
+        if cloud_exception.response and cloud_exception.response.status_code == 404:
             return None
         raise
 
