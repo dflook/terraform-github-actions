@@ -51,19 +51,16 @@ class DestroyWorkspace(PlanInputs):
     """Input variables for the terraform-destroy-workspace action"""
 
 
-class Fmt(TypedDict):
+class Fmt(InitInputs):
     """Input variables for the terraform-fmt action"""
-    INPUT_PATH: str
 
 
-class FmtCheck(TypedDict):
+class FmtCheck(InitInputs):
     """Input variables for the terraform-fmt-check action"""
-    INPUT_PATH: str
 
 
-class Version(TypedDict):
+class Version(InitInputs):
     """Input variables for the terraform-version action"""
-    INPUT_PATH: str
 
 
 class NewWorkspace(InitInputs):
@@ -82,7 +79,5 @@ class RemoteState(TypedDict):
     INPUT_BACKEND_CONFIG_FILE: str
 
 
-class Validate(TypedDict):
+class Validate(InitInputs):
     """Input variables for the terraform-validate action"""
-    INPUT_PATH: str
-    INPUT_WORKSPACE: str
