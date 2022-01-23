@@ -1,4 +1,4 @@
-FROM danielflook/terraform-github-actions-base:2022-01-22
+FROM danielflook/terraform-github-actions-base:latest
 
 COPY src/ /tmp/src/
 COPY setup.py /tmp
