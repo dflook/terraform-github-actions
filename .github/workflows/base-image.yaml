@@ -34,7 +34,7 @@ jobs:
             --label org.opencontainers.image.created="$(date '+%Y-%m-%dT%H:%M:%S%z')" \
             --label org.opencontainers.image.source="https://github.com/${{ github.repository }}" \
             --label org.opencontainers.image.revision="${{ github.sha }}" \
-            --label org.opencontainers.image.base.name="docker.io/library/debian:bullseye-slim" \ 
+            --label org.opencontainers.image.base.name="docker.io/library/debian:bullseye-slim" \
             --label org.opencontainers.image.base.digest="$BASE_DIGEST" \
             --label build="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
             image
