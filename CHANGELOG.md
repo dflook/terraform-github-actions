@@ -8,9 +8,43 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.21.1` to use an exact release
-- `@v1.21` to use the latest patch release for the specific minor version
+- `@v1.22.0` to use an exact release
+- `@v1.22` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.22.0] - 2022-01-23
+
+### Added
+
+- Workspace management for Terraform Cloud/Enterprise has been reimplemented to avoid issues with the `terraform workspace` command when using the `remote` backend or a cloud config block:
+  - [dflook/terraform-new-workspace](https://github.com/dflook/terraform-github-actions/tree/master/terraform-new-workspace) can now create the first workspace
+  - [dflook/terraform-destroy-workspace](https://github.com/dflook/terraform-github-actions/tree/master/terraform-destroy-workspace) can now delete the last remaining workspace
+  - [dflook/terraform-new-workspace](https://github.com/dflook/terraform-github-actions/tree/master/terraform-new-workspace) and [dflook/terraform-destroy-workspace](https://github.com/dflook/terraform-github-actions/tree/master/terraform-destroy-workspace) work with a `remote` backend that specifies a workspace by `name`
+  
+- The terraform version to use will now be detected from additional places:
+
+  - The terraform version set in the remote workspace when using Terraform Cloud/Enterprise as the backend 
+  - An [asdf](https://asdf-vm.com/) `.tool-versions` file
+  - The terraform version that wrote an existing state file
+  - A `TERRAFORM_VERSION` environment variable
+
+  The best way to specify the version is using a [`required_version`](https://www.terraform.io/docs/configuration/terraform.html#specifying-a-required-terraform-version) constraint.
+
+  See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/master/terraform-version#terraform-version-action) docs for details.
+
+### Changed
+
+As a result of the above terraform version detection additions, note these changes:
+
+- Actions always use the terraform version set in the remote workspace when using TFC/E, if it exists. This mostly effects [dflook/terraform-fmt](https://github.com/dflook/terraform-github-actions/tree/master/terraform-fmt), [dflook/terraform-fmt-check](https://github.com/dflook/terraform-github-actions/tree/master/terraform-fmt-check) and [dflook/terraform-validate](https://github.com/dflook/terraform-github-actions/tree/master/terraform-validate).
+
+- If the terraform version is not specified anywhere then new workspaces will be created with the latest terraform version. Existing workspaces will use the terraform version that was last used for that workspace.
+
+- If you want to always use the latest terraform version, instead of not specifying a version you now need to set an open-ended version constraint (e.g. `>1.0.0`)
+
+- All actions now support the inputs and environment variables related to the backend, for discovering the terraform version from a TFC/E workspace or remote state. This add the inputs `workspace`, `backend_config`, `backend_config_file`, and the `TERRAFORM_CLOUD_TOKENS` environment variable to the [dflook/terraform-fmt](https://github.com/dflook/terraform-github-actions/tree/master/terraform-fmt), [dflook/terraform-fmt-check](https://github.com/dflook/terraform-github-actions/tree/master/terraform-fmt-check) and [dflook/terraform-validate](https://github.com/dflook/terraform-github-actions/tree/master/terraform-validate) actions.
+
+- :warning: Some unused packages were removed from the container image, most notably Python 2.
 
 ## [1.21.1] - 2021-12-12
 
@@ -331,6 +365,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.22.0]: https://github.com/dflook/terraform-github-actions/compare/v1.21.1...v1.22.0
 [1.21.1]: https://github.com/dflook/terraform-github-actions/compare/v1.21.0...v1.21.1
 [1.21.0]: https://github.com/dflook/terraform-github-actions/compare/v1.20.1...v1.21.0
 [1.20.1]: https://github.com/dflook/terraform-github-actions/compare/v1.20.0...v1.20.1
