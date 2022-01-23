@@ -6,5 +6,5 @@ provider "acme" {
 }
 
 terraform {
-  required_version = "~>0.11"
+  required_version = "~>0.11.0"
 }

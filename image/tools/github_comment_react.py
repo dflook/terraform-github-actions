@@ -4,7 +4,7 @@ import datetime
 import json
 import os
 import sys
-from typing import Optional, cast, NewType, TypedDict
+from typing import NewType, Optional, TypedDict, cast
 
 import requests
 

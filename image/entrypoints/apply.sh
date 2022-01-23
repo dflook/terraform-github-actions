@@ -5,8 +5,7 @@ source /usr/local/actions.sh
 
 debug
 setup
-init-backend
-select-workspace
+init-backend-workspace
 set-plan-args
 
 PLAN_OUT="$STEP_TMP_DIR/plan.out"
@@ -32,7 +31,7 @@ function apply() {
         # Instead we need to do an auto approved apply using the arguments we would normally use for the plan
 
         # shellcheck disable=SC2086
-        debug_log terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS
+        debug_log terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG '$PLAN_ARGS'  # don't expand plan args
         # shellcheck disable=SC2086
         (cd "$INPUT_PATH" && terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS) | $TFMASK
         APPLY_EXIT=${PIPESTATUS[0]}

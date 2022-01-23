@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 import os
-import sys
 import re
+import sys
 
 
 def format_credentials(input):

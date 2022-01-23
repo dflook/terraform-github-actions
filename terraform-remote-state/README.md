@@ -2,7 +2,7 @@
 
 This is one of a suite of terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
-Retrieves the root-level outputs from a terraform remote state.
+Retrieves the root-level outputs from a Terraform remote state.
 
 ## Inputs
 

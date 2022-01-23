@@ -5,8 +5,7 @@ source /usr/local/actions.sh
 
 debug
 setup
-init-backend
-select-workspace
+init-backend-workspace
 set-plan-args
 
 exec 3>&1
@@ -26,10 +25,12 @@ if [[ $DESTROY_EXIT -eq 1 ]]; then
     exit 1
 fi
 
-# We can't delete an active workspace, so re-initialize with a 'default' workspace (which may not exist)
-workspace=$INPUT_WORKSPACE
-INPUT_WORKSPACE=default
-init-backend
+if [[ "$TERRAFORM_BACKEND_TYPE" == "remote" ]]; then
+    terraform-cloud-workspace delete "$INPUT_WORKSPACE"
+else
+    # We can't delete an active workspace, so re-initialize with a 'default' workspace (which may not exist)
+    init-backend-default-workspace
 
-debug_log terraform workspace delete -no-color -lock-timeout=300s "$workspace"
-(cd "$INPUT_PATH" && terraform workspace delete -no-color -lock-timeout=300s "$workspace")
+    debug_log terraform workspace delete -no-color -lock-timeout=300s "$INPUT_WORKSPACE"
+    (cd "$INPUT_PATH" && terraform workspace delete -no-color -lock-timeout=300s "$INPUT_WORKSPACE")
+fi

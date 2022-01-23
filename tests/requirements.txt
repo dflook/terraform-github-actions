@@ -1,2 +1,8 @@
 requests
 pytest
+python-hcl2
+
+types-requests
+
+mypy
+flake8

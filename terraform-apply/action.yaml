@@ -12,7 +12,7 @@ inputs:
     required: false
     default: default
   backend_config:
-    description: List of backend configs to set, one per line
+    description: List of backend config values to set, one per line
     required: false
     default: ""
   backend_config_file:
