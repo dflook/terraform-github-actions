@@ -27,13 +27,16 @@ jobs:
         run: |
           RELEASE_TAG="${{ github.event.release.tag_name }}"
 
+          docker pull --quiet danielflook/terraform-github-actions-base:latest
+          BASE_DIGEST="$(docker image inspect --format="{{index .RepoDigests 0}}" "danielflook/terraform-github-actions-base:latest" | sed 's/.*@//')"
+
           docker build --tag dflook/terraform-github-actions \
             --label org.opencontainers.image.created="$(date '+%Y-%m-%dT%H:%M:%S%z')" \
             --label org.opencontainers.image.source="https://github.com/${{ github.repository }}" \
             --label org.opencontainers.image.revision="${{ github.sha }}" \
-            --label org.opencontainers.image.version="$RELEASE_TAG" \
-            --label vcs-ref="$RELEASE_TAG" \
-            --label build="$GITHUB_RUN_ID" \
+            --label org.opencontainers.image.base.name="docker.io/danielflook/terraform-github-actions-base:latest" \
+            --label org.opencontainers.image.base.digest="$BASE_DIGEST" \
+            --label build="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
             image
 
           docker tag dflook/terraform-github-actions ghcr.io/dflook/terraform-github-actions:$RELEASE_TAG
