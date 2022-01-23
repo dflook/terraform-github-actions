@@ -7,7 +7,7 @@ This action determines the terraform and provider versions to use for a Terrafor
 The best way to specify the version is using a [`required_version`](https://www.terraform.io/docs/configuration/terraform.html#specifying-a-required-terraform-version) constraint.
 
 The version to use is discovered from the first of:
-1. The version set in the TFC/TFE workspace if the module uses a `remote` backend or `cloud` configuration, and the remote workspace exists.
+1. The version set in the Terraform Cloud/Enterprise workspace if the module uses a `remote` backend or `cloud` configuration, and the remote workspace exists.
 2. A [`required_version`](https://www.terraform.io/docs/configuration/terraform.html#specifying-a-required-terraform-version)
    constraint in the terraform configuration. If the constraint is range, the latest matching version is used.
 3. A [tfswitch](https://warrensbox.github.io/terraform-switcher/) `.tfswitchrc` file in the module path
@@ -77,7 +77,7 @@ outputs yourself.
 * `TERRAFORM_CLOUD_TOKENS`
 
   API tokens for terraform cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
-  These tokens may be used for fetching required modules from the registry.
+  These tokens may be used for fetching required modules from the registry, and determining the terraform version set in the remote workspace.
 
   e.g for terraform cloud:
   ```yaml
