@@ -29,6 +29,8 @@ class GitHubActionsEnv(TypedDict):
     GITHUB_EVENT_NAME: str
     GITHUB_REPOSITORY: str
     GITHUB_SHA: str
+    GITHUB_REF_TYPE: str
+    GITHUB_REF: str
 
 
 job_tmp_dir = os.environ.get('JOB_TMP_DIR', '.')
@@ -67,6 +69,8 @@ class ActionInputs(TypedDict):
     INPUT_TARGET: str
     INPUT_REPLACE: str
 
+class WorkflowException(Exception):
+    """An exception that should result in an error in the workflow log"""
 
 def plan_identifier(action_inputs: ActionInputs) -> str:
     def mask_backend_config() -> Optional[str]:
@@ -164,7 +168,7 @@ def github_api_request(method: str, *args, **kwargs) -> requests.Response:
                 limit_reset = datetime.datetime.fromtimestamp(int(response.headers['X-RateLimit-Reset']))
                 sys.stdout.write(message)
                 sys.stdout.write(f' Try again when the rate limit resets at {limit_reset} UTC.\n')
-                exit(1)
+                sys.exit(1)
 
             if message != 'Resource not accessible by integration':
                 sys.stdout.write(message)
@@ -206,20 +210,42 @@ def find_pr(actions_env: GitHubActionsEnv) -> PrUrl:
 
     """
 
-    with open(actions_env['GITHUB_EVENT_PATH']) as f:
-        event = json.load(f)
+    event: Optional[Dict[str, Any]]
+
+    if os.path.isfile(actions_env['GITHUB_EVENT_PATH']):
+        with open(actions_env['GITHUB_EVENT_PATH']) as f:
+            event = json.load(f)
+    else:
+        debug('Event payload is not available')
+        event = None
 
     event_type = actions_env['GITHUB_EVENT_NAME']
 
-    if event_type in ['pull_request', 'pull_request_review_comment', 'pull_request_target', 'pull_request_review']:
-        return cast(PrUrl, event['pull_request']['url'])
+    if event_type in ['pull_request', 'pull_request_review_comment', 'pull_request_target', 'pull_request_review', 'issue_comment']:
 
-    elif event_type == 'issue_comment':
+        if event is not None:
+            # Pull pr url from event payload
 
-        if 'pull_request' in event['issue']:
-            return cast(PrUrl, event['issue']['pull_request']['url'])
+            if event_type in ['pull_request', 'pull_request_review_comment', 'pull_request_target', 'pull_request_review']:
+                return cast(PrUrl, event['pull_request']['url'])
+
+            if event_type == 'issue_comment':
+
+                if 'pull_request' in event['issue']:
+                    return cast(PrUrl, event['issue']['pull_request']['url'])
+                else:
+                    raise WorkflowException('This comment is not for a PR. Add a filter of `if: github.event.issue.pull_request`')
+
         else:
-            raise Exception('This comment is not for a PR. Add a filter of `if: github.event.issue.pull_request`')
+            # Event payload is not available
+
+            if actions_env.get('GITHUB_REF_TYPE') == 'branch':
+                if match := re.match(r'refs/pull/(\d+)/', actions_env.get('GITHUB_REF', '')):
+                    return cast(PrUrl, f'{actions_env["GITHUB_API_URL"]}/repos/{actions_env["GITHUB_REPOSITORY"]}/pulls/{match.group(1)}')
+
+            raise WorkflowException(f'Event payload is not available at the GITHUB_EVENT_PATH {actions_env["GITHUB_EVENT_PATH"]!r}. ' +
+                            f'This is required when run by {event_type} events. The environment has not been setup properly by the actions runner. ' +
+                            'This can happen when the runner is running in a container')
 
     elif event_type == 'push':
         repo = actions_env['GITHUB_REPOSITORY']
@@ -233,10 +259,10 @@ def find_pr(actions_env: GitHubActionsEnv) -> PrUrl:
             if pr['merge_commit_sha'] == commit:
                 return cast(PrUrl, pr['url'])
 
-        raise Exception(f'No PR found in {repo} for commit {commit} (was it pushed directly to the target branch?)')
+        raise WorkflowException(f'No PR found in {repo} for commit {commit} (was it pushed directly to the target branch?)')
 
     else:
-        raise Exception(f"The {event_type} event doesn\'t relate to a Pull Request.")
+        raise WorkflowException(f"The {event_type} event doesn\'t relate to a Pull Request.")
 
 
 def current_user(actions_env: GitHubActionsEnv) -> str:
@@ -416,10 +442,11 @@ def save_step_cache(**kwargs) -> None:
 
 def main() -> None:
     if len(sys.argv) < 2:
-        print(f'''Usage:
+        sys.stdout.write(f'''Usage:
     STATUS="<status>" {sys.argv[0]} plan <plan.txt
     STATUS="<status>" {sys.argv[0]} status
-    {sys.argv[0]} get >plan.txt''')
+    {sys.argv[0]} get >plan.txt
+''')
 
     debug(repr(sys.argv))
 
@@ -436,7 +463,11 @@ def main() -> None:
         pr_url = step_cache['pr_url']
         debug(f'pr_url from step cache: {pr_url}')
     else:
-        pr_url = find_pr(env)
+        try:
+            pr_url = find_pr(env)
+        except WorkflowException as e:
+            sys.stdout.write('\n' + str(e) + '\n')
+            sys.exit(1)
         debug(f'discovered pr_url: {pr_url}')
 
     if step_cache.get('pr_url') == pr_url and step_cache.get('issue_url') is not None:
@@ -473,14 +504,14 @@ def main() -> None:
 
     elif sys.argv[1] == 'status':
         if plan is None:
-            exit(1)
+            sys.exit(1)
         else:
             body = format_body(action_inputs, plan, status, collapse_threshold)
             comment_url = update_comment(issue_url, comment_url, body, only_if_exists)
 
     elif sys.argv[1] == 'get':
         if plan is None:
-            exit(1)
+            sys.exit(1)
 
         with open(sys.argv[2], 'w') as f:
             f.write(plan)

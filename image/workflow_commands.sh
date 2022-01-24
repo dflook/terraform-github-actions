@@ -38,7 +38,16 @@ function debug_cmd() {
 function debug_file() {
     local FILE_PATH
     FILE_PATH="$1"
-    sed "s|^|::debug::$FILE_PATH:|" "$FILE_PATH"
+
+    if [[ -s "$FILE_PATH" ]]; then
+        # File exists, and is not empty
+        sed "s|^|::debug::$FILE_PATH:|" "$FILE_PATH"
+    elif [[ -f "$FILE_PATH" ]]; then
+        # file exists but is empty
+        echo "::debug::$FILE_PATH is empty"
+    else
+        echo "::debug::$FILE_PATH does not exist"
+    fi
 }
 
 ##
