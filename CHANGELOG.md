@@ -8,14 +8,18 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.22.0` to use an exact release
+- `@v1.22.1` to use an exact release
 - `@v1.22` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.22.1] - 2022-01-24
+
+### Fixed
+- Better support for some self-hosted runners that run in containers and don't correctly pass the event payload.
 
 ## [1.22.0] - 2022-01-23
 
 ### Added
-
 - Workspace management for Terraform Cloud/Enterprise has been reimplemented to avoid issues with the `terraform workspace` command when using the `remote` backend or a cloud config block:
   - [dflook/terraform-new-workspace](https://github.com/dflook/terraform-github-actions/tree/master/terraform-new-workspace) can now create the first workspace
   - [dflook/terraform-destroy-workspace](https://github.com/dflook/terraform-github-actions/tree/master/terraform-destroy-workspace) can now delete the last remaining workspace
@@ -33,7 +37,6 @@ When using an action you can specify the version as:
   See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/master/terraform-version#terraform-version-action) docs for details.
 
 ### Changed
-
 As a result of the above terraform version detection additions, note these changes:
 
 - Actions always use the terraform version set in the remote workspace when using TFC/E, if it exists. This mostly effects [dflook/terraform-fmt](https://github.com/dflook/terraform-github-actions/tree/master/terraform-fmt), [dflook/terraform-fmt-check](https://github.com/dflook/terraform-github-actions/tree/master/terraform-fmt-check) and [dflook/terraform-validate](https://github.com/dflook/terraform-github-actions/tree/master/terraform-validate).
@@ -365,6 +368,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.22.1]: https://github.com/dflook/terraform-github-actions/compare/v1.22.0...v1.22.1
 [1.22.0]: https://github.com/dflook/terraform-github-actions/compare/v1.21.1...v1.22.0
 [1.21.1]: https://github.com/dflook/terraform-github-actions/compare/v1.21.0...v1.21.1
 [1.21.0]: https://github.com/dflook/terraform-github-actions/compare/v1.20.1...v1.21.0
