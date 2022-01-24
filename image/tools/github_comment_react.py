@@ -80,10 +80,15 @@ def find_reaction_url(actions_env: GitHubActionsEnv) -> Optional[CommentReaction
     if event_type not in ['issue_comment', 'pull_request_review_comment']:
         return None
 
-    with open(actions_env['GITHUB_EVENT_PATH']) as f:
-        event = json.load(f)
+    try:
+        with open(actions_env['GITHUB_EVENT_PATH']) as f:
+            event = json.load(f)
 
-    return event['comment']['reactions']['url']
+        return event['comment']['reactions']['url']
+    except Exception as e:
+        debug(str(e))
+
+    return None
 
 
 def react(comment_reaction_url: CommentReactionUrl, reaction_type: str) -> None:
