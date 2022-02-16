@@ -25,6 +25,8 @@ class ActionsCache:
             return v
 
     def __setitem__(self, key, value):
+        if value is None:
+            return
 
         path = os.path.join(self._cache_dir, key)
 
