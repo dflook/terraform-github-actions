@@ -110,16 +110,13 @@ else
         exit 1
     fi
 
-    if ! github_pr_comment get "$STEP_TMP_DIR/approved-plan.txt" 2>"$STEP_TMP_DIR/github_pr_comment.stderr"; then
-        debug_file "$STEP_TMP_DIR/github_pr_comment.stderr"
+    if ! github_pr_comment get "$STEP_TMP_DIR/approved-plan.txt"; then
         echo "Plan not found on PR"
         echo "Generate the plan first using the dflook/terraform-plan action. Alternatively set the auto_approve input to 'true'"
         echo "If dflook/terraform-plan was used with add_github_comment set to changes-only, this may mean the plan has since changed to include changes"
 
         set_output failure-reason plan-changed
         exit 1
-    else
-        debug_file "$STEP_TMP_DIR/github_pr_comment.stderr"
     fi
 
     if plan_cmp "$STEP_TMP_DIR/plan.txt" "$STEP_TMP_DIR/approved-plan.txt"; then

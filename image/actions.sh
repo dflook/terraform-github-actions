@@ -96,6 +96,7 @@ function setup() {
     if [[ "$TERRAFORM_BACKEND_TYPE" != "" ]]; then
         echo "Detected $TERRAFORM_BACKEND_TYPE backend"
     fi
+    export TERRAFORM_BACKEND_TYPE
 
     end_group
 
@@ -326,10 +327,8 @@ function output() {
 function update_status() {
     local status="$1"
 
-    if ! STATUS="$status" github_pr_comment status 2>"$STEP_TMP_DIR/github_pr_comment.stderr"; then
-        debug_file "$STEP_TMP_DIR/github_pr_comment.stderr"
-    else
-        debug_file "$STEP_TMP_DIR/github_pr_comment.stderr"
+    if ! STATUS="$status" github_pr_comment status; then
+      echo
     fi
 }
 
