@@ -20,7 +20,8 @@ class ActionsCache:
             return self.__getitem__(item)
         except IndexError:
             v = default()
-            self.__setitem__(item, v)
+            if v is not None:
+                self.__setitem__(item, v)
             return v
 
     def __setitem__(self, key, value):
