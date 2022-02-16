@@ -10,7 +10,8 @@ setup(
         'console_scripts': [
             'terraform-backend=terraform_backend.__main__:main',
             'terraform-version=terraform_version.__main__:main',
-            'terraform-cloud-workspace=terraform_cloud_workspace.__main__:main'
+            'terraform-cloud-workspace=terraform_cloud_workspace.__main__:main',
+            'github_pr_comment=github_pr_comment.__main__:main'
         ]
     },
     install_requires=[

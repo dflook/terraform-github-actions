@@ -12,7 +12,6 @@ COPY actions.sh /usr/local/actions.sh
 COPY workflow_commands.sh /usr/local/workflow_commands.sh
 
 COPY tools/convert_validate_report.py /usr/local/bin/convert_validate_report
-COPY tools/github_pr_comment.py /usr/local/bin/github_pr_comment
 COPY tools/convert_output.py /usr/local/bin/convert_output
 COPY tools/plan_cmp.py /usr/local/bin/plan_cmp
 COPY tools/convert_version.py /usr/local/bin/convert_version
