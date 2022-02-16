@@ -257,7 +257,7 @@ def main() -> None:
         collapse_threshold = 10
 
     pr_url = step_cache.get_default_func('pr_url', lambda: find_pr(github, env))
-    issue_url = step_cache.get_default_func('issue_url', find_issue_url(pr_url))
+    issue_url = step_cache.get_default_func('issue_url', lambda: find_issue_url(pr_url))
 
     # Username is cached in the job tmp dir
     username = current_user(env)
