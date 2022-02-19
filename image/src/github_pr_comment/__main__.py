@@ -11,14 +11,14 @@ from github_actions.api import GithubApi, IssueUrl, CommentUrl
 from github_actions.cache import ActionsCache
 from github_actions.debug import debug
 from github_actions.env import GithubEnv
-from github_actions.find_pr import find_pr
+from github_actions.find_pr import find_pr, WorkflowException
 from github_actions.inputs import PlanPrInputs
 
 Plan = NewType('Plan', str)
 Status = NewType('Status', str)
 
-job_cache = ActionsCache(os.environ.get('JOB_TMP_DIR', '.'))
-step_cache = ActionsCache(os.environ.get('STEP_TMP_DIR', '.'))
+job_cache = ActionsCache(os.environ.get('JOB_TMP_DIR', '.'), 'job_cache')
+step_cache = ActionsCache(os.environ.get('STEP_TMP_DIR', '.'), 'step_cache')
 
 env = cast(GithubEnv, os.environ)
 
@@ -109,9 +109,8 @@ def plan_identifier(action_inputs: PlanPrInputs) -> str:
 
 
 def current_user(actions_env: GithubEnv) -> str:
-    token_hash = hashlib.sha256(actions_env['GITHUB_TOKEN'].encode()).hexdigest()
 
-    def get():
+    def get_username():
         response = github.get(f'{actions_env["GITHUB_API_URL"]}/user')
         if response.status_code != 403:
             user = response.json()
@@ -122,8 +121,15 @@ def current_user(actions_env: GithubEnv) -> str:
             # Assume this is the github actions app token
             return 'github-actions[bot]'
 
-    username = job_cache.get_default_func(f'token-cache/{token_hash}', get)
-    debug(f'discovered GITHUB_TOKEN username: {username}')
+    token_hash = hashlib.sha256(actions_env['GITHUB_TOKEN'].encode()).hexdigest()
+    cache_key = f'token-cache/{token_hash}'
+
+    if cache_key in job_cache:
+        username = job_cache[cache_key]
+    else:
+        username = get_username()
+        job_cache[cache_key] = username
+
     return username
 
 
@@ -211,15 +217,21 @@ def update_comment(issue_url: IssueUrl,
 
 
 def find_issue_url(pr_url: str) -> IssueUrl:
-    pr_hash = hashlib.sha256(pr_url.encode()).hexdigest()
 
-    def get():
+    def get_issue_url():
         response = github.get(pr_url)
         response.raise_for_status()
         return cast(IssueUrl, response.json()['_links']['issue']['href'] + '/comments')
 
-    issue_url = job_cache.get_default_func(f'issue-href-cache/{pr_hash}', get)
-    debug(f'discovered issue_url: {issue_url}')
+    pr_hash = hashlib.sha256(pr_url.encode()).hexdigest()
+    cache_key = f'issue-href-cache/{pr_hash}'
+
+    if cache_key in job_cache:
+        issue_url = job_cache[cache_key]
+    else:
+        issue_url = get_issue_url()
+        job_cache[cache_key] = issue_url
+
     return cast(IssueUrl, issue_url)
 
 
@@ -241,7 +253,7 @@ def find_comment(issue_url: IssueUrl, username: str, action_inputs: PlanPrInputs
 
 def main() -> None:
     if len(sys.argv) < 2:
-        sys.stdout.write(f'''Usage:
+        sys.stderr.write(f'''Usage:
     STATUS="<status>" {sys.argv[0]} plan <plan.txt
     STATUS="<status>" {sys.argv[0]} status
     {sys.argv[0]} get >plan.txt
@@ -256,8 +268,17 @@ def main() -> None:
     except (ValueError, KeyError):
         collapse_threshold = 10
 
-    pr_url = step_cache.get_default_func('pr_url', lambda: find_pr(github, env))
-    issue_url = step_cache.get_default_func('issue_url', lambda: find_issue_url(pr_url))
+    if 'pr_url' in step_cache:
+        pr_url = step_cache['pr_url']
+    else:
+        try:
+            pr_url = find_pr(github, env)
+            step_cache['pr_url'] = pr_url
+        except WorkflowException as e:
+            sys.stderr.write('\n' + str(e) + '\n')
+            sys.exit(1)
+
+    issue_url = find_issue_url(pr_url)
 
     # Username is cached in the job tmp dir
     username = current_user(env)
@@ -265,13 +286,8 @@ def main() -> None:
     if 'comment_url' in step_cache and 'plan' in step_cache:
         comment_url = step_cache['comment_url']
         plan = step_cache['plan']
-        debug(f'comment_url from step cache: {comment_url}')
-        debug(f'plan from step cache: {plan}')
     else:
         comment_url, plan = find_comment(issue_url, username, action_inputs)
-        step_cache['comment_url'], step_cache['plan'] = comment_url, plan
-        debug(f'discovered comment_url: {comment_url}')
-        debug(f'discovered plan: {plan}')
 
     status = cast(Status, os.environ.get('STATUS', ''))
 
@@ -284,15 +300,14 @@ def main() -> None:
             only_if_exists = True
 
         body = format_body(action_inputs, plan, status, collapse_threshold)
-        step_cache['comment_url'] = update_comment(issue_url, comment_url, body, only_if_exists)
-        step_cache['plan'] = plan
+        comment_url = update_comment(issue_url, comment_url, body, only_if_exists)
 
     elif sys.argv[1] == 'status':
         if plan is None:
             sys.exit(1)
         else:
             body = format_body(action_inputs, plan, status, collapse_threshold)
-            step_cache['comment_url'] = update_comment(issue_url, comment_url, body, only_if_exists)
+            comment_url = update_comment(issue_url, comment_url, body, only_if_exists)
 
     elif sys.argv[1] == 'get':
         if plan is None:
@@ -300,6 +315,9 @@ def main() -> None:
 
         with open(sys.argv[2], 'w') as f:
             f.write(plan)
+
+    step_cache['comment_url'] = comment_url
+    step_cache['plan'] = plan
 
 
 if __name__ == '__main__':

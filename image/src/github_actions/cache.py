@@ -1,31 +1,18 @@
 import os
 from pathlib import Path
 
+from github_actions.debug import debug
+
 
 class ActionsCache:
 
-    def __init__(self, cache_dir: Path):
+    def __init__(self, cache_dir: Path, label: str=None):
         self._cache_dir = cache_dir
-
-    def get(self, item, default=None):
-        try:
-            return self.__getitem__(item)
-        except IndexError:
-            if default is not None:
-                self.__setitem__(item, default)
-            return default
-
-    def get_default_func(self, item, default):
-        try:
-            return self.__getitem__(item)
-        except IndexError:
-            v = default()
-            if v is not None:
-                self.__setitem__(item, v)
-            return v
+        self._label = label or self._cache_dir
 
     def __setitem__(self, key, value):
         if value is None:
+            debug(f'Cache value for {key} should not be set to {value}')
             return
 
         path = os.path.join(self._cache_dir, key)
@@ -33,13 +20,15 @@ class ActionsCache:
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(os.path.join(self._cache_dir, key), 'w') as f:
             f.write(value)
+            debug(f'Wrote {key} to {self._label}')
 
-    def __getitem__(self, item):
-        if os.path.isfile(os.path.join(self._cache_dir, item)):
-            with open(os.path.join(self._cache_dir, item)) as f:
+    def __getitem__(self, key):
+        if os.path.isfile(os.path.join(self._cache_dir, key)):
+            with open(os.path.join(self._cache_dir, key)) as f:
+                debug(f'Read {key} from {self._label}')
                 return f.read()
 
-        raise IndexError()
+        raise IndexError(key)
 
-    def __contains__(self, item):
-        return os.path.isfile(os.path.join(self._cache_dir, item))
+    def __contains__(self, key):
+        return os.path.isfile(os.path.join(self._cache_dir, key))
