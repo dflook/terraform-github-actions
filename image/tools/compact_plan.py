@@ -13,7 +13,8 @@ def compact_plan(input):
             line.startswith('Terraform used the selected providers') or
             line.startswith('An execution plan has been generated and is shown below') or
             line.startswith('No changes') or
-            line.startswith('Error')
+            line.startswith('Error') or
+            line.startswith('Changes to Outputs:')
         ):
             plan = True
 
