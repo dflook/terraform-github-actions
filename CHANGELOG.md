@@ -8,9 +8,15 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.22.1` to use an exact release
+- `@v1.22.2` to use an exact release
 - `@v1.22` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.22.2] - 2022-02-28
+
+### Fixed
+- The PR plan comment was incorrectly including resource refresh lines when there were changes to outputs but not resources, while using Terraform >=0.15.4. As well as being noisy, this could lead to failures to apply due to incorrectly detecting changes in the plan.
+- Removed incorrect deprecation warning in [dflook/terraform-destroy](https://github.com/dflook/terraform-github-actions/tree/master/terraform-destroy). Thanks [dgrenner](https://github.com/dgrenner)!
 
 ## [1.22.1] - 2022-01-24
 
@@ -368,6 +374,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.22.2]: https://github.com/dflook/terraform-github-actions/compare/v1.22.1...v1.22.2
 [1.22.1]: https://github.com/dflook/terraform-github-actions/compare/v1.22.0...v1.22.1
 [1.22.0]: https://github.com/dflook/terraform-github-actions/compare/v1.21.1...v1.22.0
 [1.21.1]: https://github.com/dflook/terraform-github-actions/compare/v1.21.0...v1.21.1
