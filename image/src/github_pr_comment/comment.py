@@ -12,7 +12,6 @@ try:
 except (ValueError, KeyError):
     collapse_threshold = 10
 
-
 class TerraformComment:
     """
     Represents a Terraform PR comment
@@ -87,6 +86,29 @@ class TerraformComment:
     def status(self) -> str:
         return self._status
 
+def serialize(comment: TerraformComment) -> str:
+    return json.dumps({
+        'issue_url': comment.issue_url,
+        'comment_url': comment.comment_url,
+        'headers': comment.headers,
+        'description': comment.description,
+        'summary': comment.summary,
+        'body': comment.body,
+        'status': comment.status
+    })
+
+def deserialize(s) -> TerraformComment:
+    j = json.loads(s)
+
+    return TerraformComment(
+        issue_url=j['issue_url'],
+        comment_url=j['comment_url'],
+        headers=j['headers'],
+        description=j['description'],
+        summary=j['summary'],
+        body=j['body'],
+        status=j['status']
+    )
 
 def _format_comment_header(**kwargs) -> str:
     return f'<!-- dflook/terraform-github-actions {json.dumps(kwargs, separators=(",",":"))} -->'

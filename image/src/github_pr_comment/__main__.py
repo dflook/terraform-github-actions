@@ -10,7 +10,7 @@ from github_actions.debug import debug
 from github_actions.env import GithubEnv
 from github_actions.find_pr import find_pr, WorkflowException
 from github_actions.inputs import PlanPrInputs
-from github_pr_comment.comment import find_comment, TerraformComment, update_comment
+from github_pr_comment.comment import find_comment, TerraformComment, update_comment, serialize, deserialize
 
 Plan = NewType('Plan', str)
 Status = NewType('Status', str)
@@ -171,6 +171,9 @@ def get_pr() -> PrUrl:
 
 
 def get_comment(action_inputs: PlanPrInputs) -> TerraformComment:
+    if 'comment' in step_cache:
+        return deserialize(step_cache['comment'])
+
     pr_url = get_pr()
     issue_url = get_issue_url(pr_url)
     username = current_user(env)
@@ -189,7 +192,6 @@ def get_comment(action_inputs: PlanPrInputs) -> TerraformComment:
         headers['label'] = hashlib.sha256(label.encode()).hexdigest()
 
     return find_comment(github, issue_url, username, headers, legacy_description)
-
 
 def main() -> int:
     if len(sys.argv) < 2:
@@ -220,7 +222,7 @@ def main() -> int:
             debug('Comment doesn\'t already exist - not creating it')
             return 0
 
-        update_comment(
+        comment = update_comment(
             github,
             comment,
             description=description,
@@ -231,17 +233,20 @@ def main() -> int:
 
     elif sys.argv[1] == 'status':
         if comment.comment_url is None:
+            debug("Can't set status of comment that doesn't exist")
             return 1
         else:
-            update_comment(github, comment, status=status)
+            comment = update_comment(github, comment, status=status)
 
     elif sys.argv[1] == 'get':
         if comment.comment_url is None:
+            debug("Can't get the plan from comment that doesn't exist")
             return 1
 
         with open(sys.argv[2], 'w') as f:
             f.write(comment.body)
 
+    step_cache['comment'] = serialize(comment)
 
 if __name__ == '__main__':
     sys.exit(main())
