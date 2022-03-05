@@ -189,6 +189,21 @@ def _to_api_payload(comment: TerraformComment) -> str:
 
     return body
 
+def matching_headers(comment: TerraformComment, headers: dict[str, str]) -> bool:
+    """
+    Does a comment have all the specified headers
+
+    Additional headers may be present in the comment, they are ignored if not specified in the headers argument.
+    """
+
+    for header, value in headers.items():
+        if header not in comment.headers:
+            return False
+
+        if comment.headers[header] != value:
+            return False
+
+    return True
 
 def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers: dict[str, str], legacy_description: str) -> TerraformComment:
     """
@@ -212,20 +227,27 @@ def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers:
         if comment_payload['user']['login'] != username:
             continue
 
-        debug(json.dumps(comment_payload))
+        #debug(json.dumps(comment_payload))
 
         if comment := _from_api_payload(comment_payload):
 
-            if comment.headers == headers:
-                debug('Found comment that matches headers')
-                return comment
+            if comment.headers:
+                # Match by headers only
 
-            debug(f"Didn't match comment with {comment.headers=}")
+                if matching_headers(comment, headers):
+                    debug('Found comment that matches headers')
+                    return comment
 
-            if comment.description == legacy_description:
-                backup_comment = comment
+                debug(f"Didn't match comment with {comment.headers=}")
 
-            debug(f"Didn't match comment with {comment.description=}")
+            else:
+                # Match by description only
+
+                if comment.description == legacy_description and backup_comment is None:
+                    debug('Found backup comment that matches legacy description')
+                    backup_comment = comment
+
+                debug(f"Didn't match comment with {comment.description=}")
 
     if backup_comment is not None:
         debug('Found comment matching legacy description')
