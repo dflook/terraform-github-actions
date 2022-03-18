@@ -173,12 +173,12 @@ def get_pr() -> PrUrl:
 
     return cast(PrUrl, pr_url)
 
-def comment_hash(value: str, salt: str) -> str:
+def comment_hash(value: bytes, salt: str) -> str:
     h = hashlib.sha256(f'dflook/terraform-github-actions/{salt}'.encode())
-    h.update(value.encode())
+    h.update(value)
     return h.hexdigest()
 
-def get_comment(action_inputs: PlanPrInputs, backend_fingerprint: str) -> TerraformComment:
+def get_comment(action_inputs: PlanPrInputs, backend_fingerprint: bytes) -> TerraformComment:
     if 'comment' in step_cache:
         return deserialize(step_cache['comment'])
 

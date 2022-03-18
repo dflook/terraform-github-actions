@@ -170,7 +170,7 @@ def fingerprint_local(backend_config: BackendConfig, env) -> dict[str, str]:
     return fingerprint_inputs
 
 
-def fingerprint(backend_type: BackendType, backend_config: BackendConfig, env) -> str:
+def fingerprint(backend_type: BackendType, backend_config: BackendConfig, env) -> bytes:
     backends = {
         'remote': fingerprint_remote,
         'artifactory': fingerprint_artifactory,
