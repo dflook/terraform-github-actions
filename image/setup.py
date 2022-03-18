@@ -16,6 +16,7 @@ setup(
     },
     install_requires=[
         'requests',
-        'python-hcl2'
+        'python-hcl2',
+        'canonicaljson'
     ]
 )

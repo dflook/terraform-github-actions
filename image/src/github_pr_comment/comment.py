@@ -127,7 +127,7 @@ def _parse_comment_header(comment_header: Optional[str]) -> dict[str, str]:
 
 
 def _from_api_payload(comment: dict[str, Any]) -> Optional[TerraformComment]:
-    match = re.match(rf'''
+    match = re.match(r'''
             (?P<headers><!--.*?-->\n)?
             (?P<description>.*)
             <details(?:\sopen)?>\s*
@@ -138,9 +138,9 @@ def _from_api_payload(comment: dict[str, Any]) -> Optional[TerraformComment]:
             </details>
             (?P<status>.*)
         ''',
-                     comment['body'],
-                     re.VERBOSE | re.DOTALL
-                     )
+        comment['body'],
+        re.VERBOSE | re.DOTALL
+    )
 
     if not match:
         return None
