@@ -72,5 +72,4 @@ def find_pr(github: GithubApi, actions_env: GithubEnv) -> PrUrl:
 
         raise WorkflowException(f'No PR found in {repo} for commit {commit} (was it pushed directly to the target branch?)')
 
-    else:
-        raise WorkflowException(f"The {event_type} event doesn\'t relate to a Pull Request.")
+    raise WorkflowException(f"The {event_type} event doesn\'t relate to a Pull Request.")

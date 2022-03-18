@@ -191,5 +191,5 @@ def fingerprint(backend_type: BackendType, backend_config: BackendConfig, env) -
         'local': fingerprint_local,
     }
 
-    fingerprint_inputs = backends.get(backend_type, lambda c: c)(backend_config, env)
+    fingerprint_inputs = backends.get(backend_type, lambda c, e: c)(backend_config, env)
     return canonicaljson.encode_canonical_json(fingerprint_inputs)

@@ -45,7 +45,7 @@ def read_backend_config_vars(init_inputs: InitInputs) -> BackendConfig:
 def complete_config(action_inputs: InitInputs, module: TerraformModule) -> Tuple[BackendType, BackendConfig]:
     backend_type, config = partial_backend_config(module)
 
-    for key, value in read_backend_config_vars(action_inputs):
+    for key, value in read_backend_config_vars(action_inputs).items():
         config[key] = value
 
     return backend_type, config

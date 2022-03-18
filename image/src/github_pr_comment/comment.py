@@ -292,6 +292,6 @@ def update_comment(
     else:
         response = github.post(comment.issue_url, json={'body': _to_api_payload(new_comment)})
         response.raise_for_status()
-        new_comment.url = response.json()['url']
+        new_comment.comment_url = response.json()['url']
 
     return new_comment

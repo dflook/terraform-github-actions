@@ -19,12 +19,12 @@ from terraform.module import load_module
 Plan = NewType('Plan', str)
 Status = NewType('Status', str)
 
-job_cache = ActionsCache(os.environ.get('JOB_TMP_DIR', '.'), 'job_cache')
-step_cache = ActionsCache(os.environ.get('STEP_TMP_DIR', '.'), 'step_cache')
+job_cache = ActionsCache(Path(os.environ.get('JOB_TMP_DIR', '.')), 'job_cache')
+step_cache = ActionsCache(Path(os.environ.get('STEP_TMP_DIR', '.')), 'step_cache')
 
 env = cast(GithubEnv, os.environ)
 
-github = GithubApi(env.get('GITHUB_API_URL', 'https://api.github.com'), env.get('GITHUB_TOKEN'))
+github = GithubApi(env.get('GITHUB_API_URL', 'https://api.github.com'), env['GITHUB_TOKEN'])
 
 
 def _mask_backend_config(action_inputs: PlanPrInputs) -> Optional[str]:
@@ -174,8 +174,8 @@ def get_pr() -> PrUrl:
     return cast(PrUrl, pr_url)
 
 def comment_hash(value: str, salt: str) -> str:
-    h = hashlib.sha256(f'dflook/terraform-github-actions/{salt}')
-    h.update(value)
+    h = hashlib.sha256(f'dflook/terraform-github-actions/{salt}'.encode())
+    h.update(value.encode())
     return h.hexdigest()
 
 def get_comment(action_inputs: PlanPrInputs, backend_fingerprint: str) -> TerraformComment:
@@ -261,6 +261,7 @@ def main() -> int:
             f.write(comment.body)
 
     step_cache['comment'] = serialize(comment)
+    return 0
 
 if __name__ == '__main__':
     sys.exit(main())
