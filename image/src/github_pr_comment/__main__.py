@@ -5,6 +5,8 @@ import sys
 from pathlib import Path
 from typing import (NewType, Optional, cast)
 
+import canonicaljson
+
 from github_actions.api import GithubApi, IssueUrl, PrUrl
 from github_actions.cache import ActionsCache
 from github_actions.debug import debug
@@ -198,6 +200,17 @@ def get_comment(action_inputs: PlanPrInputs, backend_fingerprint: bytes) -> Terr
 
     if label := os.environ.get('INPUT_LABEL'):
         headers['label'] = label
+
+    plan_modifier = {}
+    if target := os.environ.get('INPUT_TARGET'):
+        plan_modifier['target'] = sorted(t.strip() for t in target.replace(',', '\n', ).split('\n'))
+
+    if replace := os.environ.get('INPUT_REPLACE'):
+        plan_modifier['replace'] = sorted(t.strip() for t in replace.replace(',', '\n', ).split('\n'))
+
+    if plan_modifier:
+        debug(f'Plan modifier: {plan_modifier}')
+        headers['plan_modifier'] = hashlib.sha256(canonicaljson.encode_canonical_json(plan_modifier))
 
     return find_comment(github, issue_url, username, headers, legacy_description)
 

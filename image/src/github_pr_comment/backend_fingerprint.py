@@ -9,6 +9,7 @@ Combined with the backend type and workspace name, this should uniquely identify
 """
 import canonicaljson
 
+from github_actions.debug import debug
 from github_pr_comment.backend_config import BackendConfig, BackendType
 
 
@@ -192,4 +193,7 @@ def fingerprint(backend_type: BackendType, backend_config: BackendConfig, env) -
     }
 
     fingerprint_inputs = backends.get(backend_type, lambda c, e: c)(backend_config, env)
+
+    debug(f'Backend fingerprint includes {fingerprint_inputs.keys()}')
+
     return canonicaljson.encode_canonical_json(fingerprint_inputs)

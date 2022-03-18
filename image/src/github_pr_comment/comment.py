@@ -221,6 +221,8 @@ def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers:
     :param legacy_description: The description that must be present on the comment, if not headers are found.
     """
 
+    debug(f"Searching for comment with {headers=}")
+
     backup_comment = None
 
     for comment_payload in github.paged_get(issue_url):
@@ -235,7 +237,7 @@ def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers:
                 # Match by headers only
 
                 if matching_headers(comment, headers):
-                    debug('Found comment that matches headers')
+                    debug(f'Found comment that matches headers {comment.headers=} ')
                     return comment
 
                 debug(f"Didn't match comment with {comment.headers=}")
@@ -253,7 +255,7 @@ def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers:
         debug('Found comment matching legacy description')
         return backup_comment
 
-    debug('No matching comment exists')
+    debug('No existing comment exists')
     return TerraformComment(
         issue_url=issue_url,
         comment_url=None,
