@@ -138,16 +138,22 @@ def try_init(terraform: Version, init_args: list[str], workspace: str, backend_t
         f.write(backend_tf)
 
     # Here we go
-    result = subprocess.run(
-        [str(terraform_path), 'init'] + init_args,
-        env=os.environ | {'TF_INPUT': 'false', 'TF_WORKSPACE': workspace},
-        capture_output=True,
-        cwd=module_dir
-    )
-    debug(f'{result.args[:2]=}')
-    debug(f'{result.returncode=}')
-    debug(result.stdout.decode())
-    debug(result.stderr.decode())
+    try:
+        result = subprocess.run(
+            [str(terraform_path), 'init'] + init_args,
+            env=os.environ | {'TF_INPUT': 'false', 'TF_WORKSPACE': workspace},
+            capture_output=True,
+            cwd=module_dir,
+            timeout=300
+        )
+    except subprocess.TimeoutExpired:
+        debug('terraform init timeout')
+        return None
+    finally:
+        debug(f'{result.args[:2]=}')
+        debug(f'{result.returncode=}')
+        debug(result.stdout.decode())
+        debug(result.stderr.decode())
 
     if result.returncode != 0:
         if match := re.search(rb'state snapshot was created by Terraform v(.*),', result.stderr):
@@ -160,16 +166,22 @@ def try_init(terraform: Version, init_args: list[str], workspace: str, backend_t
             debug(str(result.stderr))
             return None
 
-    result = subprocess.run(
-        [terraform_path, 'state', 'pull'],
-        env=os.environ | {'TF_INPUT': 'false', 'TF_WORKSPACE': workspace},
-        capture_output=True,
-        cwd=module_dir
-    )
-    debug(f'{result.args=}')
-    debug(f'{result.returncode=}')
-    debug(f'{result.stdout.decode()=}')
-    debug(f'{result.stderr.decode()=}')
+    try:
+        result = subprocess.run(
+            [terraform_path, 'state', 'pull'],
+            env=os.environ | {'TF_INPUT': 'false', 'TF_WORKSPACE': workspace},
+            capture_output=True,
+            cwd=module_dir,
+            timeout=300            
+        )
+    except subprocess.TimeoutExpired:
+        debug('terraform state pull timeout')
+        return None
+    finally:
+        debug(f'{result.args=}')
+        debug(f'{result.returncode=}')
+        debug(f'{result.stdout.decode()=}')
+        debug(f'{result.stderr.decode()=}')
 
     if result.returncode != 0:
         if b'does not support state version 4' in result.stderr:
