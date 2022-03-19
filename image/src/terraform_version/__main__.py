@@ -37,26 +37,38 @@ def determine_version(inputs: InitInputs, cli_config_path: Path, actions_env: Ac
     if version := try_get_remote_workspace_version(inputs, module, cli_config_path, versions):
         sys.stdout.write(f'Using remote workspace terraform version, which is set to {version!r}\n')
         return version
+    else:
+        debug('Root module is not using terraform cloud')
 
     if version := try_get_required_version(module, versions):
         sys.stdout.write(f'Using latest terraform version that matches the required_version constraints\n')
         return version
+    else:
+        debug('No required version constraint found')
 
     if version := try_read_tfswitch(inputs):
         sys.stdout.write('Using terraform version specified in .tfswitchrc file\n')
         return version
+    else:
+        debug('No version found in .tfswitchrc')
 
     if version := try_read_tfenv(inputs, versions):
         sys.stdout.write('Using terraform version specified in .terraform-version file\n')
         return version
+    else:
+        debug('No version found in .terraform-version')
 
     if version := try_read_asdf(inputs, github_env.get('GITHUB_WORKSPACE', '/'), versions):
         sys.stdout.write('Using terraform version specified in .tool-versions file\n')
         return version
+    else:
+        debug('No version found in .tool-versions')
 
     if version := try_read_env(actions_env, versions):
         sys.stdout.write('Using latest terraform version that matches the TERRAFORM_VERSION constraints\n')
         return version
+    else:
+        debug('No version found in TERRAFORM_VERSION')
 
     if inputs.get('INPUT_BACKEND_CONFIG', '').strip():
         # key=value form of backend config was introduced in 0.9.1
@@ -66,6 +78,7 @@ def determine_version(inputs: InitInputs, cli_config_path: Path, actions_env: Ac
         backend_config = read_backend_config_vars(inputs)
         versions = list(apply_constraints(versions, get_backend_constraints(module, backend_config)))
         backend_type = get_backend_type(module)
+        debug(f'Backend is {backend_type}')
     except Exception as e:
         debug('Failed to get backend config')
         debug(str(e))
@@ -75,11 +88,15 @@ def determine_version(inputs: InitInputs, cli_config_path: Path, actions_env: Ac
         if version := try_guess_state_version(inputs, module, versions):
             sys.stdout.write('Using the same terraform version that wrote the existing remote state file\n')
             return version
+        else:
+            debug('Unable to get version from existing remote state file')
 
     if backend_type == 'local':
         if version := try_read_local_state(Path(inputs.get('INPUT_PATH', '.'))):
             sys.stdout.write('Using the same terraform version that wrote the existing local terraform.tfstate\n')
             return version
+        else:
+            debug('Unable to get version from existing local state file')
 
     sys.stdout.write('Terraform version not specified, using the latest version\n')
     return latest_version(versions)
