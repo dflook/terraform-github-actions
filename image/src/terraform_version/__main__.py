@@ -30,7 +30,9 @@ def determine_version(inputs: InitInputs, cli_config_path: Path, actions_env: Ac
 
     versions = list(get_terraform_versions())
 
+    debug('Loading module')
     module = load_module(Path(inputs.get('INPUT_PATH', '.')))
+    debug('Finished loading module')
 
     version: Optional[Version]
 

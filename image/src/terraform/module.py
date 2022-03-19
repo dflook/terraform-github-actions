@@ -63,12 +63,18 @@ def load_module(path: Path) -> TerraformModule:
     module = cast(TerraformModule, {})
 
     for file in os.listdir(path):
+        debug(f'Loading file {file}')
         if not file.endswith('.tf'):
             continue
 
         with open(os.path.join(path, file)) as f:
             try:
-                module = merge(module, cast(TerraformModule, hcl2.load(f)))
+                debug('Parsing')
+                the_file = cast(TerraformModule, hcl2.load(f))
+                debug('Done parsing')
+                debug('Merging into module')
+                module = merge(module, the_file)
+                debug('done')
             except Exception as e:
                 # ignore tf files that don't parse
                 debug(f'Failed to parse {file}')
