@@ -199,7 +199,7 @@ def earliest_version(versions: Iterable[Version]) -> Version:
 def get_terraform_versions() -> Iterable[Version]:
     """Return the currently available terraform versions."""
 
-    response = session.get('https://releases.hashicorp.com/terraform/')
+    response = session.get('https://releases.hashicorp.com/terraform/', timeout=60)
     response.raise_for_status()
 
     version_regex = re.compile(br'/(\d+\.\d+\.\d+(-[\d\w]+)?)/')
