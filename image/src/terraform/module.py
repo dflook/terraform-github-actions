@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 from typing import Any, cast, NewType, Optional, TYPE_CHECKING, TypedDict
 
-import hcl2  # type: ignore
+import terraform.hcl
 
 from github_actions.debug import debug
 from terraform.versions import Constraint
@@ -67,18 +67,17 @@ def load_module(path: Path) -> TerraformModule:
         if not file.endswith('.tf'):
             continue
 
-        with open(os.path.join(path, file)) as f:
-            try:
-                debug('Parsing')
-                the_file = cast(TerraformModule, hcl2.load(f))
-                debug('Done parsing')
-                debug('Merging into module')
-                module = merge(module, the_file)
-                debug('done')
-            except Exception as e:
-                # ignore tf files that don't parse
-                debug(f'Failed to parse {file}')
-                debug(str(e))
+        try:
+            debug('Parsing')
+            the_file = cast(TerraformModule, terraform.hcl.load(path))
+            debug('Done parsing')
+            debug('Merging into module')
+            module = merge(module, the_file)
+            debug('done')
+        except Exception as e:
+            # ignore tf files that don't parse
+            debug(f'Failed to parse {file}')
+            debug(str(e))
 
     return module
 
@@ -86,8 +85,7 @@ def load_module(path: Path) -> TerraformModule:
 def load_backend_config_file(path: Path) -> TerraformModule:
     """Load a backend config file."""
 
-    with open(path) as f:
-        return cast(TerraformModule, hcl2.load(f))
+    return cast(TerraformModule, terraform.hcl.load(path))
 
 
 def read_cli_config(config: str) -> dict[str, str]:
@@ -99,7 +97,7 @@ def read_cli_config(config: str) -> dict[str, str]:
 
     hosts = {}
 
-    config_hcl = hcl2.loads(config)
+    config_hcl = terraform.hcl.loads(config)
 
     for credential in config_hcl.get('credentials', {}):
         for cred_hostname, cred_conf in credential.items():
