@@ -8,7 +8,7 @@ import sys
 import subprocess
 from pathlib import Path
 
-from github_pr_comment import debug
+from github_actions.debug import debug
 
 
 def try_load(path: Path) -> dict:
