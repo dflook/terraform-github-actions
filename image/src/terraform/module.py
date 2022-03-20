@@ -69,7 +69,7 @@ def load_module(path: Path) -> TerraformModule:
 
         try:
             debug('Parsing')
-            the_file = cast(TerraformModule, terraform.hcl.load(path))
+            the_file = cast(TerraformModule, terraform.hcl.load(os.path.join(path, file)))
             debug('Done parsing')
             debug('Merging into module')
             module = merge(module, the_file)
