@@ -25,22 +25,23 @@ def is_loadable(path: Path) -> bool:
             timeout=10
         )
     except subprocess.TimeoutExpired:
+        debug('TimeoutExprired')
         # We found a file that won't parse :(
         return False
     except:
         # If we get an exception, we can still try and load it.
         return True
 
-    return False
+    return True
 
-def load(path: Path) -> Optional[dict]:
+def load(path: Path) -> dict:
     if is_loadable(path):
         return try_load(path)
 
     debug(f'Unable to load {path}')
-    return {}
+    raise Exception(f'Unable to load {path}')
 
-def loads(hcl: str) -> Optional[dict]:
+def loads(hcl: str) -> dict:
 
     tmp_path = Path('/tmp/load_test.hcl')
 
@@ -50,8 +51,8 @@ def loads(hcl: str) -> Optional[dict]:
     if is_loadable(tmp_path):
         return hcl2.loads(hcl)
 
-    debug('Unable to load hcl')
-    return {}
+    debug(f'Unable to load hcl')
+    raise Exception(f'Unable to load hcl')
 
 if __name__ == '__main__':
     try_load(Path(sys.argv[1]))
