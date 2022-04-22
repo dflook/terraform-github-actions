@@ -126,6 +126,9 @@ else
         echo "The plan on the PR must be up to date. Alternatively, set the auto_approve input to 'true' to apply outdated plans"
         update_status ":x: Plan not applied in $(job_markdown_ref) (Plan has changed)"
 
+        echo "Performing diff between the pull request plan and the plan generated at execution time ..."
+        echo "> are lines from the plan in the pull request"
+        echo "< are lines from the plan generated at execution"
         echo "Plan changes:"
         debug_log diff "$STEP_TMP_DIR/plan.txt" "$STEP_TMP_DIR/approved-plan.txt"
         diff "$STEP_TMP_DIR/plan.txt" "$STEP_TMP_DIR/approved-plan.txt" || true
