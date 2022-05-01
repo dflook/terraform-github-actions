@@ -18,7 +18,7 @@ jobs:
         uses: ./terraform-plan
         id: plan
         with:
-          label: No targeted changes
+          label: test-target-replace plan_targeting
           path: tests/workflows/test-target-replace
           target: |
             random_string.notpresent
@@ -248,7 +248,7 @@ jobs:
         uses: ./terraform-plan
         id: plan
         with:
-          label: No targeted changes
+          label: test-target-replace remote_plan_targeting
           path: tests/workflows/test-target-replace
           target: |
             random_string.notpresent

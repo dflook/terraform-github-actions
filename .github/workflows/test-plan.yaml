@@ -492,4 +492,4 @@ jobs:
       - name: Plan
         uses: ./terraform-plan
         with:
-          label: Optional path
+          label: test-plan default_path

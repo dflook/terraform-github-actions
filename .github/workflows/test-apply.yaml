@@ -470,7 +470,7 @@ jobs:
         uses: ./terraform-plan
         with:
           path: tests/workflows/test-apply/vars
-          label: TestLabel
+          label: test-apply apply_label
           variables: my_var="world"
           var_file: tests/workflows/test-apply/test.tfvars
 
@@ -479,7 +479,7 @@ jobs:
         id: output
         with:
           path: tests/workflows/test-apply/vars
-          label: TestLabel
+          label: test-apply apply_label
           variables: my_var="world"
           var_file: tests/workflows/test-apply/test.tfvars
 
@@ -580,14 +580,14 @@ jobs:
       - name: Plan
         uses: ./terraform-plan
         with:
-          label: User PAT
+          label: test-apply apply_user_token
           path: tests/workflows/test-apply/changes
 
       - name: Apply
         uses: ./terraform-apply
         id: output
         with:
-          label: User PAT
+          label: test-apply apply_user_token
           path: tests/workflows/test-apply/changes
 
       - name: Verify outputs

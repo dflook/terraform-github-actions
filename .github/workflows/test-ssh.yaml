@@ -29,7 +29,7 @@ jobs:
           TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
         with:
           path: tests/workflows/test-ssh
-          label: SSH Module
+          label: test-ssh ssh_key
 
       - name: Verify outputs
         run: |
@@ -51,7 +51,7 @@ jobs:
         id: plan
         with:
           path: tests/workflows/test-ssh
-          label: SSH Module
+          label: test-ssh no_ssh_key
           add_github_comment: false
 
       - name: Check failed
