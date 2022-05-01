@@ -19,7 +19,7 @@ jobs:
         uses: ./terraform-output
         id: terraform-output
         with:
-          path: tests/workflows/test-output/test-bucket_12
+          path: tests/workflows/test-output
 
       - name: Print the outputs
         run: |

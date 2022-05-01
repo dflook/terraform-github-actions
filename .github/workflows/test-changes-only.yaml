@@ -17,8 +17,8 @@ jobs:
         uses: ./terraform-plan
         id: plan
         with:
-          label: no_changes
-          path: tests/plan/changes-only
+          label: test-changes-only change-only THIS SHOULD NOT BE A COMMENT
+          path: tests/workflows/test-changes-only
           add_github_comment: changes-only
 
       - name: Verify outputs
@@ -34,7 +34,7 @@ jobs:
         uses: ./terraform-apply
         id: apply
         with:
-          label: no_changes
+          label: test-changes-only change-only THIS SHOULD NOT BE A COMMENT
           path: tests/workflows/test-changes-only
 
       - name: Check failure-reason
@@ -57,7 +57,7 @@ jobs:
         uses: ./terraform-plan
         id: changes-plan
         with:
-          label: change_then_no_changes
+          label: test-changes-only change_then_no_changes
           path: tests/workflows/test-changes-only
           variables: |
             cause-changes=true
@@ -76,7 +76,7 @@ jobs:
         uses: ./terraform-plan
         id: plan
         with:
-          label: change_then_no_changes
+          label: test-changes-only change_then_no_changes
           path: tests/workflows/test-changes-only
           variables: |
             cause-changes=false
@@ -95,7 +95,7 @@ jobs:
         uses: ./terraform-apply
         id: apply
         with:
-          label: change_then_no_changes
+          label: test-changes-only change_then_no_changes
           path: tests/workflows/test-changes-only
           variables: |
             cause-changes=false
@@ -121,7 +121,7 @@ jobs:
         id: plan
         with:
           path: tests/workflows/test-changes-only
-          label: no_changes_then_changes
+          label: test-changes-only no_changes_then_changes
           variables: |
             cause-changes=false
           add_github_comment: changes-only
@@ -141,7 +141,7 @@ jobs:
         continue-on-error: true
         with:
           path: tests/workflows/test-changes-only
-          label: no_changes_then_changes
+          label: test-changes-only no_changes_then_changes
           variables: |
             cause-changes=true
 
@@ -170,7 +170,7 @@ jobs:
         uses: ./terraform-plan
         with:
           path: tests/workflows/test-changes-only
-          label: apply_when_plan_has_changed
+          label: test-changes-only apply_when_plan_has_changed
           variables: |
             cause-changes=true
 
@@ -180,7 +180,7 @@ jobs:
         continue-on-error: true
         with:
           path: tests/workflows/test-changes-only
-          label: apply_when_plan_has_changed
+          label: test-changes-only apply_when_plan_has_changed
           variables: |
             cause-changes=true
             len=4

@@ -453,10 +453,10 @@ jobs:
       - name: Plan
         uses: ./terraform-plan
         with:
-          path: tests/apply/vars
+          path: tests/workflows/test-plan/vars
           variables: |
             my_var="single"
-          var_file: tests/apply/test.tfvars
+          var_file: tests/workflows/test-plan/test.tfvars
 
   plan_change_run_commands:
     runs-on: ubuntu-latest
