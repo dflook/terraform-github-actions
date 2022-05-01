@@ -8,7 +8,7 @@ from typing import Iterable, Optional
 
 from github_actions.debug import debug
 from github_actions.inputs import InitInputs
-from terraform.versions import latest_version, Version
+from terraform.versions import Version, latest_non_prerelease_version
 
 
 def parse_asdf(tool_versions: str, versions: Iterable[Version]) -> Version:
@@ -17,7 +17,7 @@ def parse_asdf(tool_versions: str, versions: Iterable[Version]) -> Version:
     for line in tool_versions.splitlines():
         if match := re.match(r'^\s*terraform\s+([^\s#]+)', line.strip()):
             if match.group(1) == 'latest':
-                return latest_version(v for v in versions if not v.pre_release)
+                return latest_non_prerelease_version(v for v in versions if not v.pre_release)
             return Version(match.group(1))
 
     raise Exception('No version for terraform found in .tool-versions')

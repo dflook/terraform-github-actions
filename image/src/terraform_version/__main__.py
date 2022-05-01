@@ -8,17 +8,16 @@ import sys
 from pathlib import Path
 from typing import Optional, cast
 
-from terraform_version.remote_state import get_backend_constraints, read_backend_config_vars, try_guess_state_version
-
 from github_actions.debug import debug
 from github_actions.env import ActionsEnv, GithubEnv
 from github_actions.inputs import InitInputs
 from terraform.download import get_executable
 from terraform.module import load_module, get_backend_type
-from terraform.versions import apply_constraints, get_terraform_versions, latest_version, Version, Constraint
+from terraform.versions import apply_constraints, get_terraform_versions, Version, Constraint, latest_non_prerelease_version
 from terraform_version.asdf import try_read_asdf
 from terraform_version.env import try_read_env
 from terraform_version.local_state import try_read_local_state
+from terraform_version.remote_state import get_backend_constraints, read_backend_config_vars, try_guess_state_version
 from terraform_version.remote_workspace import try_get_remote_workspace_version
 from terraform_version.required_version import try_get_required_version
 from terraform_version.tfenv import try_read_tfenv
@@ -69,7 +68,7 @@ def determine_version(inputs: InitInputs, cli_config_path: Path, actions_env: Ac
     except Exception as e:
         debug('Failed to get backend config')
         debug(str(e))
-        return latest_version(versions)
+        return latest_non_prerelease_version(versions)
 
     if backend_type not in ['remote', 'local']:
         if version := try_guess_state_version(inputs, module, versions):
@@ -82,7 +81,7 @@ def determine_version(inputs: InitInputs, cli_config_path: Path, actions_env: Ac
             return version
 
     sys.stdout.write('Terraform version not specified, using the latest version\n')
-    return latest_version(versions)
+    return latest_non_prerelease_version(versions)
 
 
 def switch(version: Version) -> None:

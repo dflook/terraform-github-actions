@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 from functools import total_ordering
-from typing import Any, cast, Iterable, Literal
+from typing import Any, cast, Iterable, Literal, Optional
 
 import requests
 
@@ -183,12 +183,24 @@ class Constraint:
             # ~> x.x.x
             return version.major == self.major and version.minor == self.minor and version.patch >= self.patch
 
+def latest_non_prerelease_version(versions: Iterable[Version]) -> Optional[Version]:
+    """Return the latest non prerelease version of the given versions."""
+
+    for v in sorted(versions, reverse=True):
+        if not v.pre_release:
+            return v
 
 def latest_version(versions: Iterable[Version]) -> Version:
     """Return the latest version of the given versions."""
 
     return sorted(versions, reverse=True)[0]
 
+def earliest_non_prerelease_version(versions: Iterable[Version]) -> Optional[Version]:
+    """Return the earliest non prerelease version of the given versions."""
+
+    for v in sorted(versions):
+        if not v.pre_release:
+            return v
 
 def earliest_version(versions: Iterable[Version]) -> Version:
     """Return the earliest version of the given versions."""
