@@ -203,14 +203,14 @@ def get_comment(action_inputs: PlanPrInputs, backend_fingerprint: bytes) -> Terr
 
     plan_modifier = {}
     if target := os.environ.get('INPUT_TARGET'):
-        plan_modifier['target'] = sorted(t.strip() for t in target.replace(',', '\n', ).split('\n'))
+        plan_modifier['target'] = sorted(t.strip() for t in target.replace(',', '\n', ).split('\n') if t.strip())
 
     if replace := os.environ.get('INPUT_REPLACE'):
-        plan_modifier['replace'] = sorted(t.strip() for t in replace.replace(',', '\n', ).split('\n'))
+        plan_modifier['replace'] = sorted(t.strip() for t in replace.replace(',', '\n', ).split('\n') if t.strip())
 
     if plan_modifier:
         debug(f'Plan modifier: {plan_modifier}')
-        headers['plan_modifier'] = hashlib.sha256(canonicaljson.encode_canonical_json(plan_modifier))
+        headers['plan_modifier'] = hashlib.sha256(canonicaljson.encode_canonical_json(plan_modifier)).hexdigest()
 
     return find_comment(github, issue_url, username, headers, legacy_description)
 
