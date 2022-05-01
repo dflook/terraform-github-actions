@@ -194,10 +194,14 @@ def matching_headers(comment: TerraformComment, headers: dict[str, str]) -> bool
     Does a comment have all the specified headers
 
     Additional headers may be present in the comment, they are ignored if not specified in the headers argument.
+    If a header should NOT be present in the comment, specify a header with a value of None
     """
 
     for header, value in headers.items():
-        if header not in comment.headers:
+        if value is not None and header not in comment.headers:
+            return False
+
+        if value is None and header in comment.headers:
             return False
 
         if comment.headers[header] != value:

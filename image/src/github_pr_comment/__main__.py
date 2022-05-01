@@ -198,8 +198,7 @@ def get_comment(action_inputs: PlanPrInputs, backend_fingerprint: bytes) -> Terr
     if backend_type := os.environ.get('TERRAFORM_BACKEND_TYPE'):
         headers['backend_type'] = backend_type
 
-    if label := os.environ.get('INPUT_LABEL'):
-        headers['label'] = label
+    headers['label'] = os.environ.get('INPUT_LABEL') or None
 
     plan_modifier = {}
     if target := os.environ.get('INPUT_TARGET'):
