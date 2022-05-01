@@ -17,14 +17,14 @@ jobs:
         uses: ./terraform-plan
         with:
           label: pull_request_review
-          path: tests/apply/changes
+          path: tests/workflows/pull_request_review
 
       - name: Apply
         uses: ./terraform-apply
         id: output
         with:
           label: pull_request_review
-          path: tests/apply/changes
+          path: tests/workflows/pull_request_review
 
       - name: Verify outputs
         run: |

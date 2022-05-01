@@ -15,7 +15,7 @@ jobs:
         uses: ./terraform-fmt-check
         id: fmt-check
         with:
-          path: tests/fmt/canonical
+          path: tests/workflows/test-fmt-check/canonical
 
       - name: Check valid
         run: |
@@ -37,7 +37,7 @@ jobs:
         continue-on-error: true
         id: fmt-check
         with:
-          path: tests/fmt/non-canonical
+          path: tests/workflows/test-fmt-check/non-canonical
 
       - name: Check invalid
         run: |

@@ -19,7 +19,7 @@ jobs:
         env:
           TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
         with:
-          path: tests/ssh-module
+          path: tests/workflows/test-ssh
           label: SSH Module
 
       - name: Apply
@@ -28,7 +28,7 @@ jobs:
         env:
           TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
         with:
-          path: tests/ssh-module
+          path: tests/workflows/test-ssh
           label: SSH Module
 
       - name: Verify outputs
@@ -50,7 +50,7 @@ jobs:
         continue-on-error: true
         id: plan
         with:
-          path: tests/ssh-module
+          path: tests/workflows/test-ssh
           label: SSH Module
           add_github_comment: false
 

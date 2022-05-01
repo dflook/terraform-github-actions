@@ -19,7 +19,7 @@ jobs:
         id: plan
         with:
           label: No targeted changes
-          path: tests/target
+          path: tests/workflows/test-target-replace
           target: |
             random_string.notpresent
           variables: |
@@ -36,7 +36,7 @@ jobs:
         uses: ./terraform-plan
         id: plan-first-change
         with:
-          path: tests/target
+          path: tests/workflows/test-target-replace
           target: |
             random_string.count[0]
           variables: |
@@ -53,7 +53,7 @@ jobs:
         uses: ./terraform-apply
         id: apply-first-change
         with:
-          path: tests/target
+          path: tests/workflows/test-target-replace
           target: |
             random_string.count[0]
           variables: |
@@ -70,7 +70,7 @@ jobs:
         uses: ./terraform-plan
         id: plan-second-change
         with:
-          path: tests/target
+          path: tests/workflows/test-target-replace
           target: |
             random_string.foreach["hello"]
           variables: |
@@ -87,7 +87,7 @@ jobs:
         uses: ./terraform-apply
         id: apply-second-change
         with:
-          path: tests/target
+          path: tests/workflows/test-target-replace
           target: |
             random_string.foreach["hello"]
           variables: |
@@ -109,7 +109,7 @@ jobs:
         uses: ./terraform-apply
         id: apply-third-change
         with:
-          path: tests/target
+          path: tests/workflows/test-target-replace
           target: |
             random_string.count[0]
             random_string.foreach["hello"]
@@ -133,7 +133,7 @@ jobs:
         uses: ./terraform-plan
         id: plan-targeted-replacement
         with:
-          path: tests/target
+          path: tests/workflows/test-target-replace
           target: |
             random_string.foreach["hello"]
           replace: |
@@ -153,7 +153,7 @@ jobs:
         uses: ./terraform-apply
         id: apply-targeted-replacement
         with:
-          path: tests/target
+          path: tests/workflows/test-target-replace
           target: |
             random_string.foreach["hello"]
           replace: |
@@ -178,7 +178,7 @@ jobs:
         uses: ./terraform-plan
         id: plan-replacement
         with:
-          path: tests/target
+          path: tests/workflows/test-target-replace
           replace: |
             random_string.foreach["hello"]
             random_string.count[0]
@@ -196,7 +196,7 @@ jobs:
         uses: ./terraform-apply
         id: apply-replacement
         with:
-          path: tests/target
+          path: tests/workflows/test-target-replace
           replace: |
             random_string.foreach["hello"]
             random_string.count[0]
@@ -224,7 +224,7 @@ jobs:
 
       - name: Setup remote backend
         run: |
-          cat >tests/target/backend.tf <<EOF
+          cat >tests/workflows/test-target-replace/backend.tf <<EOF
           terraform {
             backend "remote" {
               organization = "flooktech"
@@ -240,7 +240,7 @@ jobs:
       - name: Create test workspace
         uses: ./terraform-new-workspace
         with:
-          path: tests/target
+          path: tests/workflows/test-target-replace
           workspace: ${{ github.head_ref }}
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
@@ -249,7 +249,7 @@ jobs:
         id: plan
         with:
           label: No targeted changes
-          path: tests/target
+          path: tests/workflows/test-target-replace
           target: |
             random_string.notpresent
           variables: |
@@ -268,7 +268,7 @@ jobs:
         uses: ./terraform-plan
         id: plan-first-change
         with:
-          path: tests/target
+          path: tests/workflows/test-target-replace
           target: |
             random_string.count[0]
           variables: |
@@ -287,7 +287,7 @@ jobs:
         uses: ./terraform-apply
         id: apply-first-change
         with:
-          path: tests/target
+          path: tests/workflows/test-target-replace
           target: |
             random_string.count[0]
           variables: |
@@ -306,7 +306,7 @@ jobs:
         uses: ./terraform-plan
         id: plan-second-change
         with:
-          path: tests/target
+          path: tests/workflows/test-target-replace
           target: |
             random_string.foreach["hello"]
           variables: |
@@ -325,7 +325,7 @@ jobs:
         uses: ./terraform-apply
         id: apply-second-change
         with:
-          path: tests/target
+          path: tests/workflows/test-target-replace
           target: |
             random_string.foreach["hello"]
           variables: |
@@ -349,7 +349,7 @@ jobs:
         uses: ./terraform-apply
         id: apply-third-change
         with:
-          path: tests/target
+          path: tests/workflows/test-target-replace
           target: |
             random_string.count[0]
             random_string.foreach["hello"]
@@ -375,7 +375,7 @@ jobs:
         uses: ./terraform-plan
         id: plan-targeted-replacement
         with:
-          path: tests/target
+          path: tests/workflows/test-target-replace
           target: |
             random_string.foreach["hello"]
           replace: |
@@ -397,7 +397,7 @@ jobs:
         uses: ./terraform-apply
         id: apply-targeted-replacement
         with:
-          path: tests/target
+          path: tests/workflows/test-target-replace
           target: |
             random_string.foreach["hello"]
           replace: |
@@ -424,7 +424,7 @@ jobs:
         uses: ./terraform-plan
         id: plan-replacement
         with:
-          path: tests/target
+          path: tests/workflows/test-target-replace
           replace: |
             random_string.foreach["hello"]
             random_string.count[0]
@@ -444,7 +444,7 @@ jobs:
         uses: ./terraform-apply
         id: apply-replacement
         with:
-          path: tests/target
+          path: tests/workflows/test-target-replace
           replace: |
             random_string.foreach["hello"]
             random_string.count[0]
@@ -468,7 +468,7 @@ jobs:
       - name: Destroy the workspace
         uses: ./terraform-destroy-workspace
         with:
-          path: tests/target
+          path: tests/workflows/test-target-replace
           workspace: ${{ github.head_ref }}
           variables: |
             length = 10

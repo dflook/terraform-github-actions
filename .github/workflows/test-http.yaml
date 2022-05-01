@@ -23,7 +23,7 @@ jobs:
         uses: ./terraform-apply
         id: output
         with:
-          path: tests/git-http-module
+          path: tests/workflows/test-http
           auto_approve: true
 
       - name: Verify outputs
@@ -49,7 +49,7 @@ jobs:
         uses: ./terraform-apply
         id: output
         with:
-          path: tests/git-http-module
+          path: tests/workflows/test-http
           auto_approve: true
 
       - name: Verify outputs
@@ -75,7 +75,7 @@ jobs:
         uses: ./terraform-apply
         id: output
         with:
-          path: tests/git-http-module
+          path: tests/workflows/test-http
           auto_approve: true
 
       - name: Verify outputs
@@ -97,7 +97,7 @@ jobs:
         continue-on-error: true
         id: apply
         with:
-          path: tests/git-http-module
+          path: tests/workflows/test-http
           auto_approve: true
 
       - name: Check failed
@@ -121,7 +121,7 @@ jobs:
         uses: ./terraform-apply
         id: output
         with:
-          path: tests/http-module
+          path: tests/workflows/test-http/http-module
           auto_approve: true
 
       - name: Verify outputs
@@ -143,7 +143,7 @@ jobs:
         continue-on-error: true
         id: apply
         with:
-          path: tests/http-module
+          path: tests/workflows/test-http/http-module
           auto_approve: true
 
       - name: Check failed

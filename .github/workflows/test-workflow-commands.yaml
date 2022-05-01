@@ -15,7 +15,7 @@ jobs:
         uses: ./terraform-plan
         id: plan
         with:
-          path: tests/plan/plan
+          path: tests/workflows/test-workflow-commands
           add_github_comment: false
         env:
           TERRAFORM_PRE_RUN: |

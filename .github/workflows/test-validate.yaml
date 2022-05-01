@@ -15,7 +15,7 @@ jobs:
         uses: ./terraform-validate
         id: validate
         with:
-          path: tests/validate/valid
+          path: tests/workflows/test-validate/valid
 
       - name: Check valid
         run: |
@@ -36,7 +36,7 @@ jobs:
         id: validate
         continue-on-error: true
         with:
-          path: tests/validate/invalid
+          path: tests/workflows/test-validate/invalid
 
       - name: Check invalid
         run: |
@@ -60,13 +60,13 @@ jobs:
       - name: validate prod
         uses: ./terraform-validate
         with:
-          path: tests/validate/workspace_eval
+          path: tests/workflows/test-validate/workspace_eval
           workspace: prod
 
       - name: validate dev
         uses: ./terraform-validate
         with:
-          path: tests/validate/workspace_eval
+          path: tests/workflows/test-validate/workspace_eval
           workspace: dev
 
       - name: validate nonexistant workspace
@@ -74,7 +74,7 @@ jobs:
         id: validate
         continue-on-error: true
         with:
-          path: tests/validate/workspace_eval
+          path: tests/workflows/test-validate/workspace_eval
 
       - name: Check invalid
         run: |

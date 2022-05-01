@@ -35,7 +35,7 @@ jobs:
         id: apply
         with:
           label: no_changes
-          path: tests/plan/changes-only
+          path: tests/workflows/test-changes-only
 
       - name: Check failure-reason
         run: |
@@ -58,7 +58,7 @@ jobs:
         id: changes-plan
         with:
           label: change_then_no_changes
-          path: tests/plan/changes-only
+          path: tests/workflows/test-changes-only
           variables: |
             cause-changes=true
           add_github_comment: changes-only
@@ -77,7 +77,7 @@ jobs:
         id: plan
         with:
           label: change_then_no_changes
-          path: tests/plan/changes-only
+          path: tests/workflows/test-changes-only
           variables: |
             cause-changes=false
           add_github_comment: changes-only
@@ -96,7 +96,7 @@ jobs:
         id: apply
         with:
           label: change_then_no_changes
-          path: tests/plan/changes-only
+          path: tests/workflows/test-changes-only
           variables: |
             cause-changes=false
 
@@ -120,7 +120,7 @@ jobs:
         uses: ./terraform-plan
         id: plan
         with:
-          path: tests/plan/changes-only
+          path: tests/workflows/test-changes-only
           label: no_changes_then_changes
           variables: |
             cause-changes=false
@@ -140,7 +140,7 @@ jobs:
         id: apply
         continue-on-error: true
         with:
-          path: tests/plan/changes-only
+          path: tests/workflows/test-changes-only
           label: no_changes_then_changes
           variables: |
             cause-changes=true
@@ -169,7 +169,7 @@ jobs:
       - name: Plan Changes
         uses: ./terraform-plan
         with:
-          path: tests/plan/changes-only
+          path: tests/workflows/test-changes-only
           label: apply_when_plan_has_changed
           variables: |
             cause-changes=true
@@ -179,7 +179,7 @@ jobs:
         id: apply
         continue-on-error: true
         with:
-          path: tests/plan/changes-only
+          path: tests/workflows/test-changes-only
           label: apply_when_plan_has_changed
           variables: |
             cause-changes=true

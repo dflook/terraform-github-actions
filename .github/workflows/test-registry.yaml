@@ -19,14 +19,14 @@ jobs:
         env:
           TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_API_TOKEN }}
         with:
-          path: tests/registry
+          path: tests/workflows/test-registry
           label: Single registry
 
       - name: Apply
         uses: ./terraform-apply
         id: output
         with:
-          path: tests/registry
+          path: tests/workflows/test-registry
           label: Single registry
         env:
           TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_API_TOKEN }}
@@ -54,14 +54,14 @@ jobs:
       - name: Plan
         uses: ./terraform-plan
         with:
-          path: tests/registry
+          path: tests/workflows/test-registry
           label: Multiple registries
 
       - name: Apply
         uses: ./terraform-apply
         id: output
         with:
-          path: tests/registry
+          path: tests/workflows/test-registry
           label: Multiple registries
 
       - name: Verify outputs
@@ -85,7 +85,7 @@ jobs:
         env:
           TERRAFORM_CLOUD_TOKENS: No thanks
         with:
-          path: tests/registry
+          path: tests/workflows/test-registry
 
       - name: Check failed
         run: |
