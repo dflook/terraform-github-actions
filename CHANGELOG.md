@@ -8,9 +8,24 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.22.2` to use an exact release
-- `@v1.22` to use the latest patch release for the specific minor version
+- `@v1.23.0` to use an exact release
+- `@v1.23` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.23.0] - 2022-05-02
+
+### Changes
+- Input variables no longer help identify the plan comment. Each PR comment is still identified by it's configured terraform backend state file.
+  This is a very subtle change but enables better reporting of why an apply operation is aborted, e.g. "plan has changed" vs "plan not found".
+
+  This means that if you have more than one [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/master/terraform-plan) action for the same root module but with different variables, you should ensure they use different `label`s.
+
+- The workflow output when an apply has been aborted because of changes in the plan has been clarified - thanks [toast-gear](https://github.com/toast-gear)!
+
+### Fixed
+- Pre-release terraform versions now won't be used when selecting the latest terraform version.
+- Invalid terraform files that contained an unterminated string would take an extremely long time to parse before failing the job.
+- [dflook/terraform-validate](https://github.com/dflook/terraform-github-actions/tree/master/terraform-validate) now automatically sets `terraform.workspace` to `default` when validating a module that uses a `remote` or `cloud` backend. 
 
 ## [1.22.2] - 2022-02-28
 
@@ -374,6 +389,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.23.0]: https://github.com/dflook/terraform-github-actions/compare/v1.22.2...v1.23.0
 [1.22.2]: https://github.com/dflook/terraform-github-actions/compare/v1.22.1...v1.22.2
 [1.22.1]: https://github.com/dflook/terraform-github-actions/compare/v1.22.0...v1.22.1
 [1.22.0]: https://github.com/dflook/terraform-github-actions/compare/v1.21.1...v1.22.0
