@@ -1,11 +1,6 @@
 locals {
   aws_provider_config = {
-    prod = {
-      region     = "..."
-      account_id = "..."
-      profile    = "..."
-    }
-    dev = {
+    default = {
       region     = "..."
       account_id = "..."
       profile    = "..."
@@ -22,3 +17,15 @@ provider "aws" {
 resource "aws_s3_bucket" "bucket" {
   bucket = "hello"
 }
+
+terraform {
+  backend "remote" {
+    hostname = "app.terraform.io"
+    organization = "flooktech"
+
+    workspaces {
+        name = "banana"
+    }
+  }
+}
+
