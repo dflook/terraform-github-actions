@@ -198,13 +198,10 @@ def matching_headers(comment: TerraformComment, headers: dict[str, str]) -> bool
     """
 
     for header, value in headers.items():
-        if value is not None and header not in comment.headers:
-            return False
-
         if value is None and header in comment.headers:
             return False
 
-        if comment.headers[header] != value:
+        if value is not None and comment.headers.get(header) != value:
             return False
 
     return True
@@ -263,7 +260,7 @@ def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers:
     return TerraformComment(
         issue_url=issue_url,
         comment_url=None,
-        headers=headers,
+        headers={k: v for k, v in headers.items() if v is not None},
         description='',
         summary='',
         body='',
