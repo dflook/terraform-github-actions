@@ -87,7 +87,7 @@ jobs:
 
   git_no_credentials:
     runs-on: ubuntu-latest
-    name: git_http no creds
+    name: git+http no creds
     steps:
       - name: Checkout
         uses: actions/checkout@v2

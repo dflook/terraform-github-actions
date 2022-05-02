@@ -52,7 +52,7 @@ jobs:
 
   validate_workspace:
     runs-on: ubuntu-latest
-    name: Use workspace name during validationg
+    name: Use workspace name during validation
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -87,3 +87,16 @@ jobs:
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
+
+  validate_remote_workspace:
+    runs-on: ubuntu-latest
+    name: Use workspace name during validation
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: validate prod
+        uses: ./terraform-validate
+        with:
+          path: tests/workflows/test-validate/workspace_eval_remote
+          workspace: prod
