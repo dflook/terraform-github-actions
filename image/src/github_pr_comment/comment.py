@@ -230,8 +230,6 @@ def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers:
         if comment_payload['user']['login'] != username:
             continue
 
-        #debug(json.dumps(comment_payload))
-
         if comment := _from_api_payload(comment_payload):
 
             if comment.headers:
@@ -247,14 +245,24 @@ def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers:
                 # Match by description only
 
                 if comment.description == legacy_description and backup_comment is None:
-                    debug('Found backup comment that matches legacy description')
+                    debug(f'Found backup comment that matches legacy description {comment.description=}')
                     backup_comment = comment
 
                 debug(f"Didn't match comment with {comment.description=}")
 
     if backup_comment is not None:
         debug('Found comment matching legacy description')
-        return backup_comment
+
+        # Insert known headers into legacy comment
+        return TerraformComment(
+            issue_url=backup_comment.issue_url,
+            comment_url=backup_comment.comment_url,
+            headers={k: v for k, v in headers.items() if v is not None},
+            description=backup_comment.description,
+            summary=backup_comment.summary,
+            body=backup_comment.body,
+            status=backup_comment.status
+        )
 
     debug('No existing comment exists')
     return TerraformComment(
