@@ -327,8 +327,10 @@ function output() {
 function update_status() {
     local status="$1"
 
-    if ! STATUS="$status" github_pr_comment status; then
-      echo
+    if ! STATUS="$status" github_pr_comment status 2>"$STEP_TMP_DIR/github_pr_comment.stderr"; then
+        debug_file "$STEP_TMP_DIR/github_pr_comment.stderr"
+    else
+        debug_file "$STEP_TMP_DIR/github_pr_comment.stderr"
     fi
 }
 
