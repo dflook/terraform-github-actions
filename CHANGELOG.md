@@ -14,11 +14,10 @@ When using an action you can specify the version as:
 
 ## [1.23.0] - 2022-05-02
 
-### Changes
-- Input variables no longer help identify the plan comment. Each PR comment is still identified by it's configured terraform backend state file.
-  This is a very subtle change but enables better reporting of why an apply operation is aborted, e.g. "plan has changed" vs "plan not found".
+### Changed
+- Input variables no longer help identify the plan comment. Each PR comment is still identified by it's configured terraform backend state file. This is a very subtle change but enables better reporting of why an apply operation is aborted, e.g. "plan has changed" vs "plan not found".
 
-  This means that if you have more than one [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/master/terraform-plan) action for the same root module but with different variables, you should ensure they use different `label`s.
+  This means that if you have more than one [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/master/terraform-plan) action for the same root module & backend but with different variables, you should ensure they use different `label`s.
 
 - The workflow output when an apply has been aborted because of changes in the plan has been clarified - thanks [toast-gear](https://github.com/toast-gear)!
 
