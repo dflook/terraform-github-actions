@@ -96,6 +96,7 @@ function setup() {
     if [[ "$TERRAFORM_BACKEND_TYPE" != "" ]]; then
         echo "Detected $TERRAFORM_BACKEND_TYPE backend"
     fi
+    export TERRAFORM_BACKEND_TYPE
 
     end_group
 

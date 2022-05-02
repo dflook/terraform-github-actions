@@ -14,9 +14,9 @@ jobs:
       - name: terraform fmt
         uses: ./terraform-fmt
         with:
-          path: tests/fmt/non-canonical
+          path: tests/workflows/test-fmt/non-canonical
 
       - name: fmt-check
         uses: ./terraform-fmt-check
         with:
-          path: tests/fmt/non-canonical
+          path: tests/workflows/test-fmt/non-canonical

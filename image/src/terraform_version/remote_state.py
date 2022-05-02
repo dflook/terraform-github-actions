@@ -16,7 +16,7 @@ from github_actions.inputs import InitInputs
 from terraform.download import get_executable
 from terraform.exec import init_args
 from terraform.module import load_backend_config_file, TerraformModule
-from terraform.versions import apply_constraints, Constraint, Version, earliest_version
+from terraform.versions import apply_constraints, Constraint, Version, earliest_version, earliest_non_prerelease_version
 
 
 def read_backend_config_vars(init_inputs: InitInputs) -> dict[str, str]:
@@ -205,7 +205,7 @@ def guess_state_version(inputs: InitInputs, module: TerraformModule, versions: I
     candidate_versions = list(versions)
 
     while candidate_versions:
-        result = try_init(earliest_version(candidate_versions), args, inputs.get('INPUT_WORKSPACE', 'default'), backend_tf)
+        result = try_init(earliest_non_prerelease_version(candidate_versions), args, inputs.get('INPUT_WORKSPACE', 'default'), backend_tf)
         if isinstance(result, Version):
             return result
         elif isinstance(result, Constraint):
@@ -213,7 +213,7 @@ def guess_state_version(inputs: InitInputs, module: TerraformModule, versions: I
         elif result is None:
             return None
         else:
-            candidate_versions = list(apply_constraints(candidate_versions, [Constraint(f'!={earliest_version}')]))
+            candidate_versions = list(apply_constraints(candidate_versions, [Constraint(f'!={earliest_version(candidate_versions)}')]))
 
     return None
 

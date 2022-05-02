@@ -17,7 +17,7 @@ jobs:
         uses: ./terraform-plan
         id: plan
         with:
-          path: tests/plan/no_changes
+          path: tests/workflows/test-plan/no_changes
 
       - name: Verify outputs
         run: |
@@ -52,7 +52,7 @@ jobs:
         uses: ./terraform-plan
         id: plan
         with:
-          path: tests/plan/no_changes
+          path: tests/workflows/test-plan/no_changes
           add_github_comment: false
 
       - name: Verify outputs
@@ -81,7 +81,7 @@ jobs:
         uses: ./terraform-plan
         id: plan
         with:
-          path: tests/plan/plan_11
+          path: tests/workflows/test-plan/plan_11
 
       - name: Verify outputs
         run: |
@@ -115,7 +115,7 @@ jobs:
         uses: ./terraform-plan
         id: plan
         with:
-          path: tests/plan/plan_12
+          path: tests/workflows/test-plan/plan_12
 
       - name: Verify outputs
         run: |
@@ -150,7 +150,7 @@ jobs:
         uses: ./terraform-plan
         id: plan
         with:
-          path: tests/plan/plan_13
+          path: tests/workflows/test-plan/plan_13
 
       - name: Verify outputs
         run: |
@@ -186,7 +186,7 @@ jobs:
         uses: ./terraform-plan
         id: plan
         with:
-          path: tests/plan/plan_14
+          path: tests/workflows/test-plan/plan_14
 
       - name: Verify outputs
         run: |
@@ -222,7 +222,7 @@ jobs:
         uses: ./terraform-plan
         id: plan
         with:
-          path: tests/plan/plan_15
+          path: tests/workflows/test-plan/plan_15
 
       - name: Verify outputs
         run: |
@@ -257,7 +257,7 @@ jobs:
         uses: ./terraform-plan
         id: plan
         with:
-          path: tests/plan/plan_15_4
+          path: tests/workflows/test-plan/plan_15_4
 
       - name: Verify outputs
         run: |
@@ -292,7 +292,7 @@ jobs:
         uses: ./terraform-plan
         id: plan
         with:
-          path: tests/plan/plan
+          path: tests/workflows/test-plan/plan
 
       - name: Verify outputs
         run: |
@@ -327,7 +327,7 @@ jobs:
         uses: ./terraform-plan
         id: plan
         with:
-          path: tests/plan/plan
+          path: tests/workflows/test-plan/plan
           add_github_comment: false
 
       - name: Verify outputs
@@ -357,7 +357,7 @@ jobs:
         continue-on-error: true
         id: plan
         with:
-          path: tests/plan/error
+          path: tests/workflows/test-plan/error
 
       - name: Check invalid
         run: |
@@ -390,7 +390,7 @@ jobs:
         continue-on-error: true
         id: plan
         with:
-          path: tests/plan/error
+          path: tests/workflows/test-plan/error
           add_github_comment: false
 
       - name: Check invalid
@@ -422,7 +422,7 @@ jobs:
         continue-on-error: true
         id: plan
         with:
-          path: tests/plan/error
+          path: tests/workflows/test-plan/error
 
       - name: Check invalid
         run: |
@@ -453,10 +453,10 @@ jobs:
       - name: Plan
         uses: ./terraform-plan
         with:
-          path: tests/apply/vars
+          path: tests/workflows/test-plan/vars
           variables: |
             my_var="single"
-          var_file: tests/apply/test.tfvars
+          var_file: tests/workflows/test-plan/test.tfvars
 
   plan_change_run_commands:
     runs-on: ubuntu-latest
@@ -470,7 +470,8 @@ jobs:
       - name: Plan
         uses: ./terraform-plan
         with:
-          path: tests/plan/plan
+          path: tests/workflows/test-plan/plan
+          add_github_comment: false
         env:
           TERRAFORM_PRE_RUN: |
             echo "testing command 1"
@@ -486,9 +487,9 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Copy
-        run: cp tests/plan/plan/main.tf ./main.tf
+        run: cp tests/workflows/test-plan/plan/main.tf ./main.tf
 
       - name: Plan
         uses: ./terraform-plan
         with:
-          label: Optional path
+          label: test-plan default_path

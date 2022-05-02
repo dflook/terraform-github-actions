@@ -18,7 +18,7 @@ jobs:
         uses: ./terraform-apply
         id: output
         with:
-          path: tests/remote-state/test-bucket_12
+          path: tests/workflows/test-apply/remote
           auto_approve: true
 
       - name: Verify outputs
@@ -50,7 +50,7 @@ jobs:
         id: apply
         continue-on-error: true
         with:
-          path: tests/remote-state/test-bucket_12
+          path: tests/workflows/test-apply/remote
           auto_approve: true
 
       - name: Check failed to apply
@@ -89,16 +89,16 @@ jobs:
       - name: Plan
         uses: ./terraform-plan
         with:
-          label: Apply Error
-          path: tests/apply/apply-error
+          label: test-apply apply_apply_error
+          path: tests/workflows/test-apply/apply-error
 
       - name: Apply
         uses: ./terraform-apply
         id: apply
         continue-on-error: true
         with:
-          label: Apply Error
-          path: tests/apply/apply-error
+          label: test-apply apply_apply_error
+          path: tests/workflows/test-apply/apply-error
 
       - name: Check failed to apply
         run: |
@@ -134,7 +134,7 @@ jobs:
         id: apply
         continue-on-error: true
         with:
-          path: tests/apply/changes
+          path: tests/workflows/test-apply/changes
 
       - name: Check failed to apply
         run: |
@@ -160,13 +160,15 @@ jobs:
       - name: Plan
         uses: ./terraform-plan
         with:
-          path: tests/apply/changes
+          label: test-apply apply
+          path: tests/workflows/test-apply/changes
 
       - name: Apply
         uses: ./terraform-apply
         id: first-apply
         with:
-          path: tests/apply/changes
+          label: test-apply apply
+          path: tests/workflows/test-apply/changes
 
       - name: Verify outputs
         run: |
@@ -189,7 +191,8 @@ jobs:
         uses: ./terraform-apply
         id: second-apply
         with:
-          path: tests/apply/changes
+          label: test-apply apply
+          path: tests/workflows/test-apply/changes
 
       - name: Verify outputs
         run: |
@@ -220,7 +223,8 @@ jobs:
       - name: Plan
         uses: ./terraform-plan
         with:
-          path: tests/apply/vars
+          label: test-apply apply_variables
+          path: tests/workflows/test-apply/vars
           variables: |
             my_var="hello"
             complex_input=[
@@ -235,13 +239,14 @@ jobs:
                 protocol = "tcp"
               },
             ]
-          var_file: tests/apply/test.tfvars
+          var_file: tests/workflows/test-apply/test.tfvars
 
       - name: Apply
         uses: ./terraform-apply
         id: output
         with:
-          path: tests/apply/vars
+          label: test-apply apply_variables
+          path: tests/workflows/test-apply/vars
           variables: |
             my_var="hello"
             complex_input=[
@@ -256,7 +261,7 @@ jobs:
                 protocol = "tcp"
               },
             ]
-          var_file: tests/apply/test.tfvars
+          var_file: tests/workflows/test-apply/test.tfvars
 
       - name: Verify outputs
         run: |
@@ -304,15 +309,17 @@ jobs:
       - name: Plan
         uses: ./terraform-plan
         with:
-          path: tests/apply/backend_config_12
-          backend_config_file: tests/apply/backend_config_12/backend_config
+          label: test-apply backend_config_12 backend_config_file
+          path: tests/workflows/test-apply/backend_config_12
+          backend_config_file: tests/workflows/test-apply/backend_config_12/backend_config
 
       - name: Apply
         uses: ./terraform-apply
         id: backend_config_file_12
         with:
-          path: tests/apply/backend_config_12
-          backend_config_file: tests/apply/backend_config_12/backend_config
+          label: test-apply backend_config_12 backend_config_file
+          path: tests/workflows/test-apply/backend_config_12
+          backend_config_file: tests/workflows/test-apply/backend_config_12/backend_config
 
       - name: Verify outputs
         run: |
@@ -334,7 +341,8 @@ jobs:
       - name: Plan
         uses: ./terraform-plan
         with:
-          path: tests/apply/backend_config_12
+          label: test-apply backend_config_12 backend_config
+          path: tests/workflows/test-apply/backend_config_12
           backend_config: |
             bucket=terraform-github-actions
             key=backend_config
@@ -344,7 +352,8 @@ jobs:
         uses: ./terraform-apply
         id: backend_config_12
         with:
-          path: tests/apply/backend_config_12
+          label: test-apply backend_config_12 backend_config
+          path: tests/workflows/test-apply/backend_config_12
           backend_config: |
             bucket=terraform-github-actions
             key=backend_config
@@ -381,15 +390,17 @@ jobs:
       - name: Plan
         uses: ./terraform-plan
         with:
-          path: tests/apply/backend_config_13
-          backend_config_file: tests/apply/backend_config_13/backend_config
+          label: test-apply backend_config_12 backend_config_file
+          path: tests/workflows/test-apply/backend_config_13
+          backend_config_file: tests/workflows/test-apply/backend_config_13/backend_config
 
       - name: Apply
         uses: ./terraform-apply
         id: backend_config_file_13
         with:
-          path: tests/apply/backend_config_13
-          backend_config_file: tests/apply/backend_config_13/backend_config
+          label: test-apply backend_config_12 backend_config_file
+          path: tests/workflows/test-apply/backend_config_13
+          backend_config_file: tests/workflows/test-apply/backend_config_13/backend_config
 
       - name: Verify outputs
         run: |
@@ -411,7 +422,8 @@ jobs:
       - name: Plan
         uses: ./terraform-plan
         with:
-          path: tests/apply/backend_config_13
+          label: test-apply backend_config_12 backend_config
+          path: tests/workflows/test-apply/backend_config_13
           backend_config: |
             bucket=terraform-github-actions
             key=backend_config_13
@@ -421,7 +433,8 @@ jobs:
         uses: ./terraform-apply
         id: backend_config_13
         with:
-          path: tests/apply/backend_config_13
+          label: test-apply backend_config_12 backend_config
+          path: tests/workflows/test-apply/backend_config_13
           backend_config: |
             bucket=terraform-github-actions
             key=backend_config_13
@@ -456,19 +469,19 @@ jobs:
       - name: Plan
         uses: ./terraform-plan
         with:
-          path: tests/apply/vars
-          label: TestLabel
+          path: tests/workflows/test-apply/vars
+          label: test-apply apply_label
           variables: my_var="world"
-          var_file: tests/apply/test.tfvars
+          var_file: tests/workflows/test-apply/test.tfvars
 
       - name: Apply
         uses: ./terraform-apply
         id: output
         with:
-          path: tests/apply/vars
-          label: TestLabel
+          path: tests/workflows/test-apply/vars
+          label: test-apply apply_label
           variables: my_var="world"
-          var_file: tests/apply/test.tfvars
+          var_file: tests/workflows/test-apply/test.tfvars
 
       - name: Verify outputs
         run: |
@@ -502,7 +515,7 @@ jobs:
         uses: ./terraform-apply
         id: output
         with:
-          path: tests/remote-state/test-bucket_12
+          path: tests/workflows/test-apply/remote
 
       - name: Verify outputs
         run: |
@@ -536,7 +549,7 @@ jobs:
         id: apply
         continue-on-error: true
         with:
-          path: tests/apply/no_plan
+          path: tests/workflows/test-apply/no_plan
 
       - name: Check failed to apply
         run: |
@@ -567,15 +580,15 @@ jobs:
       - name: Plan
         uses: ./terraform-plan
         with:
-          label: User PAT
-          path: tests/apply/changes
+          label: test-apply apply_user_token
+          path: tests/workflows/test-apply/changes
 
       - name: Apply
         uses: ./terraform-apply
         id: output
         with:
-          label: User PAT
-          path: tests/apply/changes
+          label: test-apply apply_user_token
+          path: tests/workflows/test-apply/changes
 
       - name: Verify outputs
         run: |
@@ -606,17 +619,17 @@ jobs:
       - name: Plan
         uses: ./terraform-plan
         with:
-          path: tests/apply/vars
+          path: tests/workflows/test-apply/deprecated_var
           var: my_var=hello
-          var_file: tests/apply/test.tfvars
+          var_file: tests/workflows/test-apply/test.tfvars
 
       - name: Apply
         uses: ./terraform-apply
         id: output
         with:
-          path: tests/apply/vars
+          path: tests/workflows/test-apply/deprecated_var
           var: my_var=hello
-          var_file: tests/apply/test.tfvars
+          var_file: tests/workflows/test-apply/test.tfvars
 
       - name: Verify outputs
         run: |
@@ -645,30 +658,30 @@ jobs:
       - name: Plan 1
         uses: ./terraform-plan
         with:
-          label: Refresh 1
-          path: tests/apply/refresh_15
+          label: test-apply apply_refresh 1
+          path: tests/workflows/test-apply/refresh_15
           variables: len=10
 
       - name: Apply 1
         uses: ./terraform-apply
         with:
-          label: Refresh 1
-          path: tests/apply/refresh_15
+          label: test-apply apply_refresh 1
+          path: tests/workflows/test-apply/refresh_15
           variables: len=10
 
       - name: Plan 2
         uses: ./terraform-plan
         with:
-          label: Refresh 2
-          path: tests/apply/refresh_15
+          label: test-apply apply_refresh 2
+          path: tests/workflows/test-apply/refresh_15
           variables: len=20
 
       - name: Apply 2
         uses: ./terraform-apply
         id: output
         with:
-          label: Refresh 2
-          path: tests/apply/refresh_15
+          label: test-apply apply_refresh 2
+          path: tests/workflows/test-apply/refresh_15
           variables: len=20
 
   apply_with_pre_run:
@@ -686,15 +699,15 @@ jobs:
       - name: Plan
         uses: ./terraform-plan
         with:
-          label: pre-run
-          path: tests/apply/changes
+          label: test-apply apply_with_pre_run
+          path: tests/workflows/test-apply/changes
 
       - name: Apply
         uses: ./terraform-apply
         id: output
         with:
-          label: pre-run
-          path: tests/apply/changes
+          label: test-apply apply_with_pre_run
+          path: tests/workflows/test-apply/changes
 
       - name: Verify outputs
         run: |

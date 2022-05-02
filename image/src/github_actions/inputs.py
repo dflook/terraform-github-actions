@@ -23,19 +23,20 @@ class PlanInputs(InitInputs):
     INPUT_PARALLELISM: str
 
 
-class Plan(PlanInputs):
-    """Input variables for the plan action"""
+class PlanPrInputs(PlanInputs):
+    """Common input variables for actions that use a PR comment"""
     INPUT_LABEL: str
     INPUT_TARGET: str
     INPUT_REPLACE: str
+
+
+class Plan(PlanPrInputs):
+    """Input variables for the plan action"""
     INPUT_ADD_GITHUB_COMMENT: str
 
 
-class Apply(InitInputs):
+class Apply(PlanPrInputs):
     """Input variables for the terraform-apply action"""
-    INPUT_LABEL: str
-    INPUT_TARGET: str
-    INPUT_REPLACE: str
     INPUT_AUTO_APPROVE: str
 
 

@@ -8,7 +8,7 @@ from typing import Iterable, Optional
 
 from github_actions.debug import debug
 from github_actions.inputs import InitInputs
-from terraform.versions import latest_version, Version
+from terraform.versions import latest_version, Version, latest_non_prerelease_version
 
 
 def parse_tfenv(terraform_version_file: str, versions: Iterable[Version]) -> Version:
@@ -23,7 +23,7 @@ def parse_tfenv(terraform_version_file: str, versions: Iterable[Version]) -> Ver
     version = terraform_version_file.strip()
 
     if version == 'latest':
-        return latest_version(v for v in versions if not v.pre_release)
+        return latest_non_prerelease_version(v for v in versions if not v.pre_release)
 
     if version.startswith('latest:'):
         version_regex = version.split(':', maxsplit=1)[1]

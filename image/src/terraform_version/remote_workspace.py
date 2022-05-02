@@ -5,7 +5,7 @@ from github_actions.debug import debug
 from github_actions.inputs import InitInputs
 from terraform.cloud import get_workspace
 from terraform.module import TerraformModule, get_remote_backend_config, get_cloud_config
-from terraform.versions import Version, latest_version
+from terraform.versions import Version, latest_non_prerelease_version
 
 
 def get_remote_workspace_version(inputs: InitInputs, module: TerraformModule, cli_config_path: Path, versions: Iterable[Version]) -> Optional[Version]:
@@ -30,7 +30,7 @@ def get_remote_workspace_version(inputs: InitInputs, module: TerraformModule, cl
     if workspace_info := get_workspace(backend_config, inputs['INPUT_WORKSPACE']):
         version = str(workspace_info['attributes']['terraform-version'])
         if version == 'latest':
-            return latest_version(versions)
+            return latest_non_prerelease_version(versions)
         else:
             return Version(version)
 

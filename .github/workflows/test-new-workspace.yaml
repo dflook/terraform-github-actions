@@ -20,7 +20,7 @@ jobs:
 
       - name: Setup remote backend
         run: |
-          cat >tests/new-workspace/backend.tf <<EOF
+          cat >tests/workflows/test-new-workspace/backend.tf <<EOF
           terraform {
             backend "s3" {
               bucket = "terraform-github-actions"
@@ -35,19 +35,19 @@ jobs:
       - name: Create first workspace
         uses: ./terraform-new-workspace
         with:
-          path: tests/new-workspace
+          path: tests/workflows/test-new-workspace
           workspace: test-workspace
 
       - name: Create first workspace again
         uses: ./terraform-new-workspace
         with:
-          path: tests/new-workspace
+          path: tests/workflows/test-new-workspace
           workspace: test-workspace
 
       - name: Apply in first workspace
         uses: ./terraform-apply
         with:
-          path: tests/new-workspace
+          path: tests/workflows/test-new-workspace
           workspace: test-workspace
           variables: my_string="hello"
           auto_approve: true
@@ -55,13 +55,13 @@ jobs:
       - name: Create a second workspace
         uses: ./terraform-new-workspace
         with:
-          path: tests/new-workspace
+          path: tests/workflows/test-new-workspace
           workspace: ${{ github.head_ref }}
 
       - name: Apply in second workspace
         uses: ./terraform-apply
         with:
-          path: tests/new-workspace
+          path: tests/workflows/test-new-workspace
           workspace: ${{ github.head_ref }}
           variables: my_string="world"
           auto_approve: true
@@ -70,14 +70,14 @@ jobs:
         uses: ./terraform-output
         id: first
         with:
-          path: tests/new-workspace
+          path: tests/workflows/test-new-workspace
           workspace: test-workspace
 
       - name: Get second workspace outputs
         uses: ./terraform-output
         id: second
         with:
-          path: tests/new-workspace
+          path: tests/workflows/test-new-workspace
           workspace: ${{ github.head_ref }}
 
       - name: Verify outputs
@@ -95,13 +95,13 @@ jobs:
       - name: Destroy first workspace
         uses: ./terraform-destroy-workspace
         with:
-          path: tests/new-workspace
+          path: tests/workflows/test-new-workspace
           workspace: test-workspace
           variables: my_string="hello"
 
       - name: Destroy second workspace
         uses: ./terraform-destroy-workspace
         with:
-          path: tests/new-workspace
+          path: tests/workflows/test-new-workspace
           workspace: ${{ github.head_ref }}
           variables: my_string="world"
