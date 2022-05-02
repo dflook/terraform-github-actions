@@ -100,3 +100,15 @@ jobs:
         with:
           path: tests/workflows/test-validate/workspace_eval_remote
           workspace: prod
+
+  validate_unterminated_string:
+    runs-on: ubuntu-latest
+    name: Validate with unterminated string
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: validate
+        uses: ./terraform-validate
+        with:
+          path: tests/workflows/test-validate/unterminated-string
