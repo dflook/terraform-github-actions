@@ -8,16 +8,23 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.23.0` to use an exact release
-- `@v1.23` to use the latest patch release for the specific minor version
+- `@v1.24.0` to use an exact release
+- `@v1.24` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.24.0] - 2022-05-03
+
+### Added
+- New `to_add`, `to_change` and `to_destroy` outputs for the [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/master/terraform-plan) action that contain the number of resources that would be added, changed or deleted by the plan.
+
+  These can be used in an [if expression](https://docs.github.com/en/enterprise-server@3.2/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idif) in a workflow to conditionally run steps, e.g. when the plan would destroy something. 
 
 ## [1.23.0] - 2022-05-02
 
 ### Changed
 - Input variables no longer help identify the plan comment. Each PR comment is still identified by it's configured terraform backend state file. This is a very subtle change but enables better reporting of why an apply operation is aborted, e.g. "plan has changed" vs "plan not found".
 
-  This means that if you have more than one [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/master/terraform-plan) action for the same root module & backend but with different variables, you should ensure they use different `label`s.
+  This means that if you have more than one [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/master/terraform-plan) action for the same `path` and backend but with different variables, you should ensure they use different `label`s.
 
 - The workflow output when an apply has been aborted because of changes in the plan has been clarified - thanks [toast-gear](https://github.com/toast-gear)!
 
@@ -388,6 +395,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.24.0]: https://github.com/dflook/terraform-github-actions/compare/v1.23.0...v1.24.0
 [1.23.0]: https://github.com/dflook/terraform-github-actions/compare/v1.22.2...v1.23.0
 [1.22.2]: https://github.com/dflook/terraform-github-actions/compare/v1.22.1...v1.22.2
 [1.22.1]: https://github.com/dflook/terraform-github-actions/compare/v1.22.0...v1.22.1
