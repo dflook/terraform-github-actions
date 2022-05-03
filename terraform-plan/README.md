@@ -317,6 +317,8 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   resources would change. With terraform >=0.13 this is correctly set to 'true' whenever an apply
   needs to be run.
 
+  - Type: boolean
+
 * `json_plan_path`
 
   This is the path to the generated plan in [JSON Output Format](https://www.terraform.io/docs/internals/json-format.html)
@@ -325,10 +327,32 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   This is not available when using terraform 0.11 or earlier.
   This also won't be set if the backend type is `remote` - Terraform does not support saving remote plans.
 
+  - Type: string
+
 * `text_plan_path`
 
   This is the path to the generated plan in a human-readable format.
   The path is relative to the Actions workspace.
+
+  - Type: string
+
+* `to_add`
+
+  The number of resources that would be added by this plan.
+
+  - Type: number
+
+* `to_change`
+
+  The number of resources that would be changed by this plan.
+
+  - Type: number
+
+* `to_destroy`
+
+  The number of resources that would be destroyed by this plan.
+
+  - Type: number
 
 ## Example usage
 

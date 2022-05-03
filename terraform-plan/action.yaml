@@ -53,6 +53,12 @@ inputs:
 outputs:
   changes:
     description: If the generated plan would update any resources or outputs this is set to `true`, otherwise it's set to `false`.
+  to_add:
+    description: The number of resources that would be added by this plan
+  to_change:
+    description: The number of resources that would be changed by this plan
+  to_destroy:
+    description: The number of resources that would be destroyed by this plan
   text_plan_path:
     description: Path to a file in the workspace containing the generated plan in human readble format.
   json_plan_path:

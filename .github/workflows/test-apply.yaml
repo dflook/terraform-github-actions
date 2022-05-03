@@ -671,10 +671,41 @@ jobs:
 
       - name: Plan 2
         uses: ./terraform-plan
+        id: plan
         with:
           label: test-apply apply_refresh 2
           path: tests/workflows/test-apply/refresh_15
           variables: len=20
+
+      - name: Verify outputs
+        run: |
+          echo "changes=${{ steps.plan.outputs.changes }}"
+
+          if [[ "${{ steps.plan.outputs.changes }}" != "true" ]]; then
+            echo "::error:: output changes not set correctly"
+            exit 1
+          fi
+          
+          if [[ ${{ steps.plan.outputs.to_add }} -ne 1 ]]; then
+            echo "::error:: to_add not set correctly"
+            exit 1
+          fi
+
+          if [[ ${{ steps.plan.outputs.to_change }} -ne 0 ]]; then
+            echo "::error:: to_change not set correctly"
+            exit 1
+          fi
+
+          if [[ ${{ steps.plan.outputs.to_destroy }} -ne 1 ]]; then
+            echo "::error:: to_destroy not set correctly"
+            exit 1
+          fi
+
+      - name: Test output expressions
+        if: steps.plan.outputs.to_add != 1 || steps.plan.outputs.to_change != 0 || steps.plan.outputs.to_destroy != 1
+        run: |
+          echo "if expression should not have evaluated true"
+          exit 1
 
       - name: Apply 2
         uses: ./terraform-apply

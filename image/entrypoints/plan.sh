@@ -72,6 +72,8 @@ elif [[ $PLAN_EXIT -eq 0 ]]; then
 elif [[ $PLAN_EXIT -eq 2 ]]; then
     debug_log "Changes to apply"
     set_output changes true
+
+    plan_summary "$STEP_TMP_DIR/plan.txt"
 fi
 
 mkdir -p "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR"
