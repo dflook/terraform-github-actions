@@ -39,6 +39,12 @@ jobs:
             exit 1
           fi
 
+      - name: Test output expressions
+        if: steps.plan.outputs.to_add != 0 || steps.plan.outputs.to_change != 0 || steps.plan.outputs.to_destroy != 0
+        run: |
+          echo "if expression should not have evaluated true"
+          exit 1
+
   no_changes_no_comment:
     runs-on: ubuntu-latest
     name: No changes without comment
@@ -102,6 +108,27 @@ jobs:
             exit 1
           fi
 
+          if [[ ${{ steps.plan.outputs.to_add }} -ne 1 ]]; then
+            echo "::error:: to_add not set correctly"
+            exit 1
+          fi
+
+          if [[ ${{ steps.plan.outputs.to_change }} -ne 0 ]]; then
+            echo "::error:: to_change not set correctly"
+            exit 1
+          fi
+
+          if [[ ${{ steps.plan.outputs.to_destroy }} -ne 0 ]]; then
+            echo "::error:: to_destroy not set correctly"
+            exit 1
+          fi
+
+      - name: Test output expressions
+        if: steps.plan.outputs.to_add != 1 || steps.plan.outputs.to_change != 0 || steps.plan.outputs.to_destroy != 0
+        run: |
+          echo "if expression should not have evaluated true"
+          exit 1
+
   plan_change_comment_12:
     runs-on: ubuntu-latest
     name: Change terraform 12
@@ -136,6 +163,27 @@ jobs:
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
+          
+          if [[ ${{ steps.plan.outputs.to_add }} -ne 1 ]]; then
+            echo "::error:: to_add not set correctly"
+            exit 1
+          fi
+
+          if [[ ${{ steps.plan.outputs.to_change }} -ne 0 ]]; then
+            echo "::error:: to_change not set correctly"
+            exit 1
+          fi
+
+          if [[ ${{ steps.plan.outputs.to_destroy }} -ne 0 ]]; then
+            echo "::error:: to_destroy not set correctly"
+            exit 1
+          fi
+
+      - name: Test output expressions
+        if: steps.plan.outputs.to_add != 1 || steps.plan.outputs.to_change != 0 || steps.plan.outputs.to_destroy != 0
+        run: |
+          echo "if expression should not have evaluated true"
+          exit 1
 
   plan_change_comment_13:
     runs-on: ubuntu-latest
@@ -171,6 +219,27 @@ jobs:
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
+
+          if [[ ${{ steps.plan.outputs.to_add }} -ne 1 ]]; then
+            echo "::error:: to_add not set correctly"
+            exit 1
+          fi
+
+          if [[ ${{ steps.plan.outputs.to_change }} -ne 0 ]]; then
+            echo "::error:: to_change not set correctly"
+            exit 1
+          fi
+
+          if [[ ${{ steps.plan.outputs.to_destroy }} -ne 0 ]]; then
+            echo "::error:: to_destroy not set correctly"
+            exit 1
+          fi
+
+      - name: Test output expressions
+        if: steps.plan.outputs.to_add != 1 || steps.plan.outputs.to_change != 0 || steps.plan.outputs.to_destroy != 0
+        run: |
+          echo "if expression should not have evaluated true"
+          exit 1
 
   plan_change_comment_14:
     runs-on: ubuntu-latest
@@ -208,6 +277,27 @@ jobs:
             exit 1
           fi
 
+          if [[ ${{ steps.plan.outputs.to_add }} -ne 1 ]]; then
+            echo "::error:: to_add not set correctly"
+            exit 1
+          fi
+
+          if [[ ${{ steps.plan.outputs.to_change }} -ne 0 ]]; then
+            echo "::error:: to_change not set correctly"
+            exit 1
+          fi
+
+          if [[ ${{ steps.plan.outputs.to_destroy }} -ne 0 ]]; then
+            echo "::error:: to_destroy not set correctly"
+            exit 1
+          fi
+
+      - name: Test output expressions
+        if: steps.plan.outputs.to_add != 1 || steps.plan.outputs.to_change != 0 || steps.plan.outputs.to_destroy != 0
+        run: |
+          echo "if expression should not have evaluated true"
+          exit 1
+
   plan_change_comment_15:
     runs-on: ubuntu-latest
     name: Change terraform 15
@@ -244,6 +334,27 @@ jobs:
             exit 1
           fi
 
+          if [[ ${{ steps.plan.outputs.to_add }} -ne 1 ]]; then
+            echo "::error:: to_add not set correctly"
+            exit 1
+          fi
+
+          if [[ ${{ steps.plan.outputs.to_change }} -ne 0 ]]; then
+            echo "::error:: to_change not set correctly"
+            exit 1
+          fi
+
+          if [[ ${{ steps.plan.outputs.to_destroy }} -ne 0 ]]; then
+            echo "::error:: to_destroy not set correctly"
+            exit 1
+          fi
+
+      - name: Test output expressions
+        if: steps.plan.outputs.to_add != 1 || steps.plan.outputs.to_change != 0 || steps.plan.outputs.to_destroy != 0
+        run: |
+          echo "if expression should not have evaluated true"
+          exit 1
+
   plan_change_comment_15_4:
     runs-on: ubuntu-latest
     name: Change terraform 15.4
@@ -279,6 +390,27 @@ jobs:
             exit 1
           fi
 
+          if [[ ${{ steps.plan.outputs.to_add }} -ne 1 ]]; then
+            echo "::error:: to_add not set correctly"
+            exit 1
+          fi
+
+          if [[ ${{ steps.plan.outputs.to_change }} -ne 0 ]]; then
+            echo "::error:: to_change not set correctly"
+            exit 1
+          fi
+
+          if [[ ${{ steps.plan.outputs.to_destroy }} -ne 0 ]]; then
+            echo "::error:: to_destroy not set correctly"
+            exit 1
+          fi
+
+      - name: Test output expressions
+        if: steps.plan.outputs.to_add != 1 || steps.plan.outputs.to_change != 0 || steps.plan.outputs.to_destroy != 0
+        run: |
+          echo "if expression should not have evaluated true"
+          exit 1
+
   plan_change_comment_latest:
     runs-on: ubuntu-latest
     name: Change latest terraform
@@ -313,6 +445,27 @@ jobs:
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
+
+          if [[ ${{ steps.plan.outputs.to_add }} -ne 1 ]]; then
+            echo "::error:: to_add not set correctly"
+            exit 1
+          fi
+
+          if [[ ${{ steps.plan.outputs.to_change }} -ne 0 ]]; then
+            echo "::error:: to_change not set correctly"
+            exit 1
+          fi
+
+          if [[ ${{ steps.plan.outputs.to_destroy }} -ne 0 ]]; then
+            echo "::error:: to_destroy not set correctly"
+            exit 1
+          fi
+
+      - name: Test output expressions
+        if: steps.plan.outputs.to_add != 1 || steps.plan.outputs.to_change != 0 || steps.plan.outputs.to_destroy != 0
+        run: |
+          echo "if expression should not have evaluated true"
+          exit 1
 
   plan_change_no_comment:
     runs-on: ubuntu-latest
@@ -375,6 +528,12 @@ jobs:
             echo "::error:: text_plan_path should not be set"
             exit 1
           fi
+
+      - name: Test output expressions
+        if: steps.plan.outputs.to_add != 0 || steps.plan.outputs.to_change != 0 || steps.plan.outputs.to_destroy != 0
+        run: |
+          echo "if expression should not have evaluated true"
+          exit 1
 
   error_no_comment:
     runs-on: ubuntu-latest
