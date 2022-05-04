@@ -17,7 +17,7 @@ This action uses the `terraform fmt` command to reformat files in a directory in
 * `workspace`
 
   Terraform workspace to inspect when discovering the terraform version to use, if not otherwise specified. 
-  See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/master/terraform-version#terraform-version-action) for details.
+  See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
 
   - Type: string
   - Optional
@@ -25,7 +25,7 @@ This action uses the `terraform fmt` command to reformat files in a directory in
 * `backend_config`
 
   List of terraform backend config values, one per line. This is used for discovering the terraform version to use, if not otherwise specified. 
-  See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/master/terraform-version#terraform-version-action) for details.
+  See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
 
   ```yaml
   with:
@@ -38,7 +38,7 @@ This action uses the `terraform fmt` command to reformat files in a directory in
 * `backend_config_file`
 
   List of terraform backend config files to use, one per line. This is used for discovering the terraform version to use, if not otherwise specified. 
-  See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/master/terraform-version#terraform-version-action) for details.
+  See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
   Paths should be relative to the GitHub Actions workspace
 
   ```yaml
@@ -77,7 +77,7 @@ This action uses the `terraform fmt` command to reformat files in a directory in
 ## Example usage
 
 This example automatically creates a pull request to fix any formatting
-problems that get merged into the master branch.
+problems that get merged into the main branch.
 
 ```yaml
 name: Fix terraform file formatting
@@ -85,7 +85,7 @@ name: Fix terraform file formatting
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   format:

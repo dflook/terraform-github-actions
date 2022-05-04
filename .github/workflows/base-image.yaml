@@ -3,7 +3,7 @@ name: Update base image
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - image/Dockerfile-base
       - .github/workflows/base-image.yaml

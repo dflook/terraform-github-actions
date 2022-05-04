@@ -3,7 +3,7 @@ name: Apply plan
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   plan:

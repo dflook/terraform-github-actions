@@ -15,7 +15,7 @@ When using an action you can specify the version as:
 ## [1.24.0] - 2022-05-03
 
 ### Added
-- New `to_add`, `to_change` and `to_destroy` outputs for the [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/master/terraform-plan) action that contain the number of resources that would be added, changed or deleted by the plan.
+- New `to_add`, `to_change` and `to_destroy` outputs for the [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/main/terraform-plan) action that contain the number of resources that would be added, changed or deleted by the plan.
 
   These can be used in an [if expression](https://docs.github.com/en/enterprise-server@3.2/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idif) in a workflow to conditionally run steps, e.g. when the plan would destroy something. 
 
@@ -24,20 +24,20 @@ When using an action you can specify the version as:
 ### Changed
 - Input variables no longer help identify the plan comment. Each PR comment is still identified by it's configured terraform backend state file. This is a very subtle change but enables better reporting of why an apply operation is aborted, e.g. "plan has changed" vs "plan not found".
 
-  This means that if you have more than one [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/master/terraform-plan) action for the same `path` and backend but with different variables, you should ensure they use different `label`s.
+  This means that if you have more than one [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/main/terraform-plan) action for the same `path` and backend but with different variables, you should ensure they use different `label`s.
 
 - The workflow output when an apply has been aborted because of changes in the plan has been clarified - thanks [toast-gear](https://github.com/toast-gear)!
 
 ### Fixed
 - Pre-release terraform versions now won't be used when selecting the latest terraform version.
 - Invalid terraform files that contained an unterminated string would take an extremely long time to parse before failing the job.
-- [dflook/terraform-validate](https://github.com/dflook/terraform-github-actions/tree/master/terraform-validate) now automatically sets `terraform.workspace` to `default` when validating a module that uses a `remote` or `cloud` backend. 
+- [dflook/terraform-validate](https://github.com/dflook/terraform-github-actions/tree/main/terraform-validate) now automatically sets `terraform.workspace` to `default` when validating a module that uses a `remote` or `cloud` backend. 
 
 ## [1.22.2] - 2022-02-28
 
 ### Fixed
 - The PR plan comment was incorrectly including resource refresh lines when there were changes to outputs but not resources, while using Terraform >=0.15.4. As well as being noisy, this could lead to failures to apply due to incorrectly detecting changes in the plan.
-- Removed incorrect deprecation warning in [dflook/terraform-destroy](https://github.com/dflook/terraform-github-actions/tree/master/terraform-destroy). Thanks [dgrenner](https://github.com/dgrenner)!
+- Removed incorrect deprecation warning in [dflook/terraform-destroy](https://github.com/dflook/terraform-github-actions/tree/main/terraform-destroy). Thanks [dgrenner](https://github.com/dgrenner)!
 
 ## [1.22.1] - 2022-01-24
 
@@ -48,9 +48,9 @@ When using an action you can specify the version as:
 
 ### Added
 - Workspace management for Terraform Cloud/Enterprise has been reimplemented to avoid issues with the `terraform workspace` command when using the `remote` backend or a cloud config block:
-  - [dflook/terraform-new-workspace](https://github.com/dflook/terraform-github-actions/tree/master/terraform-new-workspace) can now create the first workspace
-  - [dflook/terraform-destroy-workspace](https://github.com/dflook/terraform-github-actions/tree/master/terraform-destroy-workspace) can now delete the last remaining workspace
-  - [dflook/terraform-new-workspace](https://github.com/dflook/terraform-github-actions/tree/master/terraform-new-workspace) and [dflook/terraform-destroy-workspace](https://github.com/dflook/terraform-github-actions/tree/master/terraform-destroy-workspace) work with a `remote` backend that specifies a workspace by `name`
+  - [dflook/terraform-new-workspace](https://github.com/dflook/terraform-github-actions/tree/main/terraform-new-workspace) can now create the first workspace
+  - [dflook/terraform-destroy-workspace](https://github.com/dflook/terraform-github-actions/tree/main/terraform-destroy-workspace) can now delete the last remaining workspace
+  - [dflook/terraform-new-workspace](https://github.com/dflook/terraform-github-actions/tree/main/terraform-new-workspace) and [dflook/terraform-destroy-workspace](https://github.com/dflook/terraform-github-actions/tree/main/terraform-destroy-workspace) work with a `remote` backend that specifies a workspace by `name`
   
 - The terraform version to use will now be detected from additional places:
 
@@ -61,35 +61,35 @@ When using an action you can specify the version as:
 
   The best way to specify the version is using a [`required_version`](https://www.terraform.io/docs/configuration/terraform.html#specifying-a-required-terraform-version) constraint.
 
-  See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/master/terraform-version#terraform-version-action) docs for details.
+  See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) docs for details.
 
 ### Changed
 As a result of the above terraform version detection additions, note these changes:
 
-- Actions always use the terraform version set in the remote workspace when using TFC/E, if it exists. This mostly effects [dflook/terraform-fmt](https://github.com/dflook/terraform-github-actions/tree/master/terraform-fmt), [dflook/terraform-fmt-check](https://github.com/dflook/terraform-github-actions/tree/master/terraform-fmt-check) and [dflook/terraform-validate](https://github.com/dflook/terraform-github-actions/tree/master/terraform-validate).
+- Actions always use the terraform version set in the remote workspace when using TFC/E, if it exists. This mostly effects [dflook/terraform-fmt](https://github.com/dflook/terraform-github-actions/tree/main/terraform-fmt), [dflook/terraform-fmt-check](https://github.com/dflook/terraform-github-actions/tree/main/terraform-fmt-check) and [dflook/terraform-validate](https://github.com/dflook/terraform-github-actions/tree/main/terraform-validate).
 
 - If the terraform version is not specified anywhere then new workspaces will be created with the latest terraform version. Existing workspaces will use the terraform version that was last used for that workspace.
 
 - If you want to always use the latest terraform version, instead of not specifying a version you now need to set an open-ended version constraint (e.g. `>1.0.0`)
 
-- All actions now support the inputs and environment variables related to the backend, for discovering the terraform version from a TFC/E workspace or remote state. This add the inputs `workspace`, `backend_config`, `backend_config_file`, and the `TERRAFORM_CLOUD_TOKENS` environment variable to the [dflook/terraform-fmt](https://github.com/dflook/terraform-github-actions/tree/master/terraform-fmt), [dflook/terraform-fmt-check](https://github.com/dflook/terraform-github-actions/tree/master/terraform-fmt-check) and [dflook/terraform-validate](https://github.com/dflook/terraform-github-actions/tree/master/terraform-validate) actions.
+- All actions now support the inputs and environment variables related to the backend, for discovering the terraform version from a TFC/E workspace or remote state. This add the inputs `workspace`, `backend_config`, `backend_config_file`, and the `TERRAFORM_CLOUD_TOKENS` environment variable to the [dflook/terraform-fmt](https://github.com/dflook/terraform-github-actions/tree/main/terraform-fmt), [dflook/terraform-fmt-check](https://github.com/dflook/terraform-github-actions/tree/main/terraform-fmt-check) and [dflook/terraform-validate](https://github.com/dflook/terraform-github-actions/tree/main/terraform-validate) actions.
 
 - :warning: Some unused packages were removed from the container image, most notably Python 2.
 
 ## [1.21.1] - 2021-12-12
 
 ### Fixed
-- [dflook/terraform-new-workspace](https://github.com/dflook/terraform-github-actions/tree/master/terraform-new-workspace) support for Terraform v1.1.0.
+- [dflook/terraform-new-workspace](https://github.com/dflook/terraform-github-actions/tree/main/terraform-new-workspace) support for Terraform v1.1.0.
 
   This stopped working after a change in the behaviour of terraform init.
  
   There is an outstanding [issue in Terraform v1.1.0](https://github.com/hashicorp/terraform/issues/30129) using the `remote` backend that prevents creating a new workspace when no workspaces currently exist.
-  If you are affected by this, you can pin to an earlier version of Terraform using one of methods listed in the [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/master/terraform-version#terraform-version-action) docs.
+  If you are affected by this, you can pin to an earlier version of Terraform using one of methods listed in the [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) docs.
 
 ## [1.21.0] - 2021-12-04
 
 ### Added
-- A new `workspace` input for [dflook/terraform-validate](https://github.com/dflook/terraform-github-actions/tree/master/terraform-validate) 
+- A new `workspace` input for [dflook/terraform-validate](https://github.com/dflook/terraform-github-actions/tree/main/terraform-validate) 
   allows validating usage of `terraform.workspace` in the terraform code.
 
   Terraform doesn't initialize `terraform.workspace` based on the backend configuration when running a validate operation.
@@ -103,12 +103,12 @@ As a result of the above terraform version detection additions, note these chang
 ## [1.20.0] - 2021-12-03
 
 ### Added
-- New `text_plan_path` and `json_plan_path` outputs for [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/master/terraform-apply)
-  to match the outputs for [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/master/terraform-plan).
+- New `text_plan_path` and `json_plan_path` outputs for [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/main/terraform-apply)
+  to match the outputs for [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/main/terraform-plan).
 
   These are paths to the generated plan in human-readable and JSON formats.
 
-  If the plan generated by [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/master/terraform-plan) is different from the plan generated by [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/master/terraform-apply) the apply step will fail with `failure-reason` set to `plan-changed`.
+  If the plan generated by [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/main/terraform-plan) is different from the plan generated by [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/main/terraform-apply) the apply step will fail with `failure-reason` set to `plan-changed`.
   These new outputs make it easier to inspect the differences.
 
 ## [1.19.0] - 2021-11-01
@@ -121,7 +121,7 @@ As a result of the above terraform version detection additions, note these chang
 ## [1.18.0] - 2021-10-30
 
 ### Added
-- A new `replace` input for [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/master/terraform-plan#inputs) and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/master/terraform-apply#inputs)
+- A new `replace` input for [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/main/terraform-plan#inputs) and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/main/terraform-apply#inputs)
 
   This instructs terraform to replace the specified resources, and is available with terraform versions that support replace (v0.15.2 onwards).
 
@@ -131,7 +131,7 @@ As a result of the above terraform version detection additions, note these chang
       random_password.database
   ```
 
-- A `target` input for [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/master/terraform-plan#inputs) to match [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/master/terraform-apply#inputs)
+- A `target` input for [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/main/terraform-plan#inputs) to match [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/main/terraform-apply#inputs)
 
   `target` limits the plan to the specified resources and their dependencies. This change removes the restriction that `target` can only be used with `auto_approve`.
 

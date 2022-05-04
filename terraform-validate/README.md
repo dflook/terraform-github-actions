@@ -28,7 +28,7 @@ If the terraform configuration is not valid, the build is failed.
   Terraform workspace to use for the `terraform.workspace` value while validating. Note that for remote operations in Terraform Cloud/Enterprise, this is always `default`.
 
   Also used for discovering the terraform version to use, if not otherwise specified. 
-  See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/master/terraform-version#terraform-version-action) for details. 
+  See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details. 
 
   - Type: string
   - Optional
@@ -37,7 +37,7 @@ If the terraform configuration is not valid, the build is failed.
 * `backend_config`
 
   List of terraform backend config values, one per line. This is used for discovering the terraform version to use, if not otherwise specified. 
-  See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/master/terraform-version#terraform-version-action) for details.
+  See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
 
   ```yaml
   with:
@@ -50,7 +50,7 @@ If the terraform configuration is not valid, the build is failed.
 * `backend_config_file`
 
   List of terraform backend config files to use, one per line. This is used for discovering the terraform version to use, if not otherwise specified. 
-  See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/master/terraform-version#terraform-version-action) for details.
+  See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
   Paths should be relative to the GitHub Actions workspace
 
   ```yaml

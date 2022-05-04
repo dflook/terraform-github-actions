@@ -81,7 +81,7 @@ output "service_hostname" {
 }
 ```
 Running this action will produce a `service_hostname` output with the same value.
-See [terraform-output](https://github.com/dflook/terraform-github-actions/tree/master/terraform-output) for details.
+See [terraform-output](https://github.com/dflook/terraform-github-actions/tree/main/terraform-output) for details.
 
 ## Example usage
 
@@ -93,7 +93,7 @@ name: Send request
 on:
   push:
     branches:
-      - master
+      - main
 
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}

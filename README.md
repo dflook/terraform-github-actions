@@ -67,14 +67,14 @@ jobs:
 ```
 
 #### apply.yaml
-This workflow runs when the PR is merged into the master branch, and applies the planned changes.
+This workflow runs when the PR is merged into the main branch, and applies the planned changes.
 ```yaml
 name: Apply terraform plan
 
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   apply:
@@ -93,7 +93,7 @@ jobs:
 ```
 
 ### Linting
-This workflow runs on every push to non-master branches and checks the terraform configuration is valid.
+This workflow runs on every push to non-main branches and checks the terraform configuration is valid.
 For extra strictness, we check the files are in the canonical format.
 
 <p align="center">
@@ -109,7 +109,7 @@ name: Lint
 on:
   push:
     branches:
-      - '!master'
+      - '!main'
 
 jobs:
   validate:
@@ -208,7 +208,7 @@ name: Check terraform file formatting
 on:
   push:
     branches: 
-      - master 
+      - main 
 
 jobs:
   format:

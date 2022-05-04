@@ -20,7 +20,7 @@ If any files are not correctly formatted a failing GitHub check will be added fo
 * `workspace`
 
   Terraform workspace to inspect when discovering the terraform version to use, if not otherwise specified. 
-  See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/master/terraform-version#terraform-version-action) for details.
+  See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
 
   - Type: string
   - Optional
@@ -28,7 +28,7 @@ If any files are not correctly formatted a failing GitHub check will be added fo
 * `backend_config`
 
   List of terraform backend config values, one per line. This is used for discovering the terraform version to use, if not otherwise specified. 
-  See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/master/terraform-version#terraform-version-action) for details.
+  See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
 
   ```yaml
   with:
@@ -41,7 +41,7 @@ If any files are not correctly formatted a failing GitHub check will be added fo
 * `backend_config_file`
 
   List of terraform backend config files to use, one per line. This is used for discovering the terraform version to use, if not otherwise specified. 
-  See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/master/terraform-version#terraform-version-action) for details.
+  See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
   Paths should be relative to the GitHub Actions workspace
 
   ```yaml

@@ -12,7 +12,7 @@ If the triggering event relates to a PR it will add a comment on the PR containi
 The `GITHUB_TOKEN` environment variable must be set for the PR comment to be added.
 The action can be run on other events, which prints the plan to the workflow log.
 
-The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/master/terraform-apply) action can be used to apply the generated plan.
+The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/main/terraform-apply) action can be used to apply the generated plan.
 
 ## Inputs
 
