@@ -38,6 +38,11 @@ jobs:
             exit 1
           fi
 
+          if [[ -n "${{ steps.output.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi
+
   apply_error:
     runs-on: ubuntu-latest
     name: Auto Approve plan error
@@ -72,6 +77,11 @@ jobs:
 
           if [[ -n "${{ steps.apply.outputs.text_plan_path }}" ]]; then
             echo "::error:: text_plan_path should not be set"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
             exit 1
           fi
 
@@ -122,6 +132,11 @@ jobs:
             exit 1
           fi
 
+          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi
+
   apply_no_token:
     runs-on: ubuntu-latest
     name: Apply without token
@@ -145,6 +160,11 @@ jobs:
 
           if [[ "${{ steps.apply.outputs.failure-reason }}" != "" ]]; then
             echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
             exit 1
           fi
 
@@ -187,6 +207,11 @@ jobs:
             exit 1
           fi
 
+          if [[ -n "${{ steps.first-apply.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi
+
       - name: Apply
         uses: ./terraform-apply
         id: second-apply
@@ -208,6 +233,11 @@ jobs:
 
           if ! grep -q "No changes" '${{ steps.second-apply.outputs.text_plan_path }}'; then
             echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.second-apply.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
             exit 1
           fi
 
@@ -295,6 +325,11 @@ jobs:
             exit 1
           fi
 
+          if [[ -n "${{ steps.output.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi
+
   backend_config_12:
     runs-on: ubuntu-latest
     name: backend_config terraform 12
@@ -338,6 +373,11 @@ jobs:
             exit 1
           fi
 
+          if [[ -n "${{ steps.backend_config_file_12.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi
+
       - name: Plan
         uses: ./terraform-plan
         with:
@@ -373,6 +413,11 @@ jobs:
 
           if ! grep -q "No changes" '${{ steps.backend_config_file_12.outputs.text_plan_path }}'; then
             echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.backend_config_12.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
             exit 1
           fi
 
@@ -419,6 +464,11 @@ jobs:
             exit 1
           fi
 
+          if [[ -n "${{ steps.backend_config_file_13.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi
+
       - name: Plan
         uses: ./terraform-plan
         with:
@@ -454,6 +504,11 @@ jobs:
 
           if ! grep -q "No changes" '${{ steps.backend_config_13.outputs.text_plan_path }}'; then
             echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.backend_config_13.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
             exit 1
           fi
 
@@ -500,6 +555,11 @@ jobs:
             exit 1
           fi
 
+          if [[ -n "${{ steps.output.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi
+
   apply_no_changes:
     runs-on: ubuntu-latest
     name: Apply when there are no planned changes
@@ -535,6 +595,11 @@ jobs:
             exit 1
           fi
 
+          if [[ -n "${{ steps.output.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi
+
   apply_no_plan:
     runs-on: ubuntu-latest
     name: Apply when there is no approved plan
@@ -565,6 +630,11 @@ jobs:
 
           if ! grep -q "Terraform will perform the following actions" '${{ steps.apply.outputs.text_plan_path }}'; then
             echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.output.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
             exit 1
           fi
 
@@ -607,6 +677,11 @@ jobs:
             exit 1
           fi
 
+          if [[ -n "${{ steps.output.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi
+
   apply_vars:
     runs-on: ubuntu-latest
     name: Apply approved changes with deprecated vars
@@ -643,6 +718,11 @@ jobs:
           fi
           if [[ "${{ steps.output.outputs.from_varfile }}" != "monkey" ]]; then
             echo "::error:: output from_varfile not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.output.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
             exit 1
           fi
 

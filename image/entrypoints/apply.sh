@@ -33,8 +33,16 @@ function apply() {
         # shellcheck disable=SC2086
         debug_log terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG '$PLAN_ARGS'  # don't expand plan args
         # shellcheck disable=SC2086
-        (cd "$INPUT_PATH" && terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS) | $TFMASK
+        (cd "$INPUT_PATH" && terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS) | $TFMASK | tee "$STEP_TMP_DIR/terraform_apply.stdout"
         APPLY_EXIT=${PIPESTATUS[0]}
+
+        if remote-run-id "$STEP_TMP_DIR/terraform_apply.stdout" >"$STEP_TMP_DIR/remote-run-id.stdout" 2>"$STEP_TMP_DIR/remote-run-id.stderr"; then
+            RUN_ID="$(<"$STEP_TMP_DIR/remote-run-id.stdout")"
+            set_output run_id "$RUN_ID"
+        else
+            debug_log "Failed to get remote run-id"
+            debug_file "$STEP_TMP_DIR/remote-run-id.stderr"
+        fi
     fi
     set -e
 

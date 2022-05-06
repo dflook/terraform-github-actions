@@ -60,9 +60,11 @@ outputs:
   to_destroy:
     description: The number of resources that would be destroyed by this plan
   text_plan_path:
-    description: Path to a file in the workspace containing the generated plan in human readble format.
+    description: Path to a file in the workspace containing the generated plan in human readable format.
   json_plan_path:
-    description: Path to a file in the workspace containing the generated plan in JSON format. This won't be set if the backend type is `remote`.
+    description: Path to a file in the workspace containing the generated plan in JSON format.
+  run_id:
+    description: If the root module uses the `remote` or `cloud` backend in remote execution mode, this output will be set to the remote run id.
 
 runs:
   using: docker
