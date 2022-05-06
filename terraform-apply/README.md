@@ -226,6 +226,12 @@ These input values must be the same as any `terraform-plan` for the same configu
   If the job fails for any other reason this will not be set.
   This can be used with the Actions expression syntax to conditionally run steps.
 
+* `run_id`
+
+  If the root module uses the `remote` or `cloud` backend in remote execution mode, this output will be set to the remote run id.
+
+  - Type: string
+
 * Terraform Outputs
 
   An action output will be created for each output of the terraform configuration.

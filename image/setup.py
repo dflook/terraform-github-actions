@@ -12,7 +12,9 @@ setup(
             'terraform-version=terraform_version.__main__:main',
             'terraform-cloud-workspace=terraform_cloud_workspace.__main__:main',
             'github_pr_comment=github_pr_comment.__main__:main',
-            'plan_summary=plan_summary.__main__:main'
+            'plan_summary=plan_summary.__main__:main',
+            'terraform-cloud-state=terraform_cloud_state.__main__:main',
+            'remote-run-id=terraform_cloud_state.__main__:remote_run_id'
         ]
     },
     install_requires=[

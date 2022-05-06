@@ -39,6 +39,11 @@ jobs:
             exit 1
           fi
 
+          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi
+
       - name: Test output expressions
         if: steps.plan.outputs.to_add != 0 || steps.plan.outputs.to_change != 0 || steps.plan.outputs.to_destroy != 0
         run: |
@@ -71,6 +76,11 @@ jobs:
 
           if ! grep -q "No changes" '${{ steps.plan.outputs.text_plan_path }}'; then
             echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
             exit 1
           fi
 
@@ -120,6 +130,11 @@ jobs:
 
           if [[ ${{ steps.plan.outputs.to_destroy }} -ne 0 ]]; then
             echo "::error:: to_destroy not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
             exit 1
           fi
 
@@ -179,6 +194,11 @@ jobs:
             exit 1
           fi
 
+          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi
+
       - name: Test output expressions
         if: steps.plan.outputs.to_add != 1 || steps.plan.outputs.to_change != 0 || steps.plan.outputs.to_destroy != 0
         run: |
@@ -232,6 +252,11 @@ jobs:
 
           if [[ ${{ steps.plan.outputs.to_destroy }} -ne 0 ]]; then
             echo "::error:: to_destroy not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
             exit 1
           fi
 
@@ -292,6 +317,11 @@ jobs:
             exit 1
           fi
 
+          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi
+
       - name: Test output expressions
         if: steps.plan.outputs.to_add != 1 || steps.plan.outputs.to_change != 0 || steps.plan.outputs.to_destroy != 0
         run: |
@@ -346,6 +376,11 @@ jobs:
 
           if [[ ${{ steps.plan.outputs.to_destroy }} -ne 0 ]]; then
             echo "::error:: to_destroy not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
             exit 1
           fi
 
@@ -405,6 +440,11 @@ jobs:
             exit 1
           fi
 
+          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi
+
       - name: Test output expressions
         if: steps.plan.outputs.to_add != 1 || steps.plan.outputs.to_change != 0 || steps.plan.outputs.to_destroy != 0
         run: |
@@ -461,6 +501,11 @@ jobs:
             exit 1
           fi
 
+          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi
+
       - name: Test output expressions
         if: steps.plan.outputs.to_add != 1 || steps.plan.outputs.to_change != 0 || steps.plan.outputs.to_destroy != 0
         run: |
@@ -496,6 +541,11 @@ jobs:
             exit 1
           fi
 
+          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi
+
   error:
     runs-on: ubuntu-latest
     name: Error
@@ -526,6 +576,11 @@ jobs:
 
           if [[ -n "${{ steps.plan.outputs.text_plan_path }}" ]]; then
             echo "::error:: text_plan_path should not be set"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
             exit 1
           fi
 
@@ -569,6 +624,11 @@ jobs:
             exit 1
           fi
 
+          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi
+
   plan_without_token:
     runs-on: ubuntu-latest
     name: Add comment without token
@@ -597,6 +657,11 @@ jobs:
 
           if [[ -n "${{ steps.plan.outputs.text_plan_path }}" ]]; then
             echo "::error:: text_plan_path should not be set"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
             exit 1
           fi
 

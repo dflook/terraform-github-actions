@@ -325,7 +325,6 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   The path is relative to the Actions workspace.
 
   This is not available when using terraform 0.11 or earlier.
-  This also won't be set if the backend type is `remote` - Terraform does not support saving remote plans.
 
   - Type: string
 
@@ -353,6 +352,12 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   The number of resources that would be destroyed by this plan.
 
   - Type: number
+
+* `run_id`
+
+  If the root module uses the `remote` or `cloud` backend in remote execution mode, this output will be set to the remote run id.
+
+  - Type: string
 
 ## Example usage
 

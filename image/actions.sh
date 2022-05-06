@@ -370,7 +370,7 @@ function plan() {
     (cd "$INPUT_PATH" && terraform plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT_ARG $PLAN_ARGS) \
         2>"$STEP_TMP_DIR/terraform_plan.stderr" \
         | $TFMASK \
-        | tee /dev/fd/3 \
+        | tee /dev/fd/3 "$STEP_TMP_DIR/terraform_plan.stdout" \
         | compact_plan \
             >"$STEP_TMP_DIR/plan.txt"
 

@@ -27,6 +27,16 @@ fi
 
 cat "$STEP_TMP_DIR/terraform_plan.stderr"
 
+if [[ -z "$PLAN_OUT" ]]; then
+    if remote-run-id "$STEP_TMP_DIR/terraform_plan.stdout" >"$STEP_TMP_DIR/remote-run-id.stdout" 2>"$STEP_TMP_DIR/remote-run-id.stderr"; then
+        RUN_ID="$(<"$STEP_TMP_DIR/remote-run-id.stdout")"
+        set_output run_id "$RUN_ID"
+    else
+        debug_log "Failed to get remote run-id"
+        debug_file "$STEP_TMP_DIR/remote-run-id.stderr"
+    fi
+fi
+
 if [[ "$GITHUB_EVENT_NAME" == "pull_request" || "$GITHUB_EVENT_NAME" == "issue_comment" || "$GITHUB_EVENT_NAME" == "pull_request_review_comment" || "$GITHUB_EVENT_NAME" == "pull_request_target" || "$GITHUB_EVENT_NAME" == "pull_request_review" ]]; then
     if [[ "$INPUT_ADD_GITHUB_COMMENT" == "true" || "$INPUT_ADD_GITHUB_COMMENT" == "changes-only" ]]; then
 
@@ -85,5 +95,15 @@ if [[ -n "$PLAN_OUT" ]]; then
         set_output json_plan_path "$WORKSPACE_TMP_DIR/plan.json"
     else
         debug_file "$STEP_TMP_DIR/terraform_show.stderr"
+    fi
+elif [[ -n "$RUN_ID" ]]; then
+    if terraform-cloud-state "$RUN_ID" >"$STEP_TMP_DIR/terraform_cloud_state.stdout" 2>"$STEP_TMP_DIR/terraform_cloud_state.stderr"; then
+        debug_log "Fetched JSON plan from TFC"
+        cp "$STEP_TMP_DIR/terraform_cloud_state.stdout" "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/plan.json"
+        set_output json_plan_path "$WORKSPACE_TMP_DIR/plan.json"
+    else
+        debug_log "Failed to fetch JSON plan from TFC"
+        debug_file "$STEP_TMP_DIR/terraform_cloud_state.stdout"
+        debug_file "$STEP_TMP_DIR/terraform_cloud_state.stderr"
     fi
 fi

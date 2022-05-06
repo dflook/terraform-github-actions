@@ -76,6 +76,12 @@ jobs:
             exit 1
           fi
 
+          echo '${{ steps.auto_apply.outputs.run_id }}'
+          if [[ "${{ steps.auto_apply.outputs.run_id }}" != "run-"* ]]; then
+            echo "::error:: output run_id not set correctly"
+            exit 1
+          fi
+
       - name: Get outputs
         uses: ./terraform-output
         id: output
@@ -183,6 +189,19 @@ jobs:
             exit 1
           fi
 
+          echo '${{ steps.plan.outputs.run_id }}'
+          if [[ "${{ steps.plan.outputs.run_id }}" != "run-"* ]]; then
+            echo "::error:: output run_id not set correctly"
+            exit 1
+          fi
+
+          echo '${{ steps.plan.outputs.json_plan_path }}'
+          jq .output_changes.from_variables.actions[0] "${{ steps.plan.outputs.json_plan_path }}"
+          if [[ $(jq -r .output_changes.from_variables.actions[0] "${{ steps.plan.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
       - name: Apply workspace
         uses: ./terraform-apply
         id: apply
@@ -221,6 +240,12 @@ jobs:
 
           if [[ -n "${{ steps.apply.outputs.json_plan_path }}" ]]; then
             echo "::error:: json_plan_path should not be set"
+            exit 1
+          fi
+
+          echo '${{ steps.apply.outputs.run_id }}'
+          if [[ "${{ steps.apply.outputs.run_id }}" != "run-"* ]]; then
+            echo "::error:: output run_id not set correctly"
             exit 1
           fi
 
