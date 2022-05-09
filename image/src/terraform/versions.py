@@ -214,7 +214,7 @@ def get_terraform_versions() -> Iterable[Version]:
     response = session.get('https://releases.hashicorp.com/terraform/')
     response.raise_for_status()
 
-    version_regex = re.compile(br'/(\d+\.\d+\.\d+(-[\d\w]+)?)/')
+    version_regex = re.compile(br'/(\d+\.\d+\.\d+(-[\d\w]+)?)')
 
     for version in version_regex.finditer(response.content):
         yield Version(version.group(1).decode())
