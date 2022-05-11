@@ -1,1 +1,0 @@
-my_var_from_file="monkey"

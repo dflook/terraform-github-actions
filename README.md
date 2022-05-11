@@ -1,4 +1,4 @@
-# Terraform GitHub Actions ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/dflook/terraform-github-actions)
+# Terraform GitHub Actions ![release](https://img.shields.io/github/v/release/dflook/terraform-github-actions)![job runs](https://img.shields.io/docker/pulls/danielflook/terraform-github-actions?label=job%20runs)
 
 This is a suite of terraform related GitHub Actions that can be used together to build effective Infrastructure as Code workflows.
 
@@ -67,14 +67,14 @@ jobs:
 ```
 
 #### apply.yaml
-This workflow runs when the PR is merged into the master branch, and applies the planned changes.
+This workflow runs when the PR is merged into the main branch, and applies the planned changes.
 ```yaml
 name: Apply terraform plan
 
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   apply:
@@ -93,7 +93,7 @@ jobs:
 ```
 
 ### Linting
-This workflow runs on every push to non-master branches and checks the terraform configuration is valid.
+This workflow runs on every push to non-main branches and checks the terraform configuration is valid.
 For extra strictness, we check the files are in the canonical format.
 
 <p align="center">
@@ -109,7 +109,7 @@ name: Lint
 on:
   push:
     branches:
-      - !master
+      - '!main'
 
 jobs:
   validate:
@@ -181,9 +181,9 @@ on:
     - cron:  "0 8 * * *"
 
 jobs:
-  check_drift:
+  rotate_certs:
     runs-on: ubuntu-latest
-    name: Check for drift of example terraform configuration
+    name: Rotate TLS certificates in example terraform configuration
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -193,7 +193,9 @@ jobs:
         with:
           path: my-terraform-config
           auto_approve: true
-          target: acme_certificate.certificate,kubernetes_secret.certificate
+          target: |
+            acme_certificate.certificate
+            kubernetes_secret.certificate
 ```
 
 ### Automatically fixing formatting
@@ -206,7 +208,7 @@ name: Check terraform file formatting
 on:
   push:
     branches: 
-      - master 
+      - main 
 
 jobs:
   format:

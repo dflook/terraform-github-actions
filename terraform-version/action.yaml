@@ -5,7 +5,20 @@ author: Daniel Flook
 inputs:
   path:
     description: Path to the terraform configuration
-    required: true
+    required: false
+    default: .
+  workspace:
+    description: Name of the terraform workspace to get the version for
+    required: false
+    default: default
+  backend_config:
+    description: List of backend config values to set, one per line
+    required: false
+    default: ""
+  backend_config_file:
+    description: Path to a backend config file
+    required: false
+    default: ""
 
 outputs:
   version:

@@ -1,0 +1,44 @@
+name: Problem
+description: I'm having a problem using these actions
+labels:
+  - problem
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before creating an issue, enable debug logging by setting the `ACTIONS_STEP_DEBUG` secret to `true` and run the job again.
+  - type: textarea
+    id: description
+    attributes:
+      description: What is not working? What do you think should be happening instead?
+      label: Problem description
+    validations:
+      required: true
+
+  - type: input
+    id: terraform-version
+    attributes:
+      label: Terraform version
+      description: What terraform version are you using?
+      placeholder: 1.0.5
+
+  - type: input
+    id: backend
+    attributes:
+      label: Backend
+      description: What terraform backend are you using?
+      placeholder: s3
+
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Workflow YAML
+      description: Please copy and paste the relevant workflow yaml. This will be automatically formatted, so no need for backticks.
+      render: yaml
+
+  - type: textarea
+    id: workflow-logs
+    attributes:
+      label: Workflow log
+      description: Please copy and paste the relevant workflow log output. If this is long consider putting in a [gist](https://gist.github.com/). This will be automatically formatted, so no need for backticks.
+      render: shell

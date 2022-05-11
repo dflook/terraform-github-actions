@@ -3,9 +3,12 @@ name: Update base image
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - image/Dockerfile-base
+      - .github/workflows/base-image.yaml
+  schedule:
+    - cron: 0 1 * * 1
 
 jobs:
   push_image:
@@ -24,9 +27,23 @@ jobs:
 
       - name: Base image
         run: |
-          docker build --tag dflook/terraform-github-actions-base -f image/Dockerfile-base image
+          docker pull --quiet debian:bullseye-slim
+          BASE_DIGEST="$(docker image inspect --format="{{index .RepoDigests 0}}" "debian:bullseye-slim" | sed 's/.*@//')"
+
+          docker build --tag dflook/terraform-github-actions-base -f image/Dockerfile-base \
+            --label org.opencontainers.image.created="$(date '+%Y-%m-%dT%H:%M:%S%z')" \
+            --label org.opencontainers.image.source="https://github.com/${{ github.repository }}" \
+            --label org.opencontainers.image.revision="${{ github.sha }}" \
+            --label org.opencontainers.image.base.name="docker.io/library/debian:bullseye-slim" \
+            --label org.opencontainers.image.base.digest="$BASE_DIGEST" \
+            --label build="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+            image
 
           docker tag dflook/terraform-github-actions-base danielflook/terraform-github-actions-base:latest
-          docker push danielflook/terraform-github-actions-base:latest
+          docker push --quiet danielflook/terraform-github-actions-base:latest
+
+          IMAGE_DIGEST="$(docker image inspect --format="{{index .RepoDigests 0}}" "danielflook/terraform-github-actions-base:latest" | sed 's/.*@//')"
+          echo "::set-output name=digest::$IMAGE_DIGEST"
+
           docker tag dflook/terraform-github-actions-base danielflook/terraform-github-actions-base:$GITHUB_RUN_ID
-          docker push danielflook/terraform-github-actions-base:$GITHUB_RUN_ID
+          docker push --quiet danielflook/terraform-github-actions-base:$GITHUB_RUN_ID

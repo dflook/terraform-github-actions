@@ -5,7 +5,20 @@ author: Daniel Flook
 inputs:
   path:
     description: Path to the terraform configuration
-    required: true
+    required: false
+    default: .
+  workspace:
+    description: Name of the workspace to use for the `terraform.workspace` value while validating.
+    required: false
+    default: default
+  backend_config:
+    description: List of backend configs to set, one per line
+    required: false
+    default: ""
+  backend_config_file:
+    description: Path to a backend config file
+    required: false
+    default: ""
 
 runs:
   using: docker

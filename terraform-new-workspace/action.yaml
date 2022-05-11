@@ -5,16 +5,19 @@ author: Daniel Flook
 inputs:
   path:
     description: Path to the terraform configuration
-    required: true
+    required: false
+    default: .
   workspace:
     description: Name of the terraform workspace
     required: true
   backend_config:
-    description: Comma separated list of backend configs to set, e.g. 'foo=bar'
+    description: List of backend config values to set, one per line
     required: false
+    default: ""
   backend_config_file:
-    description: Path to a backend config file"
+    description: Path to a backend config file
     required: false
+    default: ""
 
 runs:
   using: docker

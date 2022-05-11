@@ -3,7 +3,7 @@ name: Fix terraform formatting
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   fix_formatting:

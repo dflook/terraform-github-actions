@@ -1,6 +1,7 @@
 name: Test terraform-apply
 
-on: [pull_request]
+on:
+  - pull_request
 
 jobs:
   auto_approve:
@@ -17,13 +18,28 @@ jobs:
         uses: ./terraform-apply
         id: output
         with:
-          path: tests/remote-state/test-bucket_12
+          path: tests/workflows/test-apply/remote
           auto_approve: true
 
       - name: Verify outputs
         run: |
           if [[ "${{ steps.output.outputs.my_string }}" != "hello" ]]; then
             echo "::error:: output my_string not set correctly"
+            exit 1
+          fi
+
+          if [[ $(jq -r .output_changes.my_string.actions[0] "${{ steps.output.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "No changes" '${{ steps.output.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.output.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
             exit 1
           fi
 
@@ -39,13 +55,85 @@ jobs:
         id: apply
         continue-on-error: true
         with:
-          path: tests/remote-state/test-bucket_12
+          path: tests/workflows/test-apply/remote
           auto_approve: true
 
       - name: Check failed to apply
         run: |
           if [[ "${{ steps.apply.outcome }}" != "failure" ]]; then
             echo "Apply did not fail correctly"
+            exit 1
+          fi
+
+          if [[ "${{ steps.apply.outputs.failure-reason }}" != "" ]]; then
+            echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.apply.outputs.json_plan_path }}" ]]; then
+            echo "::error:: json_plan_path should not be set"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.apply.outputs.text_plan_path }}" ]]; then
+            echo "::error:: text_plan_path should not be set"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi
+
+  apply_apply_error:
+    runs-on: ubuntu-latest
+    name: Auto Approve apply phase error
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          label: test-apply apply_apply_error
+          path: tests/workflows/test-apply/apply-error
+
+      - name: Apply
+        uses: ./terraform-apply
+        id: apply
+        continue-on-error: true
+        with:
+          label: test-apply apply_apply_error
+          path: tests/workflows/test-apply/apply-error
+
+      - name: Check failed to apply
+        run: |
+          if [[ "${{ steps.apply.outcome }}" != "failure" ]]; then
+            echo "Apply did not fail correctly"
+            exit 1
+          fi
+
+          if [[ "${{ steps.apply.outputs.failure-reason }}" != "apply-failed" ]]; then
+            echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+          if [[ $(jq -r .format_version "${{ steps.apply.outputs.json_plan_path }}") != "1.0" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "Terraform will perform the following actions" '${{ steps.apply.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
             exit 1
           fi
 
@@ -61,12 +149,22 @@ jobs:
         id: apply
         continue-on-error: true
         with:
-          path: tests/apply/changes
+          path: tests/workflows/test-apply/changes
 
       - name: Check failed to apply
         run: |
           if [[ "${{ steps.apply.outcome }}" != "failure" ]]; then
             echo "Apply did not fail correctly"
+            exit 1
+          fi
+
+          if [[ "${{ steps.apply.outputs.failure-reason }}" != "" ]]; then
+            echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
             exit 1
           fi
 
@@ -82,24 +180,70 @@ jobs:
       - name: Plan
         uses: ./terraform-plan
         with:
-          path: tests/apply/changes
+          label: test-apply apply
+          path: tests/workflows/test-apply/changes
 
       - name: Apply
         uses: ./terraform-apply
-        id: output
+        id: first-apply
         with:
-          path: tests/apply/changes
+          label: test-apply apply
+          path: tests/workflows/test-apply/changes
 
       - name: Verify outputs
         run: |
-          if [[ "${{ steps.output.outputs.output_string }}" != "the_string" ]]; then
+          if [[ "${{ steps.first-apply.outputs.output_string }}" != "the_string" ]]; then
             echo "::error:: output s not set correctly"
             exit 1
           fi
 
-  apply_vars:
+          if [[ $(jq -r .output_changes.output_string.actions[0] "${{ steps.first-apply.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "Terraform will perform the following actions" '${{ steps.first-apply.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.first-apply.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi
+
+      - name: Apply
+        uses: ./terraform-apply
+        id: second-apply
+        with:
+          label: test-apply apply
+          path: tests/workflows/test-apply/changes
+
+      - name: Verify outputs
+        run: |
+          if [[ "${{ steps.second-apply.outputs.output_string }}" != "the_string" ]]; then
+            echo "::error:: output s not set correctly"
+            exit 1
+          fi
+
+          if [[ $(jq -r .format_version "${{ steps.second-apply.outputs.json_plan_path }}") != "1.0" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "No changes" '${{ steps.second-apply.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.second-apply.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi
+
+  apply_variables:
     runs-on: ubuntu-latest
-    name: Apply approved changes with a variable
+    name: Apply approved changes with variables
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -109,17 +253,45 @@ jobs:
       - name: Plan
         uses: ./terraform-plan
         with:
-          path: tests/apply/vars
-          var: my_var=hello
-          var_file: tests/apply/test.tfvars
+          label: test-apply apply_variables
+          path: tests/workflows/test-apply/vars
+          variables: |
+            my_var="hello"
+            complex_input=[
+              {
+                internal = 2000
+                external = 3000
+                protocol = "udp"
+              },
+              {
+                internal = 4000
+                external = 5000
+                protocol = "tcp"
+              },
+            ]
+          var_file: tests/workflows/test-apply/test.tfvars
 
       - name: Apply
         uses: ./terraform-apply
         id: output
         with:
-          path: tests/apply/vars
-          var: my_var=hello
-          var_file: tests/apply/test.tfvars
+          label: test-apply apply_variables
+          path: tests/workflows/test-apply/vars
+          variables: |
+            my_var="hello"
+            complex_input=[
+              {
+                internal = 2000
+                external = 3000
+                protocol = "udp"
+              },
+              {
+                internal = 4000
+                external = 5000
+                protocol = "tcp"
+              },
+            ]
+          var_file: tests/workflows/test-apply/test.tfvars
 
       - name: Verify outputs
         run: |
@@ -138,9 +310,29 @@ jobs:
             exit 1
           fi
 
+          if [[ "${{ steps.output.outputs.complex_output }}" != "2000:3000:udp,4000:5000:tcp" ]]; then
+            echo "::error:: output complex_output not set correctly"
+            exit 1
+          fi
+
+          if [[ $(jq -r .output_changes.output_string.actions[0] "${{ steps.output.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "Terraform will perform the following actions" '${{ steps.output.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.output.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi
+
   backend_config_12:
     runs-on: ubuntu-latest
-    name: backend_config & backed_config_vars
+    name: backend_config terraform 12
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -152,15 +344,17 @@ jobs:
       - name: Plan
         uses: ./terraform-plan
         with:
-          path: tests/apply/backend_config_12
-          backend_config_file: tests/apply/backend_config_12/backend_config
+          label: test-apply backend_config_12 backend_config_file
+          path: tests/workflows/test-apply/backend_config_12
+          backend_config_file: tests/workflows/test-apply/backend_config_12/backend_config
 
       - name: Apply
         uses: ./terraform-apply
         id: backend_config_file_12
         with:
-          path: tests/apply/backend_config_12
-          backend_config_file: tests/apply/backend_config_12/backend_config
+          label: test-apply backend_config_12 backend_config_file
+          path: tests/workflows/test-apply/backend_config_12
+          backend_config_file: tests/workflows/test-apply/backend_config_12/backend_config
 
       - name: Verify outputs
         run: |
@@ -169,18 +363,41 @@ jobs:
             exit 1
           fi
 
+          if [[ $(jq -r .output_changes.test.actions[0] "${{ steps.backend_config_file_12.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "No changes" '${{ steps.backend_config_file_12.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.backend_config_file_12.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi
+
       - name: Plan
         uses: ./terraform-plan
         with:
-          path: tests/apply/backend_config_12
-          backend_config: bucket=terraform-github-actions,key=backend_config,region=eu-west-2
+          label: test-apply backend_config_12 backend_config
+          path: tests/workflows/test-apply/backend_config_12
+          backend_config: |
+            bucket=terraform-github-actions
+            key=backend_config
+            region=eu-west-2
 
       - name: Apply
         uses: ./terraform-apply
         id: backend_config_12
         with:
-          path: tests/apply/backend_config_12
-          backend_config: bucket=terraform-github-actions,key=backend_config,region=eu-west-2
+          label: test-apply backend_config_12 backend_config
+          path: tests/workflows/test-apply/backend_config_12
+          backend_config: |
+            bucket=terraform-github-actions
+            key=backend_config
+            region=eu-west-2
 
       - name: Verify outputs
         run: |
@@ -189,9 +406,24 @@ jobs:
             exit 1
           fi
 
+          if [[ $(jq -r .output_changes.test.actions[0] "${{ steps.backend_config_12.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "No changes" '${{ steps.backend_config_file_12.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.backend_config_12.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi
+
   backend_config_13:
     runs-on: ubuntu-latest
-    name: backend_config & backed_config_vars
+    name: backend_config terraform 13
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -203,15 +435,17 @@ jobs:
       - name: Plan
         uses: ./terraform-plan
         with:
-          path: tests/apply/backend_config_13
-          backend_config_file: tests/apply/backend_config_13/backend_config
+          label: test-apply backend_config_12 backend_config_file
+          path: tests/workflows/test-apply/backend_config_13
+          backend_config_file: tests/workflows/test-apply/backend_config_13/backend_config
 
       - name: Apply
         uses: ./terraform-apply
         id: backend_config_file_13
         with:
-          path: tests/apply/backend_config_13
-          backend_config_file: tests/apply/backend_config_13/backend_config
+          label: test-apply backend_config_12 backend_config_file
+          path: tests/workflows/test-apply/backend_config_13
+          backend_config_file: tests/workflows/test-apply/backend_config_13/backend_config
 
       - name: Verify outputs
         run: |
@@ -220,23 +454,61 @@ jobs:
             exit 1
           fi
 
+          if [[ $(jq -r .output_changes.test.actions[0] "${{ steps.backend_config_file_13.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "No changes" '${{ steps.backend_config_file_13.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.backend_config_file_13.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi
+
       - name: Plan
         uses: ./terraform-plan
         with:
-          path: tests/apply/backend_config_13
-          backend_config: bucket=terraform-github-actions,key=backend_config_13,region=eu-west-2
+          label: test-apply backend_config_12 backend_config
+          path: tests/workflows/test-apply/backend_config_13
+          backend_config: |
+            bucket=terraform-github-actions
+            key=backend_config_13
+            region=eu-west-2
 
       - name: Apply
         uses: ./terraform-apply
         id: backend_config_13
         with:
-          path: tests/apply/backend_config_13
-          backend_config: bucket=terraform-github-actions,key=backend_config_13,region=eu-west-2
+          label: test-apply backend_config_12 backend_config
+          path: tests/workflows/test-apply/backend_config_13
+          backend_config: |
+            bucket=terraform-github-actions
+            key=backend_config_13
+            region=eu-west-2
 
       - name: Verify outputs
         run: |
           if [[ "${{ steps.backend_config_13.outputs.test }}" != "hello" ]]; then
             echo "::error:: Output from backend_config not set correctly"
+            exit 1
+          fi
+
+          if [[ $(jq -r .output_changes.test.actions[0] "${{ steps.backend_config_13.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "No changes" '${{ steps.backend_config_13.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.backend_config_13.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
             exit 1
           fi
 
@@ -252,19 +524,19 @@ jobs:
       - name: Plan
         uses: ./terraform-plan
         with:
-          path: tests/apply/vars
-          label: TestLabel
-          var: my_var=world
-          var_file: tests/apply/test.tfvars
+          path: tests/workflows/test-apply/vars
+          label: test-apply apply_label
+          variables: my_var="world"
+          var_file: tests/workflows/test-apply/test.tfvars
 
       - name: Apply
         uses: ./terraform-apply
         id: output
         with:
-          path: tests/apply/vars
-          label: TestLabel
-          var: my_var=world
-          var_file: tests/apply/test.tfvars
+          path: tests/workflows/test-apply/vars
+          label: test-apply apply_label
+          variables: my_var="world"
+          var_file: tests/workflows/test-apply/test.tfvars
 
       - name: Verify outputs
         run: |
@@ -273,27 +545,18 @@ jobs:
             exit 1
           fi
 
-  apply_changes_already_applied:
-    runs-on: ubuntu-latest
-    name: Apply when changes are already applied
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    needs:
-      - apply
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+          if [[ $(jq -r .output_changes.output_string.actions[0] "${{ steps.output.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
 
-      - name: Apply
-        uses: ./terraform-apply
-        id: output
-        with:
-          path: tests/apply/changes
+          if ! grep -q "Terraform will perform the following actions" '${{ steps.output.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
 
-      - name: Verify outputs
-        run: |
-          if [[ "${{ steps.output.outputs.output_string }}" != "the_string" ]]; then
-            echo "::error:: output s not set correctly"
+          if [[ -n "${{ steps.output.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
             exit 1
           fi
 
@@ -312,12 +575,28 @@ jobs:
         uses: ./terraform-apply
         id: output
         with:
-          path: tests/remote-state/test-bucket_12
+          path: tests/workflows/test-apply/remote
 
       - name: Verify outputs
         run: |
           if [[ "${{ steps.output.outputs.my_string }}" != "hello" ]]; then
             echo "::error:: output my_string not set correctly"
+            exit 1
+          fi
+
+          cat "${{ steps.output.outputs.json_plan_path }}"
+          if [[ $(jq -r .format_version "${{ steps.output.outputs.json_plan_path }}") != "0.1" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "No changes" '${{ steps.output.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.output.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
             exit 1
           fi
 
@@ -335,11 +614,215 @@ jobs:
         id: apply
         continue-on-error: true
         with:
-          path: tests/apply/no_plan
+          path: tests/workflows/test-apply/no_plan
 
       - name: Check failed to apply
         run: |
           if [[ "${{ steps.apply.outcome }}" != "failure" ]]; then
             echo "Apply did not fail correctly"
+            exit 1
+          fi
+
+          if [[ $(jq -r .format_version "${{ steps.apply.outputs.json_plan_path }}") != "1.0" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "Terraform will perform the following actions" '${{ steps.apply.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.output.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi
+
+  apply_user_token:
+    runs-on: ubuntu-latest
+    name: Apply using a personal access token
+    env:
+      GITHUB_TOKEN: ${{ secrets.USER_GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          label: test-apply apply_user_token
+          path: tests/workflows/test-apply/changes
+
+      - name: Apply
+        uses: ./terraform-apply
+        id: output
+        with:
+          label: test-apply apply_user_token
+          path: tests/workflows/test-apply/changes
+
+      - name: Verify outputs
+        run: |
+          if [[ "${{ steps.output.outputs.output_string }}" != "the_string" ]]; then
+            echo "::error:: output s not set correctly"
+            exit 1
+          fi
+
+          if [[ $(jq -r .output_changes.output_string.actions[0] "${{ steps.output.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "Terraform will perform the following actions" '${{ steps.output.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.output.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi
+
+  apply_vars:
+    runs-on: ubuntu-latest
+    name: Apply approved changes with deprecated vars
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          path: tests/workflows/test-apply/deprecated_var
+          var: my_var=hello
+          var_file: tests/workflows/test-apply/test.tfvars
+
+      - name: Apply
+        uses: ./terraform-apply
+        id: output
+        with:
+          path: tests/workflows/test-apply/deprecated_var
+          var: my_var=hello
+          var_file: tests/workflows/test-apply/test.tfvars
+
+      - name: Verify outputs
+        run: |
+          if [[ "${{ steps.output.outputs.output_string }}" != "the_string" ]]; then
+            echo "::error:: output s not set correctly"
+            exit 1
+          fi
+          if [[ "${{ steps.output.outputs.from_var }}" != "this should be overridden" ]]; then
+            echo "::error:: output from_var not set correctly"
+            exit 1
+          fi
+          if [[ "${{ steps.output.outputs.from_varfile }}" != "monkey" ]]; then
+            echo "::error:: output from_varfile not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.output.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi
+
+  apply_refresh:
+    runs-on: ubuntu-latest
+    name: Apply changes are refresh
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Plan 1
+        uses: ./terraform-plan
+        with:
+          label: test-apply apply_refresh 1
+          path: tests/workflows/test-apply/refresh_15
+          variables: len=10
+
+      - name: Apply 1
+        uses: ./terraform-apply
+        with:
+          label: test-apply apply_refresh 1
+          path: tests/workflows/test-apply/refresh_15
+          variables: len=10
+
+      - name: Plan 2
+        uses: ./terraform-plan
+        id: plan
+        with:
+          label: test-apply apply_refresh 2
+          path: tests/workflows/test-apply/refresh_15
+          variables: len=20
+
+      - name: Verify outputs
+        run: |
+          echo "changes=${{ steps.plan.outputs.changes }}"
+
+          if [[ "${{ steps.plan.outputs.changes }}" != "true" ]]; then
+            echo "::error:: output changes not set correctly"
+            exit 1
+          fi
+          
+          if [[ ${{ steps.plan.outputs.to_add }} -ne 1 ]]; then
+            echo "::error:: to_add not set correctly"
+            exit 1
+          fi
+
+          if [[ ${{ steps.plan.outputs.to_change }} -ne 0 ]]; then
+            echo "::error:: to_change not set correctly"
+            exit 1
+          fi
+
+          if [[ ${{ steps.plan.outputs.to_destroy }} -ne 1 ]]; then
+            echo "::error:: to_destroy not set correctly"
+            exit 1
+          fi
+
+      - name: Test output expressions
+        if: steps.plan.outputs.to_add != 1 || steps.plan.outputs.to_change != 0 || steps.plan.outputs.to_destroy != 1
+        run: |
+          echo "if expression should not have evaluated true"
+          exit 1
+
+      - name: Apply 2
+        uses: ./terraform-apply
+        id: output
+        with:
+          label: test-apply apply_refresh 2
+          path: tests/workflows/test-apply/refresh_15
+          variables: len=20
+
+  apply_with_pre_run:
+    runs-on: ubuntu-latest
+    name: Apply with pre-run script
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TERRAFORM_PRE_RUN: |
+        echo "testing command 1"
+        echo "testing command 2"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          label: test-apply apply_with_pre_run
+          path: tests/workflows/test-apply/changes
+
+      - name: Apply
+        uses: ./terraform-apply
+        id: output
+        with:
+          label: test-apply apply_with_pre_run
+          path: tests/workflows/test-apply/changes
+
+      - name: Verify outputs
+        run: |
+          if [[ "${{ steps.output.outputs.output_string }}" != "the_string" ]]; then
+            echo "::error:: output_string not set correctly"
             exit 1
           fi
