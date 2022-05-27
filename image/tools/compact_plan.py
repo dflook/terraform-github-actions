@@ -14,7 +14,8 @@ def compact_plan(input):
             line.startswith('An execution plan has been generated and is shown below') or
             line.startswith('No changes') or
             line.startswith('Error') or
-            line.startswith('Changes to Outputs:')
+            line.startswith('Changes to Outputs:') or
+            line.startswith('Terraform will perform the following actions:')
         ):
             plan = True
 

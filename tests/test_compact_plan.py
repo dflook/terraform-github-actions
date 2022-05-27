@@ -510,6 +510,37 @@ Plan: 1 to add, 0 to change, 1 to destroy.
     output = '\n'.join(compact_plan(input.splitlines()))
     assert output == expected_output
 
+def test_plan_refresh_changes_16():
+    input = """
+random_string.my_string: Refreshing state... [id=Iyh3jLKc]
+
+Terraform will perform the following actions:
+
+  # random_string.your_string has moved to random_string.my_string
+    resource "random_string" "my_string" {
+        id          = "Iyh3jLKc"
+        length      = 8
+        # (8 unchanged attributes hidden)
+    }
+
+Plan: 0 to add, 0 to change, 0 to destroy.
+        """
+
+    expected_output = """Terraform will perform the following actions:
+
+  # random_string.your_string has moved to random_string.my_string
+    resource "random_string" "my_string" {
+        id          = "Iyh3jLKc"
+        length      = 8
+        # (8 unchanged attributes hidden)
+    }
+
+Plan: 0 to add, 0 to change, 0 to destroy.
+        """
+
+    output = '\n'.join(compact_plan(input.splitlines()))
+    assert output == expected_output
+
 def test_error_11():
     input = """
 Error: random_string.my_string: length: cannot parse '' as int: strconv.ParseInt: parsing "ten": invalid syntax
