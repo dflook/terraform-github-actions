@@ -510,7 +510,7 @@ Plan: 1 to add, 0 to change, 1 to destroy.
     output = '\n'.join(compact_plan(input.splitlines()))
     assert output == expected_output
 
-def test_plan_refresh_changes_16():
+def test_plan_move_only():
     input = """
 random_string.my_string: Refreshing state... [id=Iyh3jLKc]
 

@@ -158,3 +158,27 @@ def test_summary_unknown():
 This is not anything like terraform output we know. We don't want to generate a summary for this.
 """
     assert create_summary(plan) is None
+
+def test_summary_move_only():
+    plan = """Terraform will perform the following actions:
+
+  # random_string.your_string has moved to random_string.my_string
+    resource "random_string" "my_string" {
+        id          = "Iyh3jLKc"
+        length      = 8
+        # (8 unchanged attributes hidden)
+    }
+    
+  # random_string.blah_string has moved to random_string.my_string2
+    resource "random_string" "my_string2" {
+        id          = "Iyh3jLKc"
+        length      = 8
+        # (8 unchanged attributes hidden)
+    }    
+
+Plan: 0 to add, 0 to change, 0 to destroy.
+"""
+
+    expected = "Plan: 0 to add, 0 to change, 0 to destroy, 2 to move."
+
+    assert create_summary(plan) == expected

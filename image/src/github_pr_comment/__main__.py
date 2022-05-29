@@ -1,6 +1,7 @@
 import hashlib
 import json
 import os
+import re
 import sys
 from pathlib import Path
 from typing import (NewType, Optional, cast)
@@ -108,18 +109,26 @@ def format_classic_description(action_inputs: PlanPrInputs) -> str:
 def create_summary(plan: Plan) -> Optional[str]:
     summary = None
 
+    to_move = 0
+
     for line in plan.splitlines():
         if line.startswith('No changes') or line.startswith('Error'):
             return line
 
+        if re.match(r'  # \S+ has moved to \S+$', line):
+            to_move += 1
+
         if line.startswith('Plan:'):
             summary = line
+
+            if to_move and 'move' not in summary:
+                summary = summary.rstrip('.') + f', {to_move} to move.'
 
         if line.startswith('Changes to Outputs'):
             if summary:
                 return summary + ' Changes to Outputs.'
             else:
-                return 'Changes to Outputs'
+                return 'Changes to Outputs.'
 
     return summary
 
