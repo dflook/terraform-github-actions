@@ -226,7 +226,7 @@ Changes to Outputs:
     output = '\n'.join(compact_plan(input.splitlines()))
     assert output == expected_output
 
-def test_plan_refresh_on_changes_11():
+def test_plan_refresh_no_changes_11():
     input = """
 Refreshing Terraform state in-memory prior to plan...    
 The refreshed state will be used to calculate this plan, but will not be
