@@ -18,7 +18,7 @@ When using an action you can specify the version as:
 - The number of moved resources in a plan is summarised in the PR comment.
 
 ### Fixed
-- The plan was not being correctly extracted when it contained only resource moves, which resulted in noisy PR comments and may have caused apply operations to be aborted - Thanks to [merykozlowska](https://github.com/https://github.com/merykozlowska)!
+- The plan was not being correctly extracted when it contained only resource moves, which resulted in noisy PR comments and may have caused apply operations to be aborted - Thanks to [merykozlowska](https://github.com/merykozlowska)!
 
 ## [1.25.1] - 2022-05-10
 
