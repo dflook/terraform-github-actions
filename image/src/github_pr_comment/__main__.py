@@ -319,7 +319,9 @@ Plan changes:
             with open(approved_plan_path, 'w') as f:
                 f.write(comment.body)
             debug(f'diff {sys.argv[2]} {approved_plan_path}')
-            subprocess.run(['diff', sys.argv[2], approved_plan_path], check=False)
+            diff_complete = subprocess.run(['diff', sys.argv[2], approved_plan_path], check=False, capture_output=True, encoding='utf-8')
+            sys.stdout.write(diff_complete.stdout)
+            sys.stderr.write(diff_complete.stderr)
             output('failure-reason', 'plan-changed')
 
             step_cache['comment'] = serialize(comment)
