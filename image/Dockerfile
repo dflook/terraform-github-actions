@@ -13,7 +13,6 @@ COPY workflow_commands.sh /usr/local/workflow_commands.sh
 
 COPY tools/convert_validate_report.py /usr/local/bin/convert_validate_report
 COPY tools/convert_output.py /usr/local/bin/convert_output
-COPY tools/plan_cmp.py /usr/local/bin/plan_cmp
 COPY tools/convert_version.py /usr/local/bin/convert_version
 COPY tools/workspace_exists.py /usr/local/bin/workspace_exists
 COPY tools/compact_plan.py /usr/local/bin/compact_plan

@@ -1,6 +1,7 @@
 import hashlib
 import json
 import os
+import subprocess
 import re
 import sys
 from pathlib import Path
@@ -10,6 +11,7 @@ import canonicaljson
 
 from github_actions.api import GithubApi, IssueUrl, PrUrl
 from github_actions.cache import ActionsCache
+from github_actions.commands import output
 from github_actions.debug import debug
 from github_actions.env import GithubEnv
 from github_actions.find_pr import find_pr, WorkflowException
@@ -29,6 +31,8 @@ env = cast(GithubEnv, os.environ)
 
 github = GithubApi(env.get('GITHUB_API_URL', 'https://api.github.com'), env['GITHUB_TOKEN'])
 
+def job_markdown_ref() -> str:
+    return f'[{os.environ["GITHUB_WORKFLOW"]} #{os.environ["GITHUB_RUN_NUMBER"]}]({os.environ["GITHUB_SERVER_URL"]}/{os.environ["GITHUB_REPOSITORY"]}/actions/runs/{os.environ["GITHUB_RUN_ID"]})'
 
 def _mask_backend_config(action_inputs: PlanPrInputs) -> Optional[str]:
     bad_words = [
@@ -222,12 +226,16 @@ def get_comment(action_inputs: PlanPrInputs, backend_fingerprint: bytes) -> Terr
 
     return find_comment(github, issue_url, username, headers, legacy_description)
 
+def plan_cmp(a: str, b: str) -> bool:
+    return a.strip() == b.strip()
+
 def main() -> int:
     if len(sys.argv) < 2:
         sys.stderr.write(f'''Usage:
     STATUS="<status>" {sys.argv[0]} plan <plan.txt
     STATUS="<status>" {sys.argv[0]} status
     {sys.argv[0]} get plan.txt
+    {sys.argv[0]} approved plan.txt
 ''')
         return 1
 
@@ -280,6 +288,42 @@ def main() -> int:
 
         with open(sys.argv[2], 'w') as f:
             f.write(comment.body)
+
+    elif sys.argv[1] == 'approved':
+
+        proposed_plan = Path(sys.argv[2]).read_text()
+        if comment.comment_url is None:
+            sys.stdout.write("Plan not found on PR\n")
+            sys.stdout.write("Generate the plan first using the dflook/terraform-plan action. Alternatively set the auto_approve input to 'true'\n")
+            sys.stdout.write("If dflook/terraform-plan was used with add_github_comment set to changes-only, this may mean the plan has since changed to include changes\n")
+            output('failure-reason', 'plan-changed')
+            sys.exit(1)
+
+        # Check that plan is the same by comparing the plan text
+
+        approved_plan = comment.body
+
+        if not plan_cmp(proposed_plan, approved_plan):
+
+            sys.stdout.write("Not applying the plan - it has changed from the plan on the PR\n")
+            sys.stdout.write("The plan on the PR must be up to date. Alternatively, set the auto_approve input to 'true' to apply outdated plans\n")
+            comment = update_comment(github, comment, status=f':x: Plan not applied in {job_markdown_ref()} (Plan has changed)')
+
+            sys.stdout.write("""Performing diff between the pull request plan and the plan generated at execution time ...
+> are lines from the plan in the pull request
+< are lines from the plan generated at execution
+Plan changes:
+""")
+
+            approved_plan_path = os.path.join(os.environ['STEP_TMP_DIR'], 'approved-plan.txt')
+            with open(approved_plan_path, 'w') as f:
+                f.write(comment.body)
+            debug(f'diff {sys.argv[2]} {approved_plan_path}')
+            subprocess.run(['diff', sys.argv[2], approved_plan_path], check=False)
+            output('failure-reason', 'plan-changed')
+
+            step_cache['comment'] = serialize(comment)
+            return 1
 
     step_cache['comment'] = serialize(comment)
     return 0
