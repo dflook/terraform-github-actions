@@ -34,6 +34,9 @@ github = GithubApi(env.get('GITHUB_API_URL', 'https://api.github.com'), env['GIT
 def job_markdown_ref() -> str:
     return f'[{os.environ["GITHUB_WORKFLOW"]} #{os.environ["GITHUB_RUN_NUMBER"]}]({os.environ["GITHUB_SERVER_URL"]}/{os.environ["GITHUB_REPOSITORY"]}/actions/runs/{os.environ["GITHUB_RUN_ID"]})'
 
+def job_workflow_ref() -> str:
+    return f'Job {os.environ["GITHUB_WORKFLOW"]} #{os.environ["GITHUB_RUN_NUMBER"]} at {os.environ["GITHUB_SERVER_URL"]}/{os.environ["GITHUB_REPOSITORY"]}/actions/runs/{os.environ["GITHUB_RUN_ID"]}'
+
 def _mask_backend_config(action_inputs: PlanPrInputs) -> Optional[str]:
     bad_words = [
         'token',
@@ -229,6 +232,9 @@ def get_comment(action_inputs: PlanPrInputs, backend_fingerprint: bytes) -> Terr
 def plan_cmp(a: str, b: str) -> bool:
     return a.strip() == b.strip()
 
+def plan_hash(plan_text: str, salt: str) -> str:
+    return comment_hash(plan_text.encode(), salt)
+
 def main() -> int:
     if len(sys.argv) < 2:
         sys.stderr.write(f'''Usage:
@@ -265,11 +271,16 @@ def main() -> int:
             debug('Comment doesn\'t already exist - not creating it')
             return 0
 
+        headers = comment.headers.copy()
+        headers['plan_job_ref'] = job_workflow_ref()
+        headers['plan_hash'] = plan_hash(body, comment.issue_url)
+
         comment = update_comment(
             github,
             comment,
             description=description,
             summary=create_summary(body),
+            headers=headers,
             body=body,
             status=status
         )
