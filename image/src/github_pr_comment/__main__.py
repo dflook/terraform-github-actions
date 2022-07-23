@@ -18,7 +18,9 @@ from github_actions.find_pr import find_pr, WorkflowException
 from github_actions.inputs import PlanPrInputs
 from github_pr_comment.backend_config import complete_config
 from github_pr_comment.backend_fingerprint import fingerprint
+from github_pr_comment.cmp import plan_cmp
 from github_pr_comment.comment import find_comment, TerraformComment, update_comment, serialize, deserialize
+from github_pr_comment.hash import comment_hash, plan_hash
 from terraform.module import load_module
 
 Plan = NewType('Plan', str)
@@ -191,11 +193,6 @@ def get_pr() -> PrUrl:
 
     return cast(PrUrl, pr_url)
 
-def comment_hash(value: bytes, salt: str) -> str:
-    h = hashlib.sha256(f'dflook/terraform-github-actions/{salt}'.encode())
-    h.update(value)
-    return h.hexdigest()
-
 def get_comment(action_inputs: PlanPrInputs, backend_fingerprint: bytes) -> TerraformComment:
     if 'comment' in step_cache:
         return deserialize(step_cache['comment'])
@@ -229,11 +226,14 @@ def get_comment(action_inputs: PlanPrInputs, backend_fingerprint: bytes) -> Terr
 
     return find_comment(github, issue_url, username, headers, legacy_description)
 
-def plan_cmp(a: str, b: str) -> bool:
-    return a.strip() == b.strip()
+def is_approved(proposed_plan: str, comment: TerraformComment) -> bool:
 
-def plan_hash(plan_text: str, salt: str) -> str:
-    return comment_hash(plan_text.encode(), salt)
+    if approved_plan_hash := comment.headers.get('plan_hash'):
+        debug('Approving plan based on plan hash')
+        return plan_hash(proposed_plan, comment.issue_url) == approved_plan_hash
+    else:
+        debug('Approving plan based on plan text')
+        return plan_cmp(proposed_plan, comment.body)
 
 def main() -> int:
     if len(sys.argv) < 2:
@@ -310,11 +310,7 @@ def main() -> int:
             output('failure-reason', 'plan-changed')
             sys.exit(1)
 
-        # Check that plan is the same by comparing the plan text
-
-        approved_plan = comment.body
-
-        if not plan_cmp(proposed_plan, approved_plan):
+        if not is_approved(proposed_plan, comment):
 
             sys.stdout.write("Not applying the plan - it has changed from the plan on the PR\n")
             sys.stdout.write("The plan on the PR must be up to date. Alternatively, set the auto_approve input to 'true' to apply outdated plans\n")
