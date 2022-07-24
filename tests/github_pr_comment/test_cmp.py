@@ -13,14 +13,11 @@ def test_remove_unchanged_attributes():
     }    
     '''
 
-    expected = '''
-
-      ~ scaling_configuration {
+    expected = '''~ scaling_configuration {
           ~ seconds_until_auto_pause = 300 -> 7200
           ~ timeout_action           = "ForceApplyCapacityChange" -> "RollbackCapacityChange"
         }
-    }    
-    '''
+    }'''
 
     assert remove_unchanged_attributes(plan) == expected
 

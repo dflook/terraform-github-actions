@@ -1,5 +1,6 @@
 import hashlib
 
+from github_actions.debug import debug
 from github_pr_comment.cmp import remove_warnings, remove_unchanged_attributes
 
 
@@ -16,6 +17,8 @@ def plan_hash(plan_text: str, salt: str) -> str:
     This currently uses the plan text output.
     TODO: Change to use the plan json output
     """
+
+    debug(f'Hashing with salt {salt} and plan:\n{plan_text}')
 
     plan = remove_warnings(remove_unchanged_attributes(plan_text))
 

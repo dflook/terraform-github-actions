@@ -18,7 +18,7 @@ from github_actions.find_pr import find_pr, WorkflowException
 from github_actions.inputs import PlanPrInputs
 from github_pr_comment.backend_config import complete_config
 from github_pr_comment.backend_fingerprint import fingerprint
-from github_pr_comment.cmp import plan_cmp
+from github_pr_comment.cmp import plan_cmp, remove_warnings, remove_unchanged_attributes
 from github_pr_comment.comment import find_comment, TerraformComment, update_comment, serialize, deserialize
 from github_pr_comment.hash import comment_hash, plan_hash
 from terraform.module import load_module
@@ -166,14 +166,14 @@ def current_user(actions_env: GithubEnv) -> str:
 
 def get_issue_url(pr_url: str) -> IssueUrl:
     pr_hash = hashlib.sha256(pr_url.encode()).hexdigest()
-    cache_key = f'issue-href-cache/{pr_hash}'
+    cache_key = f'issue-url/{pr_hash}'
 
     if cache_key in job_cache:
         issue_url = job_cache[cache_key]
     else:
         response = github.get(pr_url)
         response.raise_for_status()
-        issue_url = response.json()['_links']['issue']['href'] + '/comments'
+        issue_url = response.json()['_links']['issue']['href']
 
         job_cache[cache_key] = issue_url
 
@@ -302,7 +302,7 @@ def main() -> int:
 
     elif sys.argv[1] == 'approved':
 
-        proposed_plan = Path(sys.argv[2]).read_text()
+        proposed_plan = remove_warnings(remove_unchanged_attributes(Path(sys.argv[2]).read_text().strip()))
         if comment.comment_url is None:
             sys.stdout.write("Plan not found on PR\n")
             sys.stdout.write("Generate the plan first using the dflook/terraform-plan action. Alternatively set the auto_approve input to 'true'\n")
@@ -324,9 +324,12 @@ Plan changes:
 
             approved_plan_path = os.path.join(os.environ['STEP_TMP_DIR'], 'approved-plan.txt')
             with open(approved_plan_path, 'w') as f:
-                f.write(comment.body)
-            debug(f'diff {sys.argv[2]} {approved_plan_path}')
-            diff_complete = subprocess.run(['diff', sys.argv[2], approved_plan_path], check=False, capture_output=True, encoding='utf-8')
+                f.write(comment.body.strip())
+            proposed_plan_path = os.path.join(os.environ['STEP_TMP_DIR'], 'proposed-plan.txt')
+            with open(proposed_plan_path, 'w') as f:
+                f.write(proposed_plan.strip())
+            debug(f'diff {proposed_plan_path} {approved_plan_path}')
+            diff_complete = subprocess.run(['diff', proposed_plan_path, approved_plan_path], check=False, capture_output=True, encoding='utf-8')
             sys.stdout.write(diff_complete.stdout)
             sys.stderr.write(diff_complete.stderr)
 
