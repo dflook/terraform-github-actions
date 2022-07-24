@@ -864,7 +864,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Plan
-        uses: dflook/terraform-plan@1.22.2
+        uses: dflook/terraform-plan@v1.22.2
         with:
           label: test-apply warnings (text)
           path: tests/workflows/test-apply/warnings

@@ -302,7 +302,7 @@ def main() -> int:
 
     elif sys.argv[1] == 'approved':
 
-        proposed_plan = Path(sys.argv[2]).read_text()
+        proposed_plan = Path(sys.argv[2]).read_text().strip()
         if comment.comment_url is None:
             sys.stdout.write("Plan not found on PR\n")
             sys.stdout.write("Generate the plan first using the dflook/terraform-plan action. Alternatively set the auto_approve input to 'true'\n")
