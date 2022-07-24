@@ -846,11 +846,7 @@ jobs:
 
       - name: Create warning
         run: |
-          cat >tests/workflows/test-apply/warnings/warning.tf <"EOF"
-          terraform {
-            experiments = [module_variable_optional_attrs]
-          }
-          EOF
+          mv tests/workflows/test-apply/warnings/warning.tfn tests/workflows/test-apply/warnings/warning.tf
 
       - name: Apply
         uses: ./terraform-apply
@@ -875,11 +871,7 @@ jobs:
 
       - name: Create warning
         run: |
-          cat >tests/workflows/test-apply/warnings/warning.tf <"EOF"
-          terraform {
-            experiments = [module_variable_optional_attrs]
-          }
-          EOF
+          mv tests/workflows/test-apply/warnings/warning.tfn tests/workflows/test-apply/warnings/warning.tf
 
       - name: Apply
         uses: ./terraform-apply
