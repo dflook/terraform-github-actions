@@ -324,9 +324,12 @@ Plan changes:
 
             approved_plan_path = os.path.join(os.environ['STEP_TMP_DIR'], 'approved-plan.txt')
             with open(approved_plan_path, 'w') as f:
-                f.write(comment.body)
-            debug(f'diff {sys.argv[2]} {approved_plan_path}')
-            diff_complete = subprocess.run(['diff', sys.argv[2], approved_plan_path], check=False, capture_output=True, encoding='utf-8')
+                f.write(comment.body.strip())
+            proposed_plan_path = os.path.join(os.environ['STEP_TMP_DIR'], 'proposed-plan.txt')
+            with open(proposed_plan_path, 'w') as f:
+                f.write(proposed_plan.strip())
+            debug(f'diff {proposed_plan_path} {approved_plan_path}')
+            diff_complete = subprocess.run(['diff', proposed_plan_path, approved_plan_path], check=False, capture_output=True, encoding='utf-8')
             sys.stdout.write(diff_complete.stdout)
             sys.stderr.write(diff_complete.stderr)
 

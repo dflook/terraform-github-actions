@@ -18,7 +18,7 @@ def remove_warnings(plan: str) -> str:
     plan_summary_reached = False
 
     for line in plan.splitlines():
-        if plan_summary_reached and line.startswith('Warning'):
+        if plan_summary_reached and (line.startswith('Warning') or line.startswith('╷')):
             break
 
         plan_lines.append(line)
