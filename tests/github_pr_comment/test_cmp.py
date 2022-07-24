@@ -95,3 +95,60 @@ Changes to Outputs:
     '''
 
     assert remove_warnings(plan).strip() == expected.strip()
+
+
+def test_remove_warnings_11():
+    plan = '''
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+-/+ destroy and then create replacement
+
+Terraform will perform the following actions:
+
+  # random_string.foreach["hello"] must be replaced
+-/+ resource "random_string" "foreach" {
+      ~ id          = "**********" -> (known after apply)
+      ~ length      = 10 -> 6 # forces replacement
+      ~ result      = "**********" -> (known after apply)
+        # (9 unchanged attributes hidden)
+    }
+
+Plan: 1 to add, 0 to change, 1 to destroy.
+
+Changes to Outputs:
+  ~ foreach = "dmgAfES6WH" -> (known after apply)
+╷
+│ Warning: Resource targeting is in effect
+│ 
+│ You are creating a plan with the -target option, which means that the
+│ result of this plan may not represent all of the changes requested by the
+│ current configuration.
+│ 		
+│ The -target option is not for routine use, and is provided only for
+│ exceptional situations such as recovering from errors or mistakes, or when
+│ Terraform specifically suggests to use it as part of an error message.
+╵
+    '''
+
+    expected = '''
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+-/+ destroy and then create replacement
+
+Terraform will perform the following actions:
+
+  # random_string.foreach["hello"] must be replaced
+-/+ resource "random_string" "foreach" {
+      ~ id          = "**********" -> (known after apply)
+      ~ length      = 10 -> 6 # forces replacement
+      ~ result      = "**********" -> (known after apply)
+        # (9 unchanged attributes hidden)
+    }
+
+Plan: 1 to add, 0 to change, 1 to destroy.
+
+Changes to Outputs:
+  ~ foreach = "dmgAfES6WH" -> (known after apply)
+    '''
+
+    assert remove_warnings(plan).strip() == expected.strip()
