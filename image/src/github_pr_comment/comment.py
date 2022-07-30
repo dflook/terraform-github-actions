@@ -12,6 +12,12 @@ try:
 except (ValueError, KeyError):
     collapse_threshold = 10
 
+try:
+    comment_length_threshold = int(os.environ['TF_PLAN_COMMENT_LENGTH'])
+except (ValueError, KeyError):
+    comment_length_threshold = 65000
+
+
 class TerraformComment:
     """
     Represents a Terraform PR comment
@@ -159,13 +165,16 @@ def _from_api_payload(comment: dict[str, Any]) -> Optional[TerraformComment]:
 def _to_api_payload(comment: TerraformComment) -> str:
     details_open = False
     hcl_highlighting = False
+    plan_error = False
+    plan_too_long = 'Plan exceeds comment maximum comment length, please see the link below for the full details.'
+    num_lines = len(comment.body.splitlines())
 
     if comment.body.startswith('Error'):
         details_open = True
+        plan_error = True
     elif 'Plan:' in comment.body:
         hcl_highlighting = True
-        num_lines = len(comment.body.splitlines())
-        if num_lines < collapse_threshold:
+        if num_lines < collapse_threshold or num_lines > comment_length_threshold:
             details_open = True
 
     if comment.summary is None:
@@ -179,7 +188,7 @@ def _to_api_payload(comment: TerraformComment) -> str:
 {f'<summary>{comment.summary}</summary>' if comment.summary is not None else ''}
 
 ```{'hcl' if hcl_highlighting else ''}
-{comment.body}
+{comment.body if plan_error or num_lines < comment_length_threshold else plan_too_long}
 ```
 </details>
 '''

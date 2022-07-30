@@ -285,6 +285,20 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   - Optional
   - Default: 10
 
+* `TF_PLAN_COMMENT_LENGTH`
+
+  If a terraform plan has more lines than this value, only a summary is included in the
+  PR comment with a message directing users to the workflow link for full details.
+
+  ```yaml
+  env:
+    TF_PLAN_COMMENT_LENGTH: 10000
+  ```
+
+  - Type: integer
+  - Optional
+  - Default: 65000
+
 * `TERRAFORM_PRE_RUN`
 
   A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running terraform. 
