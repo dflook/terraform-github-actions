@@ -18,7 +18,7 @@ from github_actions.find_pr import find_pr, WorkflowException
 from github_actions.inputs import PlanPrInputs
 from github_pr_comment.backend_config import complete_config
 from github_pr_comment.backend_fingerprint import fingerprint
-from github_pr_comment.cmp import plan_cmp
+from github_pr_comment.cmp import plan_cmp, remove_warnings, remove_unchanged_attributes
 from github_pr_comment.comment import find_comment, TerraformComment, update_comment, serialize, deserialize
 from github_pr_comment.hash import comment_hash, plan_hash
 from terraform.module import load_module
@@ -302,7 +302,7 @@ def main() -> int:
 
     elif sys.argv[1] == 'approved':
 
-        proposed_plan = Path(sys.argv[2]).read_text().strip()
+        proposed_plan = remove_warnings(remove_unchanged_attributes(Path(sys.argv[2]).read_text().strip()))
         if comment.comment_url is None:
             sys.stdout.write("Plan not found on PR\n")
             sys.stdout.write("Generate the plan first using the dflook/terraform-plan action. Alternatively set the auto_approve input to 'true'\n")
