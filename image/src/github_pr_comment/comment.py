@@ -21,6 +21,18 @@ class TerraformComment:
     A Terraform PR comment has a number of elements that are formatted such that they can later be parsed back into
     an equivalent TerraformComment object.
 
+    header_fields = [
+        'workspace',      # The terraform workspace
+        'backend',        # A fingerprint of the backend config
+        'label',          # The label input
+        'backend_type',   # The backend type name
+        'plan_modifier',  # Hash of plan modifiers (target/replace options)
+        'plan_job_ref',   # A text reference to the actions job that generated the plan
+        'plan_hash',      # A deterministic hash of the plan (without warnings or unchanged attributes, eventually with unmasked variables)
+        'variables_hash', # A hash of input variables and values
+        'truncated'       # If the plan text has been truncated (should not be used to approve plans, and will not show a complete diff)
+    ]
+
     """
 
     def __init__(self, *, issue_url: IssueUrl, comment_url: Optional[CommentUrl], headers: dict[str, str], description: str, summary: str, body: str, status: str):
@@ -226,7 +238,7 @@ def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers:
 
     backup_comment = None
 
-    for comment_payload in github.paged_get(issue_url):
+    for comment_payload in github.paged_get(issue_url + '/comments'):
         if comment_payload['user']['login'] != username:
             continue
 
@@ -247,8 +259,8 @@ def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers:
                 if comment.description == legacy_description and backup_comment is None:
                     debug(f'Found backup comment that matches legacy description {comment.description=}')
                     backup_comment = comment
-
-                debug(f"Didn't match comment with {comment.description=}")
+                else:
+                    debug(f"Didn't match comment with {comment.description=}")
 
     if backup_comment is not None:
         debug('Found comment matching legacy description')
@@ -301,7 +313,7 @@ def update_comment(
         response = github.patch(comment.comment_url, json={'body': _to_api_payload(new_comment)})
         response.raise_for_status()
     else:
-        response = github.post(comment.issue_url, json={'body': _to_api_payload(new_comment)})
+        response = github.post(comment.issue_url + '/comments', json={'body': _to_api_payload(new_comment)})
         response.raise_for_status()
         new_comment.comment_url = response.json()['url']
 

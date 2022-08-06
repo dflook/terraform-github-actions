@@ -118,32 +118,12 @@ else
         exit 1
     fi
 
-    if ! github_pr_comment get "$STEP_TMP_DIR/approved-plan.txt"; then
-        echo "Plan not found on PR"
-        echo "Generate the plan first using the dflook/terraform-plan action. Alternatively set the auto_approve input to 'true'"
-        echo "If dflook/terraform-plan was used with add_github_comment set to changes-only, this may mean the plan has since changed to include changes"
-
-        set_output failure-reason plan-changed
-        exit 1
-    fi
-
-    if plan_cmp "$STEP_TMP_DIR/plan.txt" "$STEP_TMP_DIR/approved-plan.txt"; then
-        apply
+    if github_pr_comment approved "$STEP_TMP_DIR/plan.txt"; then
+      apply
     else
-        echo "Not applying the plan - it has changed from the plan on the PR"
-        echo "The plan on the PR must be up to date. Alternatively, set the auto_approve input to 'true' to apply outdated plans"
-        update_status ":x: Plan not applied in $(job_markdown_ref) (Plan has changed)"
-
-        echo "Performing diff between the pull request plan and the plan generated at execution time ..."
-        echo "> are lines from the plan in the pull request"
-        echo "< are lines from the plan generated at execution"
-        echo "Plan changes:"
-        debug_log diff "$STEP_TMP_DIR/plan.txt" "$STEP_TMP_DIR/approved-plan.txt"
-        diff "$STEP_TMP_DIR/plan.txt" "$STEP_TMP_DIR/approved-plan.txt" || true
-
-        set_output failure-reason plan-changed
-        exit 1
+      exit 1
     fi
+
 fi
 
 output
