@@ -8,9 +8,21 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.26.0` to use an exact release
-- `@v1.26` to use the latest patch release for the specific minor version
+- `@v1.27.0` to use an exact release
+- `@v1.27` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.27.0] - 2022-08-07
+
+### Added
+- [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/main/terraform-plan) and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/main/terraform-apply) now work with plans that are too large to fit in a PR comment.
+
+  If plan is too large it will be truncated in the comment, with the full plan viewable in the workflow log.
+  When [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/main/terraform-apply) aborts the apply because the plan is outdated, a partial diff will be shown in the workflow log with a link to the full plan for direct comparison.
+
+### Fixed
+- Warnings are ignored when deciding if a plan has changed and should no longer cause aborted applies if the order of the warnings changes.
+- The unchanged resource attribute count is ignored when deciding if a plan has changed and should no longer cause aborted applies with harmless provider version changes.
 
 ## [1.26.0] - 2022-05-29
 
@@ -414,6 +426,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.27.0]: https://github.com/dflook/terraform-github-actions/compare/v1.26.0...v1.27.0
 [1.26.0]: https://github.com/dflook/terraform-github-actions/compare/v1.25.1...v1.26.0
 [1.25.1]: https://github.com/dflook/terraform-github-actions/compare/v1.25.0...v1.25.1
 [1.25.0]: https://github.com/dflook/terraform-github-actions/compare/v1.24.0...v1.25.0
