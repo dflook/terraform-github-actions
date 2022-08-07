@@ -841,7 +841,7 @@ jobs:
       - name: Plan
         uses: ./terraform-plan
         with:
-          label: test-apply warnings (hash)
+          label: test-apply warnings_hash
           path: tests/workflows/test-apply/warnings
 
       - name: Create warning
@@ -851,7 +851,7 @@ jobs:
       - name: Apply
         uses: ./terraform-apply
         with:
-          label: test-apply warnings (hash)
+          label: test-apply warnings_hash
           path: tests/workflows/test-apply/warnings
 
   warnings_text:
@@ -866,7 +866,7 @@ jobs:
       - name: Plan
         uses: dflook/terraform-plan@v1.22.2
         with:
-          label: test-apply warnings (text)
+          label: test-apply warnings_text
           path: tests/workflows/test-apply/warnings
 
       - name: Create warning
@@ -876,5 +876,63 @@ jobs:
       - name: Apply
         uses: ./terraform-apply
         with:
-          label: test-apply warnings (text)
+          label: test-apply warnings_text
           path: tests/workflows/test-apply/warnings
+
+  long_plan:
+    runs-on: ubuntu-latest
+    name: Apply a plan that doesn't fit in a comment
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          label: test-apply long_plan
+          path: tests/workflows/test-apply/long_plan
+
+      - name: Apply
+        uses: ./terraform-apply
+        with:
+          label: test-apply long_plan
+          path: tests/workflows/test-apply/long_plan
+
+  long_plan_changes:
+    runs-on: ubuntu-latest
+    name: Don't apply a changed plan that doesn't fit in a comment
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          label: test-apply long_plan_changes
+          path: tests/workflows/test-apply/long_plan
+
+      - name: Apply
+        uses: ./terraform-apply
+        id: apply
+        continue-on-error: true
+        with:
+          label: test-apply long_plan_changes
+          path: tests/workflows/test-apply/long_plan
+          variables: |
+              length = 2
+
+      - name: Check failed to apply
+        run: |
+          if [[ "${{ steps.apply.outcome }}" != "failure" ]]; then
+            echo "Apply did not fail correctly"
+            exit 1
+          fi
+
+          if [[ "${{ steps.apply.outputs.failure-reason }}" != "plan-changed" ]]; then
+            echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi

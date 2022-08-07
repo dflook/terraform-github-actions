@@ -18,7 +18,7 @@ def plan_hash(plan_text: str, salt: str) -> str:
     TODO: Change to use the plan json output
     """
 
-    debug(f'Hashing with salt {salt} and plan:\n{plan_text}')
+    debug(f'Hashing with salt {salt}')
 
     plan = remove_warnings(remove_unchanged_attributes(plan_text))
 
