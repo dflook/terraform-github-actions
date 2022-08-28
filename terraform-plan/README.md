@@ -154,6 +154,14 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   - Optional
   - Default: The terraform default (10)
 
+* `refresh`
+
+  Synchronize the Terraform state with remote objects before checking for configuration changes, if `false` external changes will be ignored
+
+  - Type: boolean
+  - Optional
+  - Default: `true`
+
 * ~~`var`~~
 
   > :warning: **Deprecated**: Use the `variables` input instead.

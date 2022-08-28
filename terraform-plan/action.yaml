@@ -41,6 +41,10 @@ inputs:
     description: List of resources to replace if an update is required, one per line
     required: false
     default: ""
+  refresh:
+    description: Synchronize the Terraform state with remote objects before checking for configuration changes, if false external changes will be ignored.
+    required: false
+    default: "true"
   label:
     description: A friendly name for this plan
     required: false

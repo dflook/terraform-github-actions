@@ -21,6 +21,7 @@ class PlanInputs(InitInputs):
     INPUT_VAR: str
     INPUT_VAR_FILE: str
     INPUT_PARALLELISM: str
+    INPUT_REFRESH: str
 
 
 class PlanPrInputs(PlanInputs):

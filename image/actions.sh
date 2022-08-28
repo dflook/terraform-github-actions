@@ -252,9 +252,14 @@ function select-workspace() {
 function set-common-plan-args() {
     PLAN_ARGS=""
     PARALLEL_ARG=""
+    REFRESH_ARG=""
 
     if [[ "$INPUT_PARALLELISM" -ne 0 ]]; then
         PARALLEL_ARG="-parallelism=$INPUT_PARALLELISM"
+    fi
+    
+    if [[ -v INPUT_REFRESH ]]; then
+        REFRESH_ARG="-refresh=$INPUT_REFRESH"
     fi
 
     if [[ -v INPUT_TARGET ]]; then
@@ -363,11 +368,11 @@ function plan() {
     fi
 
     # shellcheck disable=SC2086
-    debug_log terraform plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT_ARG '$PLAN_ARGS'  # don't expand PLAN_ARGS
+    debug_log terraform plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PARALLEL_ARG $REFRESH_ARG $PLAN_OUT_ARG '$PLAN_ARGS'  # don't expand PLAN_ARGS
 
     set +e
     # shellcheck disable=SC2086
-    (cd "$INPUT_PATH" && terraform plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT_ARG $PLAN_ARGS) \
+    (cd "$INPUT_PATH" && terraform plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PARALLEL_ARG $REFRESH_ARG $PLAN_OUT_ARG $PLAN_ARGS) \
         2>"$STEP_TMP_DIR/terraform_plan.stderr" \
         | $TFMASK \
         | tee /dev/fd/3 "$STEP_TMP_DIR/terraform_plan.stdout" \
