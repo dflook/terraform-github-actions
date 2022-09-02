@@ -49,6 +49,10 @@ inputs:
     description: Add the plan to a GitHub PR
     required: false
     default: "true"
+  image:
+    description: Docker Image to use as the container to run the terraform command
+    required: true
+    default: "../image/Dockerfile"
 
 outputs:
   changes:
@@ -68,7 +72,7 @@ outputs:
 
 runs:
   using: docker
-  image: ../image/Dockerfile
+  image: "{{ inputs.image }}"
   entrypoint: /entrypoints/plan.sh
 
 branding:

@@ -51,6 +51,10 @@ inputs:
     description: List of resources to replace if an update is required, one per line
     required: false
     default: ""
+  image:
+    description: Docker Image to use as the container to run the terraform command
+    required: true
+    default: "../image/Dockerfile"
 
 outputs:
   text_plan_path:
@@ -64,7 +68,7 @@ outputs:
 
 runs:
   using: docker
-  image: ../image/Dockerfile
+  image: "{{ inputs.image }}"
   entrypoint: /entrypoints/apply.sh
 
 branding:

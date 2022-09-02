@@ -32,10 +32,14 @@ inputs:
     description: Limit the number of concurrent operations
     required: false
     default: "0"
+  image:
+    description: Docker Image to use as the container to run the terraform command
+    required: true
+    default: "../image/Dockerfile"
 
 runs:
   using: docker
-  image: ../image/Dockerfile
+  image: "{{ inputs.image }}"
   entrypoint: /entrypoints/destroy-workspace.sh
 
 branding:

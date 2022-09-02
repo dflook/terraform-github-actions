@@ -16,10 +16,14 @@ inputs:
   backend_config_file:
     description: Path to a backend config file
     required: false
+  image:
+    description: Docker Image to use as the container to run the terraform command
+    required: true
+    default: "../image/Dockerfile"
 
 runs:
   using: docker
-  image: ../image/Dockerfile
+  image: "{{ inputs.image }}"
   entrypoint: /entrypoints/remote-state.sh
 
 branding:

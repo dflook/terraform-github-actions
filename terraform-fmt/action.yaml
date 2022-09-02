@@ -19,10 +19,14 @@ inputs:
     description: Path to a backend config file
     required: false
     default: ""
+  image:
+    description: Docker Image to use as the container to run the terraform command
+    required: true
+    default: "../image/Dockerfile"
 
 runs:
   using: docker
-  image: ../image/Dockerfile
+  image: "{{ inputs.image }}"
   entrypoint: /entrypoints/fmt.sh
 
 branding:
