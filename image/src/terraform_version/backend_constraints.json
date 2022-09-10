@@ -1,7 +1,8 @@
 {
   "artifactory": {
     "terraform": [
-      ">=0.9.0"
+      ">=0.9.0",
+      "<1.3.0"
     ],
     "config_variables": {
       "password": [
@@ -63,6 +64,142 @@
     }
   },
   "azure": {
+    "terraform": [
+      ">=0.9.0",
+      "<1.3.0"
+    ],
+    "config_variables": {
+      "access_key": [
+        ">=0.9.0"
+      ],
+      "arm_client_id": [
+        ">=0.9.0",
+        "<=0.14.11"
+      ],
+      "arm_client_secret": [
+        ">=0.9.0",
+        "<=0.14.11"
+      ],
+      "arm_subscription_id": [
+        ">=0.9.0",
+        "<=0.14.11"
+      ],
+      "arm_tenant_id": [
+        ">=0.9.0",
+        "<=0.14.11"
+      ],
+      "client_certificate_password": [
+        ">=0.13.1"
+      ],
+      "client_certificate_path": [
+        ">=0.13.1"
+      ],
+      "client_id": [
+        ">=0.12.0"
+      ],
+      "client_secret": [
+        ">=0.12.0"
+      ],
+      "container_name": [
+        ">=0.9.0"
+      ],
+      "endpoint": [
+        ">=0.12.0"
+      ],
+      "environment": [
+        ">=0.9.0"
+      ],
+      "key": [
+        ">=0.9.0"
+      ],
+      "lease_id": [
+        ">=0.9.0",
+        "<=0.10.2"
+      ],
+      "metadata_host": [
+        ">=0.13.1"
+      ],
+      "msi_endpoint": [
+        ">=0.12.0"
+      ],
+      "resource_group_name": [
+        ">=0.9.0"
+      ],
+      "sas_token": [
+        ">=0.12.0"
+      ],
+      "snapshot": [
+        ">=0.13.0"
+      ],
+      "storage_account_name": [
+        ">=0.9.0"
+      ],
+      "subscription_id": [
+        ">=0.12.0"
+      ],
+      "tenant_id": [
+        ">=0.12.0"
+      ],
+      "use_azuread_auth": [
+        ">=0.15.0"
+      ],
+      "use_microsoft_graph": [
+        ">=1.1.0"
+      ],
+      "use_msi": [
+        ">=0.12.0"
+      ]
+    },
+    "environment_variables": {
+      "ARM_ACCESS_KEY": [
+        ">=0.9.0"
+      ],
+      "ARM_CLIENT_CERTIFICATE_PASSWORD": [
+        ">=0.13.1"
+      ],
+      "ARM_CLIENT_CERTIFICATE_PATH": [
+        ">=0.13.1"
+      ],
+      "ARM_CLIENT_ID": [
+        ">=0.9.0"
+      ],
+      "ARM_CLIENT_SECRET": [
+        ">=0.9.0"
+      ],
+      "ARM_ENDPOINT": [
+        ">=0.12.0"
+      ],
+      "ARM_ENVIRONMENT": [
+        ">=0.9.0"
+      ],
+      "ARM_MSI_ENDPOINT": [
+        ">=0.12.0"
+      ],
+      "ARM_SAS_TOKEN": [
+        ">=0.12.0"
+      ],
+      "ARM_SNAPSHOT": [
+        ">=0.13.0"
+      ],
+      "ARM_SUBSCRIPTION_ID": [
+        ">=0.9.0"
+      ],
+      "ARM_TENANT_ID": [
+        ">=0.9.0"
+      ],
+      "ARM_USE_AZUREAD": [
+        ">=0.15.0"
+      ],
+      "ARM_USE_MSI": [
+        ">=0.12.0"
+      ],
+      "ARM_LEASE_ID": [
+        ">=0.9.0",
+        "<=0.10.2"
+      ]
+    }
+  },
+  "azurerm": {
     "terraform": [
       ">=0.9.0"
     ],
@@ -304,7 +441,8 @@
   },
   "etcd": {
     "terraform": [
-      ">=0.9.0"
+      ">=0.9.0",
+      "<1.3.0"
     ],
     "config_variables": {
       "endpoints": [
@@ -323,7 +461,8 @@
   },
   "etcdv3": {
     "terraform": [
-      ">=0.10.8"
+      ">=0.10.8",
+      "<1.3.0"
     ],
     "config_variables": {
       "cacert_path": [
@@ -617,7 +756,8 @@
   },
   "manta": {
     "terraform": [
-      ">=0.9.0"
+      ">=0.9.0",
+      "<1.3.0"
     ],
     "config_variables": {
       "account": [
@@ -973,7 +1113,8 @@
   },
   "swift": {
     "terraform": [
-      ">=0.9.0"
+      ">=0.9.0",
+      "<1.3.0"
     ],
     "config_variables": {
       "allow_reauth": [

@@ -59,9 +59,6 @@ def get_backend_constraints(module: TerraformModule, backend_config_vars: dict[s
     backend_type, config = backend_config(module)
     backend_constraints = json.loads(importlib.resources.read_binary('terraform_version', 'backend_constraints.json'))
 
-    if backend_type == 'azurerm':
-        backend_type = 'azure'
-
     if backend_type not in backend_constraints:
         return []
 
