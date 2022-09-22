@@ -40,6 +40,8 @@ class TerraformCloudApi:
 
         headers['Authorization'] = f'Bearer {self._token}'
 
+        path = path.removeprefix('/')
+
         response = session.request(method, f'https://{self._host}/api/v2/{path}', headers=headers, **kwargs)
 
         debug(f'terraform cloud request url={response.url}')
