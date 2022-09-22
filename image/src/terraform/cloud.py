@@ -52,6 +52,7 @@ class TerraformCloudApi:
             debug(str(response.content))
             raise CloudException('Terraform cloud rate limit reached', response)
         elif not response.ok:
+            debug(response.content.decode())
             raise CloudException(f'Terraform cloud unexpected response code {response.status_code}', response)
 
         return response
