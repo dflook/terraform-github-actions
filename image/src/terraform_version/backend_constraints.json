@@ -425,6 +425,9 @@
       ],
       "secret_key": [
         ">=0.12.21"
+      ],
+      "accelerate": [
+        ">=1.3.0"
       ]
     },
     "environment_variables": {
