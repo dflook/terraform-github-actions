@@ -40,6 +40,8 @@ class TerraformCloudApi:
 
         headers['Authorization'] = f'Bearer {self._token}'
 
+        path = path.removeprefix('/')
+
         response = session.request(method, f'https://{self._host}/api/v2/{path}', headers=headers, **kwargs)
 
         debug(f'terraform cloud request url={response.url}')
@@ -52,6 +54,7 @@ class TerraformCloudApi:
             debug(str(response.content))
             raise CloudException('Terraform cloud rate limit reached', response)
         elif not response.ok:
+            debug(response.content.decode())
             raise CloudException(f'Terraform cloud unexpected response code {response.status_code}', response)
 
         return response
