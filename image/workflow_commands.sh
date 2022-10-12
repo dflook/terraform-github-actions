@@ -60,7 +60,11 @@ function set_output() {
     name="$1"
     value="${*:2}"
 
-    echo "::set-output name=${name}::${value}"
+    if [[ -f "$GITHUB_OUTPUT" ]]; then
+      echo "${name}=${value}" >> "$GITHUB_OUTPUT"
+    else
+      echo "::set-output name=${name}::${value}"
+    fi
 }
 
 ##

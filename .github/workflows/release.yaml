@@ -45,7 +45,7 @@ jobs:
           docker tag dflook/terraform-github-actions danielflook/terraform-github-actions:$RELEASE_TAG
           docker push --quiet danielflook/terraform-github-actions:$RELEASE_TAG
 
-          echo "::set-output name=digest::$(docker image inspect --format="{{index .RepoDigests 0}}" "danielflook/terraform-github-actions:$RELEASE_TAG")"
+          echo "digest=$(docker image inspect --format="{{index .RepoDigests 0}}" "danielflook/terraform-github-actions:$RELEASE_TAG")" >> "$GITHUB_OUTPUT"
 
       - name: Release actions
         run: |

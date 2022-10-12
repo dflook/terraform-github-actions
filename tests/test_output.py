@@ -1,5 +1,5 @@
 import json
-from convert_output import convert_to_github
+from convert_output import convert_to_github, Mask, Output
 
 
 def test_string():
@@ -17,9 +17,9 @@ def test_string():
     }
 
     expected_output = [
-        '::add-mask::abc',
-        '::set-output name=sensitive_string::abc',
-        '::set-output name=string::xyz'
+        Mask(value='abc'),
+        Output(name='sensitive_string', value='abc'),
+        Output(name='string', value='xyz')
     ]
 
     output = list(convert_to_github(input))
@@ -40,11 +40,9 @@ def test_number():
         }
     }
 
-    expected_output = [
-        '::set-output name=int::123',
-        '::add-mask::123',
-        '::set-output name=sensitive_int::123'
-    ]
+    expected_output = [Output(name='int', value='123'),
+ Mask(value='123'),
+ Output(name='sensitive_int', value='123')]
 
     output = list(convert_to_github(input))
     assert output == expected_output
@@ -60,7 +58,7 @@ def test_bool():
     }
 
     expected_output = [
-        '::set-output name=bool::true'
+        Output(name='bool', value='true')
     ]
 
     output = list(convert_to_github(input))
@@ -99,9 +97,9 @@ def test_tuple():
     }
 
     expected_output = [
-        '::set-output name=my_tuple::["one","two"]',
-        '::add-mask::["one","two"]',
-        '::set-output name=my_sensitive_tuple::["one","two"]'
+        Output(name='my_tuple', value='["one","two"]'),
+        Mask(value='["one","two"]'),
+        Output(name='my_sensitive_tuple', value='["one","two"]')
     ]
 
     output = list(convert_to_github(input))
@@ -134,9 +132,9 @@ def test_list():
     }
 
     expected_output = [
-        '::set-output name=my_list::["one","two"]',
-        '::add-mask::["one","two"]',
-        '::set-output name=my_sensitive_list::["one","two"]'
+        Output(name='my_list', value='["one","two"]'),
+        Mask(value='["one","two"]'),
+        Output(name='my_sensitive_list', value='["one","two"]')
     ]
 
     output = list(convert_to_github(input))
@@ -172,9 +170,10 @@ def test_map():
     }
 
     expected_output = [
-        '::set-output name=my_map::{"first":"one","second":"two","third":"3"}',
-        '::add-mask::{"first":"one","second":"two","third":3}',
-        '::set-output name=my_sensitive_map::{"first":"one","second":"two","third":3}'
+        Output(name='my_map', value='{"first":"one","second":"two","third":"3"}'),
+        Mask(value='{"first":"one","second":"two","third":3}'),
+        Output(name='my_sensitive_map',
+               value='{"first":"one","second":"two","third":3}')
     ]
 
     output = list(convert_to_github(input))
@@ -217,9 +216,10 @@ def test_object():
     }
 
     expected_output = [
-        '::set-output name=my_object::{"first":"one","second":"two","third":3}',
-        '::add-mask::{"first":"one","second":"two","third":3}',
-        '::set-output name=my_sensitive_object::{"first":"one","second":"two","third":3}'
+        Output(name='my_object', value='{"first":"one","second":"two","third":3}'),
+        Mask(value='{"first":"one","second":"two","third":3}'),
+        Output(name='my_sensitive_object',
+               value='{"first":"one","second":"two","third":3}')
     ]
 
     output = list(convert_to_github(input))
@@ -252,9 +252,9 @@ def test_set():
     }
 
     expected_output = [
-        '::set-output name=my_set::["one","two"]',
-        '::add-mask::["one","two"]',
-        '::set-output name=my_sensitive_set::["one","two"]'
+        Output(name='my_set', value='["one","two"]'),
+        Mask(value='["one","two"]'),
+        Output(name='my_sensitive_set', value='["one","two"]')
     ]
 
     output = list(convert_to_github(input))
@@ -300,7 +300,7 @@ def test_compound():
     }, separators=(',', ':'))
 
     expected_output = [
-        '::set-output name=my_compound_output::' + expected_json
+        Output('my_compound_output', expected_json)
     ]
 
     output = list(convert_to_github(input))
