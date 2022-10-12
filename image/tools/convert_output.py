@@ -2,23 +2,33 @@
 
 import json
 import sys
-from typing import Dict, Iterable
+from dataclasses import dataclass
+from typing import Dict, Iterable, Union
+from github_actions.commands import output, mask
 
+@dataclass
+class Mask:
+    value: str
 
-def convert_to_github(outputs: Dict) -> Iterable[str]:
+@dataclass
+class Output:
+    name: str
+    value: str
+
+def convert_to_github(outputs: Dict) -> Iterable[Union[Mask, Output]]:
     for name, output in outputs.items():
 
         if isinstance(output['type'], str):
             # primitive type
 
             if output['sensitive'] is True:
-                yield f'::add-mask::{str(output["value"])}'
+                yield Mask(str(output["value"]))
 
             if output['type'] in ['string', 'number']:
-                yield f'::set-output name={name}::{output["value"]}'
+                yield Output(name, str(output["value"]))
 
             if output['type'] == 'bool':
-                yield f'::set-output name={name}::{json.dumps(output["value"])}'
+                yield Output(name, json.dumps(output["value"]))
 
         else:
             # complex type
@@ -26,9 +36,9 @@ def convert_to_github(outputs: Dict) -> Iterable[str]:
             value = json.dumps(output["value"], separators=(",", ":"))
 
             if output['sensitive'] is True:
-                yield f'::add-mask::{value}'
+                yield Mask(value)
 
-            yield f'::set-output name={name}::{value}'
+            yield Output(name, str(value))
 
 if __name__ == '__main__':
 
@@ -41,7 +51,10 @@ if __name__ == '__main__':
         sys.stderr.write(input_string)
         raise
 
-    for line in convert_to_github(outputs):
-        print(line)
+    for command in convert_to_github(outputs):
+        if isinstance(command, Output):
+            output(command.name, command.value)
+        elif isinstance(command, Mask):
+            mask(command.value)
 
     exit(0)

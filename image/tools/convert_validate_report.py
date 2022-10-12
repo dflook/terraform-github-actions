@@ -4,6 +4,7 @@ import json
 import os.path
 import sys
 from typing import Dict, Iterable
+from github_actions.commands import output
 
 
 def relative_to_base(file_path: str, base_path: str):
@@ -51,5 +52,5 @@ if __name__ == '__main__':
     if report.get('valid', False) is True:
         exit(0)
     else:
-        print('::set-output name=failure-reason::validate-failed')
+        output('failure-reason', 'validate-failed')
         exit(1)

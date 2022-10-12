@@ -43,7 +43,7 @@ jobs:
           docker push --quiet danielflook/terraform-github-actions-base:latest
 
           IMAGE_DIGEST="$(docker image inspect --format="{{index .RepoDigests 0}}" "danielflook/terraform-github-actions-base:latest" | sed 's/.*@//')"
-          echo "::set-output name=digest::$IMAGE_DIGEST"
+          echo "digest=$IMAGE_DIGEST" >> "$GITHUB_OUTPUT"
 
           docker tag dflook/terraform-github-actions-base danielflook/terraform-github-actions-base:$GITHUB_RUN_ID
           docker push --quiet danielflook/terraform-github-actions-base:$GITHUB_RUN_ID
