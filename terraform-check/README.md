@@ -215,7 +215,7 @@ jobs:
     name: Check for drift of terraform configuration
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Check
         uses: dflook/terraform-check@v1
@@ -238,7 +238,7 @@ jobs:
     name: Check for drift of terraform configuration
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Check
         uses: dflook/terraform-check@v1

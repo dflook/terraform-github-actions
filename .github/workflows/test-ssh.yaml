@@ -12,7 +12,7 @@ jobs:
     name: Git module source
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Plan
         uses: ./terraform-plan
@@ -43,7 +43,7 @@ jobs:
     name: Git module source with no key
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Plan
         uses: ./terraform-plan

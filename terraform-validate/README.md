@@ -169,7 +169,7 @@ jobs:
     name: Validate terraform
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: terraform validate
         uses: dflook/terraform-validate@v1
@@ -188,7 +188,7 @@ jobs:
     name: Validate terraform
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: terraform validate
         uses: dflook/terraform-validate@v1

@@ -13,7 +13,7 @@ jobs:
         tf_version: ['0.13', '1.0']
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Create a new workspace with no existing workspaces
         uses: ./terraform-new-workspace

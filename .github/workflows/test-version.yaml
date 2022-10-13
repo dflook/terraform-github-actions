@@ -9,7 +9,7 @@ jobs:
     name: specific required_version
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Test terraform-version
         uses: ./terraform-version
@@ -32,7 +32,7 @@ jobs:
     name: required_version range
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Test terraform-version
         uses: ./terraform-version
@@ -55,7 +55,7 @@ jobs:
     name: tfswitch
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Test terraform-version
         uses: ./terraform-version
@@ -78,7 +78,7 @@ jobs:
     name: tfenv
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Test terraform-version
         uses: ./terraform-version
@@ -101,7 +101,7 @@ jobs:
     name: asdf
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Test terraform-version
         uses: ./terraform-version
@@ -124,7 +124,7 @@ jobs:
     name: TERRAFORM_VERSION range
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Test terraform-version
         uses: ./terraform-version
@@ -149,7 +149,7 @@ jobs:
     name: TFC Workspace
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Create workspace
         uses: ./terraform-new-workspace
@@ -189,7 +189,7 @@ jobs:
     name: TFC Cloud Configuration
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Create workspace
         uses: ./terraform-new-workspace
@@ -231,7 +231,7 @@ jobs:
     name: Local State file
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Test terraform-version
         uses: ./terraform-version
@@ -254,7 +254,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Apply default workspace
         uses: ./terraform-apply
@@ -385,7 +385,7 @@ jobs:
     name: latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Test terraform-version
         uses: ./terraform-version
@@ -408,7 +408,7 @@ jobs:
     name: provider versions
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Test terraform-version with 0.12
         uses: ./terraform-version
