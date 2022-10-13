@@ -189,7 +189,7 @@ jobs:
     name: Print the required terraform  and provider versions
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Test terraform-version
         uses: dflook/terraform-version@v1

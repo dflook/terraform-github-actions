@@ -101,7 +101,7 @@ jobs:
     name: Check terraform file are formatted correctly
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: terraform fmt
         uses: dflook/terraform-fmt-check@v1
@@ -122,7 +122,7 @@ jobs:
     name: Check terraform file are formatted correctly
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: terraform fmt
         uses: dflook/terraform-fmt-check@v1

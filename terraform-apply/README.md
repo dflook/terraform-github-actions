@@ -376,7 +376,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: terraform apply
         uses: dflook/terraform-apply@v1
@@ -403,7 +403,7 @@ jobs:
     name: Apply terraform
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: terraform apply
         uses: dflook/terraform-apply@v1
@@ -430,7 +430,7 @@ jobs:
     name: Rotate certs
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: terraform apply
         uses: dflook/terraform-apply@v1
@@ -463,7 +463,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: refs/pull/${{ github.event.issue.number }}/merge
 
@@ -491,7 +491,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: terraform apply
         uses: dflook/terraform-apply@v1

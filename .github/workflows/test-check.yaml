@@ -9,7 +9,7 @@ jobs:
     name: No changes
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Check
         uses: ./terraform-check
@@ -29,7 +29,7 @@ jobs:
     name: Changes
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Check
         uses: ./terraform-check

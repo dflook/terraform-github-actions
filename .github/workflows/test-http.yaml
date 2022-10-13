@@ -17,7 +17,7 @@ jobs:
         github.com/dflook/terraform-github-actions-dev.git=dflook:${{ secrets.USER_GITHUB_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Apply
         uses: ./terraform-apply
@@ -43,7 +43,7 @@ jobs:
         github.com/dflook=dflook:${{ secrets.USER_GITHUB_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Apply
         uses: ./terraform-apply
@@ -69,7 +69,7 @@ jobs:
         github.com=dflook:${{ secrets.USER_GITHUB_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Apply
         uses: ./terraform-apply
@@ -90,7 +90,7 @@ jobs:
     name: git+http no creds
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Apply
         uses: ./terraform-apply
@@ -115,7 +115,7 @@ jobs:
         5qcb7mjppk.execute-api.eu-west-2.amazonaws.com=dflook:hello
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Apply
         uses: ./terraform-apply
@@ -136,7 +136,7 @@ jobs:
     name: http module source with no credentials
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Apply
         uses: ./terraform-apply

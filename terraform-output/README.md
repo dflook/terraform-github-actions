@@ -177,7 +177,7 @@ jobs:
     name: Show the terraformed hostname
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Get outputs
         uses: dflook/terraform-output@v1
@@ -211,7 +211,7 @@ jobs:
     name: An example of workflow expressions with terraform output
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Get outputs
         uses: dflook/terraform-output@v1

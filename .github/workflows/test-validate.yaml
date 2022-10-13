@@ -9,7 +9,7 @@ jobs:
     name: valid
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: validate
         uses: ./terraform-validate
@@ -29,7 +29,7 @@ jobs:
     name: Invalid terraform configuration
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: validate
         uses: ./terraform-validate
@@ -55,7 +55,7 @@ jobs:
     name: Use workspace name during validation
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: validate prod
         uses: ./terraform-validate
@@ -93,7 +93,7 @@ jobs:
     name: Use workspace name during validation
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: validate prod
         uses: ./terraform-validate
@@ -106,7 +106,7 @@ jobs:
     name: Validate with unterminated string
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: validate
         uses: ./terraform-validate

@@ -148,7 +148,7 @@ jobs:
     name: Run integration tests
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Use branch workspace
         uses: dflook/terraform-new-workspace@v1
