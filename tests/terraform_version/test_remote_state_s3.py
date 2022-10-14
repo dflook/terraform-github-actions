@@ -5,8 +5,7 @@ import subprocess
 import hcl2
 import pytest
 
-from terraform.download import download_version, get_executable
-from terraform.module import load_module
+from terraform.download import get_executable
 from terraform.versions import Version, apply_constraints
 from terraform_version.remote_state import try_guess_state_version, get_backend_constraints
 
