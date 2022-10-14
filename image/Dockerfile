@@ -1,11 +1,21 @@
 FROM danielflook/terraform-github-actions-base:latest
 
+RUN apt-get update  \
+ && apt-get install --no-install-recommends -y \
+    gpg \
+    gpg-agent \
+    dirmngr \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN gpg --recv-keys C874011F0AB405110D02105534365D9472D7468F \
+ && echo "C874011F0AB405110D02105534365D9472D7468F:6:" | gpg --import-ownertrust
+
 COPY src/ /tmp/src/
 COPY setup.py /tmp
 RUN pip install /tmp \
  && rm -rf /tmp/src /tmp/setup.py \
- && TERRAFORM_BIN_DIR="/usr/local/bin" terraform-version 0.9.0 \
- && TERRAFORM_BIN_DIR="/usr/local/bin" terraform-version 0.12.0
+ && TERRAFORM_BIN_CACHE_DIR="/var/terraform" TERRAFORM_BIN_CHECKSUM_DIR="/var/terraform" terraform-version 0.9.0 \
+ && TERRAFORM_BIN_CACHE_DIR="/var/terraform" TERRAFORM_BIN_CHECKSUM_DIR="/var/terraform" terraform-version 0.12.0
 
 COPY entrypoints/ /entrypoints/
 COPY actions.sh /usr/local/actions.sh
