@@ -92,8 +92,6 @@ def switch(version: Version) -> None:
     The version will be downloaded if it doesn't already exist.
     """
 
-    sys.stdout.write(f'Switching to Terraform v{version}\n')
-
     target_path = get_executable(version)
 
     link_path = '/usr/local/bin/terraform'
@@ -101,7 +99,7 @@ def switch(version: Version) -> None:
         os.remove(link_path)
 
     os.symlink(target_path, link_path)
-
+    sys.stdout.write(f'Switched to Terraform v{version}\n')
 
 def main() -> None:
     """Entrypoint for terraform-version."""

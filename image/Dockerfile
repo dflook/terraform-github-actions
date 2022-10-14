@@ -14,6 +14,7 @@ COPY src/ /tmp/src/
 COPY setup.py /tmp
 RUN pip install /tmp \
  && rm -rf /tmp/src /tmp/setup.py \
+ && TERRAFORM_BIN_CHECKSUM_DIR="/var/terraform" get-terraform-checksums \
  && TERRAFORM_BIN_CACHE_DIR="/var/terraform" TERRAFORM_BIN_CHECKSUM_DIR="/var/terraform" terraform-version 0.9.0 \
  && TERRAFORM_BIN_CACHE_DIR="/var/terraform" TERRAFORM_BIN_CHECKSUM_DIR="/var/terraform" terraform-version 0.12.0
 
