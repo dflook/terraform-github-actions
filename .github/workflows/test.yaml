@@ -30,4 +30,4 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           GITHUB_TOKEN: No
         run: |
-           PYTHONPATH=image/tools:image/src pytest tests
+           GNUPGHOME=$HOME/.gnupg PYTHONPATH=image/tools:image/src pytest tests
