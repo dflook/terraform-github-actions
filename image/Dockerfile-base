@@ -25,6 +25,9 @@ RUN apt-get update  \
     python3-requests \
     python3-pip \
     wget \
+    gpg \
+    gpg-agent \
+    dirmngr \    
  && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p $TF_PLUGIN_CACHE_DIR
