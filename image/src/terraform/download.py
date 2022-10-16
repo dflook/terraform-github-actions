@@ -63,9 +63,10 @@ def get_checksums(version: Version, checksum_dir: Path) -> Path:
     checksums_path = Path(checksum_dir, f'terraform_{version}_SHA256SUMS')
     signature_path = Path(checksum_dir, f'terraform_{version}_SHA256SUMS.72D7468F.sig')
 
+    os.makedirs(checksum_dir, exist_ok=True)
+
     if not signature_path.exists():
         debug('Downloading signature')
-        os.makedirs(checksum_dir, exist_ok=True)
         urlretrieve(
             f'https://releases.hashicorp.com/terraform/{version}/terraform_{version}_SHA256SUMS.72D7468F.sig',
             signature_path
@@ -109,7 +110,7 @@ def download_archive(version: Version, cache_dir: Path) -> Tuple[Path, str]:
     return cache_dir, f'terraform_{version}_{get_platform()}_{get_arch()}.zip'
 
 
-def verify_archive(version: Version, cache_dir: Path, checksum_dir: Path) -> None:
+def verify_archive(version: Version, cache_dir: Path, archive_name: str, checksum_dir: Path) -> None:
     """
     Verify terraform zip archive
 
@@ -118,10 +119,17 @@ def verify_archive(version: Version, cache_dir: Path, checksum_dir: Path) -> Non
     :param checksum_dir: The directory the checksum file can be found in
     """
 
+    def get_checksum():
+        for line in Path(checksum_dir, f'terraform_{version}_SHA256SUMS').read_bytes().splitlines():
+            if archive_name.encode() in line:
+                return line + b'\n'
+        raise RuntimeError('Checksum not found')
+
     subprocess.run(
-        ['shasum', '-a', '256', '-c', Path(checksum_dir, f'terraform_{version}_SHA256SUMS').absolute(), '--ignore-missing'],
+        ['shasum', '--algorithm', '256', '--check', '--strict'],
         check=True,
-        cwd=cache_dir
+        cwd=cache_dir,
+        input=get_checksum()
     )
 
 
@@ -163,7 +171,7 @@ def get_executable(version: Version) -> Path:
 
     get_checksums(version, checksum_dir)
     cache_dir, archive_name = get_archive(version, cache_dirs)
-    verify_archive(version, cache_dir, checksum_dir)
+    verify_archive(version, cache_dir, archive_name, checksum_dir)
 
     executable_dir = os.environ.get('STEP_TEMP_DIR', f'/tmp/terraform_{version}')
 

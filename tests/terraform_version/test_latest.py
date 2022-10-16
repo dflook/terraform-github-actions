@@ -10,7 +10,8 @@ def test_latest():
         Version('1.1.9'),
         Version('1.1.7'),
         Version('1.1.0-alpha20210811'),
-        Version('1.2.0-alpha20225555')
+        Version('1.2.0-alpha20225555'),
+        Version('1.2.0-alpha-20220328')
     ]
 
     assert earliest_version(versions) == Version('0.13.6-alpha-23')
