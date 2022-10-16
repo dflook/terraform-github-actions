@@ -8,3 +8,9 @@ def debug(msg: str) -> None:
 
     for line in msg.splitlines():
         sys.stderr.write(f'::debug::{line}\n')
+
+def warning(msg: str) -> None:
+    """Add a warning message to the workflow log."""
+
+    for line in msg.splitlines():
+        sys.stderr.write(f'::warning::{line}\n')
