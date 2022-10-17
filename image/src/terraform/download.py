@@ -66,16 +66,18 @@ def get_checksums(version: Version, checksum_dir: Path) -> Path:
     os.makedirs(checksum_dir, exist_ok=True)
 
     if not signature_path.exists():
-        debug('Downloading signature')
+        signature_url = f'https://releases.hashicorp.com/terraform/{version}/terraform_{version}_SHA256SUMS.72D7468F.sig'
+        debug(f'Downloading signature from {signature_url}')
         urlretrieve(
-            f'https://releases.hashicorp.com/terraform/{version}/terraform_{version}_SHA256SUMS.72D7468F.sig',
+            signature_url,
             signature_path
         )
 
     if not checksums_path.exists():
-        debug('Downloading checksums')
+        checksum_url = f'https://releases.hashicorp.com/terraform/{version}/terraform_{version}_SHA256SUMS'
+        debug(f'Downloading checksums from {checksum_url}')
         urlretrieve(
-            f'https://releases.hashicorp.com/terraform/{version}/terraform_{version}_SHA256SUMS',
+            checksum_url,
             checksums_path
         )
 
@@ -100,10 +102,11 @@ def download_archive(version: Version, cache_dir: Path) -> Tuple[Path, str]:
     if os.path.exists(archive_path):
         return cache_dir, f'terraform_{version}_{get_platform()}_{get_arch()}.zip'
 
-    debug('Downloading archive')
+    archive_url = f'https://releases.hashicorp.com/terraform/{version}/terraform_{version}_{get_platform()}_{get_arch()}.zip'
+    debug(f'Downloading archive from {archive_url}')
     os.makedirs(cache_dir, exist_ok=True)
     urlretrieve(
-        f'https://releases.hashicorp.com/terraform/{version}/terraform_{version}_{get_platform()}_{get_arch()}.zip',
+        archive_url,
         archive_path
     )
 
