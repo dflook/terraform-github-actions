@@ -14,7 +14,8 @@ setup(
             'github_pr_comment=github_pr_comment.__main__:main',
             'plan_summary=plan_summary.__main__:main',
             'terraform-cloud-state=terraform_cloud_state.__main__:main',
-            'remote-run-id=terraform_cloud_state.__main__:remote_run_id'
+            'remote-run-id=terraform_cloud_state.__main__:remote_run_id',
+            'get-terraform-checksums=terraform_version.get_checksums:main'
         ]
     },
     install_requires=[

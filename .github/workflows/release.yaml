@@ -31,6 +31,7 @@ jobs:
           BASE_DIGEST="$(docker image inspect --format="{{index .RepoDigests 0}}" "danielflook/terraform-github-actions-base:latest" | sed 's/.*@//')"
 
           docker build --tag dflook/terraform-github-actions \
+            --build-arg FETCH_CHECKSUMS=yes \
             --label org.opencontainers.image.created="$(date '+%Y-%m-%dT%H:%M:%S%z')" \
             --label org.opencontainers.image.source="https://github.com/${{ github.repository }}" \
             --label org.opencontainers.image.revision="${{ github.sha }}" \

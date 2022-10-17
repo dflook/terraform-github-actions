@@ -23,7 +23,7 @@ class Version:
 
     def __init__(self, version: str):
 
-        match = re.match(r'(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?:-(?P<pre_release>[\d\w]+))?', version)
+        match = re.match(r'(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?:-(?P<pre_release>[\d\w-]+))?', version)
         if not match:
             raise ValueError(f'Not a valid version {version}')
 
@@ -214,7 +214,7 @@ def get_terraform_versions() -> Iterable[Version]:
     response = session.get('https://releases.hashicorp.com/terraform/')
     response.raise_for_status()
 
-    version_regex = re.compile(br'/(\d+\.\d+\.\d+(-[\d\w]+)?)')
+    version_regex = re.compile(br'/(\d+\.\d+\.\d+(-[\d\w-]+)?)')
 
     for version in version_regex.finditer(response.content):
         yield Version(version.group(1).decode())
