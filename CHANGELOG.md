@@ -12,7 +12,7 @@ When using an action you can specify the version as:
 - `@v1.28` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
 
-## [1.28.1] - 2022-10-12
+## [1.28.1] - 2022-10-17
 
 ### Fixed
 - `GITHUB_OUTPUT: unbound variable` errors with v1.28.0 on self-hosted runners with older runner versions.
