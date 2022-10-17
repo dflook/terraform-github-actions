@@ -62,7 +62,9 @@ jobs:
               echo "Releasing dflook/$action@$RELEASE_TAG"
 
               rsync -r $GITHUB_WORKSPACE/$action/ $HOME/$action
-              cp $GITHUB_WORKSPACE/.github/FUNDING.yml $HOME/$action/.github
+              rm -rf $HOME/$action/.github
+              mkdir $HOME/$action/.github
+              cp $GITHUB_WORKSPACE/.github/FUNDING.yml $HOME/$action/.github/FUNDING.yml
 
               sed -i "s|../image/Dockerfile|docker://${{ steps.image_build.outputs.digest }}|" $HOME/$action/action.yaml
 
