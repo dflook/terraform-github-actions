@@ -116,10 +116,14 @@ def verify_archive(version: Version, cache_dir: Path, archive_name: str, checksu
 
     :param version: The version of terraform to verify
     :param cache_dir: The directory the archive is in
+    :param archive_name: The name of the archive
     :param checksum_dir: The directory the checksum file can be found in
     """
 
     def get_checksum():
+        """
+        Get the checksum for specified archive from the checksums file
+        """
         for line in Path(checksum_dir, f'terraform_{version}_SHA256SUMS').read_bytes().splitlines():
             if archive_name.encode() in line:
                 return line + b'\n'
