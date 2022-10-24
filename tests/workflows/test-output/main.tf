@@ -25,6 +25,23 @@ output "my_sensitive_string" {
   sensitive = true
 }
 
+output "my_multiline_string" {
+  value = <<EOF
+mcnbcvnxdgjt
+iyriuytifdcv
+pydrtdxfgcvj
+EOF
+}
+
+output "my_sensitive_multiline_string" {
+  value = <<EOF
+qowicznobnad
+trewptonopce
+zxicvbnoberg
+EOF
+  sensitive = true
+}
+
 output "my_bool" {
   value = true
 }
