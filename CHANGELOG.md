@@ -8,9 +8,14 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.29.0` to use an exact release
+- `@v1.29.1` to use an exact release
 - `@v1.29` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.29.1] - 2022-10-24
+
+### Fixed
+- Multiline string terraform outputs are now properly set as action outputs, and properly masked in the workflow log. 
 
 ## [1.29.0] - 2022-10-17
 
@@ -444,6 +449,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.29.1]: https://github.com/dflook/terraform-github-actions/compare/v1.29.0...v1.29.1
 [1.29.0]: https://github.com/dflook/terraform-github-actions/compare/v1.28.1...v1.29.0
 [1.28.1]: https://github.com/dflook/terraform-github-actions/compare/v1.28.0...v1.28.1
 [1.28.0]: https://github.com/dflook/terraform-github-actions/compare/v1.27.0...v1.28.0
