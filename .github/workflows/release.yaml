@@ -50,9 +50,9 @@ jobs:
 
       - name: Release actions
         run: |
-          RELEASE_TAG="${{ github.event.release.tag_name }}"
-          major=$(echo $RELEASE_TAG | cut -d. -f1)
-          minor=$(echo $RELEASE_TAG | cut -d. -f2)
+          export RELEASE_TAG="${{ github.event.release.tag_name }}"
+          export major=$(echo $RELEASE_TAG | cut -d. -f1)
+          export minor=$(echo $RELEASE_TAG | cut -d. -f2)
 
           git config --global user.name "Daniel Flook"
           git config --global user.email "daniel@flook.org"
