@@ -684,6 +684,50 @@ jobs:
             exit 1
           fi
 
+  apply_fine_grained_pat:
+    runs-on: ubuntu-latest
+    name: Apply using a fine grained personal access token
+    env:
+      GITHUB_TOKEN: ${{ secrets.FINE_PAT_GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          label: test-apply apply_fine_grained_pat
+          path: tests/workflows/test-apply/changes
+
+      - name: Apply
+        uses: ./terraform-apply
+        id: output
+        with:
+          label: test-apply apply_fine_grained_pat
+          path: tests/workflows/test-apply/changes
+
+      - name: Verify outputs
+        run: |
+          if [[ "${{ steps.output.outputs.output_string }}" != "the_string" ]]; then
+            echo "::error:: output s not set correctly"
+            exit 1
+          fi
+
+          if [[ $(jq -r .output_changes.output_string.actions[0] "${{ steps.output.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "Terraform will perform the following actions" '${{ steps.output.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.output.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi
+
   apply_vars:
     runs-on: ubuntu-latest
     name: Apply approved changes with deprecated vars

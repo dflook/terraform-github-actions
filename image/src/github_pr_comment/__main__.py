@@ -143,24 +143,48 @@ def create_summary(plan: Plan) -> Optional[str]:
 
 
 def current_user(actions_env: GithubEnv) -> str:
-    token_hash = hashlib.sha256(actions_env['GITHUB_TOKEN'].encode()).hexdigest()
+    token_hash = hashlib.sha256(f'dflook/terraform-github-actions/{actions_env["GITHUB_TOKEN"]}'.encode()).hexdigest()
     cache_key = f'token-cache/{token_hash}'
+
+    def graphql() -> Optional[str]:
+        response = github.post(f'{actions_env["GITHUB_API_URL"]}/graphql', json={
+            'query': "query { viewer { login } }"
+        })
+
+        if response.ok:
+            try:
+                debug(f'graphql response: {response.content}')
+                return response.json()['data']['viewer']['login']
+            except Exception as e:
+                pass
+
+        debug('Failed to get current user from graphql')
+
+    def rest() -> Optional[str]:
+        response = github.get(f'{actions_env["GITHUB_API_URL"]}/user')
+
+        if response.ok:
+            user = response.json()
+            debug(f'rest response: {json.dumps(user)}')
+
+            return user['login']
 
     if cache_key in job_cache:
         username = job_cache[cache_key]
     else:
-        response = github.get(f'{actions_env["GITHUB_API_URL"]}/user')
-        if response.status_code != 403:
-            user = response.json()
-            debug(json.dumps(user))
 
-            username = user['login']
-        else:
-            # Assume this is the github actions app token
-            username = 'github-actions[bot]'
+        # Not all tokens can be used with graphql
+        # There is also no rest endpoint that can get the current login for app tokens :(
+        # Try graphql first, then fallback to rest (e.g. for fine grained PATs)
+
+        username = graphql() or rest()
+
+        if username is None:
+            raise Exception('Unable to get username for the github token')
 
         job_cache[cache_key] = username
 
+    debug(f'token username is {username}')
     return username
 
 
