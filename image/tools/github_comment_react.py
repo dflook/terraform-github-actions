@@ -22,6 +22,7 @@ class GitHubActionsEnv(TypedDict):
     GITHUB_EVENT_NAME: str
     GITHUB_REPOSITORY: str
     GITHUB_SHA: str
+    TERRAFORM_ACTIONS_GITHUB_TOKEN: str
 
 
 job_tmp_dir = os.environ.get('JOB_TMP_DIR', '.')
@@ -35,7 +36,7 @@ def github_session(github_env: GitHubActionsEnv) -> requests.Session:
     A request session that is configured for the github API
     """
     session = requests.Session()
-    session.headers['authorization'] = f'token {github_env["GITHUB_TOKEN"]}'
+    session.headers['authorization'] = f'token {github_env["TERRAFORM_ACTIONS_GITHUB_TOKEN"]}'
     session.headers['user-agent'] = 'terraform-github-actions'
     session.headers['accept'] = 'application/vnd.github.v3+json'
     return session
@@ -108,7 +109,7 @@ def main() -> None:
 
 
 if __name__ == '__main__':
-    if 'GITHUB_TOKEN' not in env:
+    if 'TERRAFORM_ACTIONS_GITHUB_TOKEN' not in env:
         exit(0)
     github = github_session(env)
     main()

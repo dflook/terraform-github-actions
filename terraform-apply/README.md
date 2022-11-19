@@ -250,7 +250,8 @@ These input values must be the same as any `terraform-plan` for the same configu
 
 * `GITHUB_TOKEN`
 
-  The GitHub authorization token to use to fetch an approved plan from a PR.
+  The GitHub authorization token to use to fetch an approved plan from a PR. 
+  This must belong to the same user/app as the token used by the terraform-plan action.
   The token provided by GitHub Actions can be used - it can be passed by
   using the `${{ secrets.GITHUB_TOKEN }}` expression, e.g.
 
@@ -263,8 +264,22 @@ These input values must be the same as any `terraform-plan` for the same configu
   The minimum permissions are `pull-requests: write`.
   It will also likely need `contents: read` so the job can checkout the repo.
 
-  You can also use a Personal Access Token which has the `repo` scope.
-  This must belong to the same user as the token used by the terraform-plan action
+  You can also use any other App token that has `pull-requests: write` permission.
+
+  You can use a fine-grained Personal Access Token which has repository permissions:
+  - Read access to metadata
+  - Read and Write access to pull requests
+
+  You can also use a classic Personal Access Token which has the `repo` scope.
+
+  - Type: string
+  - Optional
+
+* `TERRAFORM_ACTIONS_GITHUB_TOKEN`
+
+  When this is set it is used instead of `GITHUB_TOKEN`, with the same behaviour.
+  The GitHub terraform provider also uses the `GITHUB_TOKEN` so this can be used to
+  make the github actions and the terraform provider use different tokens.
 
   - Type: string
   - Optional

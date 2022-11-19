@@ -40,7 +40,7 @@ fi
 if [[ "$GITHUB_EVENT_NAME" == "pull_request" || "$GITHUB_EVENT_NAME" == "issue_comment" || "$GITHUB_EVENT_NAME" == "pull_request_review_comment" || "$GITHUB_EVENT_NAME" == "pull_request_target" || "$GITHUB_EVENT_NAME" == "pull_request_review" ]]; then
     if [[ "$INPUT_ADD_GITHUB_COMMENT" == "true" || "$INPUT_ADD_GITHUB_COMMENT" == "changes-only" ]]; then
 
-        if [[ ! -v GITHUB_TOKEN ]]; then
+        if [[ ! -v TERRAFORM_ACTIONS_GITHUB_TOKEN ]]; then
             echo "GITHUB_TOKEN environment variable must be set to add GitHub PR comments"
             echo "Either set the GITHUB_TOKEN environment variable, or disable by setting the add_github_comment input to 'false'"
             echo "See https://github.com/dflook/terraform-github-actions/ for details."

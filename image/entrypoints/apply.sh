@@ -10,7 +10,7 @@ set-plan-args
 
 PLAN_OUT="$STEP_TMP_DIR/plan.out"
 
-if [[ -v GITHUB_TOKEN ]]; then
+if [[ -v TERRAFORM_ACTIONS_GITHUB_TOKEN ]]; then
     update_status ":orange_circle: Applying plan in $(job_markdown_ref)"
 fi
 
@@ -111,7 +111,7 @@ else
         exit 1
     fi
 
-    if [[ ! -v GITHUB_TOKEN ]]; then
+    if [[ ! -v TERRAFORM_ACTIONS_GITHUB_TOKEN ]]; then
         echo "GITHUB_TOKEN environment variable must be set to get plan approval from a PR"
         echo "Either set the GITHUB_TOKEN environment variable or automatically approve by setting the auto_approve input to 'true'"
         echo "See https://github.com/dflook/terraform-github-actions/ for details."

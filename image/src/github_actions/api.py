@@ -26,20 +26,19 @@ class GithubApi:
 
     def api_request(self, method: str, *args, **kwargs) -> requests.Response:
         response = self._session.request(method, *args, **kwargs)
+        debug(f'{response.request.method} {response.request.url} -> {response.status_code}')
 
         if 400 <= response.status_code < 500:
-            debug(str(response.headers))
-
             try:
                 message = response.json()['message']
 
-                if response.headers['X-RateLimit-Remaining'] == '0':
+                if response.headers['X-RateLimit-Remaining'] == '0' and response.headers['X-RateLimit-Limit'] != '0':
                     limit_reset = datetime.datetime.fromtimestamp(int(response.headers['X-RateLimit-Reset']))
                     sys.stdout.write(message)
                     sys.stdout.write(f' Try again when the rate limit resets at {limit_reset} UTC.\n')
                     sys.exit(1)
 
-                if message != 'Resource not accessible by integration':
+                if message not in ['Resource not accessible by integration', 'Personal access tokens with fine grained access do not support the GraphQL API']:
                     sys.stdout.write(message)
                     sys.stdout.write('\n')
                     debug(response.content.decode())
