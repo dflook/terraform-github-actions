@@ -8,9 +8,17 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.29.1` to use an exact release
-- `@v1.29` to use the latest patch release for the specific minor version
+- `@v1.30.0` to use an exact release
+- `@v1.30` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.30.0] - 2022-11-19
+
+### Added
+- The `TERRAFORM_ACTIONS_GITHUB_TOKEN` environment variable can be set to the github token for the actions to use instead of using `GITHUB_TOKEN`.
+  This is useful if using the terraform GitHub provider which also uses the `GITHUB_TOKEN` variable, allowing the github actions and terraform provider to use separate tokens.
+
+- The `GITHUB_TOKEN`/`TERRAFORM_ACTIONS_GITHUB_TOKEN` can now be a github app token or fine grained personal access token. As before, it can also be a classic PAT or use the token provided by github actions.
 
 ## [1.29.1] - 2022-10-24
 
@@ -449,6 +457,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.30.0]: https://github.com/dflook/terraform-github-actions/compare/v1.29.1...v1.30.0
 [1.29.1]: https://github.com/dflook/terraform-github-actions/compare/v1.29.0...v1.29.1
 [1.29.0]: https://github.com/dflook/terraform-github-actions/compare/v1.28.1...v1.29.0
 [1.28.1]: https://github.com/dflook/terraform-github-actions/compare/v1.28.0...v1.28.1
