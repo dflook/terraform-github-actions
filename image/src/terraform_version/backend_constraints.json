@@ -283,6 +283,12 @@
       ],
       "use_msi": [
         ">=0.12.0"
+      ],
+      "oidc_token": [
+        ">=1.3.4"
+      ],
+      "oidc_token_file_path": [
+        ">=1.3.4"
       ]
     },
     "environment_variables": {
@@ -331,6 +337,12 @@
       "ARM_LEASE_ID": [
         ">=0.9.0",
         "<=0.10.2"
+      ],
+      "ARM_OIDC_TOKEN": [
+        ">=1.3.4"
+      ],
+      "ARM_OIDC_TOKEN_FILE_PATH": [
+        ">=1.3.4"
       ]
     }
   },
