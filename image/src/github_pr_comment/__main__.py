@@ -30,8 +30,8 @@ job_cache = ActionsCache(Path(os.environ.get('JOB_TMP_DIR', '.')), 'job_cache')
 step_cache = ActionsCache(Path(os.environ.get('STEP_TMP_DIR', '.')), 'step_cache')
 
 env = cast(GithubEnv, os.environ)
-
-github = GithubApi(env.get('GITHUB_API_URL', 'https://api.github.com'), env['GITHUB_TOKEN'])
+github_token = env['TERRAFORM_ACTIONS_GITHUB_TOKEN']
+github = GithubApi(env.get('GITHUB_API_URL', 'https://api.github.com'), github_token)
 
 def job_markdown_ref() -> str:
     return f'[{os.environ["GITHUB_WORKFLOW"]} #{os.environ["GITHUB_RUN_NUMBER"]}]({os.environ["GITHUB_SERVER_URL"]}/{os.environ["GITHUB_REPOSITORY"]}/actions/runs/{os.environ["GITHUB_RUN_ID"]})'
@@ -143,7 +143,7 @@ def create_summary(plan: Plan) -> Optional[str]:
 
 
 def current_user(actions_env: GithubEnv) -> str:
-    token_hash = hashlib.sha256(f'dflook/terraform-github-actions/{actions_env["GITHUB_TOKEN"]}'.encode()).hexdigest()
+    token_hash = hashlib.sha256(f'dflook/terraform-github-actions/{github_token}'.encode()).hexdigest()
     cache_key = f'token-cache/{token_hash}'
 
     def graphql() -> Optional[str]:

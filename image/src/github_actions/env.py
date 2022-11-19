@@ -12,6 +12,7 @@ class ActionsEnv(TypedDict):
     TERRAFORM_PRE_RUN: str
     TERRAFORM_HTTP_CREDENTIALS: str
     TERRAFORM_VERSION: str
+    TERRAFORM_ACTIONS_GITHUB_TOKEN: str
 
 
 class GithubEnv(TypedDict):

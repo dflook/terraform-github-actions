@@ -102,6 +102,12 @@ function setup() {
 
     detect-tfmask
 
+    if [[ ! -v TERRAFORM_ACTIONS_GITHUB_TOKEN ]]; then
+      if [[ -v GITHUB_TOKEN ]]; then
+        export TERRAFORM_ACTIONS_GITHUB_TOKEN="$GITHUB_TOKEN"
+      fi
+    fi
+
     execute_run_commands
 }
 
