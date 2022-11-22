@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-from typing import Any, cast, NewType, Optional, TYPE_CHECKING, TypedDict
+from typing import Any, cast, NewType, Optional, TYPE_CHECKING, TypedDict, List
 
 import terraform.hcl
 
@@ -251,3 +251,13 @@ def get_backend_type(module: TerraformModule) -> Optional[str]:
             return 'remote'
 
     return 'local'
+
+def get_sensitive_variables(module: TerraformModule) -> List[str]:
+    sensitive_variables = []
+
+    for variable in module.get('variable', []):
+        for variable_name, attributes in variable.items():
+            if attributes.get('sensitive', False):
+                sensitive_variables.append(variable_name)
+
+    return sensitive_variables

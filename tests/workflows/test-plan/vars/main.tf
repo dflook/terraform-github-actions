@@ -16,6 +16,19 @@ variable "my_var_from_file" {
   default = "my_var_from_file_default"
 }
 
+variable "my_int" {
+  default = 100
+}
+
+variable "my_float" {
+  default = 0.0
+}
+
+variable "my_sensitive_string" {
+  default = "danger"
+  sensitive = true
+}
+
 variable "complex_input" {
   type = list(object({
     internal = number

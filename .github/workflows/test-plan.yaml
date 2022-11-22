@@ -682,6 +682,73 @@ jobs:
             my_var="single"
           var_file: tests/workflows/test-plan/test.tfvars
 
+  plan_single_sensitive_variable:
+    runs-on: ubuntu-latest
+    name: Plan single sensitive variable
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          path: tests/workflows/test-plan/single_sensitive_variable
+          variables: |
+            my_sensitive_string = "password123"
+     
+
+  plan_sensitive_variables:
+    runs-on: ubuntu-latest
+    name: Plan variables some which are sensitive
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          path: tests/workflows/test-plan/sensitive_variables
+          variables: |
+            my_string="hello"
+            my_int = 23
+            my_float = 3.14
+            my_sensitive_string = "password123"
+            complex = [
+              {
+                internal = 8300
+                external = 8300
+                protocol = "tcp"
+                animals = ["dog", "cat"]
+              }
+            ]
+            complex_sensitive = [
+              {
+                internal = 100
+                external = 100
+                protocol = "udp"
+                fruits = ["apple", "banana"]
+              }
+            ]   
+
+  plan_sensitive_var:
+    runs-on: ubuntu-latest
+    name: Plan using deprecated var and sensitive variable
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          path: tests/workflows/test-plan/sensitive_var
+          var: my_sensitive_var=hello
+
   plan_change_run_commands:
     runs-on: ubuntu-latest
     name: Change with shell init commands
