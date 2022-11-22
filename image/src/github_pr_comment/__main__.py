@@ -21,7 +21,9 @@ from github_pr_comment.backend_fingerprint import fingerprint
 from github_pr_comment.cmp import plan_cmp, remove_warnings, remove_unchanged_attributes
 from github_pr_comment.comment import find_comment, TerraformComment, update_comment, serialize, deserialize
 from github_pr_comment.hash import comment_hash, plan_hash
+from plan_renderer.variables import render_argument_list
 from terraform.module import load_module
+from terraform import hcl
 
 Plan = NewType('Plan', str)
 Status = NewType('Status', str)
@@ -114,6 +116,50 @@ def format_classic_description(action_inputs: PlanPrInputs) -> str:
 
     return label
 
+def format_description(action_inputs: PlanPrInputs) -> str:
+    if action_inputs['INPUT_LABEL']:
+        return f'Terraform plan for __{action_inputs["INPUT_LABEL"]}__'
+
+    label = f'Terraform plan in __{action_inputs["INPUT_PATH"]}__'
+
+    if action_inputs["INPUT_WORKSPACE"] != 'default':
+        label += f' in the __{action_inputs["INPUT_WORKSPACE"]}__ workspace'
+
+    if action_inputs["INPUT_TARGET"]:
+        label += '\nTargeting resources: '
+        label += ', '.join(f'`{res.strip()}`' for res in action_inputs['INPUT_TARGET'].splitlines())
+
+    if action_inputs["INPUT_REPLACE"]:
+        label += '\nReplacing resources: '
+        label += ', '.join(f'`{res.strip()}`' for res in action_inputs['INPUT_REPLACE'].splitlines())
+
+    if backend_config := _mask_backend_config(action_inputs):
+        label += f'\nWith backend config: `{backend_config}`'
+
+    if action_inputs["INPUT_BACKEND_CONFIG_FILE"]:
+        label += f'\nWith backend config files: `{action_inputs["INPUT_BACKEND_CONFIG_FILE"]}`'
+
+    if action_inputs["INPUT_VAR"]:
+        label += f'\n:warning: Using deprecated var input. Use the variables input instead.'
+        label += f'\nWith vars: `{action_inputs["INPUT_VAR"]}`'
+
+    if action_inputs["INPUT_VAR_FILE"]:
+        label += f'\nWith var files: `{action_inputs["INPUT_VAR_FILE"]}`'
+
+    if action_inputs["INPUT_VARIABLES"]:
+        stripped_vars = render_argument_list(hcl.loads(action_inputs["INPUT_VARIABLES"])).strip()
+        if '\n' in stripped_vars:
+            label += f'''<details open><summary>With variables</summary>
+
+```hcl
+{stripped_vars}
+```
+</details>
+'''
+        else:
+            label += f'\nWith variables: `{stripped_vars}`'
+
+    return label
 
 def create_summary(plan: Plan) -> Optional[str]:
     summary = None
@@ -313,7 +359,7 @@ def main() -> int:
 
     if sys.argv[1] == 'plan':
         body = cast(Plan, sys.stdin.read().strip())
-        description = format_classic_description(action_inputs)
+        description = format_description(action_inputs)
 
         only_if_exists = False
         if action_inputs['INPUT_ADD_GITHUB_COMMENT'] == 'changes-only' and os.environ.get('TF_CHANGES', 'true') == 'false':

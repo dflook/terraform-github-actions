@@ -682,6 +682,32 @@ jobs:
             my_var="single"
           var_file: tests/workflows/test-plan/test.tfvars
 
+  plan_variables:
+    runs-on: ubuntu-latest
+    name: Plan variables
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          path: tests/workflows/test-plan/vars
+          variables: |
+            my_var="hello"
+            my_int = 23
+            my_float = 3.14
+            complex_input = [
+              {
+                internal = 8300
+                external = 8300
+                protocol = "tcp"
+                animals = ["dog", "cat"]
+              }
+            ]
+
   plan_change_run_commands:
     runs-on: ubuntu-latest
     name: Change with shell init commands
