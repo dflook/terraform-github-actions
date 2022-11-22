@@ -8,9 +8,14 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.30.0` to use an exact release
-- `@v1.30` to use the latest patch release for the specific minor version
+- `@v1.31.0` to use an exact release
+- `@v1.31` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.31.0] - 2022-11-22
+
+### Added
+- Sensitive values in the `variables` input of [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/main/terraform-plan) are masked in the PR comment. Previously a `label` was required to avoid revealing sensitive values. 
 
 ## [1.30.0] - 2022-11-19
 
@@ -457,6 +462,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.31.0]: https://github.com/dflook/terraform-github-actions/compare/v1.30.0...v1.31.0
 [1.30.0]: https://github.com/dflook/terraform-github-actions/compare/v1.29.1...v1.30.0
 [1.29.1]: https://github.com/dflook/terraform-github-actions/compare/v1.29.0...v1.29.1
 [1.29.0]: https://github.com/dflook/terraform-github-actions/compare/v1.28.1...v1.29.0

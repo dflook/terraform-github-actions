@@ -59,8 +59,6 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   Variables set here override any given in `var_file`s.
   This **can** be used with remote backends such as Terraform Cloud/Enterprise, with variables set in the remote workspace having precedence.
 
-  > :warning: Secret values are not masked in the PR comment. Set a `label` to avoid revealing the variables in the PR.
-
   - Type: string
   - Optional
 
