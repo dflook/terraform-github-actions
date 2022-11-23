@@ -15,7 +15,7 @@ When using an action you can specify the version as:
 ## [1.31.0] - 2022-11-22
 
 ### Added
-- Sensitive values in the `variables` input of [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/main/terraform-plan) are masked in the PR comment. Previously a `label` was required to avoid revealing sensitive values. 
+- Values in the `variables` input of [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/main/terraform-plan) will be masked in the PR comment if the Terraform variable is marked 'sensitive'. Previously a `label` was required to avoid revealing sensitive values.
 
 ## [1.30.0] - 2022-11-19
 
