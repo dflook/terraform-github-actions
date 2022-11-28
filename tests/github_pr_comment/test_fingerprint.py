@@ -3,7 +3,7 @@ from terraform.hcl import loads
 
 def test_read_backend_config_vars():
     assert read_backend_config_vars({
-        'INPUT_BACKEND_CONFIG_FILE': 'test_file.tfvars'
+        'INPUT_BACKEND_CONFIG_FILE': 'tests/github_pr_comment/test_file.tfvars'
     }) == {'hello': 'world'}
 
 def test_read_partial_backend_config():
@@ -41,13 +41,13 @@ terraform {
 def test_complete_config():
     assert complete_config(
         {
-            'INPUT_BACKEND_CONFIG_FILE': 'test_file.tfvars'
+            'INPUT_BACKEND_CONFIG_FILE': 'tests/github_pr_comment/test_file.tfvars'
         },
         {}) == ('local', {'hello': 'world'})
 
     assert complete_config(
         {
-            'INPUT_BACKEND_CONFIG_FILE': 'test_file.tfvars'
+            'INPUT_BACKEND_CONFIG_FILE': 'tests/github_pr_comment/test_file.tfvars'
         },
         loads('''
         terraform {
@@ -59,7 +59,7 @@ def test_complete_config():
 
     assert complete_config(
         {
-            'INPUT_BACKEND_CONFIG_FILE': 'test_file.tfvars'
+            'INPUT_BACKEND_CONFIG_FILE': 'tests/github_pr_comment/test_file.tfvars'
         },
         loads('''
         terraform {
