@@ -789,6 +789,9 @@ jobs:
     runs-on: ubuntu-latest
     name: Default path
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: path
         uses: ./terraform-plan
         id: path
