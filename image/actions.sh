@@ -139,6 +139,12 @@ function set-init-args() {
 
     if [[ -n "$INPUT_BACKEND_CONFIG_FILE" ]]; then
         for file in $(echo "$INPUT_BACKEND_CONFIG_FILE" | tr ',' '\n'); do
+
+            if [[ ! -f "$file" ]]; then
+                error_log "Path does not exist: \"$file\""
+                exit 1
+            fi
+
             INIT_ARGS="$INIT_ARGS -backend-config=$(relative_to "$INPUT_PATH" "$file")"
         done
     fi
@@ -291,6 +297,12 @@ function set-plan-args() {
 
     if [[ -n "$INPUT_VAR_FILE" ]]; then
         for file in $(echo "$INPUT_VAR_FILE" | tr ',' '\n'); do
+
+            if [[ ! -f "$file" ]]; then
+                error_log "Path does not exist: \"$file\""
+                exit 1
+            fi
+
             PLAN_ARGS="$PLAN_ARGS -var-file=$(relative_to "$INPUT_PATH" "$file")"
         done
     fi

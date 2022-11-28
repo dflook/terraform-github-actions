@@ -784,3 +784,46 @@ jobs:
         uses: ./terraform-plan
         with:
           label: test-plan default_path
+
+  path_does_not_exist:
+    runs-on: ubuntu-latest
+    name: Default path
+    steps:
+      - name: path
+        uses: ./terraform-plan
+        id: path
+        continue-on-error: true
+        with:
+          path: nope
+
+      - name: Plan
+        uses: ./terraform-plan
+        id: var_file
+        continue-on-error: true
+        with:
+          var_file: |
+              var_file/doesnt/exist.tfvars    
+
+      - name: Plan
+        uses: ./terraform-plan
+        id: backend_config_var
+        continue-on-error: true
+        with:
+          backend_config_var: backend_config/doesnt/exist.tfvars
+
+      - name: Check invalid
+        run: |
+          if [[ "${{ steps.path.outcome }}" != "failure" ]]; then
+            echo "Non existant path did not fail correctly"
+            exit 1
+          fi
+
+          if [[ "${{ steps.var_file.outcome }}" != "failure" ]]; then
+            echo "Non existant var_file did not fail correctly"
+            exit 1
+          fi
+          
+          if [[ "${{ steps.backend_config_var.outcome }}" != "failure" ]]; then
+            echo "Non existant backend_config_var did not fail correctly"
+            exit 1
+          fi          
