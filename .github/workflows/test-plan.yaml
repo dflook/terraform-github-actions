@@ -787,7 +787,7 @@ jobs:
 
   path_does_not_exist:
     runs-on: ubuntu-latest
-    name: Default path
+    name: Error with invalid paths
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -798,21 +798,26 @@ jobs:
         continue-on-error: true
         with:
           path: nope
+          add_github_comment: false
 
-      - name: Plan
+      - name: var_file
         uses: ./terraform-plan
         id: var_file
         continue-on-error: true
         with:
+          path: tests/workflows/test-plan/plan
           var_file: |
-              var_file/doesnt/exist.tfvars    
+              var_file/doesnt/exist.tfvars
+          add_github_comment: false
 
-      - name: Plan
+      - name: backend_config_file
         uses: ./terraform-plan
-        id: backend_config_var
+        id: backend_config_file
         continue-on-error: true
         with:
-          backend_config_var: backend_config/doesnt/exist.tfvars
+          path: tests/workflows/test-plan/plan
+          backend_config_file: backend_config/doesnt/exist.tfvars
+          add_github_comment: false
 
       - name: Check invalid
         run: |
@@ -826,7 +831,7 @@ jobs:
             exit 1
           fi
           
-          if [[ "${{ steps.backend_config_var.outcome }}" != "failure" ]]; then
-            echo "Non existant backend_config_var did not fail correctly"
+          if [[ "${{ steps.backend_config_file.outcome }}" != "failure" ]]; then
+            echo "Non existant backend_config_file did not fail correctly"
             exit 1
           fi          
