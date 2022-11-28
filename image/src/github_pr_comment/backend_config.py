@@ -1,9 +1,9 @@
 import re
 from typing import Tuple, Any
-
+from pathlib import Path
 from github_actions.debug import debug
 from github_actions.inputs import InitInputs
-from terraform.module import TerraformModule
+from terraform.module import TerraformModule, load_backend_config_file
 
 BackendConfig = dict[str, Any]
 BackendType = str

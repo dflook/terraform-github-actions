@@ -176,6 +176,7 @@ def fingerprint(backend_type: BackendType, backend_config: BackendConfig, env) -
         'remote': fingerprint_remote,
         'artifactory': fingerprint_artifactory,
         'azurerm': fingerprint_azurerm,
+        'azure': fingerprint_azurerm,
         'consul': fingerprint_consul,
         'cloud': fingerprint_cloud,
         'cos': fingerprint_cos,
