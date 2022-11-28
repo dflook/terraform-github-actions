@@ -807,7 +807,8 @@ jobs:
         with:
           path: tests/workflows/test-plan/plan
           var_file: |
-              var_file/doesnt/exist.tfvars
+              var_file/doesnt/exist.tfvars   
+              var_file/doesnt/exist2.tfvars
           add_github_comment: false
 
       - name: backend_config_file
