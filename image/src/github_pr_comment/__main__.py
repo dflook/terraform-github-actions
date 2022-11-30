@@ -16,7 +16,7 @@ from github_actions.debug import debug
 from github_actions.env import GithubEnv
 from github_actions.find_pr import find_pr, WorkflowException
 from github_actions.inputs import PlanPrInputs
-from github_pr_comment.backend_config import complete_config
+from github_pr_comment.backend_config import complete_config, partial_config
 from github_pr_comment.backend_fingerprint import fingerprint
 from github_pr_comment.cmp import plan_cmp, remove_warnings, remove_unchanged_attributes
 from github_pr_comment.comment import find_comment, TerraformComment, update_comment, serialize, deserialize
@@ -271,7 +271,7 @@ def get_pr() -> PrUrl:
 
     return cast(PrUrl, pr_url)
 
-def get_comment(action_inputs: PlanPrInputs, backend_fingerprint: bytes) -> TerraformComment:
+def get_comment(action_inputs: PlanPrInputs, backend_fingerprint: bytes, backup_fingerprint: bytes) -> TerraformComment:
     if 'comment' in step_cache:
         return deserialize(step_cache['comment'])
 
@@ -283,7 +283,6 @@ def get_comment(action_inputs: PlanPrInputs, backend_fingerprint: bytes) -> Terr
 
     headers = {
         'workspace': os.environ.get('INPUT_WORKSPACE', 'default'),
-        'backend': comment_hash(backend_fingerprint, pr_url)
     }
 
     if backend_type := os.environ.get('TERRAFORM_BACKEND_TYPE'):
@@ -302,7 +301,12 @@ def get_comment(action_inputs: PlanPrInputs, backend_fingerprint: bytes) -> Terr
         debug(f'Plan modifier: {plan_modifier}')
         headers['plan_modifier'] = hashlib.sha256(canonicaljson.encode_canonical_json(plan_modifier)).hexdigest()
 
-    return find_comment(github, issue_url, username, headers, legacy_description)
+    backup_headers = headers.copy()
+
+    headers['backend'] = comment_hash(backend_fingerprint, pr_url)
+    backup_headers['backend'] = comment_hash(backup_fingerprint, pr_url)
+
+    return find_comment(github, issue_url, username, headers, backup_headers, legacy_description)
 
 def is_approved(proposed_plan: str, comment: TerraformComment) -> bool:
 
@@ -357,11 +361,13 @@ def main() -> int:
 
     module = load_module(Path(action_inputs.get('INPUT_PATH', '.')))
 
-    backend_type, backend_config = complete_config(action_inputs, module)
+    backend_type, backend_config = partial_config(action_inputs, module)
+    partial_backend_fingerprint = fingerprint(backend_type, backend_config, os.environ)
 
+    backend_type, backend_config = complete_config(action_inputs, module)
     backend_fingerprint = fingerprint(backend_type, backend_config, os.environ)
 
-    comment = get_comment(action_inputs, backend_fingerprint)
+    comment = get_comment(action_inputs, backend_fingerprint, partial_backend_fingerprint)
 
     status = cast(Status, os.environ.get('STATUS', ''))
 
