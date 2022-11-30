@@ -242,7 +242,7 @@ def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers:
     """
 
     debug(f"Searching for comment with {headers=}")
-    debug(f"Or backup headers {headers=}")
+    debug(f"Or backup headers {backup_headers=}")
 
     backup_comment = None
     legacy_comment = None
@@ -263,8 +263,8 @@ def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers:
                 if matching_headers(comment, backup_headers):
                     debug(f'Found comment that matches backup headers {comment.headers=} ')
                     backup_comment = comment
-
-                debug(f"Didn't match comment with {comment.headers=}")
+                else:
+                    debug(f"Didn't match comment with {comment.headers=}")
 
             else:
                 # Match by description only
@@ -276,6 +276,9 @@ def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers:
                     debug(f"Didn't match comment with {comment.description=}")
 
     if backup_comment is not None:
+        debug('Using comment matching backup headers')
+
+        # Use the backup comment but update the headers
         return TerraformComment(
             issue_url=backup_comment.issue_url,
             comment_url=backup_comment.comment_url,
@@ -287,7 +290,7 @@ def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers:
         )
 
     if legacy_comment is not None:
-        debug('Found comment matching legacy description')
+        debug('Using comment matching legacy description')
 
         # Insert known headers into legacy comment
         return TerraformComment(
