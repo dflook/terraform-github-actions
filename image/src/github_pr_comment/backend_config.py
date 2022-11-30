@@ -1,4 +1,5 @@
 import re
+import sys
 from typing import Tuple, Any
 from pathlib import Path
 from github_actions.debug import debug
@@ -34,6 +35,8 @@ def read_backend_config_files(init_inputs: InitInputs) -> BackendConfig:
         except Exception as e:
             debug(f'Failed to load backend config file {path}')
             debug(str(e))
+            sys.stderr.write(f'Failed to load backend config file {path}\n')
+            sys.exit(1)
 
     return config
 
