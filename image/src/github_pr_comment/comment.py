@@ -12,6 +12,13 @@ try:
 except (ValueError, KeyError):
     collapse_threshold = 10
 
+from pkg_resources import get_distribution, DistributionNotFound
+
+try:
+    version = get_distribution('terraform-github-actions').version
+except DistributionNotFound:
+    version = '0.0.0'
+
 class TerraformComment:
     """
     Represents a Terraform PR comment
@@ -299,10 +306,13 @@ def update_comment(
     status: str = None
 ) -> TerraformComment:
 
+    new_headers = headers if headers is not None else comment.headers
+    new_headers['version'] = version
+
     new_comment = TerraformComment(
         issue_url=comment.issue_url,
         comment_url=comment.comment_url,
-        headers=headers if headers is not None else comment.headers,
+        headers=new_headers,
         description=description if description is not None else comment.description,
         summary=summary if summary is not None else comment.summary,
         body=body if body is not None else comment.body,

@@ -14,7 +14,8 @@ def try_load(path: Path) -> dict:
     try:
         with open(path) as f:
             return hcl2.load(f)
-    except:
+    except Exception as e:
+        debug(e)
         return {}
 
 
