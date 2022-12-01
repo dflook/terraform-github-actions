@@ -8,9 +8,15 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.31.0` to use an exact release
+- `@v1.31.1` to use an exact release
 - `@v1.31` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.31.1] - 2022-12-01
+
+### Fixed
+- Failing to read backend config files for the purpose of identifying the backend state. This meant multiple plans with only
+  different backend config files would overwrite each others PR comments.
 
 ## [1.31.0] - 2022-11-22
 
@@ -462,6 +468,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.31.1]: https://github.com/dflook/terraform-github-actions/compare/v1.31.0...v1.31.1
 [1.31.0]: https://github.com/dflook/terraform-github-actions/compare/v1.30.0...v1.31.0
 [1.30.0]: https://github.com/dflook/terraform-github-actions/compare/v1.29.1...v1.30.0
 [1.29.1]: https://github.com/dflook/terraform-github-actions/compare/v1.29.0...v1.29.1
