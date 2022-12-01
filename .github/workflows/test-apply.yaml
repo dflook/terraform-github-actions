@@ -1025,3 +1025,28 @@ jobs:
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
+
+  partial_backend_fingerprint:
+    runs-on: ubuntu-latest
+    name: Get comment using partial fingerprint
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Plan
+        uses: dflook/terraform-plan@v1.31.0
+        with:
+          path: tests/workflows/test-apply/partial_backend
+          backend_config_file: tests/workflows/test-apply/partial_backend/backend_config
+          backend_config: key=${{ github.run_id }}${{ github.run_attempt }}
+
+      - name: Apply
+        uses: ./terraform-apply
+        with:
+          path: tests/workflows/test-apply/partial_backend
+          backend_config_file: tests/workflows/test-apply/partial_backend/backend_config
+          backend_config: key=${{ github.run_id }}${{ github.run_attempt }}

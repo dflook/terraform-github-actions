@@ -12,6 +12,13 @@ try:
 except (ValueError, KeyError):
     collapse_threshold = 10
 
+from pkg_resources import get_distribution, DistributionNotFound
+
+try:
+    version = get_distribution('terraform-github-actions').version
+except DistributionNotFound:
+    version = '0.0.0'
+
 class TerraformComment:
     """
     Represents a Terraform PR comment
@@ -218,7 +225,7 @@ def matching_headers(comment: TerraformComment, headers: dict[str, str]) -> bool
 
     return True
 
-def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers: dict[str, str], legacy_description: str) -> TerraformComment:
+def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers: dict[str, str], backup_headers: dict[str, str], legacy_description: str) -> TerraformComment:
     """
     Find a github comment that matches the given headers
 
@@ -235,8 +242,10 @@ def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers:
     """
 
     debug(f"Searching for comment with {headers=}")
+    debug(f"Or backup headers {backup_headers=}")
 
     backup_comment = None
+    legacy_comment = None
 
     for comment_payload in github.paged_get(issue_url + '/comments'):
         if comment_payload['user']['login'] != username:
@@ -251,29 +260,47 @@ def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers:
                     debug(f'Found comment that matches headers {comment.headers=} ')
                     return comment
 
-                debug(f"Didn't match comment with {comment.headers=}")
+                if matching_headers(comment, backup_headers):
+                    debug(f'Found comment that matches backup headers {comment.headers=} ')
+                    backup_comment = comment
+                else:
+                    debug(f"Didn't match comment with {comment.headers=}")
 
             else:
                 # Match by description only
 
-                if comment.description == legacy_description and backup_comment is None:
-                    debug(f'Found backup comment that matches legacy description {comment.description=}')
-                    backup_comment = comment
+                if comment.description == legacy_description and legacy_comment is None:
+                    debug(f'Found comment that matches legacy description {comment.description=}')
+                    legacy_comment = comment
                 else:
                     debug(f"Didn't match comment with {comment.description=}")
 
     if backup_comment is not None:
-        debug('Found comment matching legacy description')
+        debug('Using comment matching backup headers')
 
-        # Insert known headers into legacy comment
+        # Use the backup comment but update the headers
         return TerraformComment(
             issue_url=backup_comment.issue_url,
             comment_url=backup_comment.comment_url,
-            headers={k: v for k, v in headers.items() if v is not None},
+            headers=backup_comment.headers | headers,
             description=backup_comment.description,
             summary=backup_comment.summary,
             body=backup_comment.body,
             status=backup_comment.status
+        )
+
+    if legacy_comment is not None:
+        debug('Using comment matching legacy description')
+
+        # Insert known headers into legacy comment
+        return TerraformComment(
+            issue_url=legacy_comment.issue_url,
+            comment_url=legacy_comment.comment_url,
+            headers={k: v for k, v in headers.items() if v is not None},
+            description=legacy_comment.description,
+            summary=legacy_comment.summary,
+            body=legacy_comment.body,
+            status=legacy_comment.status
         )
 
     debug('No existing comment exists')
@@ -299,10 +326,13 @@ def update_comment(
     status: str = None
 ) -> TerraformComment:
 
+    new_headers = headers if headers is not None else comment.headers
+    new_headers['version'] = version
+
     new_comment = TerraformComment(
         issue_url=comment.issue_url,
         comment_url=comment.comment_url,
-        headers=headers if headers is not None else comment.headers,
+        headers=new_headers,
         description=description if description is not None else comment.description,
         summary=summary if summary is not None else comment.summary,
         body=body if body is not None else comment.body,
