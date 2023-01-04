@@ -11,6 +11,14 @@ inputs:
     description: Name of the terraform workspace
     required: false
     default: default
+  backend_config:
+    description: List of backend config values to set, one per line
+    required: false
+    default: ""
+  backend_config_file:
+    description: Path to a backend config file
+    required: false
+    default: ""
   force:
     description: Force unlock the state
     required: false
