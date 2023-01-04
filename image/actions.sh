@@ -415,7 +415,7 @@ function destroy() {
 
 function force_unlock() {
 
-    if [[ $FORCE == "true" ]]; then
+    if [[ $INPUT_FORCE == "true" ]]; then
         debug_log terraform force-unlock -force $INPUT_LOCK_ID
     else
         debug_log terraform force-unlock $INPUT_LOCK_ID
