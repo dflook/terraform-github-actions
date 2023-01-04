@@ -414,7 +414,7 @@ function destroy() {
 }
 
 function force_unlock() {
-    start_group "Unlocking state"
+    start_group "Unlock state"
 
     if [[ $INPUT_FORCE == "true" ]]; then
         echo "Unlocking state with -force flag set..."

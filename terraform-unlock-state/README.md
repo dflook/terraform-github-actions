@@ -180,3 +180,37 @@ The action can be run on other events, which prints the plan to the workflow log
   - Optional
 
 ## Outputs
+
+## Example usage
+
+```yaml
+name: "Unlock state"
+on:
+  workflow_dispatch:
+    inputs:
+      path:
+        description: "Path to the terraform files configuration"
+        required: true
+      lock_id:
+        description: "Lock ID to be unlocked"
+        required: true
+
+jobs:
+  unlock:
+    name: Setup and unlock
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Terraform Unlock
+        uses: patricktalmeida/terraform-github-actions/terraform-unlock-state@add-unlock-state
+        with:
+          path: ${{ github.event.inputs.path }}
+          lock_id: ${{ github.event.inputs.lock_id }}
+
+```
