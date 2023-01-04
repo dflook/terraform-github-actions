@@ -5,7 +5,7 @@ source /usr/local/actions.sh
 
 debug
 setup
-init
+init-backend-workspace
 
 exec 3>&1
 
