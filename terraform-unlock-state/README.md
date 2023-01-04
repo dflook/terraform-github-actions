@@ -1,4 +1,4 @@
-# terraform-plan action
+# terraform-unlock-state action
 
 This is one of a suite of terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
@@ -6,8 +6,6 @@ This actions is intially planned to manually unlock the state for the defined co
 
 The `GITHUB_TOKEN` environment variable must be set for the PR comment to be added.
 The action can be run on other events, which prints the plan to the workflow log.
-
-The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/main/terraform-apply) action can be used to apply the generated plan.
 
 ## Inputs
 
@@ -21,7 +19,7 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `workspace`
 
-  Terraform workspace to run the plan for
+  Terraform workspace to run
 
   - Type: string
   - Optional
