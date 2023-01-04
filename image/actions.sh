@@ -416,13 +416,8 @@ function destroy() {
 function force_unlock() {
     start_group "Unlock state"
 
-    if [[ $INPUT_FORCE == "true" ]]; then
-        echo "Unlocking state with -force flag set..."
-        debug_log terraform force-unlock -force $INPUT_LOCK_ID
-    else
-        echo "Unlocking state without -force flag set..."
-        debug_log terraform force-unlock $INPUT_LOCK_ID
-    fi
+    echo "Unlocking state..."
+    debug_log terraform force-unlock -force $INPUT_LOCK_ID
 
     end_group
 }

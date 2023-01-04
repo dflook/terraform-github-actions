@@ -19,10 +19,6 @@ inputs:
     description: Path to a backend config file
     required: false
     default: ""
-  force:
-    description: Force unlock the state
-    required: false
-    default: true
   lock_id:
     description: Lock ID of the state lock to unlock
     required: true

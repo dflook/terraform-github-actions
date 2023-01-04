@@ -25,14 +25,6 @@ The action can be run on other events, which prints the plan to the workflow log
   - Optional
   - Default: `default`
 
-* `force`
-
-  Disable force flag
-
-  - Type: string
-  - Optional
-  - Default: `true`
-
 * `lock_id`
 
   Lock id from the defined configuration
