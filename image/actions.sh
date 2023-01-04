@@ -414,6 +414,7 @@ function destroy() {
 }
 
 function force_unlock() {
+    start_group "Unlocking state"
 
     if [[ $INPUT_FORCE == "true" ]]; then
         echo "Unlocking state with -force flag set..."
@@ -422,6 +423,8 @@ function force_unlock() {
         echo "Unlocking state without -force flag set..."
         debug_log terraform force-unlock $INPUT_LOCK_ID
     fi
+
+    end_group
 }
 
 # Every file written to disk should use one of these directories
