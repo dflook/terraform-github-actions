@@ -11,6 +11,10 @@ inputs:
     description: Name of the terraform workspace
     required: false
     default: default
+  force:
+    description: Force unlock the state
+    required: false
+    default: true
   lock_id:
     description: Lock ID of the state lock to unlock
     required: true
