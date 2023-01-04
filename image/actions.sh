@@ -413,6 +413,15 @@ function destroy() {
     set -e
 }
 
+function force_unlock() {
+
+    if [[ $FORCE == "true" ]]; then
+        debug_log terraform force-unlock -force $INPUT_LOCK_ID
+    else
+        debug_log terraform force-unlock $INPUT_LOCK_ID
+    fi
+}
+
 # Every file written to disk should use one of these directories
 STEP_TMP_DIR="/tmp"
 JOB_TMP_DIR="$HOME/.dflook-terraform-github-actions"

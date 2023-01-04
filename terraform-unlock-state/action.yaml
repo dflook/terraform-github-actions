@@ -1,0 +1,25 @@
+name: terraform-unlock-state
+description: Unlock previously locked Terraform state
+author: Patrick Almeida
+
+inputs:
+  path:
+    description: Path to the terraform configuration
+    required: false
+    default: .
+  workspace:
+    description: Name of the terraform workspace
+    required: false
+    default: default
+  lock_id:
+    description: Lock ID of the state lock to unlock
+    required: true
+
+runs:
+  using: docker
+  image: ../image/Dockerfile
+  entrypoint: /entrypoints/force-unlock.sh
+
+branding:
+  icon: globe
+  color: purple
