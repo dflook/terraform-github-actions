@@ -416,7 +416,7 @@ function destroy() {
 function force_unlock() {
     start_group "Unlock state"
 
-    echo "Unlocking state..."
+    echo "Unlocking state with ID: $INPUT_LOCK_ID"
     (cd "$INPUT_PATH" && terraform force-unlock -force $INPUT_LOCK_ID)
 
     end_group
