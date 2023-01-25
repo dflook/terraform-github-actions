@@ -417,7 +417,7 @@ function force_unlock() {
     start_group "Unlock state"
 
     echo "Unlocking state..."
-    debug_log terraform force-unlock -force $INPUT_LOCK_ID
+    (cd "$INPUT_PATH" && terraform force-unlock -force $INPUT_LOCK_ID)
 
     end_group
 }
