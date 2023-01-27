@@ -21,6 +21,10 @@ fi
 
 if [[ $DESTROY_EXIT -eq 1 ]]; then
     cat >&2 "$STEP_TMP_DIR/terraform_destroy.stderr"
-    set_output failure-reason destroy-failed
+    if lock_info "$STEP_TMP_DIR/terraform_destroy.stderr"; then
+        set_output failure-reason state-locked
+    else
+        set_output failure-reason destroy-failed
+    fi
     exit 1
 fi
