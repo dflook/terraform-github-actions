@@ -56,7 +56,7 @@ function apply() {
     if [[ $APPLY_EXIT -eq 0 ]]; then
         update_status ":white_check_mark: Plan applied in $(job_markdown_ref)"
     else
-        if lock_info "$STEP_TMP_DIR/terraform_apply.stderr"; then
+        if lock-info "$STEP_TMP_DIR/terraform_apply.stderr"; then
             set_output failure-reason state-locked
         else
             set_output failure-reason apply-failed
