@@ -5,8 +5,6 @@ source /usr/local/actions.sh
 
 debug
 setup
-init-backend-default-workspace
-
-exec 3>&1
+init-backend-workspace
 
 force_unlock
