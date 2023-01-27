@@ -3,6 +3,10 @@ name: Test terraform-unlock-state
 on:
   - pull_request
 
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
 jobs:
   default_workspace:
     runs-on: ubuntu-latest
