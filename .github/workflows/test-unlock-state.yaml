@@ -20,8 +20,6 @@ jobs:
         with:
           path: tests/workflows/test-unlock-state
           auto_approve: true
-          variables:
-            lock=false
 
       - name: Intentionally lock the state
         uses: ./terraform-apply
@@ -30,6 +28,8 @@ jobs:
         with:
           path: tests/workflows/test-unlock-state
           auto_approve: true
+          variables:
+            lock=true
 
       # State is now locked
 
@@ -82,5 +82,3 @@ jobs:
         with:
           path: tests/workflows/test-unlock-state
           auto_approve: true
-          variables:
-            lock=false
