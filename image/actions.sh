@@ -414,12 +414,9 @@ function destroy() {
 }
 
 function force_unlock() {
-    start_group "Unlock state"
-
     echo "Unlocking state with ID: $INPUT_LOCK_ID"
+    debug_log terraform force-unlock -force $INPUT_LOCK_ID
     (cd "$INPUT_PATH" && terraform force-unlock -force $INPUT_LOCK_ID)
-
-    end_group
 }
 
 # Every file written to disk should use one of these directories
