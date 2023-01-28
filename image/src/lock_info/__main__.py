@@ -23,13 +23,12 @@ def get_lock_info(stderr: Iterable[str]) -> Optional[dict[str, str]]:
     lock_info = {}
 
     for line in stderr:
-
         if locked is True:
             if lock_info_line:
                 if match := re.match(r'^\s+(?P<field>.*?):\s+(?P<value>.*)', line):
                     lock_info[match['field']] = match['value']
 
-            elif line == 'Lock Info:':
+            elif line.startswith('Lock Info:'):
                 lock_info_line = True
 
         elif 'Error acquiring the state lock' in line:
@@ -45,7 +44,7 @@ def main():
     if lock_info is None:
         sys.exit(1)
 
-    output('lock_info', json.dumps(lock_info))
+    output('lock-info', json.dumps(lock_info))
 
 
 if __name__ == '__main__':
