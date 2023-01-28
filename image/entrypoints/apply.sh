@@ -24,8 +24,11 @@ function apply() {
         # shellcheck disable=SC2086
         debug_log terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT
         # shellcheck disable=SC2086
-        (cd "$INPUT_PATH" && terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT) | $TFMASK
+        (cd "$INPUT_PATH" && terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT) \
+            2>"$STEP_TMP_DIR/terraform_apply.stderr" \
+            | $TFMASK
         APPLY_EXIT=${PIPESTATUS[0]}
+        >&2 cat "$STEP_TMP_DIR/terraform_apply.stderr"
     else
         # There is no plan file to apply, since the remote backend can't produce them.
         # Instead we need to do an auto approved apply using the arguments we would normally use for the plan
@@ -33,8 +36,12 @@ function apply() {
         # shellcheck disable=SC2086
         debug_log terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG '$PLAN_ARGS'  # don't expand plan args
         # shellcheck disable=SC2086
-        (cd "$INPUT_PATH" && terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS) | $TFMASK | tee "$STEP_TMP_DIR/terraform_apply.stdout"
+        (cd "$INPUT_PATH" && terraform apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS) \
+            2>"$STEP_TMP_DIR/terraform_apply.stderr" \
+            | $TFMASK \
+            | tee "$STEP_TMP_DIR/terraform_apply.stdout"
         APPLY_EXIT=${PIPESTATUS[0]}
+        >&2 cat "$STEP_TMP_DIR/terraform_apply.stderr"
 
         if remote-run-id "$STEP_TMP_DIR/terraform_apply.stdout" >"$STEP_TMP_DIR/remote-run-id.stdout" 2>"$STEP_TMP_DIR/remote-run-id.stderr"; then
             RUN_ID="$(<"$STEP_TMP_DIR/remote-run-id.stdout")"
@@ -49,7 +56,11 @@ function apply() {
     if [[ $APPLY_EXIT -eq 0 ]]; then
         update_status ":white_check_mark: Plan applied in $(job_markdown_ref)"
     else
-        set_output failure-reason apply-failed
+        if lock-info "$STEP_TMP_DIR/terraform_apply.stderr"; then
+            set_output failure-reason state-locked
+        else
+            set_output failure-reason apply-failed
+        fi
         update_status ":x: Error applying plan in $(job_markdown_ref)"
         exit 1
     fi
@@ -75,6 +86,10 @@ fi
 
 if [[ $PLAN_EXIT -eq 1 ]]; then
     cat >&2 "$STEP_TMP_DIR/terraform_plan.stderr"
+
+    if lock-info "$STEP_TMP_DIR/terraform_plan.stderr"; then
+        set_output failure-reason state-locked
+    fi
 
     update_status ":x: Error applying plan in $(job_markdown_ref)"
     exit 1

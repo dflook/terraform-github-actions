@@ -399,11 +399,11 @@ function plan() {
 
 function destroy() {
     # shellcheck disable=SC2086
-    debug_log terraform destroy -input=false -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS
+    debug_log terraform destroy -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS
 
     set +e
     # shellcheck disable=SC2086
-    (cd "$INPUT_PATH" && terraform destroy -input=false -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS) \
+    (cd "$INPUT_PATH" && terraform destroy -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS) \
         2>"$STEP_TMP_DIR/terraform_destroy.stderr" \
         | tee /dev/fd/3 \
             >"$STEP_TMP_DIR/terraform_destroy.stdout"
@@ -411,6 +411,12 @@ function destroy() {
     # shellcheck disable=SC2034
     DESTROY_EXIT=${PIPESTATUS[0]}
     set -e
+}
+
+function force_unlock() {
+    echo "Unlocking state with ID: $INPUT_LOCK_ID"
+    debug_log terraform force-unlock -force $INPUT_LOCK_ID
+    (cd "$INPUT_PATH" && terraform force-unlock -force $INPUT_LOCK_ID)
 }
 
 # Every file written to disk should use one of these directories
