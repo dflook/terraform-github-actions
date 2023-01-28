@@ -87,6 +87,10 @@ fi
 if [[ $PLAN_EXIT -eq 1 ]]; then
     cat >&2 "$STEP_TMP_DIR/terraform_plan.stderr"
 
+    if lock-info "$STEP_TMP_DIR/terraform_plan.stderr"; then
+        set_output failure-reason state-locked
+    fi
+
     update_status ":x: Error applying plan in $(job_markdown_ref)"
     exit 1
 fi
