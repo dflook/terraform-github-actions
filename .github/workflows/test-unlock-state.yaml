@@ -82,3 +82,83 @@ jobs:
         with:
           path: tests/workflows/test-unlock-state
           auto_approve: true
+
+  nondefault_workspace:
+    runs-on: ubuntu-latest
+    name: Non Default workspace
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Check state is not locked
+        uses: ./terraform-apply
+        with:
+          path: tests/workflows/test-unlock-state
+          workspace: hello
+          auto_approve: true
+
+      - name: Intentionally lock the state
+        uses: ./terraform-apply
+        id: failed-apply-workspace
+        continue-on-error: true
+        with:
+          path: tests/workflows/test-unlock-state
+          workspace: hello
+          auto_approve: true
+          variables:
+            lock=true
+
+      # State is now locked
+
+      - name: Check apply-failed
+        run: |
+          if [[ "${{ steps.failed-apply-workspace.outcome }}" != "failure" ]]; then
+            echo "Apply did not fail correctly"
+            exit 1
+          fi
+
+          if [[ "${{ steps.failed-apply-workspace.outputs.failure-reason }}" != "apply-failed" ]]; then
+            echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+      # Check state-locked
+      - name: Try using locked state
+        uses: ./terraform-apply
+        id: locked-state-workspace
+        continue-on-error: true
+        with:
+          path: tests/workflows/test-unlock-state
+          workspace: hello
+          auto_approve: true
+
+      - name: Check state locked failure-reason
+        run: |
+          if [[ "${{ steps.locked-state-workspace.outcome }}" != "failure" ]]; then
+            echo "Apply did not fail correctly"
+            exit 1
+          fi
+
+          if [[ "${{ steps.locked-state-workspace.outputs.failure-reason }}" != "state-locked" ]]; then
+            echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+          
+          echo '"${{ steps.locked-state-workspace.outputs.lock-info }}"'
+          
+          echo 'Lock id is ${{ fromJson(steps.locked-state-workspace.outputs.lock-info).ID }}'
+
+      - name: Unlock the state
+        uses: ./terraform-unlock-state
+        continue-on-error: true
+        with:
+          path: tests/workflows/test-unlock-state
+          workspace: hello
+          lock_id: ${{ fromJson(steps.locked-state-workspace.outputs.lock-info).ID }}
+
+      - name: Check state is not locked
+        uses: ./terraform-apply
+        with:
+          path: tests/workflows/test-unlock-state
+          workspace: hello
+          auto_approve: true
