@@ -2,16 +2,13 @@
 
 This is one of a suite of terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
-This actions is intially planned to manually unlock the state for the defined configuration.
-
-The `GITHUB_TOKEN` environment variable must be set for the PR comment to be added.
-The action can be run on other events, which prints the plan to the workflow log.
+Force unlocks a Terraform remote state.
 
 ## Inputs
 
 * `path`
 
-  Path to the terraform root module to apply
+  Path to the terraform root module that defines the remote state to unlock
 
   - Type: string
   - Optional
@@ -19,7 +16,7 @@ The action can be run on other events, which prints the plan to the workflow log
 
 * `workspace`
 
-  Terraform workspace to run
+  Terraform workspace to unlock the remote state for
 
   - Type: string
   - Optional
@@ -27,49 +24,12 @@ The action can be run on other events, which prints the plan to the workflow log
 
 * `lock_id`
 
-  Lock id from the defined configuration
+  The ID of the state lock to release
 
   - Type: string
   - Required
 
 ## Environment Variables
-
-* `GITHUB_TOKEN`
-
-  The GitHub authorization token to use to create comments on a PR.
-  The token provided by GitHub Actions can be used - it can be passed by
-  using the `${{ secrets.GITHUB_TOKEN }}` expression, e.g.
-
-  ```yaml
-  env:
-    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  ```
-
-  The token provided by GitHub Actions will work with the default permissions.
-  The minimum permissions are `pull-requests: write`.
-  It will also likely need `contents: read` so the job can checkout the repo.
-
-  You can also use any other App token that has `pull-requests: write` permission.
-
-  You can use a fine-grained Personal Access Token which has repository permissions:
-  - Read access to metadata
-  - Read and Write access to pull requests
-
-  You can also use a classic Personal Access Token which has the `repo` scope.
-
-  The GitHub user or app that owns the token will be the PR comment author.
-
-  - Type: string
-  - Optional
-
-* `TERRAFORM_ACTIONS_GITHUB_TOKEN`
-
-  When this is set it is used instead of `GITHUB_TOKEN`, with the same behaviour.
-  The GitHub terraform provider also uses the `GITHUB_TOKEN` environment variable, 
-  so this can be used to make the github actions and the terraform provider use different tokens.
-
-  - Type: string
-  - Optional
 
 * `TERRAFORM_CLOUD_TOKENS`
 
@@ -133,22 +93,6 @@ The action can be run on other events, which prints the plan to the workflow log
   - Type: string
   - Optional
 
-* `TF_PLAN_COLLAPSE_LENGTH`
-
-  When PR comments are enabled, the terraform output is included in a collapsable pane.
-  
-  If a terraform plan has fewer lines than this value, the pane is expanded
-  by default when the comment is displayed.
-
-  ```yaml
-  env:
-    TF_PLAN_COLLAPSE_LENGTH: 30
-  ```
-
-  - Type: integer
-  - Optional
-  - Default: 10
-
 * `TERRAFORM_PRE_RUN`
 
   A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running terraform. 
@@ -181,26 +125,26 @@ on:
   workflow_dispatch:
     inputs:
       path:
-        description: "Path to the terraform files configuration"
+        description: "Path to the terraform root module"
         required: true
       lock_id:
         description: "Lock ID to be unlocked"
         required: true
 
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
 jobs:
   unlock:
-    name: Setup and unlock
+    name: Unlock
     runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
       - name: Terraform Unlock
-        uses: patricktalmeida/terraform-github-actions/terraform-unlock-state@add-unlock-state
+        uses: dflook/terraform-unlock-state@v1
         with:
           path: ${{ github.event.inputs.path }}
           lock_id: ${{ github.event.inputs.lock_id }}
