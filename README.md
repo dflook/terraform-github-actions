@@ -20,6 +20,7 @@ See the documentation for the available actions:
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 - [dflook/terraform-destroy](terraform-destroy)
 - [dflook/terraform-version](terraform-version)
+- [dflook/terraform-unlock-state](terraform-unlock-state)
 
 ## Example Usage
 These terraform actions can be added as steps to your own workflow files.

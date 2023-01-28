@@ -8,9 +8,21 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.31.1` to use an exact release
-- `@v1.31` to use the latest patch release for the specific minor version
+- `@v1.32.0` to use an exact release
+- `@v1.32` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.32.0] - 2023-01-28
+
+### Added
+- A new [dflook/terraform-state-unlock](https://github.com/dflook/terraform-github-actions/tree/main/terraform-state-unlock) action. Thanks [patricktalmeida](https://github.com/patricktalmeida) for working on this!
+- Actions that fail because the state was locked will now have the `failure-reason` output set to `state-locked`.
+  They also have a new `lock-info` output which is a json object with any available lock information.
+  This affects [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/main/terraform-apply), [dflook/terraform-destroy](https://github.com/dflook/terraform-github-actions/tree/main/terraform-destroy), and [dflook/terraform-destroy-worksapce](https://github.com/dflook/terraform-github-actions/tree/main/terraform-destroy-workspace).
+
+### Changed
+- If a terraform operation fails because the state is locked the `failure-reason` output will now be set to `state-locked`,
+  where before it may have been `apply-failed` or `destroy-failed`. 
 
 ## [1.31.1] - 2022-12-01
 
@@ -468,6 +480,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.32.0]: https://github.com/dflook/terraform-github-actions/compare/v1.31.1...v1.32.0
 [1.31.1]: https://github.com/dflook/terraform-github-actions/compare/v1.31.0...v1.31.1
 [1.31.0]: https://github.com/dflook/terraform-github-actions/compare/v1.30.0...v1.31.0
 [1.30.0]: https://github.com/dflook/terraform-github-actions/compare/v1.29.1...v1.30.0

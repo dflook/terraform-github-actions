@@ -115,8 +115,6 @@ Force unlocks a Terraform remote state.
   - Type: string
   - Optional
 
-## Outputs
-
 ## Example usage
 
 ```yaml
