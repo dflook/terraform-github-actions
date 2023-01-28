@@ -90,6 +90,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Create first workspace
+        uses: ./terraform-new-workspace
+        with:
+          path: tests/workflows/test-unlock-state
+          workspace: hello
+
       - name: Check state is not locked
         uses: ./terraform-apply
         with:
@@ -162,3 +168,9 @@ jobs:
           path: tests/workflows/test-unlock-state
           workspace: hello
           auto_approve: true
+
+      - name: Destroy workspace
+        uses: ./terraform-destroy-workspace
+        with:
+          path: tests/workflows/test-unlock-state
+          workspace: hello
