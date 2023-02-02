@@ -27,7 +27,7 @@ RUN apt-get update  \
     wget \
     gpg \
     gpg-agent \
-    dirmngr \    
+    dirmngr \
  && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p $TF_PLUGIN_CACHE_DIR

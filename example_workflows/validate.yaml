@@ -2,8 +2,8 @@ name: Validate changes
 
 on:
   push:
-    branches:
-      - '!main'
+    branches-ignore:
+      - 'main'
 
 jobs:
   fmt-check:

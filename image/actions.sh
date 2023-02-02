@@ -76,6 +76,12 @@ function setup() {
         exit 1
     fi
 
+    if [[ ! -v TERRAFORM_ACTIONS_GITHUB_TOKEN ]]; then
+      if [[ -v GITHUB_TOKEN ]]; then
+        export TERRAFORM_ACTIONS_GITHUB_TOKEN="$GITHUB_TOKEN"
+      fi
+    fi
+
     if ! github_comment_react +1 2>"$STEP_TMP_DIR/github_comment_react.stderr"; then
         debug_file "$STEP_TMP_DIR/github_comment_react.stderr"
     fi
@@ -101,12 +107,6 @@ function setup() {
     end_group
 
     detect-tfmask
-
-    if [[ ! -v TERRAFORM_ACTIONS_GITHUB_TOKEN ]]; then
-      if [[ -v GITHUB_TOKEN ]]; then
-        export TERRAFORM_ACTIONS_GITHUB_TOKEN="$GITHUB_TOKEN"
-      fi
-    fi
 
     execute_run_commands
 }

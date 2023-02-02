@@ -195,7 +195,8 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   ```
 
-  The token provided by GitHub Actions will work with the default permissions.
+  The token provided by GitHub Actions has default permissions at GitHub's whim. You can see what it is for your repo under the repo settings.
+
   The minimum permissions are `pull-requests: write`.
   It will also likely need `contents: read` so the job can checkout the repo.
 
@@ -385,6 +386,10 @@ name: PR Plan
 
 on: [pull_request]
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   plan:
     runs-on: ubuntu-latest
@@ -419,6 +424,10 @@ env:
   TERRAFORM_CLOUD_TOKENS: terraform.example.com=${{ secrets.TF_REGISTRY_TOKEN }}
   TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   plan:
     runs-on: ubuntu-latest
@@ -450,6 +459,10 @@ a comment on the PR with the generated plan.
 name: Terraform Plan
 
 on: [issue_comment]
+
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
   plan:
