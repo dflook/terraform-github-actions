@@ -51,6 +51,10 @@ name: Create terraform plan
 
 on: [pull_request]
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   plan:
     runs-on: ubuntu-latest
@@ -76,6 +80,10 @@ on:
   push:
     branches:
       - main
+
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
   apply:

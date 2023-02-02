@@ -278,7 +278,8 @@ These input values must be the same as any `terraform-plan` for the same configu
     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   ```
 
-  The token provided by GitHub Actions will work with the default permissions.
+  The token provided by GitHub Actions has default permissions at GitHub's whim. You can see what it is for your repo under the repo settings.
+
   The minimum permissions are `pull-requests: write`.
   It will also likely need `contents: read` so the job can checkout the repo.
 
@@ -401,6 +402,10 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   apply:
     runs-on: ubuntu-latest
@@ -515,6 +520,10 @@ on:
   push:
     branches:
       - main
+
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
   plan:
