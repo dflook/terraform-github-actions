@@ -8,9 +8,14 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.32.0` to use an exact release
+- `@v1.32.1` to use an exact release
 - `@v1.32` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.32.1] - 2023-02-02
+
+### Fixed
+- When triggered by `issue_comment` or `pull_request_review_comment` events, the action will first add a :+1: reaction to the comment
 
 ## [1.32.0] - 2023-01-28
 
@@ -480,6 +485,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.32.1]: https://github.com/dflook/terraform-github-actions/compare/v1.32.0...v1.32.1
 [1.32.0]: https://github.com/dflook/terraform-github-actions/compare/v1.31.1...v1.32.0
 [1.31.1]: https://github.com/dflook/terraform-github-actions/compare/v1.31.0...v1.31.1
 [1.31.0]: https://github.com/dflook/terraform-github-actions/compare/v1.30.0...v1.31.0
