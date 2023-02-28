@@ -52,7 +52,7 @@ inputs:
     required: false
     default: ""
   destroy:
-    description: Create a plan to destroy all resources
+    description: Create and apply a plan to destroy all resources
     required: false
     default: "false"
 

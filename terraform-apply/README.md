@@ -156,6 +156,9 @@ These input values must be the same as any `terraform-plan` for the same configu
 
   Set to `true` to destroy all resources.
 
+  This generates and applies a plan in [destroy mode](https://developer.hashicorp.com/terraform/cli/commands/plan#planning-modes).
+  This is only available in Terraform v0.15.2 and later.
+
   - Type: boolean
   - Optional
   - Default: false

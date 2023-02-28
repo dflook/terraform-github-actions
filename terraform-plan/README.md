@@ -138,6 +138,8 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
   Set to `true` to generate a plan to destroy all resources.
 
+  This generates a plan in [destroy mode](https://developer.hashicorp.com/terraform/cli/commands/plan#planning-modes).
+
   - Type: boolean
   - Optional
   - Default: false

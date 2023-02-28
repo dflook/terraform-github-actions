@@ -8,9 +8,18 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.32.1` to use an exact release
-- `@v1.32` to use the latest patch release for the specific minor version
+- `@v1.33.0` to use an exact release
+- `@v1.33` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.33.0] - 2023-02-28
+
+### Added
+- The [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/main/terraform-plan) and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/main/terraform-apply) actions now have a `destroy` input.
+  When set to `true` terraform will run in destroy mode, planning the destruction of all resources.
+  This allows reviewing the effect of a destroy before applying it.
+
+  The [dflook/terraform-destroy](https://github.com/dflook/terraform-github-actions/tree/main/terraform-destroy) action is unchanged and will still immediately destroy all resources.
 
 ## [1.32.1] - 2023-02-02
 
@@ -485,6 +494,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.33.0]: https://github.com/dflook/terraform-github-actions/compare/v1.32.1...v1.33.0
 [1.32.1]: https://github.com/dflook/terraform-github-actions/compare/v1.32.0...v1.32.1
 [1.32.0]: https://github.com/dflook/terraform-github-actions/compare/v1.31.1...v1.32.0
 [1.31.1]: https://github.com/dflook/terraform-github-actions/compare/v1.31.0...v1.31.1

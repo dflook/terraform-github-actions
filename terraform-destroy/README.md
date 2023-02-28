@@ -2,8 +2,10 @@
 
 This is one of a suite of terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
-This action uses the `terraform destroy` command to destroy all resources in a terraform workspace.
+:warning: This action uses the `terraform destroy` command to immediately destroy all resources in a terraform workspace.
 
+To generate a plan that can be reviewed you can instead use the [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/main/terraform-plan) 
+and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/main/terraform-plan) actions with the `destroy` input set to `true`.
 
 ## Inputs
 
