@@ -28,6 +28,7 @@ class PlanPrInputs(PlanInputs):
     INPUT_LABEL: str
     INPUT_TARGET: str
     INPUT_REPLACE: str
+    INPUT_DESTROY: str
 
 
 class Plan(PlanPrInputs):

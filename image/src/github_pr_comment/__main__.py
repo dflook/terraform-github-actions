@@ -117,13 +117,20 @@ def format_classic_description(action_inputs: PlanPrInputs) -> str:
     return label
 
 def format_description(action_inputs: PlanPrInputs, sensitive_variables: List[str]) -> str:
+
+    mode = ''
+    if action_inputs["INPUT_DESTROY"] == 'true':
+        mode = '\n:bomb: Planning to destroy all resources'
+
     if action_inputs['INPUT_LABEL']:
-        return f'Terraform plan for __{action_inputs["INPUT_LABEL"]}__'
+        return f'Terraform plan for __{action_inputs["INPUT_LABEL"]}__' + mode
 
     label = f'Terraform plan in __{action_inputs["INPUT_PATH"]}__'
 
     if action_inputs["INPUT_WORKSPACE"] != 'default':
         label += f' in the __{action_inputs["INPUT_WORKSPACE"]}__ workspace'
+
+    label += mode
 
     if action_inputs["INPUT_TARGET"]:
         label += '\nTargeting resources: '
@@ -296,6 +303,9 @@ def get_comment(action_inputs: PlanPrInputs, backend_fingerprint: bytes, backup_
 
     if replace := os.environ.get('INPUT_REPLACE'):
         plan_modifier['replace'] = sorted(t.strip() for t in replace.replace(',', '\n', ).split('\n') if t.strip())
+
+    if os.environ.get('INPUT_DESTROY') == 'true':
+        plan_modifier['destroy'] = 'true'
 
     if plan_modifier:
         debug(f'Plan modifier: {plan_modifier}')

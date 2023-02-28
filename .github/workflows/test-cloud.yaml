@@ -256,7 +256,7 @@ jobs:
           workspace: ${{ github.head_ref }}-2
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
-      - name: Destroy non-existant workspace
+      - name: Destroy non-existent workspace
         uses: ./terraform-destroy-workspace
         continue-on-error: true
         id: destroy-non-existant-workspace
