@@ -1080,7 +1080,7 @@ jobs:
 
   destroy_mode_label:
     runs-on: ubuntu-latest
-    name: Generate and apply a destroy mode plan
+    name: Generate and apply a destroy mode plan with a label
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -1096,13 +1096,13 @@ jobs:
       - name: Plan destroy
         uses: ./terraform-plan
         with:
-          label: test-apply destroy_mode
+          label: test-apply destroy_mode_label
           path: tests/workflows/test-apply/destroy_mode
           destroy: true
 
       - name: Apply destroy
         uses: ./terraform-apply
         with:
-          label: test-apply destroy_mode
+          label: test-apply destroy_mode_label
           path: tests/workflows/test-apply/destroy_mode
           destroy: true

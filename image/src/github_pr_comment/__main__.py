@@ -117,16 +117,20 @@ def format_classic_description(action_inputs: PlanPrInputs) -> str:
     return label
 
 def format_description(action_inputs: PlanPrInputs, sensitive_variables: List[str]) -> str:
+
+    mode = ''
+    if action_inputs["INPUT_DESTROY"] == 'true':
+        mode = '\n:skull: Planning to destroy all resources'
+
     if action_inputs['INPUT_LABEL']:
-        return f'Terraform plan for __{action_inputs["INPUT_LABEL"]}__'
+        return f'Terraform plan for __{action_inputs["INPUT_LABEL"]}__' + mode
 
     label = f'Terraform plan in __{action_inputs["INPUT_PATH"]}__'
 
     if action_inputs["INPUT_WORKSPACE"] != 'default':
         label += f' in the __{action_inputs["INPUT_WORKSPACE"]}__ workspace'
 
-    if action_inputs["INPUT_DESTROY"] == 'true':
-        label += '\n:skull: Planning to destroy all resources'
+    label += mode
 
     if action_inputs["INPUT_TARGET"]:
         label += '\nTargeting resources: '
