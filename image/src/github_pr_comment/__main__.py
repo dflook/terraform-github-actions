@@ -304,8 +304,8 @@ def get_comment(action_inputs: PlanPrInputs, backend_fingerprint: bytes, backup_
     if replace := os.environ.get('INPUT_REPLACE'):
         plan_modifier['replace'] = sorted(t.strip() for t in replace.replace(',', '\n', ).split('\n') if t.strip())
 
-    if destroy := os.environ.get('INPUT_DESTROY'):
-        plan_modifier['destroy'] = destroy
+    if os.environ.get('INPUT_DESTROY') == 'true':
+        plan_modifier['destroy'] = 'true'
 
     if plan_modifier:
         debug(f'Plan modifier: {plan_modifier}')
