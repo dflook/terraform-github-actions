@@ -1,13 +1,15 @@
 FROM danielflook/terraform-github-actions-base:latest
 
 ARG FETCH_CHECKSUMS
+ARG VERSION=99.0.0
 
 RUN gpg --recv-keys C874011F0AB405110D02105534365D9472D7468F \
  && echo "C874011F0AB405110D02105534365D9472D7468F:6:" | gpg --import-ownertrust
 
 COPY src/ /tmp/src/
 COPY setup.py /tmp
-RUN pip install /tmp \
+RUN sed -i "s|version='.*'|version=\'${VERSION}\'|" /tmp/setup.py \
+ && pip install /tmp \
  && rm -rf /tmp/src /tmp/setup.py
 
 RUN if [ "$FETCH_CHECKSUMS" = "yes" ]; then \

@@ -1050,3 +1050,59 @@ jobs:
           path: tests/workflows/test-apply/partial_backend
           backend_config_file: tests/workflows/test-apply/partial_backend/backend_config
           backend_config: key=${{ github.run_id }}${{ github.run_attempt }}
+
+  destroy_mode:
+    runs-on: ubuntu-latest
+    name: Generate and apply a destroy mode plan
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Apply
+        uses: ./terraform-apply
+        with:
+          path: tests/workflows/test-apply/destroy_mode
+          auto_approve: true
+
+      - name: Plan destroy
+        uses: ./terraform-plan
+        with:
+          path: tests/workflows/test-apply/destroy_mode
+          destroy: true
+
+      - name: Apply destroy
+        uses: ./terraform-apply
+        with:
+          path: tests/workflows/test-apply/destroy_mode
+          destroy: true
+
+  destroy_mode_label:
+    runs-on: ubuntu-latest
+    name: Generate and apply a destroy mode plan with a label
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Apply
+        uses: ./terraform-apply
+        with:
+          path: tests/workflows/test-apply/destroy_mode
+          auto_approve: true
+
+      - name: Plan destroy
+        uses: ./terraform-plan
+        with:
+          label: test-apply destroy_mode_label
+          path: tests/workflows/test-apply/destroy_mode
+          destroy: true
+
+      - name: Apply destroy
+        uses: ./terraform-apply
+        with:
+          label: test-apply destroy_mode_label
+          path: tests/workflows/test-apply/destroy_mode
+          destroy: true
