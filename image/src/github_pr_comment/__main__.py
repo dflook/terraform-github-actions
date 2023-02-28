@@ -125,7 +125,7 @@ def format_description(action_inputs: PlanPrInputs, sensitive_variables: List[st
     if action_inputs["INPUT_WORKSPACE"] != 'default':
         label += f' in the __{action_inputs["INPUT_WORKSPACE"]}__ workspace'
 
-    if action_inputs["INPUT_DESTROY"]:
+    if action_inputs["INPUT_DESTROY"] == 'true':
         label += '\n:skull: Planning to destroy all resources'
 
     if action_inputs["INPUT_TARGET"]:
