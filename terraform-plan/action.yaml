@@ -41,6 +41,10 @@ inputs:
     description: List of resources to replace if an update is required, one per line
     required: false
     default: ""
+  destroy:
+    description: Create a plan to destroy all resources
+    required: false
+    default: "false"
   label:
     description: A friendly name for this plan
     required: false

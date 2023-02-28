@@ -152,6 +152,14 @@ These input values must be the same as any `terraform-plan` for the same configu
   - Type: string
   - Optional
 
+* `destroy`
+
+  Set to `true` to destroy all resources.
+
+  - Type: boolean
+  - Optional
+  - Default: false
+
 * `auto_approve`
 
   When set to `true`, generated plans are always applied.

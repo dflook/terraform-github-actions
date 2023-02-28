@@ -284,6 +284,10 @@ function set-common-plan-args() {
             done
         fi
     fi
+
+    if [[ "$INPUT_DESTROY" == "true" ]]; then
+        PLAN_ARGS="$PLAN_ARGS -destroy"
+    fi
 }
 
 function set-plan-args() {

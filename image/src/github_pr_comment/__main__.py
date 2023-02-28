@@ -125,6 +125,9 @@ def format_description(action_inputs: PlanPrInputs, sensitive_variables: List[st
     if action_inputs["INPUT_WORKSPACE"] != 'default':
         label += f' in the __{action_inputs["INPUT_WORKSPACE"]}__ workspace'
 
+    if action_inputs["INPUT_DESTROY"]:
+        label += '\n:skull: Planning to destroy all resources'
+
     if action_inputs["INPUT_TARGET"]:
         label += '\nTargeting resources: '
         label += ', '.join(f'`{res.strip()}`' for res in action_inputs['INPUT_TARGET'].splitlines())
@@ -296,6 +299,9 @@ def get_comment(action_inputs: PlanPrInputs, backend_fingerprint: bytes, backup_
 
     if replace := os.environ.get('INPUT_REPLACE'):
         plan_modifier['replace'] = sorted(t.strip() for t in replace.replace(',', '\n', ).split('\n') if t.strip())
+
+    if destroy := os.environ.get('INPUT_DESTROY'):
+        plan_modifier['destroy'] = destroy
 
     if plan_modifier:
         debug(f'Plan modifier: {plan_modifier}')
