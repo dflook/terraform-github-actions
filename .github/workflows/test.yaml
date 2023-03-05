@@ -5,11 +5,7 @@ on:
 
 jobs:
   pytest:
-    strategy:
-      matrix:
-        runner: [ubuntu-latest, buildjet-2vcpu-ubuntu-2204-arm]
-
-    runs-on: ${{ matrix.runner }}
+    runs-on: ubuntu-latest
     name: pytest
     steps:
       - name: Checkout
@@ -19,6 +15,29 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: 3.9
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r tests/requirements.txt
+          
+          gpg --recv-keys C874011F0AB405110D02105534365D9472D7468F \
+           && echo "C874011F0AB405110D02105534365D9472D7468F:6:" | gpg --import-ownertrust          
+
+      - name: Run tests
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          TERRAFORM_ACTIONS_GITHUB_TOKEN: No
+        run: |
+           GNUPGHOME=$HOME/.gnupg PYTHONPATH=image/tools:image/src pytest tests
+
+  pytest_arm64:
+    runs-on: buildjet-2vcpu-ubuntu-2204-arm
+    name: pytest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
       - name: Install dependencies
         run: |
