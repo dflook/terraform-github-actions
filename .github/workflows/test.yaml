@@ -5,7 +5,11 @@ on:
 
 jobs:
   pytest:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        runner: [ubuntu-latest, buildjet-2vcpu-ubuntu-2204-arm]
+
+    runs-on: ${{ matrix.runner }}
     name: pytest
     steps:
       - name: Checkout
