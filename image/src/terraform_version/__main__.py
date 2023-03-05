@@ -29,6 +29,10 @@ def determine_version(inputs: InitInputs, cli_config_path: Path, actions_env: Ac
 
     versions = list(get_terraform_versions())
 
+    if get_arch() == 'arm64':
+        # arm64 support was introduced in 0.13.5
+        versions = list(apply_constraints(versions, [Constraint('>=0.13.5')]))
+
     module = load_module(Path(inputs.get('INPUT_PATH', '.')))
 
     version: Optional[Version]
@@ -69,10 +73,6 @@ def determine_version(inputs: InitInputs, cli_config_path: Path, actions_env: Ac
         debug('Failed to get backend config')
         debug(str(e))
         return latest_non_prerelease_version(versions)
-
-    if get_arch() == 'arm64':
-        # arm64 support was introduced in 0.13.5
-        versions = list(apply_constraints(versions, [Constraint('>=0.13.5')]))
 
     if backend_type not in ['remote', 'local']:
         if version := try_guess_state_version(inputs, module, versions):

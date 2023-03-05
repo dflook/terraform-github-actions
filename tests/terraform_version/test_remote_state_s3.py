@@ -6,7 +6,7 @@ import hcl2
 import pytest
 
 from terraform.download import get_executable, get_arch
-from terraform.versions import Version, apply_constraints
+from terraform.versions import Version, apply_constraints, Constraint
 from terraform_version.remote_state import try_guess_state_version, get_backend_constraints
 
 arm64_versions = [
@@ -208,6 +208,17 @@ def test_state(state_version):
 
     module = hcl2.loads(backend_tf)
 
+    initial_candidates = apply_constraints(
+        sorted(Version(v) for v in terraform_versions),
+        get_backend_constraints(module, {})
+    )
+
+    if get_arch() == 'arm64':
+        initial_candidates = apply_constraints(
+            initial_candidates,
+            [Constraint('>= 0.13.5')]
+        )
+
     assert try_guess_state_version(
         {
             'INPUT_BACKEND_CONFIG': '',
@@ -215,8 +226,5 @@ def test_state(state_version):
             'INPUT_WORKSPACE': 'default'
         },
         module,
-        versions=apply_constraints(
-            sorted(Version(v) for v in terraform_versions),
-            get_backend_constraints(module, {})
-        )
+        versions=initial_candidates
     ) == terraform_version
