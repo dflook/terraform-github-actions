@@ -11,7 +11,7 @@ from typing import Optional, cast
 from github_actions.debug import debug
 from github_actions.env import ActionsEnv, GithubEnv
 from github_actions.inputs import InitInputs
-from terraform.download import get_executable
+from terraform.download import get_executable, get_arch
 from terraform.module import load_module, get_backend_type
 from terraform.versions import apply_constraints, get_terraform_versions, Version, Constraint, latest_non_prerelease_version
 from terraform_version.asdf import try_read_asdf
@@ -69,6 +69,10 @@ def determine_version(inputs: InitInputs, cli_config_path: Path, actions_env: Ac
         debug('Failed to get backend config')
         debug(str(e))
         return latest_non_prerelease_version(versions)
+
+    if get_arch() == 'arm64':
+        # arm64 support was introduced in 0.13.5
+        versions = list(apply_constraints(versions, [Constraint('>=0.13.5')]))
 
     if backend_type not in ['remote', 'local']:
         if version := try_guess_state_version(inputs, module, versions):
