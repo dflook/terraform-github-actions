@@ -15,7 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     name: Docker Images
     env:
-      GITHUB_TOKEN: ${{ github.token }}
       DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
     steps:
       - name: Checkout
@@ -25,25 +24,19 @@ jobs:
         run: |
           echo $DOCKER_TOKEN | docker login --username danielflook --password-stdin
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
       - name: Base image
         run: |
-          docker pull --quiet debian:bullseye-slim
-          BASE_DIGEST="$(docker image inspect --format="{{index .RepoDigests 0}}" "debian:bullseye-slim" | sed 's/.*@//')"
-
-          docker build --tag dflook/terraform-github-actions-base -f image/Dockerfile-base \
-            --label org.opencontainers.image.created="$(date '+%Y-%m-%dT%H:%M:%S%z')" \
-            --label org.opencontainers.image.source="https://github.com/${{ github.repository }}" \
-            --label org.opencontainers.image.revision="${{ github.sha }}" \
-            --label org.opencontainers.image.base.name="docker.io/library/debian:bullseye-slim" \
-            --label org.opencontainers.image.base.digest="$BASE_DIGEST" \
-            --label build="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+          docker buildx build \
+            --tag danielflook/terraform-github-actions-base:$GITHUB_RUN_ID \
+            --tag danielflook/terraform-github-actions-base:latest  \
+            --platform linux/amd64,linux/arm64 \
+            --attest type=provenance,mode=max,builder-id=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID \
+            --file image/Dockerfile-base \
+            --push \
+            --iidfile manifest-list-digest.txt \
             image
 
-          docker tag dflook/terraform-github-actions-base danielflook/terraform-github-actions-base:latest
-          docker push --quiet danielflook/terraform-github-actions-base:latest
-
-          IMAGE_DIGEST="$(docker image inspect --format="{{index .RepoDigests 0}}" "danielflook/terraform-github-actions-base:latest" | sed 's/.*@//')"
-          echo "digest=$IMAGE_DIGEST" >> "$GITHUB_OUTPUT"
-
-          docker tag dflook/terraform-github-actions-base danielflook/terraform-github-actions-base:$GITHUB_RUN_ID
-          docker push --quiet danielflook/terraform-github-actions-base:$GITHUB_RUN_ID
+          echo "digest=$(<manifest-list-digest.txt)" >> "$GITHUB_OUTPUT"
