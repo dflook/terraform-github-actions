@@ -75,7 +75,7 @@ arm64_versions = [
     '0.13.5',
 ]
 
-amd64_versions = arm64_versions + [
+terraform_versions = arm64_versions + [
     '0.13.4',
     '0.13.3',
     '0.13.2',
