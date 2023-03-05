@@ -5,11 +5,37 @@ import subprocess
 import hcl2
 import pytest
 
-from terraform.download import get_executable
+from terraform.download import get_executable, get_arch
 from terraform.versions import Version, apply_constraints
 from terraform_version.remote_state import try_guess_state_version, get_backend_constraints
 
-terraform_versions = [
+arm64_versions = [
+    '1.3.9',
+    '1.3.8',
+    '1.3.7',
+    '1.3.6',
+    '1.3.5',
+    '1.3.4',
+    '1.3.3',
+    '1.3.2',
+    '1.3.1',
+    '1.3.0',
+    '1.2.9',
+    '1.2.8',
+    '1.2.7',
+    '1.2.6',
+    '1.2.5',
+    '1.2.4',
+    '1.2.3',
+    '1.2.2',
+    '1.2.1',
+    '1.2.0',
+    '1.1.9',
+    '1.1.8',
+    '1.1.7',
+    '1.1.6',
+    '1.1.5',
+    '1.1.4',
     '1.1.3',
     '1.1.2',
     '1.1.1',
@@ -47,6 +73,9 @@ terraform_versions = [
     '0.13.7',
     '0.13.6',
     '0.13.5',
+]
+
+amd64_versions = arm64_versions + [
     '0.13.4',
     '0.13.3',
     '0.13.2',
@@ -115,7 +144,7 @@ terraform_versions = [
     "0.9.7",
 ]
 
-@pytest.fixture(scope='module', params=["0.9.7", "0.11.8", "1.1.2"])
+@pytest.fixture(scope='module', params=["0.9.7", "0.11.8", "1.1.2"] if get_arch() == 'amd64' else ["0.13.5", "0.14.0", "1.1.2"])
 def state_version(request):
     terraform_version = Version(request.param)
     terraform_path = get_executable(terraform_version)

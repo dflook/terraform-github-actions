@@ -110,7 +110,7 @@ terraform_versions = [
 ]
 
 
-@pytest.fixture(scope='module', params=["0.11.8", "1.1.2"])
+@pytest.fixture(scope='module', params=["0.13.6", "1.1.2"])
 def local_state_version(request):
     terraform_version = Version(request.param)
     terraform_path = get_executable(Version(request.param))
