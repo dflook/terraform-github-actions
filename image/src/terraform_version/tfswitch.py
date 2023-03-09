@@ -14,7 +14,7 @@ def parse_tfswitch(tfswitch: str) -> Version:
     """
     Return the terraform version specified by a tfswitch file
 
-    :param tfswitch: The contents of a .tfswitch file
+    :param tfswitch: The contents of a .tfswitchrc file
     :return: The terraform version specified by the file
     """
 
