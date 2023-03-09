@@ -3,7 +3,7 @@ from subprocess import CalledProcessError
 from urllib.error import HTTPError
 
 from terraform.versions import Version
-from terraform.download import get_checksums, download_archive, verify_archive
+from terraform.download import get_checksums, download_archive, verify_archive, DownloadError
 
 import tempfile
 import os
@@ -20,16 +20,16 @@ def test_get_checksums():
                   Path(tempdir, 'terraform_0.11.8_SHA256SUMS.72D7468F.sig'))
         try:
             get_checksums(Version('0.11.8'), tempdir)
-        except CalledProcessError:
-            pass
+        except DownloadError as download_error:
+            assert str(download_error) == 'Could not verify checksums signature for 0.11.8'
         else:
             raise AssertionError('No exception was raised for invalid signature')
 
         # No such signature
         try:
             get_checksums(Version('1.1.100'), tempdir)
-        except HTTPError:
-            pass
+        except DownloadError as download_error:
+            assert str(download_error) == 'Could not download signature file for 1.1.100 - does this version exist?'
         else:
             raise AssertionError('No exception was raised for no signature found')
 
@@ -62,7 +62,7 @@ def test_verify_archive():
 
         try:
             verify_archive(version, archive_dir, archive_name, tempdir)
-        except CalledProcessError:
-            pass
+        except DownloadError as download_error:
+            assert str(download_error) == 'Could not verify integrity of terraform executable for 0.14.0'
         else:
             raise AssertionError('No exception was raised for incorrect checksum')

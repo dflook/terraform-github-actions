@@ -10,6 +10,7 @@ from terraform.versions import Version, apply_constraints, Constraint
 from terraform_version.remote_state import try_guess_state_version, get_backend_constraints
 
 arm64_versions = [
+    '1.4.0',
     '1.3.9',
     '1.3.8',
     '1.3.7',
@@ -144,7 +145,7 @@ terraform_versions = arm64_versions + [
     "0.9.7",
 ]
 
-@pytest.fixture(scope='module', params=["0.9.7", "0.11.8", "1.1.2"] if get_arch() == 'amd64' else ["0.13.5", "0.14.0", "1.1.2"])
+@pytest.fixture(scope='module', params=["0.9.7", "0.11.8", "1.1.2", "1.3.0", "1.4.0"] if get_arch() == 'amd64' else ["0.13.5", "0.14.0", "1.1.2", "1.3.0", "1.4.0"])
 def state_version(request):
     terraform_version = Version(request.param)
     terraform_path = get_executable(terraform_version)
