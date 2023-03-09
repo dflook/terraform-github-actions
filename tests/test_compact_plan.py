@@ -694,3 +694,13 @@ Plan: 1 to add, 0 to change, 0 to destroy."""
 
     output = '\n'.join(compact_plan(input.splitlines()))
     assert output == expected_output
+
+def test_plan_no_changes_1_4():
+    # yes really... this is what terraform 1.4 outputs if there are no changes and there are outputs defined
+    input = """random_string.my_string: Refreshing state... [id=t[oR@lj(UQZ]
+"""
+
+    expected_output = input.strip()
+
+    output = '\n'.join(compact_plan(input.splitlines()))
+    assert output == expected_output
