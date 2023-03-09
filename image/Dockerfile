@@ -6,7 +6,7 @@ ARG FETCH_CHECKSUMS
 ARG VERSION=99.0.0
 
 RUN gpg --recv-keys C874011F0AB405110D02105534365D9472D7468F \
- && echo "C874011F0AB405110D02105534365D9472D7468F:6:" | gpg --import-ownertrust \
+ && echo "C874011F0AB405110D02105534365D9472D7468F:6:" | gpg --import-ownertrust
 RUN gpg --check-trustdb
 
 COPY src/ /tmp/src/
