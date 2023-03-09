@@ -200,7 +200,14 @@ def create_summary(plan: Plan) -> Optional[str]:
             else:
                 return 'Changes to Outputs.'
 
-    return summary
+    if summary:
+        return summary
+
+    # Terraform 1.4.0 starting forgetting to print the plan summary
+    if os.environ.get('TF_CHANGES') == 'false':
+        return 'No changes.'
+    else:
+        return 'Plan generated.'
 
 
 def current_user(actions_env: GithubEnv) -> str:
