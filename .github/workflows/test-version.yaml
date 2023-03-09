@@ -526,10 +526,8 @@ jobs:
         uses: ./terraform-version
         continue-on-error: true
         id: no-such-version
-        env:
-          TERRAFORM_VERSION: 40.0.0
         with:
-          path: tests/workflows/test-version/empty
+          path: tests/workflows/test-version/nosuchversion
 
       - name: Check failed to download no such version
         run: |
