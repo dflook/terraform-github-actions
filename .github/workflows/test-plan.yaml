@@ -836,3 +836,18 @@ jobs:
             echo "Non existant backend_config_file did not fail correctly"
             exit 1
           fi          
+
+  arm64:
+    runs-on: buildjet-2vcpu-ubuntu-2204-arm
+    name: Test on arm64
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          path: tests/workflows/test-plan/plan
+          label: arm64

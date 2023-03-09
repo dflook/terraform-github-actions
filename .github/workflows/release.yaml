@@ -19,35 +19,27 @@ jobs:
         env:
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
         run: |
-          echo $GITHUB_TOKEN | docker login ghcr.io -u dflook --password-stdin
           echo $DOCKER_TOKEN | docker login --username danielflook --password-stdin
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
       - name: Build action image
         id: image_build
         run: |
           RELEASE_TAG="${{ github.event.release.tag_name }}"
 
-          docker pull --quiet danielflook/terraform-github-actions-base:latest
-          BASE_DIGEST="$(docker image inspect --format="{{index .RepoDigests 0}}" "danielflook/terraform-github-actions-base:latest" | sed 's/.*@//')"
-
-          docker build --tag dflook/terraform-github-actions \
+          docker buildx build \
             --build-arg FETCH_CHECKSUMS=yes \
             --build-arg VERSION="${RELEASE_TAG:1}" \
-            --label org.opencontainers.image.created="$(date '+%Y-%m-%dT%H:%M:%S%z')" \
-            --label org.opencontainers.image.source="https://github.com/${{ github.repository }}" \
-            --label org.opencontainers.image.revision="${{ github.sha }}" \
-            --label org.opencontainers.image.base.name="docker.io/danielflook/terraform-github-actions-base:latest" \
-            --label org.opencontainers.image.base.digest="$BASE_DIGEST" \
-            --label build="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+            --tag danielflook/terraform-github-actions:$RELEASE_TAG \
+            --platform linux/amd64,linux/arm64 \
+            --attest type=provenance,mode=max,builder-id=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID \
+            --push \
+            --iidfile manifest-list-digest.txt \
             image
 
-          docker tag dflook/terraform-github-actions ghcr.io/dflook/terraform-github-actions:$RELEASE_TAG
-          docker push --quiet ghcr.io/dflook/terraform-github-actions:$RELEASE_TAG
-
-          docker tag dflook/terraform-github-actions danielflook/terraform-github-actions:$RELEASE_TAG
-          docker push --quiet danielflook/terraform-github-actions:$RELEASE_TAG
-
-          echo "digest=$(docker image inspect --format="{{index .RepoDigests 0}}" "danielflook/terraform-github-actions:$RELEASE_TAG")" >> "$GITHUB_OUTPUT"
+          echo "digest=danielflook/terraform-github-actions@$(<manifest-list-digest.txt)" >> "$GITHUB_OUTPUT"
 
       - name: Release actions
         run: |
