@@ -414,6 +414,9 @@
       ">=0.12.21"
     ],
     "config_variables": {
+      "assume_role": [
+        ">=1.4.0"
+      ],
       "acl": [
         ">=0.12.21"
       ],
@@ -438,11 +441,23 @@
       "secret_key": [
         ">=0.12.21"
       ],
+      "security_token": [
+        ">=1.4.0"
+      ],
       "accelerate": [
         ">=1.3.0"
       ]
     },
     "environment_variables": {
+      "TENCENTCLOUD_ASSUME_ROLE_ARN": [
+        ">=1.4.0"
+      ],
+      "TENCENTCLOUD_ASSUME_ROLE_SESSION_NAME": [
+        ">=1.4.0"
+      ],
+      "TENCENTCLOUD_ASSUME_ROLE_SESSION_DURATION": [
+        ">=1.4.0"
+      ],
       "TENCENTCLOUD_REGION": [
         ">=0.12.21"
       ],
@@ -451,6 +466,9 @@
       ],
       "TENCENTCLOUD_SECRET_KEY": [
         ">=0.12.21"
+      ],
+      "TENCENTCLOUD_SECURITY_TOKEN": [
+        ">=1.4.0"
       ]
     }
   },
@@ -540,6 +558,9 @@
       "impersonate_service_account_delegates": [
         ">=0.14.0"
       ],
+      "kms_encryption_key": [
+        ">=1.4.0"
+      ],
       "path": [
         ">=0.9.0",
         "<=0.14.11"
@@ -554,6 +575,9 @@
       "region": [
         ">=0.11.0",
         "<=0.15.3"
+      ],
+      "storage_custom_endpoint": [
+        ">=1.4.0"
       ]
     },
     "environment_variables": {
@@ -568,6 +592,9 @@
       ],
       "GOOGLE_IMPERSONATE_SERVICE_ACCOUNT": [
         ">=0.14.0"
+      ],
+      "GOOGLE_BACKEND_IMPERSONATE_SERVICE_ACCOUNT": [
+        ">=1.4.0"
       ]
     }
   },
