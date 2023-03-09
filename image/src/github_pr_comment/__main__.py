@@ -176,7 +176,7 @@ def format_description(action_inputs: PlanPrInputs, sensitive_variables: List[st
 
     return label
 
-def create_summary(plan: Plan) -> Optional[str]:
+def create_summary(plan: Plan, changes: bool=True) -> Optional[str]:
     summary = None
 
     to_move = 0
@@ -204,10 +204,7 @@ def create_summary(plan: Plan) -> Optional[str]:
         return summary
 
     # Terraform 1.4.0 starting forgetting to print the plan summary
-    if os.environ.get('TF_CHANGES') == 'false':
-        return 'No changes.'
-    else:
-        return 'Plan generated.'
+    return 'Plan generated.' if changes else 'No changes.'
 
 
 def current_user(actions_env: GithubEnv) -> str:
@@ -405,11 +402,13 @@ def main() -> int:
         headers['plan_hash'] = plan_hash(body, comment.issue_url)
         headers['plan_text_format'], plan_text = format_plan_text(body)
 
+        changes = os.environ.get('TF_CHANGES') == 'true'
+
         comment = update_comment(
             github,
             comment,
             description=description,
-            summary=create_summary(body),
+            summary=create_summary(body, changes),
             headers=headers,
             body=plan_text,
             status=status
