@@ -155,9 +155,10 @@ Changes to Outputs:
 
 def test_summary_unknown():
     plan = """
-This is not anything like terraform output we know. We don't want to generate a summary for this.
+This is not anything like terraform output we know. We will look at the terraform exit code to see if there were changes
 """
-    assert create_summary(plan) is None
+    assert create_summary(plan, True) == 'Plan generated.'
+    assert create_summary(plan, False) == 'No changes.'
 
 def test_summary_move_only():
     plan = """Terraform will perform the following actions:

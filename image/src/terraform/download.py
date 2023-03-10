@@ -11,6 +11,7 @@ import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Tuple
 from urllib.request import urlretrieve
+from urllib.error import HTTPError
 from zipfile import ZipFile
 
 from github_actions.debug import debug
@@ -18,6 +19,8 @@ from github_actions.debug import debug
 if TYPE_CHECKING:
     from terraform.versions import Version
 
+class DownloadError(Exception):
+    """Error downloading terraform"""
 
 def get_platform() -> str:
     """Return terraform's idea of the current platform name."""
@@ -68,24 +71,39 @@ def get_checksums(version: Version, checksum_dir: Path) -> Path:
     if not signature_path.exists():
         signature_url = f'https://releases.hashicorp.com/terraform/{version}/terraform_{version}_SHA256SUMS.72D7468F.sig'
         debug(f'Downloading signature from {signature_url}')
-        urlretrieve(
-            signature_url,
-            signature_path
-        )
+
+        try:
+            urlretrieve(
+                signature_url,
+                signature_path
+            )
+        except HTTPError as http_error:
+            if http_error.code == 404:
+                raise DownloadError(f'Could not download signature file for {version} - does this version exist?')
+            raise
 
     if not checksums_path.exists():
         checksum_url = f'https://releases.hashicorp.com/terraform/{version}/terraform_{version}_SHA256SUMS'
         debug(f'Downloading checksums from {checksum_url}')
-        urlretrieve(
-            checksum_url,
-            checksums_path
-        )
 
-    subprocess.run(
-        ['gpg', '--verify', signature_path, checksums_path],
-        check=True,
-        env={'GNUPGHOME': '/root/.gnupg'} | os.environ
-    )
+        try:
+            urlretrieve(
+                checksum_url,
+                checksums_path
+            )
+        except HTTPError as http_error:
+            if http_error.code == 404:
+                raise DownloadError(f'Could not download checksums for {version} - does this version exist?')
+            raise
+
+    try:
+        subprocess.run(
+            ['gpg', '--verify', signature_path, checksums_path],
+            check=True,
+            env={'GNUPGHOME': '/root/.gnupg'} | os.environ
+        )
+    except subprocess.CalledProcessError:
+        raise DownloadError(f'Could not verify checksums signature for {version}')
 
     return checksums_path
 
@@ -105,10 +123,16 @@ def download_archive(version: Version, cache_dir: Path) -> Tuple[Path, str]:
     archive_url = f'https://releases.hashicorp.com/terraform/{version}/terraform_{version}_{get_platform()}_{get_arch()}.zip'
     debug(f'Downloading archive from {archive_url}')
     os.makedirs(cache_dir, exist_ok=True)
-    urlretrieve(
-        archive_url,
-        archive_path
-    )
+
+    try:
+        urlretrieve(
+            archive_url,
+            archive_path
+        )
+    except HTTPError as http_error:
+        if http_error.code == 404:
+            raise DownloadError(f'Could not download archive for {version} - does this version exist for this platform ({get_platform()}_{get_arch()})?')
+        raise
 
     return cache_dir, f'terraform_{version}_{get_platform()}_{get_arch()}.zip'
 
@@ -132,13 +156,15 @@ def verify_archive(version: Version, cache_dir: Path, archive_name: str, checksu
                 return line + b'\n'
         raise RuntimeError('Checksum not found')
 
-    subprocess.run(
-        ['shasum', '--algorithm', '256', '--check', '--strict'],
-        check=True,
-        cwd=cache_dir,
-        input=get_checksum()
-    )
-
+    try:
+        subprocess.run(
+            ['shasum', '--algorithm', '256', '--check', '--strict'],
+            check=True,
+            cwd=cache_dir,
+            input=get_checksum()
+        )
+    except subprocess.CalledProcessError:
+        raise DownloadError(f'Could not verify integrity of terraform executable for {version}')
 
 def get_archive(version: Version, cache_dirs: list[Path]) -> Tuple[Path, str]:
     """

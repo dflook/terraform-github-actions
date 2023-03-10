@@ -11,7 +11,7 @@ from typing import Optional, cast
 from github_actions.debug import debug
 from github_actions.env import ActionsEnv, GithubEnv
 from github_actions.inputs import InitInputs
-from terraform.download import get_executable
+from terraform.download import get_executable, get_arch, DownloadError
 from terraform.module import load_module, get_backend_type
 from terraform.versions import apply_constraints, get_terraform_versions, Version, Constraint, latest_non_prerelease_version
 from terraform_version.asdf import try_read_asdf
@@ -70,14 +70,18 @@ def determine_version(inputs: InitInputs, cli_config_path: Path, actions_env: Ac
         debug(str(e))
         return latest_non_prerelease_version(versions)
 
-    if backend_type not in ['remote', 'local']:
-        if version := try_guess_state_version(inputs, module, versions):
-            sys.stdout.write('Using the same terraform version that wrote the existing remote state file\n')
-            return version
-
     if backend_type == 'local':
         if version := try_read_local_state(Path(inputs.get('INPUT_PATH', '.'))):
             sys.stdout.write('Using the same terraform version that wrote the existing local terraform.tfstate\n')
+            return version
+
+    if get_arch() == 'arm64':
+        # arm64 support was introduced in 0.13.5
+        versions = list(apply_constraints(versions, [Constraint('>=0.13.5')]))
+
+    if backend_type not in ['remote', 'local']:
+        if version := try_guess_state_version(inputs, module, versions):
+            sys.stdout.write('Using the same terraform version that wrote the existing remote state file\n')
             return version
 
     sys.stdout.write('Terraform version not specified, using the latest version\n')
@@ -104,14 +108,19 @@ def switch(version: Version) -> None:
 def main() -> None:
     """Entrypoint for terraform-version."""
 
-    if len(sys.argv) > 1:
-        switch(Version(sys.argv[1]))
-    else:
-        version = determine_version(
-            cast(InitInputs, os.environ),
-            Path('~/.terraformrc'),
-            cast(ActionsEnv, os.environ),
-            cast(GithubEnv, os.environ)
-        )
+    try:
+        if len(sys.argv) > 1:
+            switch(Version(sys.argv[1]))
 
-        switch(version)
+        else:
+            version = determine_version(
+                cast(InitInputs, os.environ),
+                Path('~/.terraformrc'),
+                cast(ActionsEnv, os.environ),
+                cast(GithubEnv, os.environ)
+            )
+            switch(version)
+
+    except DownloadError as download_error:
+        sys.stderr.write(str(download_error))
+        sys.exit(1)

@@ -5,11 +5,38 @@ import subprocess
 import hcl2
 import pytest
 
-from terraform.download import get_executable
-from terraform.versions import Version, apply_constraints
+from terraform.download import get_executable, get_arch
+from terraform.versions import Version, apply_constraints, Constraint
 from terraform_version.remote_state import try_guess_state_version, get_backend_constraints
 
-terraform_versions = [
+arm64_versions = [
+    '1.4.0',
+    '1.3.9',
+    '1.3.8',
+    '1.3.7',
+    '1.3.6',
+    '1.3.5',
+    '1.3.4',
+    '1.3.3',
+    '1.3.2',
+    '1.3.1',
+    '1.3.0',
+    '1.2.9',
+    '1.2.8',
+    '1.2.7',
+    '1.2.6',
+    '1.2.5',
+    '1.2.4',
+    '1.2.3',
+    '1.2.2',
+    '1.2.1',
+    '1.2.0',
+    '1.1.9',
+    '1.1.8',
+    '1.1.7',
+    '1.1.6',
+    '1.1.5',
+    '1.1.4',
     '1.1.3',
     '1.1.2',
     '1.1.1',
@@ -47,6 +74,9 @@ terraform_versions = [
     '0.13.7',
     '0.13.6',
     '0.13.5',
+]
+
+terraform_versions = arm64_versions + [
     '0.13.4',
     '0.13.3',
     '0.13.2',
@@ -115,7 +145,7 @@ terraform_versions = [
     "0.9.7",
 ]
 
-@pytest.fixture(scope='module', params=["0.9.7", "0.11.8", "1.1.2"])
+@pytest.fixture(scope='module', params=["0.9.7", "0.11.8", "1.1.2", "1.3.0", "1.4.0"] if get_arch() == 'amd64' else ["0.13.5", "0.14.0", "1.1.2", "1.3.0", "1.4.0"])
 def state_version(request):
     terraform_version = Version(request.param)
     terraform_path = get_executable(terraform_version)
@@ -179,6 +209,17 @@ def test_state(state_version):
 
     module = hcl2.loads(backend_tf)
 
+    initial_candidates = apply_constraints(
+        sorted(Version(v) for v in terraform_versions),
+        get_backend_constraints(module, {})
+    )
+
+    if get_arch() == 'arm64':
+        initial_candidates = apply_constraints(
+            initial_candidates,
+            [Constraint('>= 0.13.5')]
+        )
+
     assert try_guess_state_version(
         {
             'INPUT_BACKEND_CONFIG': '',
@@ -186,8 +227,5 @@ def test_state(state_version):
             'INPUT_WORKSPACE': 'default'
         },
         module,
-        versions=apply_constraints(
-            sorted(Version(v) for v in terraform_versions),
-            get_backend_constraints(module, {})
-        )
+        versions=initial_candidates
     ) == terraform_version

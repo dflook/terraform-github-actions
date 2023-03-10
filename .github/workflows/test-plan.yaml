@@ -836,3 +836,39 @@ jobs:
             echo "Non existant backend_config_file did not fail correctly"
             exit 1
           fi          
+
+  test_plan_1_4:
+    runs-on: ubuntu-latest
+    name: Test plan text on Terraform 1.4
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Apply
+        uses: ./terraform-apply
+        with:
+          path: tests/workflows/test-plan/plan
+          auto_approve: true
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          path: tests/workflows/test-plan/plan
+          label: test-plan test_plan_1_4
+
+  arm64:
+    runs-on: buildjet-2vcpu-ubuntu-2204-arm
+    name: Test on arm64
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          path: tests/workflows/test-plan/plan
+          label: arm64

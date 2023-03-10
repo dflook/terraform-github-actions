@@ -1,10 +1,13 @@
 FROM danielflook/terraform-github-actions-base:latest
 
+ARG TARGETARCH
+
 ARG FETCH_CHECKSUMS
 ARG VERSION=99.0.0
 
 RUN gpg --recv-keys C874011F0AB405110D02105534365D9472D7468F \
  && echo "C874011F0AB405110D02105534365D9472D7468F:6:" | gpg --import-ownertrust
+RUN gpg --check-trustdb
 
 COPY src/ /tmp/src/
 COPY setup.py /tmp
@@ -16,8 +19,16 @@ RUN if [ "$FETCH_CHECKSUMS" = "yes" ]; then \
   TERRAFORM_BIN_CHECKSUM_DIR="/var/terraform" get-terraform-checksums; \
 fi
 
-RUN TERRAFORM_BIN_CACHE_DIR="/var/terraform" TERRAFORM_BIN_CHECKSUM_DIR="/var/terraform" terraform-version 0.9.0 \
- && TERRAFORM_BIN_CACHE_DIR="/var/terraform" TERRAFORM_BIN_CHECKSUM_DIR="/var/terraform" terraform-version 0.12.0
+RUN echo "$TARGETARCH"
+
+RUN if [ "$TARGETARCH" = "amd64" ]; then \
+      TERRAFORM_BIN_CACHE_DIR="/var/terraform" TERRAFORM_BIN_CHECKSUM_DIR="/var/terraform" terraform-version 0.9.0 \
+   && TERRAFORM_BIN_CACHE_DIR="/var/terraform" TERRAFORM_BIN_CHECKSUM_DIR="/var/terraform" terraform-version 0.12.0; \
+fi
+
+RUN if [ "$TARGETARCH" = "arm64" ]; then \
+      TERRAFORM_BIN_CACHE_DIR="/var/terraform" TERRAFORM_BIN_CHECKSUM_DIR="/var/terraform" terraform-version 0.13.5; \
+fi
 
 COPY entrypoints/ /entrypoints/
 COPY actions.sh /usr/local/actions.sh
