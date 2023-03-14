@@ -29,7 +29,7 @@ jobs:
             --build-arg FETCH_CHECKSUMS=yes \
             --build-arg VERSION="0.99.0" \
             --tag danielflook/terraform-github-actions:$RELEASE_TAG \
-            --tag ghcr.io/dflook/terraform-github-actions:$RELEASE_TAG \          
+            --tag ghcr.io/dflook/terraform-github-actions:$RELEASE_TAG \
             --platform linux/amd64,linux/arm64 \
             --attest type=provenance,mode=max,builder-id=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID \
             --push \
