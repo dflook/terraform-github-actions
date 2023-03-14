@@ -17,8 +17,10 @@ jobs:
 
       - name: Registry login
         env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
         run: |
+          echo $GITHUB_TOKEN | docker login ghcr.io --username dflook --password-stdin          
           echo $DOCKER_TOKEN | docker login --username danielflook --password-stdin
 
       - name: Set up Docker Buildx
@@ -33,13 +35,14 @@ jobs:
             --build-arg FETCH_CHECKSUMS=yes \
             --build-arg VERSION="${RELEASE_TAG:1}" \
             --tag danielflook/terraform-github-actions:$RELEASE_TAG \
+            --tag ghcr.io/dflook/terraform-github-actions:$RELEASE_TAG \       
             --platform linux/amd64,linux/arm64 \
             --attest type=provenance,mode=max,builder-id=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID \
             --push \
             --iidfile manifest-list-digest.txt \
             image
 
-          echo "digest=danielflook/terraform-github-actions@$(<manifest-list-digest.txt)" >> "$GITHUB_OUTPUT"
+          echo "digest=$(<manifest-list-digest.txt)" >> "$GITHUB_OUTPUT"
 
       - name: Release actions
         run: |
@@ -49,18 +52,22 @@ jobs:
 
           git config --global user.name "Daniel Flook"
           git config --global user.email "daniel@flook.org"
+          
+          function prepare_release() {
+              rsync -r $GITHUB_WORKSPACE/$action/ $HOME/$action
+              rm -rf $HOME/$action/.github
+              mkdir $HOME/$action/.github
+              cp $GITHUB_WORKSPACE/.github/FUNDING.yml $HOME/$action/.github/FUNDING.yml
+          }
 
           for action in $(cd $GITHUB_WORKSPACE && find . -name action.yaml -printf "%h\n" | sed 's/^.\///'); do
 
             if git clone https://dflook:$GITHUB_TOKEN@github.com/dflook/$action.git "$HOME/$action"; then
               echo "Releasing dflook/$action@$RELEASE_TAG"
 
-              rsync -r $GITHUB_WORKSPACE/$action/ $HOME/$action
-              rm -rf $HOME/$action/.github
-              mkdir $HOME/$action/.github
-              cp $GITHUB_WORKSPACE/.github/FUNDING.yml $HOME/$action/.github/FUNDING.yml
-
-              sed -i "s|../image/Dockerfile|docker://${{ steps.image_build.outputs.digest }}|" $HOME/$action/action.yaml
+              # git tags that use DockerHub for the image
+              prepare_release
+              sed -i 's|  image:.*|  image: docker://danielflook/terraform-github-actions@${{ steps.image_build.outputs.digest }}|' $HOME/$action/action.yaml
 
               git -C "$HOME/$action" add -A
               git -C "$HOME/$action" commit -m "$RELEASE_TAG"
@@ -69,7 +76,20 @@ jobs:
               git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$major.$minor"
               git -C "$HOME/$action" push --force
               git -C "$HOME/$action" push --force --tags
+          
+              # git tags that use GitHub Container Registry for the image
+              git -C "$HOME/$action" checkout ghcr
+              prepare_release
+              sed -i 's|  image:.*|  image: docker://ghcr.io/dflook/terraform-github-actions@${{ steps.image_build.outputs.digest }}|' $HOME/$action/action.yaml
+          
+              git -C "$HOME/$action" add -A
+              git -C "$HOME/$action" commit -m "$RELEASE_TAG-ghcr"
+              git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$RELEASE_TAG-ghcr"
+              git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$major-ghcr"
+              git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$major.$minor-ghcr"
+              git -C "$HOME/$action" push --force --tags
 
+              # Create the github release
               cat $GITHUB_WORKSPACE/.github/release_template.md \
                | envsubst \
                | jq --slurp --raw-input --arg RELEASE_TAG "$RELEASE_TAG" '{"tag_name": $RELEASE_TAG, "name": $RELEASE_TAG, "body": . }' \

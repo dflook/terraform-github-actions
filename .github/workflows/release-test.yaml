@@ -1,6 +1,11 @@
 name: Build test image
 
-on: [push]
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to push"
+        required: true
 
 jobs:
   image:
@@ -23,7 +28,7 @@ jobs:
 
       - name: Build action image
         run: |
-          RELEASE_TAG="ghcr-test"
+          RELEASE_TAG="${{ github.event.inputs.tag }}"
 
           docker buildx build \
             --build-arg FETCH_CHECKSUMS=yes \
