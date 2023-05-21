@@ -29,6 +29,7 @@ RUN apt-get update  \
     python3-pip \
     wget \
     gpg \
+    awscli \
     gpg-agent \
     dirmngr \
  && rm -rf /var/lib/apt/lists/*
