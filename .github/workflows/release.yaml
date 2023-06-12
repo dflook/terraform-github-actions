@@ -87,6 +87,7 @@ jobs:
               git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$RELEASE_TAG-ghcr"
               git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$major-ghcr"
               git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$major.$minor-ghcr"
+              git -C "$HOME/$action" push --force
               git -C "$HOME/$action" push --force --tags
 
               # Create the github release
