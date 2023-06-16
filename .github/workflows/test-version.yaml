@@ -241,7 +241,7 @@ jobs:
           TF_CLOUD_ORGANIZATION: flooktech
         with:
           path: tests/workflows/test-version/partial-cloud
-          workspace: tfc_cloud_workspace-1
+          workspace: tfc_partial_cloud_workspace-1
 
       - name: Test terraform-version
         uses: ./terraform-version
@@ -251,7 +251,7 @@ jobs:
           TF_CLOUD_ORGANIZATION: flooktech
         with:
           path: tests/workflows/test-version/partial-cloud
-          workspace: tfc_cloud_workspace-1
+          workspace: tfc_partial_cloud_workspace-1
 
       - name: Destroy workspace
         uses: ./terraform-destroy-workspace
@@ -260,7 +260,7 @@ jobs:
           TF_CLOUD_ORGANIZATION: flooktech
         with:
           path: tests/workflows/test-version/partial-cloud
-          workspace: tfc_cloud_workspace-1
+          workspace: tfc_partial_cloud_workspace-1
 
       - name: Print the version
         run: |
