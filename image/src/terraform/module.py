@@ -216,8 +216,10 @@ def get_cloud_config(module: TerraformModule, cli_config_path: Path) -> Optional
 
             if 'hostname' in cloud:
                 backend_config['hostname'] = cloud['hostname']
+            elif 'TF_CLOUD_HOSTNAME' in os.environ:
+                backend_config['hostname'] = os.environ['TF_CLOUD_HOSTNAME']
 
-            backend_config['organization'] = cloud.get('organization')
+            backend_config['organization'] = cloud.get('organization', os.environ.get('TF_ORGANIZATION'))
             backend_config['token'] = cloud.get('token')
 
             if cloud.get('workspaces', []):
