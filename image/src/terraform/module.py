@@ -222,8 +222,10 @@ def get_cloud_config(module: TerraformModule, cli_config_path: Path) -> Optional
             backend_config['organization'] = cloud.get('organization', os.environ.get('TF_CLOUD_ORGANIZATION'))
             backend_config['token'] = cloud.get('token')
 
-            if cloud.get('workspaces', []):
+            if 'workspaces' in cloud:
                 backend_config['workspaces'] = cloud['workspaces'][0]
+            elif 'INPUT_WORKSPACE' in os.environ:
+                backend_config['workspaces'] = BackendConfigWorkspaces(name=os.environ['INPUT_WORKSPACE'])
 
     if not found:
         return None
