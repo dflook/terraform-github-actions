@@ -123,7 +123,7 @@ jobs:
           fi
 
           cat "${{ steps.apply.outputs.json_plan_path }}"
-          if [[ $(jq -r .format_version "${{ steps.apply.outputs.json_plan_path }}") != "1.1" ]]; then
+          if [[ $(jq -r .format_version "${{ steps.apply.outputs.json_plan_path }}") != "1.2" ]]; then
             echo "::error:: json_plan_path not set correctly"
             exit 1
           fi
@@ -227,7 +227,7 @@ jobs:
             exit 1
           fi
 
-          if [[ $(jq -r .format_version "${{ steps.second-apply.outputs.json_plan_path }}") != "1.1" ]]; then
+          if [[ $(jq -r .format_version "${{ steps.second-apply.outputs.json_plan_path }}") != "1.2" ]]; then
             echo "::error:: json_plan_path not set correctly"
             exit 1
           fi
@@ -625,7 +625,7 @@ jobs:
           fi
 
           cat "${{ steps.apply.outputs.json_plan_path }}"
-          if [[ $(jq -r .format_version "${{ steps.apply.outputs.json_plan_path }}") != "1.1" ]]; then
+          if [[ $(jq -r .format_version "${{ steps.apply.outputs.json_plan_path }}") != "1.2" ]]; then
             echo "::error:: json_plan_path not set correctly"
             exit 1
           fi
