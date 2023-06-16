@@ -236,7 +236,7 @@ jobs:
       - name: Create workspace
         uses: ./terraform-new-workspace
         env:
-          TERRAFORM_VERSION: 1.1.2
+          TERRAFORM_VERSION: 1.2.1
           TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_API_TOKEN }}
           TF_CLOUD_ORGANIZATION: flooktech
         with:
@@ -266,7 +266,7 @@ jobs:
         run: |
           echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
 
-          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "1.1.2" ]]; then
+          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "1.2.1" ]]; then
             echo "::error:: Terraform version not set from remote workspace"
             exit 1
           fi
