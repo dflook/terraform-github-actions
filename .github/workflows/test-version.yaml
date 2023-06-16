@@ -226,6 +226,51 @@ jobs:
             exit 1
           fi
 
+  tfc_partial_cloud_workspace:
+    runs-on: ubuntu-latest
+    name: Partial TFC Cloud Configuration
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Create workspace
+        uses: ./terraform-new-workspace
+        env:
+          TERRAFORM_VERSION: 1.1.2
+          TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_API_TOKEN }}
+          TF_CLOUD_ORGANIZATION: flooktech
+        with:
+          path: tests/workflows/test-version/partial-cloud
+          workspace: tfc_cloud_workspace-1
+
+      - name: Test terraform-version
+        uses: ./terraform-version
+        id: terraform-version
+        env:
+          TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_API_TOKEN }}
+          TF_CLOUD_ORGANIZATION: flooktech
+        with:
+          path: tests/workflows/test-version/partial-cloud
+          workspace: tfc_cloud_workspace-1
+
+      - name: Destroy workspace
+        uses: ./terraform-destroy-workspace
+        env:
+          TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_API_TOKEN }}
+          TF_CLOUD_ORGANIZATION: flooktech
+        with:
+          path: tests/workflows/test-version/partial-cloud
+          workspace: tfc_cloud_workspace-1
+
+      - name: Print the version
+        run: |
+          echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
+
+          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "1.1.2" ]]; then
+            echo "::error:: Terraform version not set from remote workspace"
+            exit 1
+          fi
+
   local_state:
     runs-on: ubuntu-latest
     name: Local State file
