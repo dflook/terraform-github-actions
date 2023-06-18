@@ -249,6 +249,10 @@ function select-workspace() {
         if [[ $WORKSPACE_EXIT -ne 0 ]] && grep -q "workspaces not supported" "$STEP_TMP_DIR/workspace_select" && [[ $INPUT_WORKSPACE == "default" ]]; then
             echo "The full name of a remote workspace is set by the terraform configuration, selecting a different one is not supported"
             WORKSPACE_EXIT=0
+        elif [[ $WORKSPACE_EXIT -ne 0 && "$TERRAFORM_BACKEND_TYPE" == "cloud" ]]; then
+            # workspace select doesn't work with partial cloud config, we'll just have to try it and see
+            export TF_WORKSPACE="$INPUT_WORKSPACE"
+            WORKSPACE_EXIT=0
         else
             cat "$STEP_TMP_DIR/workspace_select"
         fi
