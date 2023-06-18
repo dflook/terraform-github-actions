@@ -79,7 +79,7 @@ def determine_version(inputs: InitInputs, cli_config_path: Path, actions_env: Ac
         # arm64 support was introduced in 0.13.5
         versions = list(apply_constraints(versions, [Constraint('>=0.13.5')]))
 
-    if backend_type not in ['remote', 'local']:
+    if backend_type not in ['remote', 'cloud', 'local']:
         if version := try_guess_state_version(inputs, module, versions):
             sys.stdout.write('Using the same terraform version that wrote the existing remote state file\n')
             return version

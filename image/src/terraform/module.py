@@ -216,12 +216,16 @@ def get_cloud_config(module: TerraformModule, cli_config_path: Path) -> Optional
 
             if 'hostname' in cloud:
                 backend_config['hostname'] = cloud['hostname']
+            elif 'TF_CLOUD_HOSTNAME' in os.environ:
+                backend_config['hostname'] = os.environ['TF_CLOUD_HOSTNAME']
 
-            backend_config['organization'] = cloud.get('organization')
+            backend_config['organization'] = cloud.get('organization', os.environ.get('TF_CLOUD_ORGANIZATION'))
             backend_config['token'] = cloud.get('token')
 
-            if cloud.get('workspaces', []):
+            if 'workspaces' in cloud:
                 backend_config['workspaces'] = cloud['workspaces'][0]
+            elif 'INPUT_WORKSPACE' in os.environ:
+                backend_config['workspaces'] = BackendConfigWorkspaces(name=os.environ['INPUT_WORKSPACE'])
 
     if not found:
         return None
@@ -248,7 +252,7 @@ def get_backend_type(module: TerraformModule) -> Optional[str]:
 
     for terraform in module.get('terraform', []):
         if 'cloud' in terraform:
-            return 'remote'
+            return 'cloud'
 
     return 'local'
 
