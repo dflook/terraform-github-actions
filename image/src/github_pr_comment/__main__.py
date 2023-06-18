@@ -297,6 +297,8 @@ def get_comment(action_inputs: PlanPrInputs, backend_fingerprint: bytes, backup_
     }
 
     if backend_type := os.environ.get('TERRAFORM_BACKEND_TYPE'):
+        if backend_type == 'cloud':
+            backend_type = 'remote'
         headers['backend_type'] = backend_type
 
     headers['label'] = os.environ.get('INPUT_LABEL') or None

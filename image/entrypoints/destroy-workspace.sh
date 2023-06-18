@@ -29,7 +29,7 @@ if [[ $DESTROY_EXIT -eq 1 ]]; then
     exit 1
 fi
 
-if [[ "$TERRAFORM_BACKEND_TYPE" == "remote" ]]; then
+if [[ "$TERRAFORM_BACKEND_TYPE" == "remote" || "$TERRAFORM_BACKEND_TYPE" == "cloud" ]]; then
     terraform-cloud-workspace delete "$INPUT_WORKSPACE"
 else
     # We can't delete an active workspace, so re-initialize with a 'default' workspace (which may not exist)

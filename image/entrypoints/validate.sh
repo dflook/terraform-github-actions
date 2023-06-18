@@ -13,7 +13,7 @@ setup
 # terraform.workspace will be evaluated during a validate, but it is not initialized properly.
 # Pass through the workspace input, except for remote backend where it should be 'default'
 
-if [[ "$TERRAFORM_BACKEND_TYPE" == "remote" ]]; then
+if [[ "$TERRAFORM_BACKEND_TYPE" == "remote" || "$TERRAFORM_BACKEND_TYPE" == "cloud" ]]; then
   TF_WORKSPACE="default"
 else
   TF_WORKSPACE="$INPUT_WORKSPACE"

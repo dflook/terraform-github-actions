@@ -6,7 +6,7 @@ source /usr/local/actions.sh
 debug
 setup
 
-if [[ "$TERRAFORM_BACKEND_TYPE" == "remote" ]]; then
+if [[ "$TERRAFORM_BACKEND_TYPE" == "remote" || "$TERRAFORM_BACKEND_TYPE" == "cloud" ]]; then
     TERRAFORM_VERSION="$TERRAFORM_VER_MAJOR.$TERRAFORM_VER_MINOR.$TERRAFORM_VER_PATCH" terraform-cloud-workspace new "$INPUT_WORKSPACE"
     exit 0
 fi

@@ -252,7 +252,7 @@ def get_backend_type(module: TerraformModule) -> Optional[str]:
 
     for terraform in module.get('terraform', []):
         if 'cloud' in terraform:
-            return 'remote'
+            return 'cloud'
 
     return 'local'
 
