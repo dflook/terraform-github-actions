@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='terraform-github-actions',
-    version='1.31.1',
+    version='1.35.0',
     packages=find_packages('src'),
     package_dir={'': 'src'},
     package_data={'terraform_version': ['backend_constraints.json']},

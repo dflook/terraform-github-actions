@@ -8,9 +8,24 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.34.0` to use an exact release
-- `@v1.34` to use the latest patch release for the specific minor version
+- `@v1.35.0` to use an exact release
+- `@v1.35` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.35.0] - 2023-06-18
+
+### Added
+- Support for partial or empty cloud blocks. This means you can use a placeholder `cloud` block in your terraform, like so: 
+
+```hcl
+terraform {
+  cloud {
+  }
+}
+```
+
+  The configuration will be completed with the `TF_CLOUD_ORGANIZATION` and `TF_CLOUD_HOSTNAME` environment variables - the workspace should be specified using the `workspace` input.
+  As always, any tokens can be supplied in the `TERRAFORM_CLOUD_TOKENS` environment variable.
 
 ## [1.34.0] - 2023-03-10
 
@@ -502,6 +517,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.35.0]: https://github.com/dflook/terraform-github-actions/compare/v1.34.0...v1.35.0
 [1.34.0]: https://github.com/dflook/terraform-github-actions/compare/v1.33.0...v1.34.0
 [1.33.0]: https://github.com/dflook/terraform-github-actions/compare/v1.32.1...v1.33.0
 [1.32.1]: https://github.com/dflook/terraform-github-actions/compare/v1.32.0...v1.32.1
