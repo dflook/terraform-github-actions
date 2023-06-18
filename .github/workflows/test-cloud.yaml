@@ -358,7 +358,7 @@ jobs:
           path: tests/workflows/test-cloud/partial
           workspace: ${{ github.head_ref }}-cloud-1
           variables: |
-            len=6
+            length=6
 
       - name: Verify changes detected
         run: |
