@@ -309,7 +309,7 @@ jobs:
 
       - name: Verify auto_apply terraform outputs
         run: |
-          if [[ "${{ steps.apply.outputs.len }}" != "5" ]]; then
+          if [[ "${{ steps.auto_apply.outputs.len }}" != "5" ]]; then
             echo "::error:: output not set correctly"
             exit 1
           fi
@@ -337,7 +337,7 @@ jobs:
           path: tests/workflows/test-cloud/partial
           workspace: ${{ github.head_ref }}-cloud-1
 
-      - name: Verify auto_apply terraform outputs with workspace prefix
+      - name: Verify terraform-output outputs
         run: |
           if [[ "${{ steps.output.outputs.len }}" != "5" ]]; then
             echo "::error:: output not set correctly"
@@ -446,14 +446,14 @@ jobs:
       - name: Destroy non-existent workspace
         uses: ./terraform-destroy-workspace
         continue-on-error: true
-        id: destroy-non-existant-workspace
+        id: destroy-non-existent-workspace
         with:
           path: tests/workflows/test-cloud/partial
           workspace: ${{ github.head_ref }}-cloud-1
 
       - name: Check failed to destroy
         run: |
-          if [[ "${{ steps.destroy-non-existant-workspace.outcome }}" != "failure" ]]; then
+          if [[ "${{ steps.destroy-non-existent-workspace.outcome }}" != "failure" ]]; then
             echo "Destroy non-existant workspace"
             exit 1
           fi
