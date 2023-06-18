@@ -4,6 +4,11 @@ on:
   release:
     types:
       - released
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Tag to release"
+        required: true
 
 jobs:
   image:
@@ -29,7 +34,7 @@ jobs:
       - name: Build action image
         id: image_build
         run: |
-          RELEASE_TAG="${{ github.event.release.tag_name }}"
+          RELEASE_TAG="${{ github.event.release.tag_name }}${{ github.event.inputs.tag_name }}"
 
           docker buildx build \
             --build-arg FETCH_CHECKSUMS=yes \
@@ -46,7 +51,7 @@ jobs:
 
       - name: Release actions
         run: |
-          export RELEASE_TAG="${{ github.event.release.tag_name }}"
+          export RELEASE_TAG="${{ github.event.release.tag_name }}${{ github.event.inputs.tag_name }}"
           export major=$(echo $RELEASE_TAG | cut -d. -f1)
           export minor=$(echo $RELEASE_TAG | cut -d. -f2)
 
