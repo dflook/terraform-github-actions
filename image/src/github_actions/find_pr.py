@@ -58,6 +58,14 @@ def find_pr(github: GithubApi, actions_env: GithubEnv) -> PrUrl:
                                     f'This is required when run by {event_type} events. The environment has not been setup properly by the actions runner. ' +
                                     'This can happen when the runner is running in a container')
 
+    elif event_type == 'repository_dispatch':
+        if 'pull_request' not in event['client_payload'] or not isinstance(event['client_payload']['pull_request'], dict):
+            raise WorkflowException('The repository_dispatch event must have a pull_request object in the client_payload')
+        if 'url' not in event['client_payload']['pull_request']:
+            raise WorkflowException('The pull_request object in the client_payload must have a url')
+
+        return cast(PrUrl, event['client_payload']['pull_request']['url'])
+
     elif event_type == 'push':
         repo = actions_env['GITHUB_REPOSITORY']
         commit = actions_env['GITHUB_SHA']
