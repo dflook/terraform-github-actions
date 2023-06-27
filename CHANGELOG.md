@@ -8,9 +8,27 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.35.0` to use an exact release
-- `@v1.35` to use the latest patch release for the specific minor version
+- `@v1.36.0` to use an exact release
+- `@v1.36` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.36.0] - 2023-06-27
+
+### Added
+- Support for being triggered by [repository_dispatch](https://docs.github.com/en/actions/reference/events-that-trigger-workflows#repository_dispatch) events.
+
+  Previously [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/main/terraform-plan) and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/main/terraform-apply) couldn't work with PR comments when triggered by repository_dispatch events.
+  With this change `repository_dispatch` events that include the PR api url in the client payload will be able to use PR comments.
+
+  The minimum client payload looks like:
+
+  ```json
+  {
+    "pull_request": {
+      "url": "https://api.github.com/repos/dflook/terraform-github-actions/pulls/1"
+    }
+  }
+  ```
 
 ## [1.35.0] - 2023-06-18
 
@@ -517,6 +535,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.36.0]: https://github.com/dflook/terraform-github-actions/compare/v1.35.0...v1.36.0
 [1.35.0]: https://github.com/dflook/terraform-github-actions/compare/v1.34.0...v1.35.0
 [1.34.0]: https://github.com/dflook/terraform-github-actions/compare/v1.33.0...v1.34.0
 [1.33.0]: https://github.com/dflook/terraform-github-actions/compare/v1.32.1...v1.33.0
