@@ -384,6 +384,63 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
   - Type: string
 
+## Workflow events
+
+When adding the plan to a PR comment (`add_github_comment` is set to `true`/`changes-only`), the workflow can be triggered by the following events:
+
+  - pull_request
+  - pull_request_review_comment
+  - pull_request_target
+  - pull_request_review
+  - issue_comment, if the comment is on a PR (see below)
+  - push, if the pushed commit came from a PR (see below)
+  - repository_dispatch, if the client payload includes the pull_request url (see below)
+
+When `add_github_comment` is set to `false`, the workflow can be triggered by any event.
+
+### issue_comment
+
+This event triggers workflows when a comment is made in a Issue, as well as a Pull Request.
+Since running the action will only work in the context of a PR, the workflow should check that the comment is on a PR before running.
+
+Also take care to checkout the PR ref.
+
+```yaml
+jobs:
+  plan:
+    if: ${{ github.event.issue.pull_request }}
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: refs/pull/${{ github.event.issue.number }}/merge
+
+      - name: terraform apply
+        uses: dflook/terraform-plan@v1
+        with:
+          path: my-terraform-config
+```
+
+### push
+
+The pushed commit must have come from a Pull Request. Typically this is used to trigger a workflow that runs on the main branch after a PR has been merged.
+
+### repository_dispatch
+
+This event can be used to trigger a workflow from another workflow. The client payload must include the pull_request api url of where the plan PR comment should be added.
+
+A minimal example payload looks like:
+```json
+{
+  "pull_request": {
+    "url": "https://api.github.com/repos/dflook/terraform-github-actions/pulls/1"
+  }
+}
+```
+
 ## Example usage
 
 ### Automatically generating a plan
