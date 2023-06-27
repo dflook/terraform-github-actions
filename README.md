@@ -1,3 +1,5 @@
+Test repository_dispatch
+
 # Terraform GitHub Actions ![release](https://img.shields.io/github/v/release/dflook/terraform-github-actions)![job runs](https://img.shields.io/docker/pulls/danielflook/terraform-github-actions?label=job%20runs)
 
 This is a suite of terraform related GitHub Actions that can be used together to build effective Infrastructure as Code workflows.
