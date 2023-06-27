@@ -37,7 +37,7 @@ if [[ -z "$PLAN_OUT" ]]; then
     fi
 fi
 
-if [[ "$GITHUB_EVENT_NAME" == "pull_request" || "$GITHUB_EVENT_NAME" == "issue_comment" || "$GITHUB_EVENT_NAME" == "pull_request_review_comment" || "$GITHUB_EVENT_NAME" == "pull_request_target" || "$GITHUB_EVENT_NAME" == "pull_request_review" ]]; then
+if [[ "$GITHUB_EVENT_NAME" == "pull_request" || "$GITHUB_EVENT_NAME" == "issue_comment" || "$GITHUB_EVENT_NAME" == "pull_request_review_comment" || "$GITHUB_EVENT_NAME" == "pull_request_target" || "$GITHUB_EVENT_NAME" == "pull_request_review" || "$GITHUB_EVENT_NAME" == "repository_dispatch" ]]; then
     if [[ "$INPUT_ADD_GITHUB_COMMENT" == "true" || "$INPUT_ADD_GITHUB_COMMENT" == "changes-only" ]]; then
 
         if [[ ! -v TERRAFORM_ACTIONS_GITHUB_TOKEN ]]; then
@@ -68,7 +68,7 @@ if [[ "$GITHUB_EVENT_NAME" == "pull_request" || "$GITHUB_EVENT_NAME" == "issue_c
     fi
 
 else
-    debug_log "Not a pull_request, issue_comment, pull_request_target, pull_request_review or pull_request_review_comment event - not creating a PR comment"
+    debug_log "Not a pull_request, issue_comment, pull_request_target, pull_request_review, pull_request_review_comment or repository_dispatch event - not creating a PR comment"
 fi
 
 if [[ $PLAN_EXIT -eq 1 ]]; then
