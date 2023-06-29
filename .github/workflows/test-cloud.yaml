@@ -27,4 +27,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           path: tests/workflows/test-cloud/partial
-          workspace: ${{ github.head_ref }}-cloud-2
+          workspace: ${{ github.head_ref }}-cloud-1
