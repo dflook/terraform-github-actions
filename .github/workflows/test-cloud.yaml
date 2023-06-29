@@ -20,11 +20,11 @@ jobs:
           path: tests/workflows/test-cloud/partial
           workspace: ${{ github.head_ref }}-cloud-1
 
-#      - name: Plan workspace
-#        uses: ./terraform-plan
-#        id: plan
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          path: tests/workflows/test-cloud/partial
-#          workspace: ${{ github.head_ref }}-cloud-2
+      - name: Plan workspace
+        uses: ./terraform-plan
+        id: plan
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          path: tests/workflows/test-cloud/partial
+          workspace: ${{ github.head_ref }}-cloud-2
