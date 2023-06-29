@@ -275,8 +275,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Partial cloud config
     env:
-      TF_CLOUD_ORGANIZATION: flooktech
       TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_API_TOKEN }}
+      TFE_TOKEN: ${{ secrets.tf_api_token }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
