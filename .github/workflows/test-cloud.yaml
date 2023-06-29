@@ -276,7 +276,7 @@ jobs:
     name: Partial cloud config
     env:
       TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_API_TOKEN }}
-      TFE_TOKEN: ${{ secrets.tf_api_token }}
+      TFE_TOKEN: ${{ secrets.TF_API_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
