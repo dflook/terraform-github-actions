@@ -2,7 +2,7 @@
 
 This is one of a suite of terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
-This action uses the `terraform fmt` command to reformat files in a directory into a canonical format.
+This action uses the `terraform fmt -recursive` command to reformat files in a directory into a canonical format.
 
 ## Inputs
 
