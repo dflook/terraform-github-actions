@@ -251,6 +251,7 @@ function select-workspace() {
             WORKSPACE_EXIT=0
         elif [[ $WORKSPACE_EXIT -ne 0 && "$TERRAFORM_BACKEND_TYPE" == "cloud" ]]; then
             # workspace select doesn't work with partial cloud config, we'll just have to try it and see
+            echo "Using the $INPUT_WORKSPACE workspace"
             export TF_WORKSPACE="$INPUT_WORKSPACE"
             WORKSPACE_EXIT=0
         else
