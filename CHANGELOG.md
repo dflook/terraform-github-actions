@@ -8,7 +8,7 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.36.0` to use an exact release
+- `@v1.36.1` to use an exact release
 - `@v1.36` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
 
