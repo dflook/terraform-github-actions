@@ -12,6 +12,11 @@ When using an action you can specify the version as:
 - `@v1.36` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
 
+## [1.36.1] - 2023-07-15
+
+### Fixed
+- The selected workspace was not being shown in the workflow log when using a partial cloud block.
+
 ## [1.36.0] - 2023-06-27
 
 ### Added
@@ -535,6 +540,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.36.1]: https://github.com/dflook/terraform-github-actions/compare/v1.36.0...v1.36.1
 [1.36.0]: https://github.com/dflook/terraform-github-actions/compare/v1.35.0...v1.36.0
 [1.35.0]: https://github.com/dflook/terraform-github-actions/compare/v1.34.0...v1.35.0
 [1.34.0]: https://github.com/dflook/terraform-github-actions/compare/v1.33.0...v1.34.0
