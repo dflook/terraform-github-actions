@@ -18,6 +18,7 @@ class ActionsEnv(TypedDict):
 class GithubEnv(TypedDict):
     """Environment variables that are set by the actions runner."""
     GITHUB_API_URL: str
+    GITHUB_GRAPHQL_URL: str
     GITHUB_TOKEN: str
     GITHUB_EVENT_PATH: str
     GITHUB_EVENT_NAME: str

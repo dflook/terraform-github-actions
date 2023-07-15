@@ -212,13 +212,15 @@ def current_user(actions_env: GithubEnv) -> str:
     cache_key = f'token-cache/{token_hash}'
 
     def graphql() -> Optional[str]:
-        response = github.post(f'{actions_env["GITHUB_API_URL"]}/graphql', json={
+        graphql_url = actions_env.get('GITHUB_GRAPHQL_URL', f'{actions_env["GITHUB_API_URL"]}/graphql')
+
+        response = github.post(graphql_url, json={
             'query': "query { viewer { login } }"
         })
+        debug(f'graphql response: {response.content}')
 
         if response.ok:
             try:
-                debug(f'graphql response: {response.content}')
                 return response.json()['data']['viewer']['login']
             except Exception as e:
                 pass
@@ -227,10 +229,10 @@ def current_user(actions_env: GithubEnv) -> str:
 
     def rest() -> Optional[str]:
         response = github.get(f'{actions_env["GITHUB_API_URL"]}/user')
+        debug(f'rest response: {response.content}')
 
         if response.ok:
             user = response.json()
-            debug(f'rest response: {json.dumps(user)}')
 
             return user['login']
 
