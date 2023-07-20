@@ -247,7 +247,8 @@ def current_user(actions_env: GithubEnv) -> str:
         username = graphql() or rest()
 
         if username is None:
-            raise Exception('Unable to get username for the github token')
+            debug('Unable to get username for the github token')
+            username = 'github-actions[bot]'
 
         job_cache[cache_key] = username
 
