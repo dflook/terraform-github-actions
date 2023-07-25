@@ -187,6 +187,9 @@ def try_init(terraform: Version, init_args: list[str], workspace: str, backend_t
 
         # terraform_version is made up
     except Exception as e:
+        if b'no state' in result.stderr:
+            return None
+
         debug(str(e))
 
     # There is some state
