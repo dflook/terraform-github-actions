@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        If you are having a problem, please ensure you have enabled debug logging by setting the `ACTIONS_STEP_DEBUG` secret to `true` and run the job again.
+        # If you are having a problem, please ensure you have enabled debug logging by setting the ACTIONS_STEP_DEBUG secret to true and run the job again.
         Then complete these fields with as much detail as possible. Being able to see the complete workflow and debug logs will make it much easier to help you.
 
   - type: textarea
@@ -44,3 +44,11 @@ body:
       label: Workflow log
       description: Please copy and paste the workflow log output from a job with debug logging enabled. If this is long consider putting in a [gist](https://gist.github.com/). This will be automatically formatted, so no need for backticks.
       render: shell
+
+  - type: checkboxes
+    id: debugging-enabled
+    attributes:
+      label: Has debug logging been enabled?
+      options: 
+        - label: Yes, the `ACTIONS_STEP_DEBUG` secret was set to `true` when capturing the workflow log above.
+          required: true
