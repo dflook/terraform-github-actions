@@ -6,8 +6,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        *If you are having a problem, please ensure you have enabled debug logging by setting the `ACTIONS_STEP_DEBUG` secret to `true` and run the job again.
-        Then complete these fields with as much detail as possible. Being able to see the complete workflow and debug logs will make it much easier to help you.*
+        # If you are having a problem, please ensure you have enabled debug logging by setting the `ACTIONS_STEP_DEBUG` secret to `true` and run the job again.
+        Then complete these fields with as much detail as possible. Being able to see the complete workflow and debug logs will make it much easier to help you.
 
   - type: textarea
     id: description
