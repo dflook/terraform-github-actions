@@ -12,6 +12,20 @@ When using an action you can specify the version as:
 - `@v1.36` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
 
+## Unreleased
+
+### Added
+
+- Experimental support for OpenTofu. As OpenTofu currently only has prerelease versions, the version can only be selected by using the exact version number.
+  The easiest way to do this is by setting the `OPENTOFU_VERSION` environment variable, e.g in your workflow:
+
+  ```yaml
+    env:
+        OPENTOFU_VERSION: 1.6.0-alpha3
+  ```
+  
+  Once OpenTofu has a full release, you can just set an `OPENTOFU=true` environment variable and specify the version in any of the ways listed in the [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version) docs.
+
 ## [1.36.2] - 2023-08-17
 
 ### Fixed

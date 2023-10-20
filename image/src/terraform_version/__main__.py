@@ -59,7 +59,8 @@ def determine_version(inputs: InitInputs, cli_config_path: Path, actions_env: Ac
         return version
 
     if version := try_read_env(actions_env, versions):
-        sys.stdout.write(f'Using latest {version.product} version that matches the TERRAFORM_VERSION constraints\n')
+        env_var = 'OPENTOFU_VERSION' if 'OPENTOFU_VERSION' in os.environ else 'TERRAFORM_VERSION'
+        sys.stdout.write(f'Using latest {version.product} version that matches the {env_var} constraints\n')
         return version
 
     if inputs.get('INPUT_BACKEND_CONFIG', '').strip():
