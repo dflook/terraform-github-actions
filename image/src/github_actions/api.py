@@ -1,6 +1,6 @@
 import datetime
 import sys
-from typing import NewType, Iterable, Any
+from typing import NewType, Iterable, Any, Optional
 
 import requests
 from requests import Response
@@ -15,12 +15,15 @@ CommentReactionUrl = NewType('CommentReactionUrl', GitHubUrl)
 
 
 class GithubApi:
-    def __init__(self, host: str, token: str):
+    def __init__(self, host: str, token: Optional[str]):
         self._host = host
         self._token = token
 
         self._session = requests.Session()
-        self._session.headers['authorization'] = f'token {token}'
+
+        if token is not None:
+            self._session.headers['authorization'] = f'token {token}'
+
         self._session.headers['user-agent'] = 'terraform-github-actions'
         self._session.headers['accept'] = 'application/vnd.github.v3+json'
 

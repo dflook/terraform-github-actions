@@ -13,6 +13,8 @@ class ActionsEnv(TypedDict):
     TERRAFORM_HTTP_CREDENTIALS: str
     TERRAFORM_VERSION: str
     TERRAFORM_ACTIONS_GITHUB_TOKEN: str
+    OPENTOFU_VERSION: str
+    OPENTOFU: str
 
 
 class GithubEnv(TypedDict):
