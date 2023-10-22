@@ -1,11 +1,15 @@
 #!/usr/bin/python3
 
 import json
+import os
 import re
 import sys
 from dataclasses import dataclass
 from typing import Dict, Iterable, Union
 from github_actions.commands import output
+
+TOOL_PRODUCT_NAME = os.environ.get('TOOL_PRODUCT_NAME', 'Terraform')
+TOOL_COMMAND_NAME = os.environ.get('TOOL_COMMAND_NAME', 'terraform')
 
 @dataclass
 class Output:
@@ -63,8 +67,11 @@ def convert_version_from_json(tf_output: Dict) -> Iterable[Union[str, Output]]:
      Output('random', '2.2.0')]
     """
 
-    yield f'Terraform v{tf_output["terraform_version"]}'
+    yield f'{TOOL_PRODUCT_NAME} v{tf_output["terraform_version"]}'
     yield Output(f'terraform', tf_output["terraform_version"])
+
+    if TOOL_COMMAND_NAME != 'terraform':
+        yield Output(TOOL_COMMAND_NAME, tf_output["terraform_version"])
 
     for path, version in tf_output['provider_selections'].items():
         name_match = re.match(r'(.*?)/(.*?)/(.*)', path)
