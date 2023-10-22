@@ -1,5 +1,4 @@
 import hashlib
-import json
 import os
 import subprocess
 import re
@@ -34,6 +33,8 @@ step_cache = ActionsCache(Path(os.environ.get('STEP_TMP_DIR', '.')), 'step_cache
 env = cast(GithubEnv, os.environ)
 github_token = env['TERRAFORM_ACTIONS_GITHUB_TOKEN']
 github = GithubApi(env.get('GITHUB_API_URL', 'https://api.github.com'), github_token)
+
+ToolProductName = os.environ.get('TOOL_PRODUCT_NAME', 'Terraform')
 
 def job_markdown_ref() -> str:
     return f'[{os.environ["GITHUB_WORKFLOW"]} #{os.environ["GITHUB_RUN_NUMBER"]}]({os.environ["GITHUB_SERVER_URL"]}/{os.environ["GITHUB_REPOSITORY"]}/actions/runs/{os.environ["GITHUB_RUN_ID"]})'
@@ -123,9 +124,9 @@ def format_description(action_inputs: PlanPrInputs, sensitive_variables: List[st
         mode = '\n:bomb: Planning to destroy all resources'
 
     if action_inputs['INPUT_LABEL']:
-        return f'Terraform plan for __{action_inputs["INPUT_LABEL"]}__' + mode
+        return f'{ToolProductName} plan for __{action_inputs["INPUT_LABEL"]}__' + mode
 
-    label = f'Terraform plan in __{action_inputs["INPUT_PATH"]}__'
+    label = f'{ToolProductName} plan in __{action_inputs["INPUT_PATH"]}__'
 
     if action_inputs["INPUT_WORKSPACE"] != 'default':
         label += f' in the __{action_inputs["INPUT_WORKSPACE"]}__ workspace'

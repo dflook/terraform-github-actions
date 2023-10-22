@@ -29,7 +29,7 @@ from opentofu.versions import get_opentofu_versions
 def determine_version(inputs: InitInputs, cli_config_path: Path, actions_env: ActionsEnv, github_env: GithubEnv) -> Version:
     """Determine the terraform version to use"""
 
-    if 'OPENTOFU_VERSION' in os.environ or 'OPENTOFU' in os.environ:
+    if 'OPENTOFU' in os.environ:
         versions = list(get_opentofu_versions())
     else:
         versions = list(get_terraform_versions())
@@ -112,6 +112,13 @@ def switch(version: Version) -> None:
         os.remove(link_path)
 
     os.symlink(target_path, link_path)
+
+    if version.product == 'OpenTofu':
+        link_path = '/usr/local/bin/tofu'
+        if os.path.exists(link_path):
+            os.remove(link_path)
+
+        os.symlink(target_path, link_path)
 
     sys.stdout.write(f'Switched to {version.product} v{version}\n')
 

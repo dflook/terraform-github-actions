@@ -655,7 +655,7 @@ jobs:
           path: tests/workflows/test-version/empty
 
       - name: Print the version
-        run: echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
+        run: echo "The tofu version was ${{ steps.terraform-version.outputs.terraform }}"
 
       - name: Check the version
         run: |
