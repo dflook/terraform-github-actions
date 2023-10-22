@@ -426,7 +426,7 @@ function destroy() {
 
     set +e
     # shellcheck disable=SC2086
-    (cd "$INPUT_PATH" && terraform $TOOL_COMMAND_NAME -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS) \
+    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME destroy -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS) \
         2>"$STEP_TMP_DIR/terraform_destroy.stderr" \
         | tee /dev/fd/3 \
             >"$STEP_TMP_DIR/terraform_destroy.stdout"
