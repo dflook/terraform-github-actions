@@ -12,6 +12,12 @@ try:
 except (ValueError, KeyError):
     collapse_threshold = 10
 
+
+try:
+    always_comment = os.environ['GITHUB_ALWAYS_COMMENT']
+except (KeyError):
+    always_comment = False
+
 from pkg_resources import get_distribution, DistributionNotFound
 
 try:
@@ -339,7 +345,7 @@ def update_comment(
         status=status if status is not None else comment.status
     )
 
-    if comment.comment_url is not None:
+    if comment.comment_url is not None and not always_comment:
         response = github.patch(comment.comment_url, json={'body': _to_api_payload(new_comment)})
         response.raise_for_status()
     else:
