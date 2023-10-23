@@ -7,5 +7,5 @@ debug
 setup
 init
 
-debug_cmd terraform version -json
-(cd "$INPUT_PATH" && terraform version -json | convert_version)
+debug_cmd $TOOL_COMMAND_NAME version -json
+(cd "$INPUT_PATH" && $TOOL_COMMAND_NAME version -json | convert_version)

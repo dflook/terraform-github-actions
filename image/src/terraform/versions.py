@@ -21,7 +21,8 @@ class Version:
     Versions are made up of major, minor & patch numbers, plus an optional pre_release string.
     """
 
-    def __init__(self, version: str):
+    def __init__(self, version: str, product: str = 'Terraform'):
+        self.product = product
 
         match = re.match(r'(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?:-(?P<pre_release>[\d\w-]+))?', version)
         if not match:

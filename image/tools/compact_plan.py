@@ -11,11 +11,13 @@ def compact_plan(input):
 
         if not plan and (
             line.startswith('Terraform used the selected providers') or
+            line.startswith('OpenTofu used the selected providers') or
             line.startswith('An execution plan has been generated and is shown below') or
             line.startswith('No changes') or
             line.startswith('Error') or
             line.startswith('Changes to Outputs:') or
-            line.startswith('Terraform will perform the following actions:')
+            line.startswith('Terraform will perform the following actions:') or
+            line.startswith('OpenTofu will perform the following actions:')
         ):
             plan = True
 

@@ -1106,3 +1106,51 @@ jobs:
           label: test-apply destroy_mode_label
           path: tests/workflows/test-apply/destroy_mode
           destroy: true
+
+  apply_opentofu:
+    runs-on: ubuntu-latest
+    name: Apply OpenTofu
+    env:
+      GITHUB_TOKEN: ${{ secrets.USER_GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Plan
+        uses: ./terraform-plan
+        env:
+          OPENTOFU_VERSION: "1.6.0-alpha3"
+        with:
+          label: test-apply apply_opentofu
+          path: tests/workflows/test-apply/changes
+
+      - name: Apply
+        uses: ./terraform-apply
+        env:
+          OPENTOFU_VERSION: "1.6.0-alpha3"
+        id: output
+        with:
+          label: test-apply apply_opentofu
+          path: tests/workflows/test-apply/changes
+
+      - name: Verify outputs
+        run: |
+          if [[ "${{ steps.output.outputs.output_string }}" != "the_string" ]]; then
+            echo "::error:: output s not set correctly"
+            exit 1
+          fi
+
+          if [[ $(jq -r .output_changes.output_string.actions[0] "${{ steps.output.outputs.json_plan_path }}") != "create" ]]; then
+            echo "::error:: json_plan_path not set correctly"
+            exit 1
+          fi
+
+          if ! grep -q "OpenTofu will perform the following actions" '${{ steps.output.outputs.text_plan_path }}'; then
+            echo "::error:: text_plan_path not set correctly"
+            exit 1
+          fi
+
+          if [[ -n "${{ steps.output.outputs.run_id }}" ]]; then
+            echo "::error:: run_id should not be set"
+            exit 1
+          fi

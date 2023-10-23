@@ -19,16 +19,16 @@ function detect-terraform-version() {
     debug_cmd ls -la "/usr/local/bin"
     debug_cmd ls -la "$JOB_TMP_DIR/terraform-bin-dir"
     TERRAFORM_BIN_CACHE_DIR="/var/terraform:$JOB_TMP_DIR/terraform-bin-dir" TERRAFORM_BIN_CHECKSUM_DIR="/var/terraform" terraform-version
-    debug_cmd ls -la "$(which terraform)"
+    debug_cmd ls -la "$(which $TOOL_COMMAND_NAME)"
 
     local TF_VERSION
-    TF_VERSION=$(terraform version -json | jq -r '.terraform_version' 2>/dev/null || terraform version | grep 'Terraform v' | sed 's/Terraform v//')
+    TF_VERSION=$($TOOL_COMMAND_NAME version -json | jq -r '.terraform_version' 2>/dev/null || terraform version | grep 'Terraform v' | sed 's/Terraform v//')
 
     TERRAFORM_VER_MAJOR=$(echo "$TF_VERSION" | cut -d. -f1)
     TERRAFORM_VER_MINOR=$(echo "$TF_VERSION" | cut -d. -f2)
     TERRAFORM_VER_PATCH=$(echo "$TF_VERSION" | cut -d. -f3)
 
-    debug_log "Terraform version major $TERRAFORM_VER_MAJOR minor $TERRAFORM_VER_MINOR patch $TERRAFORM_VER_PATCH"
+    debug_log "$TOOL_PRODUCT_NAME version major $TERRAFORM_VER_MAJOR minor $TERRAFORM_VER_MINOR patch $TERRAFORM_VER_PATCH"
 }
 
 function test-terraform-version() {
@@ -82,6 +82,18 @@ function setup() {
       fi
     fi
 
+    if [[ -v OPENTOFU_VERSION ]]; then
+        export OPENTOFU=true
+    fi
+
+    if [[ -v OPENTOFU ]]; then
+        export TOOL_PRODUCT_NAME="OpenTofu"
+        export TOOL_COMMAND_NAME="tofu"
+    else
+        export TOOL_PRODUCT_NAME="Terraform"
+        export TOOL_COMMAND_NAME="terraform"
+    fi
+
     if ! github_comment_react +1 2>"$STEP_TMP_DIR/github_comment_react.stderr"; then
         debug_file "$STEP_TMP_DIR/github_comment_react.stderr"
     fi
@@ -94,7 +106,7 @@ function setup() {
 
     write_credentials
 
-    start_group "Installing Terraform"
+    start_group "Installing $TOOL_PRODUCT_NAME"
 
     detect-terraform-version
 
@@ -125,11 +137,11 @@ function relative_to() {
 #
 # This only validates and installs plugins
 function init() {
-    start_group "Initializing Terraform"
+    start_group "Initializing $TOOL_PRODUCT_NAME"
 
     rm -rf "$TF_DATA_DIR"
-    debug_log terraform init -input=false -backend=false
-    (cd "$INPUT_PATH" && terraform init -input=false -backend=false)
+    debug_log $TOOL_COMMAND_NAME init -input=false -backend=false
+    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME init -input=false -backend=false)
 
     end_group
 }
@@ -163,17 +175,17 @@ function set-init-args() {
 #
 # The workspace must already exist, or the job will be failed
 function init-backend-workspace() {
-    start_group "Initializing Terraform"
+    start_group "Initializing $TOOL_PRODUCT_NAME"
 
     set-init-args
 
     rm -rf "$TF_DATA_DIR"
 
-    debug_log TF_WORKSPACE=$INPUT_WORKSPACE terraform init -input=false '$INIT_ARGS'  # don't expand INIT_ARGS
+    debug_log TF_WORKSPACE=$INPUT_WORKSPACE $TOOL_COMMAND_NAME init -input=false '$INIT_ARGS'  # don't expand INIT_ARGS
 
     set +e
     # shellcheck disable=SC2086
-    (cd "$INPUT_PATH" && TF_WORKSPACE=$INPUT_WORKSPACE terraform init -input=false $INIT_ARGS \
+    (cd "$INPUT_PATH" && TF_WORKSPACE=$INPUT_WORKSPACE $TOOL_COMMAND_NAME init -input=false $INIT_ARGS \
         2>"$STEP_TMP_DIR/terraform_init.stderr")
 
     local INIT_EXIT=$?
@@ -203,16 +215,16 @@ function init-backend-workspace() {
 # This can be used to initialize when you don't know if a given workspace exists
 # This can NOT be used with remote backend, as they have no default workspace
 function init-backend-default-workspace() {
-    start_group "Initializing Terraform"
+    start_group "Initializing $TOOL_PRODUCT_NAME"
 
     set-init-args
 
     rm -rf "$TF_DATA_DIR"
 
-    debug_log terraform init -input=false '$INIT_ARGS'  # don't expand INIT_ARGS
+    debug_log $TOOL_COMMAND_NAME init -input=false '$INIT_ARGS'  # don't expand INIT_ARGS
     set +e
     # shellcheck disable=SC2086
-    (cd "$INPUT_PATH" && terraform init -input=false $INIT_ARGS \
+    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME init -input=false $INIT_ARGS \
         2>"$STEP_TMP_DIR/terraform_init.stderr")
 
     local INIT_EXIT=$?
@@ -237,9 +249,9 @@ function init-backend-default-workspace() {
 function select-workspace() {
     local WORKSPACE_EXIT
 
-    debug_log terraform workspace select "$INPUT_WORKSPACE"
+    debug_log $TOOL_COMMAND_NAME workspace select "$INPUT_WORKSPACE"
     set +e
-    (cd "$INPUT_PATH" && terraform workspace select "$INPUT_WORKSPACE") >"$STEP_TMP_DIR/workspace_select" 2>&1
+    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME workspace select "$INPUT_WORKSPACE") >"$STEP_TMP_DIR/workspace_select" 2>&1
     WORKSPACE_EXIT=$?
     set -e
 
@@ -349,8 +361,8 @@ function set-remote-plan-args() {
 }
 
 function output() {
-    debug_log terraform output -json
-    (cd "$INPUT_PATH" && terraform output -json | convert_output)
+    debug_log $TOOL_COMMAND_NAME output -json
+    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME output -json | convert_output)
 }
 
 function update_status() {
@@ -392,11 +404,11 @@ function plan() {
     fi
 
     # shellcheck disable=SC2086
-    debug_log terraform plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT_ARG '$PLAN_ARGS'  # don't expand PLAN_ARGS
+    debug_log $TOOL_COMMAND_NAME plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT_ARG '$PLAN_ARGS'  # don't expand PLAN_ARGS
 
     set +e
     # shellcheck disable=SC2086
-    (cd "$INPUT_PATH" && terraform plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT_ARG $PLAN_ARGS) \
+    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT_ARG $PLAN_ARGS) \
         2>"$STEP_TMP_DIR/terraform_plan.stderr" \
         | $TFMASK \
         | tee /dev/fd/3 "$STEP_TMP_DIR/terraform_plan.stdout" \
@@ -410,11 +422,11 @@ function plan() {
 
 function destroy() {
     # shellcheck disable=SC2086
-    debug_log terraform destroy -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS
+    debug_log $TOOL_COMMAND_NAME destroy -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS
 
     set +e
     # shellcheck disable=SC2086
-    (cd "$INPUT_PATH" && terraform destroy -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS) \
+    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME destroy -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS) \
         2>"$STEP_TMP_DIR/terraform_destroy.stderr" \
         | tee /dev/fd/3 \
             >"$STEP_TMP_DIR/terraform_destroy.stdout"
@@ -426,8 +438,8 @@ function destroy() {
 
 function force_unlock() {
     echo "Unlocking state with ID: $INPUT_LOCK_ID"
-    debug_log terraform force-unlock -force $INPUT_LOCK_ID
-    (cd "$INPUT_PATH" && terraform force-unlock -force $INPUT_LOCK_ID)
+    debug_log $TOOL_COMMAND_NAME force-unlock -force $INPUT_LOCK_ID
+    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME force-unlock -force $INPUT_LOCK_ID)
 }
 
 # Every file written to disk should use one of these directories

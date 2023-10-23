@@ -2,7 +2,9 @@
 
 This is one of a suite of terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
-This action determines the terraform and provider versions to use for a Terraform root module.
+This action determines the terraform/opentofu and provider versions to use for the root module.
+
+If the `OPENTOFU` environment variable is set or if the version is specified using `OPENTOFU_VERSION` then a version of opentofu will be selected.
 
 The best way to specify the version is using a [`required_version`](https://www.terraform.io/docs/configuration/terraform.html#specifying-a-required-terraform-version) constraint.
 
@@ -13,9 +15,10 @@ The version to use is discovered from the first of:
 3. A [tfswitch](https://warrensbox.github.io/terraform-switcher/) `.tfswitchrc` file in the module path
 4. A [tfenv](https://github.com/tfutils/tfenv) `.terraform-version` file in the module path
 5. An [asdf](https://asdf-vm.com/) `.tool-versions` file in the module path or any parent path
-6. A `TERRAFORM_VERSION` environment variable containing a [version constraint](https://www.terraform.io/language/expressions/version-constraints).  If the constraint allows multiple versions, the latest matching version is used.
-7. The Terraform version that created the current state file (best effort).
-8. The latest terraform version
+6. An `OPENTOFU_VERSION` environment variable containing a [version constraint](https://www.terraform.io/language/expressions/version-constraints). If the constraint allows multiple versions, the latest matching version is used.
+7. A `TERRAFORM_VERSION` environment variable containing a [version constraint](https://www.terraform.io/language/expressions/version-constraints). If the constraint allows multiple versions, the latest matching version is used.
+8. The Terraform version that created the current state file (best effort).
+9. The latest terraform version
 
 The version of terraform and all required providers will be output to the workflow log.
 

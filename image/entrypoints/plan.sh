@@ -72,7 +72,7 @@ else
 fi
 
 if [[ $PLAN_EXIT -eq 1 ]]; then
-    debug_log "Error running terraform"
+    debug_log "Error running $TOOL_COMMAND_NAME"
     exit 1
 
 elif [[ $PLAN_EXIT -eq 0 ]]; then
@@ -91,7 +91,7 @@ cp "$STEP_TMP_DIR/plan.txt" "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/plan.txt"
 set_output text_plan_path "$WORKSPACE_TMP_DIR/plan.txt"
 
 if [[ -n "$PLAN_OUT" ]]; then
-    if (cd "$INPUT_PATH" && terraform show -json "$PLAN_OUT") >"$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/plan.json" 2>"$STEP_TMP_DIR/terraform_show.stderr"; then
+    if (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME show -json "$PLAN_OUT") >"$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/plan.json" 2>"$STEP_TMP_DIR/terraform_show.stderr"; then
         set_output json_plan_path "$WORKSPACE_TMP_DIR/plan.json"
     else
         debug_file "$STEP_TMP_DIR/terraform_show.stderr"

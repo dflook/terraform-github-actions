@@ -6,4 +6,4 @@ source /usr/local/actions.sh
 debug
 setup
 
-terraform fmt -recursive -no-color "$INPUT_PATH"
+$TOOL_COMMAND_NAME fmt -recursive -no-color "$INPUT_PATH"

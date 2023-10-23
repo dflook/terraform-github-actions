@@ -14,14 +14,14 @@ fi
 init-backend-default-workspace
 
 set +e
-(cd "$INPUT_PATH" && terraform workspace list -no-color) \
+(cd "$INPUT_PATH" && $TOOL_COMMAND_NAME workspace list -no-color) \
     2>"$STEP_TMP_DIR/terraform_workspace_list.stderr" \
     >"$STEP_TMP_DIR/terraform_workspace_list.stdout"
 
 readonly TF_WS_LIST_EXIT=${PIPESTATUS[0]}
 set -e
 
-debug_log "terraform workspace list: ${TF_WS_LIST_EXIT}"
+debug_log "$TOOL_COMMAND_NAME workspace list: ${TF_WS_LIST_EXIT}"
 debug_file "$STEP_TMP_DIR/terraform_workspace_list.stderr"
 debug_file "$STEP_TMP_DIR/terraform_workspace_list.stdout"
 
@@ -32,19 +32,19 @@ fi
 
 if workspace_exists "$INPUT_WORKSPACE" <"$STEP_TMP_DIR/terraform_workspace_list.stdout"; then
     echo "Workspace appears to exist, selecting it"
-    (cd "$INPUT_PATH" && terraform workspace select -no-color "$INPUT_WORKSPACE")
+    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME workspace select -no-color "$INPUT_WORKSPACE")
 else
     echo "Workspace does not appear to exist, attempting to create it"
 
     set +e
-    (cd "$INPUT_PATH" && terraform workspace new -no-color -lock-timeout=300s "$INPUT_WORKSPACE") \
+    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME workspace new -no-color -lock-timeout=300s "$INPUT_WORKSPACE") \
         2>"$STEP_TMP_DIR/terraform_workspace_new.stderr" \
         >"$STEP_TMP_DIR/terraform_workspace_new.stdout"
 
     readonly TF_WS_NEW_EXIT=${PIPESTATUS[0]}
     set -e
 
-    debug_log "terraform workspace new: ${TF_WS_NEW_EXIT}"
+    debug_log "$TOOL_COMMAND_NAME workspace new: ${TF_WS_NEW_EXIT}"
     debug_file "$STEP_TMP_DIR/terraform_workspace_new.stderr"
     debug_file "$STEP_TMP_DIR/terraform_workspace_new.stdout"
 
@@ -52,7 +52,7 @@ else
 
         if grep -Fq "already exists" "$STEP_TMP_DIR/terraform_workspace_new.stderr"; then
             echo "Workspace does exist, selecting it"
-            (cd "$INPUT_PATH" && terraform workspace select -no-color "$INPUT_WORKSPACE")
+            (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME workspace select -no-color "$INPUT_WORKSPACE")
         else
             cat "$STEP_TMP_DIR/terraform_workspace_new.stderr"
             cat "$STEP_TMP_DIR/terraform_workspace_new.stdout"

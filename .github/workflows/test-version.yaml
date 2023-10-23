@@ -488,7 +488,7 @@ jobs:
 
       - name: Check the version
         run: |
-          if [[ "${{ steps.terraform-version.outputs.terraform }}" != *"1.5"* ]]; then
+          if [[ "${{ steps.terraform-version.outputs.terraform }}" != *"1.6"* ]]; then
             echo "::error:: Latest version was not used"
             exit 1
           fi
@@ -636,5 +636,30 @@ jobs:
         run: |
           if [[ "${{ steps.terraform-version.outputs.terraform }}" != "1.1.0" ]]; then
             echo "::error:: Terraform version not set from .tfswitchrc"
+            exit 1
+          fi
+
+  opentofu:
+    runs-on: ubuntu-latest
+    name: OPENTOFU_VERSION
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Test terraform-version
+        uses: ./terraform-version
+        id: terraform-version
+        env:
+          OPENTOFU_VERSION: "1.6.0-alpha3"
+        with:
+          path: tests/workflows/test-version/empty
+
+      - name: Print the version
+        run: echo "The tofu version was ${{ steps.terraform-version.outputs.terraform }}"
+
+      - name: Check the version
+        run: |
+          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "1.6.0-alpha3" ]]; then
+            echo "::error:: Terraform version not set from OPENTOFU_VERSION"
             exit 1
           fi

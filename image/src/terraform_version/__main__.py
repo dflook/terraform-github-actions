@@ -22,12 +22,17 @@ from terraform_version.remote_workspace import try_get_remote_workspace_version
 from terraform_version.required_version import try_get_required_version
 from terraform_version.tfenv import try_read_tfenv
 from terraform_version.tfswitch import try_read_tfswitch
+from opentofu.download import get_executable as get_opentofu_executable
+from opentofu.versions import get_opentofu_versions
 
 
 def determine_version(inputs: InitInputs, cli_config_path: Path, actions_env: ActionsEnv, github_env: GithubEnv) -> Version:
     """Determine the terraform version to use"""
 
-    versions = list(get_terraform_versions())
+    if 'OPENTOFU' in os.environ:
+        versions = list(get_opentofu_versions())
+    else:
+        versions = list(get_terraform_versions())
 
     module = load_module(Path(inputs.get('INPUT_PATH', '.')))
 
@@ -38,23 +43,24 @@ def determine_version(inputs: InitInputs, cli_config_path: Path, actions_env: Ac
         return version
 
     if version := try_get_required_version(module, versions):
-        sys.stdout.write(f'Using latest terraform version that matches the required_version constraints\n')
+        sys.stdout.write(f'Using latest {version.product} version that matches the required_version constraints\n')
         return version
 
     if version := try_read_tfswitch(inputs):
-        sys.stdout.write('Using terraform version specified in .tfswitchrc file\n')
+        sys.stdout.write(f'Using {version.product} version specified in .tfswitchrc file\n')
         return version
 
     if version := try_read_tfenv(inputs, versions):
-        sys.stdout.write('Using terraform version specified in .terraform-version file\n')
+        sys.stdout.write(f'Using {version.product} version specified in .terraform-version file\n')
         return version
 
     if version := try_read_asdf(inputs, github_env.get('GITHUB_WORKSPACE', '/'), versions):
-        sys.stdout.write('Using terraform version specified in .tool-versions file\n')
+        sys.stdout.write(f'Using {version.product} version specified in .tool-versions file\n')
         return version
 
     if version := try_read_env(actions_env, versions):
-        sys.stdout.write('Using latest terraform version that matches the TERRAFORM_VERSION constraints\n')
+        env_var = 'OPENTOFU_VERSION' if 'OPENTOFU_VERSION' in os.environ else 'TERRAFORM_VERSION'
+        sys.stdout.write(f'Using latest {version.product} version that matches the {env_var} constraints\n')
         return version
 
     if inputs.get('INPUT_BACKEND_CONFIG', '').strip():
@@ -72,7 +78,7 @@ def determine_version(inputs: InitInputs, cli_config_path: Path, actions_env: Ac
 
     if backend_type == 'local':
         if version := try_read_local_state(Path(inputs.get('INPUT_PATH', '.'))):
-            sys.stdout.write('Using the same terraform version that wrote the existing local terraform.tfstate\n')
+            sys.stdout.write(f'Using the same {version.product} version that wrote the existing local terraform.tfstate\n')
             return version
 
     if get_arch() == 'arm64':
@@ -81,10 +87,10 @@ def determine_version(inputs: InitInputs, cli_config_path: Path, actions_env: Ac
 
     if backend_type not in ['remote', 'cloud', 'local']:
         if version := try_guess_state_version(inputs, module, versions):
-            sys.stdout.write('Using the same terraform version that wrote the existing remote state file\n')
+            sys.stdout.write(f'Using the same {version.product} version that wrote the existing remote state file\n')
             return version
 
-    sys.stdout.write('Terraform version not specified, using the latest version\n')
+    sys.stdout.write(f'Version not specified, using the latest version\n')
     return latest_non_prerelease_version(versions)
 
 
@@ -96,14 +102,25 @@ def switch(version: Version) -> None:
     The version will be downloaded if it doesn't already exist.
     """
 
-    target_path = get_executable(version)
+    if version.product == 'OpenTofu':
+        target_path = get_opentofu_executable(version)
+    else:
+        target_path = get_executable(version)
 
     link_path = '/usr/local/bin/terraform'
     if os.path.exists(link_path):
         os.remove(link_path)
 
     os.symlink(target_path, link_path)
-    sys.stdout.write(f'Switched to Terraform v{version}\n')
+
+    if version.product == 'OpenTofu':
+        link_path = '/usr/local/bin/tofu'
+        if os.path.exists(link_path):
+            os.remove(link_path)
+
+        os.symlink(target_path, link_path)
+
+    sys.stdout.write(f'Switched to {version.product} v{version}\n')
 
 def main() -> None:
     """Entrypoint for terraform-version."""
