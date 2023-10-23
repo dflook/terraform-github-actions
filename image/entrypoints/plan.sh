@@ -38,7 +38,7 @@ if [[ -z "$PLAN_OUT" ]]; then
 fi
 
 if [[ "$GITHUB_EVENT_NAME" == "pull_request" || "$GITHUB_EVENT_NAME" == "issue_comment" || "$GITHUB_EVENT_NAME" == "pull_request_review_comment" || "$GITHUB_EVENT_NAME" == "pull_request_target" || "$GITHUB_EVENT_NAME" == "pull_request_review" || "$GITHUB_EVENT_NAME" == "repository_dispatch" ]]; then
-    if [[ "$INPUT_ADD_GITHUB_COMMENT" == "true" || "$INPUT_ADD_GITHUB_COMMENT" == "changes-only" ]]; then
+    if [[ "$INPUT_ADD_GITHUB_COMMENT" == "true" ||  "$INPUT_ADD_GITHUB_COMMENT" == "always" || "$INPUT_ADD_GITHUB_COMMENT" == "changes-only" ]]; then
 
         if [[ ! -v TERRAFORM_ACTIONS_GITHUB_TOKEN ]]; then
             echo "GITHUB_TOKEN environment variable must be set to add GitHub PR comments"

@@ -13,10 +13,7 @@ except (ValueError, KeyError):
     collapse_threshold = 10
 
 
-try:
-    always_comment = os.environ['GITHUB_ALWAYS_COMMENT']
-except (KeyError):
-    always_comment = False
+    always_comment = os.environ['INPUT_ADD_GITHUB_COMMENT'] == "always"
 
 from pkg_resources import get_distribution, DistributionNotFound
 
