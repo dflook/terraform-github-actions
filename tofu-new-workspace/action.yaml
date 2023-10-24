@@ -1,0 +1,31 @@
+name: tofu-new-workspace
+description: Create a new OpenTofu workspace
+author: Daniel Flook
+
+inputs:
+  path:
+    description: Path to the OpenTofu configuration
+    required: false
+    default: .
+  workspace:
+    description: Name of the OpenTofu workspace
+    required: true
+  backend_config:
+    description: List of backend config values to set, one per line
+    required: false
+    default: ""
+  backend_config_file:
+    description: Path to a backend config file
+    required: false
+    default: ""
+
+runs:
+  env:
+    OPENTOFU: true
+  using: docker
+  image: ../image/Dockerfile
+  entrypoint: /entrypoints/new-workspace.sh
+
+branding:
+  icon: globe
+  color: purple

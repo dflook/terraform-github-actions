@@ -1,14 +1,14 @@
 name: terraform-plan
-description: Create a terraform plan
+description: Create a Terraform plan
 author: Daniel Flook
 
 inputs:
   path:
-    description: Path to the terraform configuration
+    description: Path to the Terraform configuration
     required: false
     default: .
   workspace:
-    description: Name of the terraform workspace
+    description: Name of the Terraform workspace
     required: false
     default: default
   backend_config:

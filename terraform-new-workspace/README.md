@@ -1,14 +1,14 @@
 # terraform-new-workspace action
 
-This is one of a suite of terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
+This is one of a suite of Terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
-Creates a new terraform workspace. If the workspace already exists, succeeds without doing anything.
+Creates a new Terraform workspace. If the workspace already exists, succeeds without doing anything.
 
 ## Inputs
 
 * `path`
 
-  Path to the terraform root module
+  Path to the Terraform root module
 
   - Type: string
   - Optional
@@ -35,7 +35,7 @@ Creates a new terraform workspace. If the workspace already exists, succeeds wit
 
 * `backend_config_file`
 
-  List of terraform backend config files to use, one per line.
+  List of Terraform backend config files to use, one per line.
   Paths should be relative to the GitHub Actions workspace
 
   ```yaml
@@ -50,16 +50,16 @@ Creates a new terraform workspace. If the workspace already exists, succeeds wit
 
 * `TERRAFORM_CLOUD_TOKENS`
 
-  API tokens for terraform cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
+  API tokens for cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
   These tokens may be used with the `remote` backend and for fetching required modules from the registry.
 
-  e.g for terraform cloud:
+  e.g:
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
   ```
 
-  With Terraform Enterprise or other registries:
+  With other registries:
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: |
@@ -72,7 +72,7 @@ Creates a new terraform workspace. If the workspace already exists, succeeds wit
 
 * `TERRAFORM_SSH_KEY`
 
-  A SSH private key that terraform will use to fetch git module sources.
+  A SSH private key that Terraform will use to fetch git module sources.
 
   This should be in PEM format.
 
@@ -87,7 +87,7 @@ Creates a new terraform workspace. If the workspace already exists, succeeds wit
 
 * `TERRAFORM_PRE_RUN`
 
-  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running terraform. 
+  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running Terraform. 
   
   The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
   

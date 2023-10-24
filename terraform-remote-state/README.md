@@ -1,6 +1,6 @@
 # terraform-remote-state action
 
-This is one of a suite of terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
+This is one of a suite of Terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
 Retrieves the root-level outputs from a Terraform remote state.
 
@@ -8,7 +8,7 @@ Retrieves the root-level outputs from a Terraform remote state.
 
 * `backend_type`
 
-  The name of the terraform plugin used for backend state
+  The name of the Terraform plugin used for backend state
 
   - Type: string
   - Required
@@ -23,7 +23,7 @@ Retrieves the root-level outputs from a Terraform remote state.
 
 * `backend_config`
 
-  List of terraform backend config values, one per line.
+  List of Terraform backend config values, one per line.
 
   ```yaml
   with:
@@ -35,7 +35,7 @@ Retrieves the root-level outputs from a Terraform remote state.
 
 * `backend_config_file`
 
-  List of terraform backend config files to use, one per line.
+  List of Terraform backend config files to use, one per line.
   Paths should be relative to the GitHub Actions workspace
 
   ```yaml
@@ -50,16 +50,16 @@ Retrieves the root-level outputs from a Terraform remote state.
 
 * `TERRAFORM_CLOUD_TOKENS`
 
-  API tokens for terraform cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
+  API tokens for cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
   These tokens may be used with the `remote` backend.
 
-  e.g for terraform cloud:
+  e.g:
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
   ```
 
-  With Terraform Enterprise or other registries:
+  With other registries:
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: |
@@ -72,7 +72,7 @@ Retrieves the root-level outputs from a Terraform remote state.
 
 ## Outputs
 
-An output will be created for each root-level output in the terraform remote state.
+An output will be created for each root-level output in the Terraform remote state.
 
 For example, with a remote state that has an output created using:
 ```hcl
@@ -85,7 +85,7 @@ See [terraform-output](https://github.com/dflook/terraform-github-actions/tree/m
 
 ## Example usage
 
-This example sends a request to a url that has previously been provisioned by terraform, by fetching the url from the remote state in S3.
+This example sends a request to a url that has previously been provisioned by Terraform, by fetching the url from the remote state in S3.
 
 ```yaml
 name: Send request
@@ -102,7 +102,7 @@ env:
 jobs:
   get_remote_state:
     runs-on: ubuntu-latest
-    name: Check terraform file are formatted correctly
+    name: Run Test
     steps:
       - name: Get remote state
         uses: dflook/terraform-remote-state@v1

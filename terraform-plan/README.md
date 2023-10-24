@@ -1,8 +1,8 @@
 # terraform-plan action
 
-This is one of a suite of terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
+This is one of a suite of Terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
-This actions generates a terraform plan.
+This actions generates a Terraform plan.
 If the triggering event relates to a PR it will add a comment on the PR containing the generated plan.
 
 <p align="center">
@@ -18,7 +18,7 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `path`
 
-  Path to the terraform root module to apply
+  Path to the Terraform root module to apply
 
   - Type: string
   - Optional
@@ -34,7 +34,7 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `label`
 
-  A friendly name for the environment the terraform configuration is for.
+  A friendly name for the environment the Terraform configuration is for.
   This will be used in the PR comment for easy identification.
 
   If set, must be the same as the `label` used in the corresponding `terraform-apply` command.
@@ -44,7 +44,7 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `variables`
 
-  Variables to set for the terraform plan. This should be valid terraform syntax - like a [variable definition file](https://www.terraform.io/docs/language/values/variables.html#variable-definitions-tfvars-files).
+  Variables to set for the terraform plan. This should be valid Terraform syntax - like a [variable definition file](https://www.terraform.io/docs/language/values/variables.html#variable-definitions-tfvars-files).
 
   ```yaml
   with:
@@ -57,7 +57,6 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   ```
 
   Variables set here override any given in `var_file`s.
-  This **can** be used with remote backends such as Terraform Cloud/Enterprise, with variables set in the remote workspace having precedence.
 
   - Type: string
   - Optional
@@ -74,14 +73,12 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
       prod.tfvars
   ```
 
-  This **can** be used with remote backends such as Terraform Cloud/Enterprise, with variables set in the remote workspace having precedence.
-
   - Type: string
   - Optional
 
 * `backend_config`
 
-  List of terraform backend config values, one per line.
+  List of Terraform backend config values, one per line.
 
   ```yaml
   with:
@@ -93,7 +90,7 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `backend_config_file`
 
-  List of terraform backend config files to use, one per line.
+  List of Terraform backend config files to use, one per line.
   Paths should be relative to the GitHub Actions workspace
 
   ```yaml
@@ -107,8 +104,6 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 * `replace`
 
   List of resources to replace, one per line.
-
-  Only available with terraform versions that support replace (v0.15.2 onwards).
 
   ```yaml
   with:
@@ -162,36 +157,6 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   - Optional
   - Default: The terraform default (10)
 
-* ~~`var`~~
-
-  > :warning: **Deprecated**: Use the `variables` input instead.
-
-  Comma separated list of terraform vars to set.
-
-  This is deprecated due to the following limitations:
-  - Only primitive types can be set with `var` - number, bool and string.
-  - String values may not contain a comma.
-  - Values set with `var` will be overridden by values contained in `var_file`s
-  - Does not work with the `remote` backend
-
-  You can change from `var` to `variables` by putting each variable on a separate line and ensuring each string value is quoted.
-
-  For example:
-  ```yaml
-  with:
-    var: instance_type=m5.xlarge,nat_type=instance
-  ```
-  Becomes:
-  ```yaml
-  with:
-    variables: |
-      instance_type="m5.xlarge"
-      nat_type="instance"
-  ```
-
-  - Type: string
-  - Optional
-
 ## Environment Variables
 
 * `GITHUB_TOKEN`
@@ -226,24 +191,24 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 * `TERRAFORM_ACTIONS_GITHUB_TOKEN`
 
   When this is set it is used instead of `GITHUB_TOKEN`, with the same behaviour.
-  The GitHub terraform provider also uses the `GITHUB_TOKEN` environment variable, 
-  so this can be used to make the github actions and the terraform provider use different tokens.
+  The GitHub Terraform provider also uses the `GITHUB_TOKEN` environment variable, 
+  so this can be used to make the github actions and the Terraform provider use different tokens.
 
   - Type: string
   - Optional
 
 * `TERRAFORM_CLOUD_TOKENS`
 
-  API tokens for terraform cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
+  API tokens for cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
   These tokens may be used with the `remote` backend and for fetching required modules from the registry.
 
-  e.g for terraform cloud:
+  e.g:
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
   ```
 
-  With Terraform Enterprise or other registries:
+  With other registries:
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: |
@@ -256,7 +221,7 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `TERRAFORM_SSH_KEY`
 
-  A SSH private key that terraform will use to fetch git/mercurial module sources.
+  A SSH private key that Terraform will use to fetch git/mercurial module sources.
 
   This should be in PEM format.
 
@@ -312,7 +277,7 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `TERRAFORM_PRE_RUN`
 
-  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running terraform. 
+  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running Terraform. 
   
   The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
   
@@ -338,18 +303,12 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
   Set to 'true' if the plan would apply any changes, 'false' if it wouldn't.
 
-  Note that with terraform <0.13 an apply may still be needed to update any outputs, even if no
-  resources would change. With terraform >=0.13 this is correctly set to 'true' whenever an apply
-  needs to be run.
-
   - Type: boolean
 
 * `json_plan_path`
 
   This is the path to the generated plan in [JSON Output Format](https://www.terraform.io/docs/internals/json-format.html)
   The path is relative to the Actions workspace.
-
-  This is not available when using terraform 0.11 or earlier.
 
   - Type: string
 
@@ -498,7 +457,7 @@ permissions:
 jobs:
   plan:
     runs-on: ubuntu-latest
-    name: Create terraform plan
+    name: Create Terraform plan
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -535,7 +494,7 @@ jobs:
   plan:
     if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, 'terraform plan') }}
     runs-on: ubuntu-latest
-    name: Create terraform plan
+    name: Create Terraform plan
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:

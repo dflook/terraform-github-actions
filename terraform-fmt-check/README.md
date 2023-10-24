@@ -1,8 +1,8 @@
 # terraform-fmt-check action
 
-This is one of a suite of terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
+This is one of a suite of Terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
-This action uses the `terraform fmt` command to check that all terraform files in a terraform configuration directory are in the canonical format.
+This action uses the `terraform fmt` command to check that all files in a Terraform configuration directory are in the canonical format.
 This can be used to check that files are properly formatted before merging.
 
 If any files are not correctly formatted a failing GitHub check will be added for the file, and the job failed.
@@ -11,7 +11,7 @@ If any files are not correctly formatted a failing GitHub check will be added fo
 
 * `path`
 
-  Path containing terraform files
+  Path containing Terraform files
 
   - Type: string
   - Optional
@@ -19,7 +19,7 @@ If any files are not correctly formatted a failing GitHub check will be added fo
 
 * `workspace`
 
-  Terraform workspace to inspect when discovering the terraform version to use, if not otherwise specified. 
+  Terraform workspace to inspect when discovering the Terraform version to use, if not otherwise specified. 
   See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
 
   - Type: string
@@ -27,7 +27,7 @@ If any files are not correctly formatted a failing GitHub check will be added fo
 
 * `backend_config`
 
-  List of terraform backend config values, one per line. This is used for discovering the terraform version to use, if not otherwise specified. 
+  List of Terraform backend config values, one per line. This is used for discovering the Terraform version to use, if not otherwise specified. 
   See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
 
   ```yaml
@@ -40,7 +40,7 @@ If any files are not correctly formatted a failing GitHub check will be added fo
 
 * `backend_config_file`
 
-  List of terraform backend config files to use, one per line. This is used for discovering the terraform version to use, if not otherwise specified. 
+  List of Terraform backend config files to use, one per line. This is used for discovering the Terraform version to use, if not otherwise specified. 
   See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
   Paths should be relative to the GitHub Actions workspace
 
@@ -64,17 +64,17 @@ If any files are not correctly formatted a failing GitHub check will be added fo
 
 * `TERRAFORM_CLOUD_TOKENS`
 
-  For the purpose of detecting the terraform version to use from a TFC/E backend.
-  API tokens for terraform cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
+  For the purpose of detecting the Terraform version to use from a cloud backend.
+  API tokens for cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
   These tokens may be used with the `remote` backend and for fetching required modules from the registry.
 
-  e.g for terraform cloud:
+  e.g:
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
   ```
 
-  With Terraform Enterprise or other registries:
+  With other registries:
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: |
@@ -88,17 +88,17 @@ If any files are not correctly formatted a failing GitHub check will be added fo
 ## Example usage
 
 This example workflow runs on every push and fails if any of the
-terraform files are not formatted correctly.
+Terraform files are not formatted correctly.
 
 ```yaml
-name: Check terraform file formatting
+name: Check file formatting
 
 on: [push]
 
 jobs:
   check_format:
     runs-on: ubuntu-latest
-    name: Check terraform file are formatted correctly
+    name: Check Terraform file are formatted correctly
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -112,14 +112,14 @@ jobs:
 This example executes a run step only if the format check failed.
 
 ```yaml
-name: Check terraform file formatting
+name: Check file formatting
 
 on: [push]
 
 jobs:
   check_format:
     runs-on: ubuntu-latest
-    name: Check terraform file are formatted correctly
+    name: Check Terraform file are formatted correctly
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -132,5 +132,5 @@ jobs:
 
       - name: Wrong formatting found
         if: ${{ failure() && steps.fmt-check.outputs.failure-reason == 'check-failed' }}
-        run: echo "terraform formatting check failed"
+        run: echo "formatting check failed"
 ```

@@ -1,0 +1,82 @@
+name: tofu-plan
+description: Create an OpenTofu plan
+author: Daniel Flook
+
+inputs:
+  path:
+    description: Path to the OpenTofu configuration
+    required: false
+    default: .
+  workspace:
+    description: Name of the OpenTofu workspace
+    required: false
+    default: default
+  backend_config:
+    description: List of backend config values to set, one per line
+    required: false
+    default: ""
+  backend_config_file:
+    description: Path to a backend config file
+    required: false
+    default: ""
+  variables:
+    description: Variable definitions
+    required: false
+  var:
+    description: Comma separated list of vars to set, e.g. 'foo=bar'
+    required: false
+    deprecationMessage: Use the variables input instead.
+  var_file:
+    description: List of var file paths, one per line
+    required: false
+  parallelism:
+    description: Limit the number of concurrent operations
+    required: false
+    default: "0"
+  target:
+    description: List of resources to target for the plan, one per line
+    required: false
+    default: ""
+  replace:
+    description: List of resources to replace if an update is required, one per line
+    required: false
+    default: ""
+  destroy:
+    description: Create a plan to destroy all resources
+    required: false
+    default: "false"
+  label:
+    description: A friendly name for this plan
+    required: false
+    default: ""
+  add_github_comment:
+    description: Add the plan to a GitHub PR
+    required: false
+    default: "true"
+
+outputs:
+  changes:
+    description: If the generated plan would update any resources or outputs this is set to `true`, otherwise it's set to `false`.
+  to_add:
+    description: The number of resources that would be added by this plan
+  to_change:
+    description: The number of resources that would be changed by this plan
+  to_destroy:
+    description: The number of resources that would be destroyed by this plan
+  text_plan_path:
+    description: Path to a file in the workspace containing the generated plan in human readable format.
+  json_plan_path:
+    description: Path to a file in the workspace containing the generated plan in JSON format.
+  run_id:
+    description: If the root module uses the `remote` or `cloud` backend in remote execution mode, this output will be set to the remote run id.
+
+runs:
+  env:
+    OPENTOFU: true
+  using: docker
+  image: ../image/Dockerfile
+  entrypoint: /entrypoints/plan.sh
+
+branding:
+  icon: globe
+  color: purple

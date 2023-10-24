@@ -1,14 +1,14 @@
 name: terraform-destroy
-description: Destroys all resources in a terraform workspace
+description: Destroys all resources in a Terraform workspace
 author: Daniel Flook
 
 inputs:
   path:
-    description: Path to the terraform configuration
+    description: Path to the Terraform configuration
     required: false
     default: .
   workspace:
-    description: Name of the terraform workspace
+    description: Name of the Terraform workspace
     required: false
     default: default
   backend_config:

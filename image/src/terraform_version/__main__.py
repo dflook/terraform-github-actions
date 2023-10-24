@@ -90,7 +90,7 @@ def determine_version(inputs: InitInputs, cli_config_path: Path, actions_env: Ac
             sys.stdout.write(f'Using the same {version.product} version that wrote the existing remote state file\n')
             return version
 
-    sys.stdout.write(f'Version not specified, using the latest version\n')
+    sys.stdout.write(f'Version not specified, using the latest release version\n')
     return latest_non_prerelease_version(versions)
 
 
@@ -136,6 +136,14 @@ def main() -> None:
                 cast(ActionsEnv, os.environ),
                 cast(GithubEnv, os.environ)
             )
+
+            if version is None:
+                if 'OPENTOFU' in os.environ:
+                    sys.stderr.write('No release version of OpenTofu found. Try specifying a pre-release version, e.g. OPENTOFU_VERSION=1.6.0-alpha3\n')
+                else:
+                    sys.stderr.write('No eligible versions found\n')
+                sys.exit(1)
+
             switch(version)
 
     except DownloadError as download_error:

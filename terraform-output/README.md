@@ -1,14 +1,14 @@
 # terraform-output action
 
-This is one of a suite of terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
+This is one of a suite of Terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
-Retrieve the root-level outputs from a terraform configuration.
+Retrieve the root-level outputs from a Terraform configuration.
 
 ## Inputs
 
 * `path`
 
-  Path to the terraform root module
+  Path to the Terraform root module
 
   - Type: string
   - Optional
@@ -24,7 +24,7 @@ Retrieve the root-level outputs from a terraform configuration.
 
 * `backend_config`
 
-  List of terraform backend config values, one per line.
+  List of Terraform backend config values, one per line.
 
   ```yaml
   with:
@@ -36,7 +36,7 @@ Retrieve the root-level outputs from a terraform configuration.
 
 * `backend_config_file`
 
-  List of terraform backend config files to use, one per line.
+  List of Terraform backend config files to use, one per line.
   Paths should be relative to the GitHub Actions workspace
 
   ```yaml
@@ -51,16 +51,16 @@ Retrieve the root-level outputs from a terraform configuration.
 
 * `TERRAFORM_CLOUD_TOKENS`
 
-  API tokens for terraform cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
+  API tokens for cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
   These tokens may be used with the `remote` backend and for fetching required modules from the registry.
 
-  e.g for terraform cloud:
+  e.g:
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
   ```
 
-  With Terraform Enterprise or other registries:
+  With other registries:
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: |
@@ -73,7 +73,7 @@ Retrieve the root-level outputs from a terraform configuration.
 
 * `TERRAFORM_SSH_KEY`
 
-  A SSH private key that terraform will use to fetch git module sources.
+  A SSH private key that Terraform will use to fetch git module sources.
 
   This should be in PEM format.
 
@@ -88,7 +88,7 @@ Retrieve the root-level outputs from a terraform configuration.
 
 * `TERRAFORM_PRE_RUN`
 
-  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running terraform. 
+  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running Terraform. 
   
   The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
   
@@ -141,9 +141,9 @@ Retrieve the root-level outputs from a terraform configuration.
 
 ## Outputs
 
-An action output will be created for each output of the terraform configuration.
+An action output will be created for each output of the Terraform configuration.
 
-For example, with the terraform config:
+For example, with the Terraform config:
 ```hcl
 output "service_hostname" {
   value = "example.com"
@@ -166,7 +166,7 @@ These values can be used in a workflow expression by using the [fromJSON](https:
 
 ### String
 
-This example uses a terraform string output to get a hostname:
+This example uses a Terraform string output to get a hostname:
 
 ```yaml
 on: [push]
@@ -174,7 +174,7 @@ on: [push]
 jobs:
   show_hostname:
     runs-on: ubuntu-latest
-    name: Show the terraformed hostname
+    name: Show the hostname
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -193,7 +193,7 @@ jobs:
 
 This example gets information from object and array(object) outputs.
 
-With this terraform config:
+With this Terraform config:
 ```hcl
 output "vpc" {
   value = aws_vpc.test

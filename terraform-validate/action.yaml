@@ -1,10 +1,10 @@
 name: terraform-validate
-description: Validate a terraform configuration directory
+description: Validate a Terraform configuration directory
 author: Daniel Flook
 
 inputs:
   path:
-    description: Path to the terraform configuration
+    description: Path to the Terraform configuration
     required: false
     default: .
   workspace:

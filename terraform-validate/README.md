@@ -1,8 +1,8 @@
 # terraform-validate action
 
-This is one of a suite of terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
+This is one of a suite of Terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
-This action uses the `terraform validate` command to check that a terraform configuration is valid.
+This action uses the `terraform validate` command to check that a Terraform configuration is valid.
 This can be used to check that a configuration is valid before creating a plan.
 
 Failing GitHub checks will be added for any problems found.
@@ -11,13 +11,13 @@ Failing GitHub checks will be added for any problems found.
     <img src="validate.png" width="1000">
 </p>
 
-If the terraform configuration is not valid, the build is failed.
+If the Terraform configuration is not valid, the build is failed.
 
 ## Inputs
 
 * `path`
 
-  Path to the terraform root module
+  Path to the Terraform root module
 
   - Type: string
   - Optional
@@ -25,9 +25,9 @@ If the terraform configuration is not valid, the build is failed.
 
 * `workspace`
 
-  Terraform workspace to use for the `terraform.workspace` value while validating. Note that for remote operations in Terraform Cloud/Enterprise, this is always `default`.
+  Terraform workspace to use for the `terraform.workspace` value while validating. Note that for remote operations in a cloud backend, this is always `default`.
 
-  Also used for discovering the terraform version to use, if not otherwise specified. 
+  Also used for discovering the Terraform version to use, if not otherwise specified. 
   See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details. 
 
   - Type: string
@@ -36,7 +36,7 @@ If the terraform configuration is not valid, the build is failed.
 
 * `backend_config`
 
-  List of terraform backend config values, one per line. This is used for discovering the terraform version to use, if not otherwise specified. 
+  List of Terraform backend config values, one per line. This is used for discovering the Terraform version to use, if not otherwise specified. 
   See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
 
   ```yaml
@@ -49,7 +49,7 @@ If the terraform configuration is not valid, the build is failed.
 
 * `backend_config_file`
 
-  List of terraform backend config files to use, one per line. This is used for discovering the terraform version to use, if not otherwise specified. 
+  List of Terraform backend config files to use, one per line. This is used for discovering the Terraform version to use, if not otherwise specified. 
   See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
   Paths should be relative to the GitHub Actions workspace
 
@@ -73,16 +73,16 @@ If the terraform configuration is not valid, the build is failed.
 
 * `TERRAFORM_CLOUD_TOKENS`
 
-  API tokens for terraform cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
-  These tokens may be used for fetching required modules from the registry, and discovering the terraform version to use from a TFC/E workspace.
+  API tokens for cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
+  These tokens may be used for fetching required modules from the registry, and discovering the Terraform version to use from a cloud workspace.
 
-  e.g for terraform cloud:
+  e.g:
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
   ```
 
-  With Terraform Enterprise or other registries:
+  With other registries:
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: |
@@ -95,7 +95,7 @@ If the terraform configuration is not valid, the build is failed.
 
 * `TERRAFORM_SSH_KEY`
 
-  A SSH private key that terraform will use to fetch git module sources.
+  A SSH private key that Terraform will use to fetch git module sources.
 
   This should be in PEM format.
 
@@ -110,7 +110,7 @@ If the terraform configuration is not valid, the build is failed.
 
 * `TERRAFORM_PRE_RUN`
 
-  A set of commands that will be run prior to `terraform init`. This can be used to customise the environment before running terraform. 
+  A set of commands that will be run prior to `terraform init`. This can be used to customise the environment before running Terraform. 
   
   The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
   
@@ -157,7 +157,7 @@ If the terraform configuration is not valid, the build is failed.
 
 ## Example usage
 
-This example workflow runs on every push and fails if the terraform
+This example workflow runs on every push and fails if the Terraform
 configuration is invalid.
 
 ```yaml
@@ -166,7 +166,7 @@ on: [push]
 jobs:
   validate:
     runs-on: ubuntu-latest
-    name: Validate terraform
+    name: Validate Terraform module
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -185,7 +185,7 @@ on: [push]
 jobs:
   validate:
     runs-on: ubuntu-latest
-    name: Validate terraform
+    name: Validate Terraform module
     steps:
       - name: Checkout
         uses: actions/checkout@v3

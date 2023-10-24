@@ -1,6 +1,6 @@
 # terraform-unlock-state action
 
-This is one of a suite of terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
+This is one of a suite of Terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
 Force unlocks a Terraform remote state.
 
@@ -8,7 +8,7 @@ Force unlocks a Terraform remote state.
 
 * `path`
 
-  Path to the terraform root module that defines the remote state to unlock
+  Path to the Terraform root module that defines the remote state to unlock
 
   - Type: string
   - Optional
@@ -24,7 +24,7 @@ Force unlocks a Terraform remote state.
 
 * `backend_config`
 
-  List of terraform backend config values, one per line.
+  List of Terraform backend config values, one per line.
 
   ```yaml
   with:
@@ -36,7 +36,7 @@ Force unlocks a Terraform remote state.
 
 * `backend_config_file`
 
-  List of terraform backend config files to use, one per line.
+  List of Terraform backend config files to use, one per line.
   Paths should be relative to the GitHub Actions workspace
 
   ```yaml
@@ -58,16 +58,16 @@ Force unlocks a Terraform remote state.
 
 * `TERRAFORM_CLOUD_TOKENS`
 
-  API tokens for terraform cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
+  API tokens for cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
   These tokens may be used with the `remote` backend and for fetching required modules from the registry.
 
-  e.g for terraform cloud:
+  e.g:
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
   ```
 
-  With Terraform Enterprise or other registries:
+  With other registries:
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: |
@@ -80,7 +80,7 @@ Force unlocks a Terraform remote state.
 
 * `TERRAFORM_SSH_KEY`
 
-  A SSH private key that terraform will use to fetch git/mercurial module sources.
+  A SSH private key that Terraform will use to fetch git/mercurial module sources.
 
   This should be in PEM format.
 
@@ -120,7 +120,7 @@ Force unlocks a Terraform remote state.
 
 * `TERRAFORM_PRE_RUN`
 
-  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running terraform. 
+  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running Terraform. 
   
   The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
   
@@ -148,7 +148,7 @@ on:
   workflow_dispatch:
     inputs:
       path:
-        description: "Path to the terraform root module"
+        description: "Path to the Terraform root module"
         required: true
       lock_id:
         description: "Lock ID to be unlocked"

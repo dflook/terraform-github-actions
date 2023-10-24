@@ -1,0 +1,78 @@
+name: tofu-apply
+description: Apply an OpenTofu plan
+author: Daniel Flook
+
+inputs:
+  path:
+    description: Path to the OpenTofu configuration
+    required: false
+    default: .
+  workspace:
+    description: Name of the OpenTofu workspace
+    required: false
+    default: default
+  backend_config:
+    description: List of backend config values to set, one per line
+    required: false
+    default: ""
+  backend_config_file:
+    description: Path to a backend config file
+    required: false
+    default: ""
+  variables:
+    description: Variable definitions
+    required: false
+  var:
+    description: Comma separated list of vars to set, e.g. 'foo=bar'
+    required: false
+    default: ""
+    deprecationMessage: Use the variables input instead.
+  var_file:
+    description: List of var file paths, one per line
+    required: false
+    default: ""
+  parallelism:
+    description: Limit the number of concurrent operations
+    required: false
+    default: "0"
+  label:
+    description: A friendly name for this plan
+    required: false
+    default: ""
+  auto_approve:
+    description: Automatically approve and apply plan
+    required: false
+    default: "false"
+  target:
+    description: List of resources to target for the apply, one per line
+    required: false
+    default: ""
+  replace:
+    description: List of resources to replace if an update is required, one per line
+    required: false
+    default: ""
+  destroy:
+    description: Create and apply a plan to destroy all resources
+    required: false
+    default: "false"
+
+outputs:
+  text_plan_path:
+    description: Path to a file in the workspace containing the generated plan in human readble format. This won't be set if the backend type is `remote` and `auto_approve` is `true`
+  json_plan_path:
+    description: Path to a file in the workspace containing the generated plan in JSON format. This won't be set if the backend type is `remote`.
+  failure-reason:
+    description: The reason for the build failure. May be `apply-failed` or `plan-changed`.
+  run_id:
+    description: If the root module uses the `remote` or `cloud` backend in remote execution mode, this output will be set to the remote run id.
+
+runs:
+  env:
+    OPENTOFU: true
+  using: docker
+  image: ../image/Dockerfile
+  entrypoint: /entrypoints/apply.sh
+
+branding:
+  icon: globe
+  color: purple

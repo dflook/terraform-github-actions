@@ -1,0 +1,36 @@
+name: tofu-version
+description: Prints OpenTofu and providers versions
+author: Daniel Flook
+
+inputs:
+  path:
+    description: Path to the OpenTofu configuration
+    required: false
+    default: .
+  workspace:
+    description: Name of the OpenTofu workspace to get the version for
+    required: false
+    default: default
+  backend_config:
+    description: List of backend config values to set, one per line
+    required: false
+    default: ""
+  backend_config_file:
+    description: Path to a backend config file
+    required: false
+    default: ""
+
+outputs:
+  tofu:
+    description: The OpenTofu version used by the configuration
+
+runs:
+  env:
+    OPENTOFU: true
+  using: docker
+  image: ../image/Dockerfile
+  entrypoint: /entrypoints/version.sh
+
+branding:
+  icon: globe
+  color: purple
