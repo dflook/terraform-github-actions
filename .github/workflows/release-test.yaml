@@ -1,7 +1,11 @@
 name: Test Release
 
 on:
-  - push
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Tag to push"
+        required: true
 
 jobs:
   image:
@@ -32,7 +36,7 @@ jobs:
       - name: Build action image
         id: image_build
         run: |
-          RELEASE_TAG="tofu.0.0"
+          RELEASE_TAG="${{ github.event.inputs.tag_name }}"
 
           docker buildx build \
             --build-arg FETCH_CHECKSUMS=yes \
@@ -51,7 +55,7 @@ jobs:
         run: |
           set -x
           
-          export RELEASE_TAG="tofu.0.0"
+          export RELEASE_TAG="${{ github.event.inputs.tag_name }}"
           export major=$(echo $RELEASE_TAG | cut -d. -f1)
           export minor=$(echo $RELEASE_TAG | cut -d. -f2)
 
@@ -65,7 +69,7 @@ jobs:
               cp $GITHUB_WORKSPACE/.github/FUNDING.yml $HOME/$action/.github/FUNDING.yml
           }
 
-          action=tofu-version
+          for action in $(cd $GITHUB_WORKSPACE && find . -name action.yaml -printf "%h\n" | sed 's/^.\///'); do
 
             if git clone https://dflook:$GITHUB_TOKEN@github.com/dflook/$action.git "$HOME/$action"; then
               echo "Releasing dflook/$action@$RELEASE_TAG"
@@ -98,4 +102,4 @@ jobs:
             else
               echo "Skipping dflook/$action"
             fi
-
+          done
