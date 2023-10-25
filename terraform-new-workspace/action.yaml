@@ -1,14 +1,14 @@
 name: terraform-new-workspace
-description: Create a new terraform workspace
+description: Create a new Terraform workspace
 author: Daniel Flook
 
 inputs:
   path:
-    description: Path to the terraform configuration
+    description: Path to the Terraform configuration
     required: false
     default: .
   workspace:
-    description: Name of the terraform workspace
+    description: Name of the Terraform workspace
     required: true
   backend_config:
     description: List of backend config values to set, one per line

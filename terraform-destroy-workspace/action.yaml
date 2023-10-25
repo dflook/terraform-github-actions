@@ -1,14 +1,14 @@
 name: terraform-destroy-workspace
-description: Delete a terraform workspace, destroying all resources
+description: Delete a Terraform workspace, destroying all resources
 author: Daniel Flook
 
 inputs:
   path:
-    description: Path to the terraform configuration
+    description: Path to the Terraform configuration
     required: false
     default: .
   workspace:
-    description: Name of the terraform workspace
+    description: Name of the Terraform workspace
     required: true
   backend_config:
     description: List of backend config values to set, one per line

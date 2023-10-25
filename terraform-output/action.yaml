@@ -1,14 +1,14 @@
 name: terraform-output
-description: Set the action outputs from terraform configuration outputs
+description: Set the action outputs from Terraform configuration outputs
 author: Daniel Flook
 
 inputs:
   path:
-    description: Path to the terraform configuration
+    description: Path to the Terraform configuration
     required: false
     default: .
   workspace:
-    description: Name of the terraform workspace
+    description: Name of the Terraform workspace
     required: false
     default: default
   backend_config:

@@ -1,4 +1,4 @@
-name: Release
+name: Test Release
 
 on:
   workflow_dispatch:
@@ -16,6 +16,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Check tofu actions are up to date
+        run: |
+          python3 tofu/tofuize.py
+          git diff --exit-code
 
       - name: Registry login
         env:
@@ -48,6 +53,8 @@ jobs:
 
       - name: Release actions
         run: |
+          set -x
+          
           export RELEASE_TAG="${{ github.event.inputs.tag_name }}"
           export major=$(echo $RELEASE_TAG | cut -d. -f1)
           export minor=$(echo $RELEASE_TAG | cut -d. -f2)
@@ -80,7 +87,7 @@ jobs:
               git -C "$HOME/$action" push --force --tags
           
               # git tags that use GitHub Container Registry for the image
-              git -C "$HOME/$action" checkout ghcr
+              git -C "$HOME/$action" checkout ghcr || git -C "$HOME/$action" checkout -b ghcr
               prepare_release
               sed -i 's|  image:.*|  image: docker://ghcr.io/dflook/terraform-github-actions@${{ steps.image_build.outputs.digest }}|' $HOME/$action/action.yaml
           
@@ -89,12 +96,10 @@ jobs:
               git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$RELEASE_TAG-ghcr"
               git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$major-ghcr"
               git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$major.$minor-ghcr"
-              git -C "$HOME/$action" push --force
+              git -C "$HOME/$action" push --set-upstream origin ghcr --force
               git -C "$HOME/$action" push --force --tags
 
-              # For testing, only release one action
-              exit 0
             else
-              echo "Skipping $action"
+              echo "Skipping dflook/$action"
             fi
           done

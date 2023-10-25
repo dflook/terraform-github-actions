@@ -1,28 +1,26 @@
 # terraform-version action
 
-This is one of a suite of terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
+This is one of a suite of Terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
-This action determines the terraform/opentofu and provider versions to use for the root module.
-
-If the `OPENTOFU` environment variable is set or if the version is specified using `OPENTOFU_VERSION` then a version of opentofu will be selected.
+This action determines the Terraform and provider versions to use for the root module.
 
 The best way to specify the version is using a [`required_version`](https://www.terraform.io/docs/configuration/terraform.html#specifying-a-required-terraform-version) constraint.
 
 The version to use is discovered from the first of:
-1. The version set in the Terraform Cloud/Enterprise workspace if the module uses a `remote` backend or `cloud` configuration, and the remote workspace exists.
+1. The version set in the cloud workspace if the module uses a `remote` backend or `cloud` configuration, and the remote workspace exists.
 2. A [`required_version`](https://www.terraform.io/docs/configuration/terraform.html#specifying-a-required-terraform-version)
-   constraint in the terraform configuration. If the constraint is range, the latest matching version is used.
+   constraint in the Terraform configuration. If the constraint is range, the latest matching version is used.
 3. A [tfswitch](https://warrensbox.github.io/terraform-switcher/) `.tfswitchrc` file in the module path
 4. A [tfenv](https://github.com/tfutils/tfenv) `.terraform-version` file in the module path
 5. An [asdf](https://asdf-vm.com/) `.tool-versions` file in the module path or any parent path
 6. An `OPENTOFU_VERSION` environment variable containing a [version constraint](https://www.terraform.io/language/expressions/version-constraints). If the constraint allows multiple versions, the latest matching version is used.
 7. A `TERRAFORM_VERSION` environment variable containing a [version constraint](https://www.terraform.io/language/expressions/version-constraints). If the constraint allows multiple versions, the latest matching version is used.
 8. The Terraform version that created the current state file (best effort).
-9. The latest terraform version
+9. The latest Terraform version
 
-The version of terraform and all required providers will be output to the workflow log.
+The version of Terraform and all required providers will be output to the workflow log.
 
-Other terraform actions automatically determine the terraform version
+Other terraform actions automatically determine the Terraform version
 in the same way. You only need to run this action if you want to use the
 outputs yourself.
 
@@ -30,7 +28,7 @@ outputs yourself.
 
 * `path`
 
-  Path to the terraform root module
+  Path to the Terraform root module
 
   - Type: string
   - Optional
@@ -46,10 +44,10 @@ outputs yourself.
 
 * `backend_config`
 
-  List of terraform backend config values, one per line.
+  List of Terraform backend config values, one per line.
 
-  This will be used to fetch the Terraform version set in the TFC/TFE workspace if using the `remote` backend.
-  For other backend types, this is used to fetch the version that most recently wrote to the terraform state.
+  This will be used to fetch the Terraform version set in the cloud workspace if using the `remote` backend.
+  For other backend types, this is used to fetch the version that most recently wrote to the Terraform state.
 
   ```yaml
   with:
@@ -61,11 +59,11 @@ outputs yourself.
 
 * `backend_config_file`
 
-  List of terraform backend config files to use, one per line.
+  List of Terraform backend config files to use, one per line.
   Paths should be relative to the GitHub Actions workspace
 
-  This will be used to fetch the Terraform version set in the TFC/TFE workspace if using the `remote` backend.
-  For other backend types, this is used to fetch the version that most recently wrote to the terraform state.
+  This will be used to fetch the Terraform version set in the cloud workspace if using the `remote` backend.
+  For other backend types, this is used to fetch the version that most recently wrote to the Terraform state.
 
   ```yaml
   with:
@@ -79,16 +77,16 @@ outputs yourself.
 
 * `TERRAFORM_CLOUD_TOKENS`
 
-  API tokens for terraform cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
-  These tokens may be used for fetching required modules from the registry, and determining the terraform version set in the remote workspace.
+  API tokens for cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
+  These tokens may be used for fetching required modules from the registry, and determining the Terraform version set in the remote workspace.
 
-  e.g for terraform cloud:
+  e.g:
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
   ```
 
-  With Terraform Enterprise or other registries:
+  With other registries:
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: |
@@ -101,7 +99,7 @@ outputs yourself.
 
 * `TERRAFORM_SSH_KEY`
 
-  A SSH private key that terraform will use to fetch git module sources.
+  A SSH private key that Terraform will use to fetch git module sources.
 
   This should be in PEM format.
 
@@ -116,7 +114,7 @@ outputs yourself.
 
 * `TERRAFORM_PRE_RUN`
 
-  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running terraform. 
+  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running Terraform. 
   
   The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
   
@@ -165,12 +163,12 @@ outputs yourself.
 
 * `terraform`
 
-  The terraform version that is used by the terraform configuration
+  The Terraform version that is used by the configuration
 
 * Provider Versions
 
   Additional outputs are added with the version of each provider that
-  is used by the terraform configuration. For example, if the random
+  is used by the Terraform configuration. For example, if the random
   provider is used:
 
   ```hcl
@@ -189,7 +187,7 @@ on: [push]
 jobs:
   required_version:
     runs-on: ubuntu-latest
-    name: Print the required terraform  and provider versions
+    name: Print the required Terraform and provider versions
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -201,7 +199,7 @@ jobs:
           path: my-configuration
 
       - name: Print the version
-        run: echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
+        run: echo "The Terraform version was ${{ steps.terraform-version.outputs.terraform }}"
         
       - name: Print aws provider version
         run: echo "The aws provider version was ${{ steps.terraform-version.outputs.aws }}"        

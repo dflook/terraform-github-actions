@@ -1,14 +1,14 @@
 name: terraform-version
-description: Prints terraform and providers versions
+description: Prints Terraform and providers versions
 author: Daniel Flook
 
 inputs:
   path:
-    description: Path to the terraform configuration
+    description: Path to the Terraform configuration
     required: false
     default: .
   workspace:
-    description: Name of the terraform workspace to get the version for
+    description: Name of the Terraform workspace to get the version for
     required: false
     default: default
   backend_config:
@@ -21,8 +21,8 @@ inputs:
     default: ""
 
 outputs:
-  version:
-    description: The terraform version used by the configuration
+  terraform:
+    description: The Terraform version used by the configuration
 
 runs:
   using: docker

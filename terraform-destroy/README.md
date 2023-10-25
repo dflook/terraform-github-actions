@@ -1,6 +1,6 @@
 # terraform-destroy action
 
-This is one of a suite of terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
+This is one of a suite of Terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
 :warning: This action uses the `terraform destroy` command to immediately destroy all resources in a terraform workspace.
 
@@ -11,7 +11,7 @@ and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `path`
 
-  Path to the terraform root module
+  Path to the Terraform root module
 
   - Type: string
   - Optional
@@ -27,7 +27,7 @@ and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `variables`
 
-  Variables to set for the terraform destroy. This should be valid terraform syntax - like a [variable definition file](https://www.terraform.io/docs/language/values/variables.html#variable-definitions-tfvars-files).
+  Variables to set for the terraform destroy. This should be valid Terraform syntax - like a [variable definition file](https://www.terraform.io/docs/language/values/variables.html#variable-definitions-tfvars-files).
 
   ```yaml
   with:
@@ -40,9 +40,6 @@ and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   ```
 
   Variables set here override any given in `var_file`s.
-  This **can** be used with remote backends such as Terraform Cloud/Enterprise, with variables set in the remote workspace having precedence.
-
-  > :warning: Secret values are not masked in the PR comment. Set a `label` to avoid revealing the variables in the PR.
 
   - Type: string
   - Optional
@@ -58,8 +55,6 @@ and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
       common.tfvars
       prod.tfvars
   ```
-
-  This **can** be used with remote backends such as Terraform Cloud/Enterprise, with variables set in the remote workspace having precedence.
 
   - Type: string
   - Optional
@@ -78,7 +73,7 @@ and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `backend_config_file`
 
-  List of terraform backend config files to use, one per line.
+  List of Terraform backend config files to use, one per line.
   Paths should be relative to the GitHub Actions workspace
 
   ```yaml
@@ -96,15 +91,6 @@ and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   - Type: number
   - Optional
   - Default: The terraform default (10)
-
-* ~~`var`~~
-
-  > :warning: **Deprecated**: Use the `variables` input instead.
-
-  Comma separated list of terraform vars to set
-
-  - Type: string
-  - Optional
 
 ## Outputs
 
@@ -139,16 +125,16 @@ and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `TERRAFORM_CLOUD_TOKENS`
 
-  API tokens for terraform cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
+  API tokens for cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
   These tokens may be used with the `remote` backend and for fetching required modules from the registry.
 
-  e.g for terraform cloud:
+  e.g:
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
   ```
 
-  With Terraform Enterprise or other registries:
+  With other registries:
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: |
@@ -161,7 +147,7 @@ and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `TERRAFORM_SSH_KEY`
 
-  A SSH private key that terraform will use to fetch git module sources.
+  A SSH private key that Terraform will use to fetch git module sources.
 
   This should be in PEM format.
 
@@ -176,7 +162,7 @@ and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `TERRAFORM_PRE_RUN`
 
-  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running terraform. 
+  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running Terraform. 
   
   The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
 
@@ -235,7 +221,7 @@ on:
 jobs:
   destroy_workspace:
     runs-on: ubuntu-latest
-    name: Destroy terraform workspace
+    name: Destroy Terraform workspace
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -259,7 +245,7 @@ on:
 jobs:
   destroy_workspace:
     runs-on: ubuntu-latest
-    name: Destroy terraform workspace
+    name: Destroy Terraform workspace
     steps:
       - name: Checkout
         uses: actions/checkout@v3

@@ -1,0 +1,35 @@
+name: tofu-unlock-state
+description: Unlock previously locked OpenTofu state
+author: Patrick Almeida
+
+inputs:
+  path:
+    description: Path to the OpenTofu configuration
+    required: false
+    default: .
+  workspace:
+    description: Name of the OpenTofu workspace
+    required: false
+    default: default
+  backend_config:
+    description: List of backend config values to set, one per line
+    required: false
+    default: ""
+  backend_config_file:
+    description: Path to a backend config file
+    required: false
+    default: ""
+  lock_id:
+    description: Lock ID of the state lock to unlock
+    required: true
+
+runs:
+  env:
+    OPENTOFU: true
+  using: docker
+  image: ../image/Dockerfile
+  entrypoint: /entrypoints/unlock-state.sh
+
+branding:
+  icon: globe
+  color: purple

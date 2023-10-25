@@ -1,0 +1,202 @@
+# tofu-validate action
+
+This is one of a suite of OpenTofu related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
+
+This action uses the `tofu validate` command to check that an OpenTofu configuration is valid.
+This can be used to check that a configuration is valid before creating a plan.
+
+Failing GitHub checks will be added for any problems found.
+
+<p align="center">
+    <img src="validate.png" width="1000">
+</p>
+
+If the OpenTofu configuration is not valid, the build is failed.
+
+## Inputs
+
+* `path`
+
+  Path to the OpenTofu root module
+
+  - Type: string
+  - Optional
+  - Default: The action workspace
+
+* `workspace`
+
+  OpenTofu workspace to use for the `terraform.workspace` value while validating. Note that for remote operations in a cloud backend, this is always `default`.
+
+  Also used for discovering the OpenTofu version to use, if not otherwise specified. 
+  See [dflook/tofu-version](https://github.com/dflook/terraform-github-actions/tree/main/tofu-version#tofu-version-action) for details. 
+
+  - Type: string
+  - Optional
+  - Default: `default`
+
+* `backend_config`
+
+  List of OpenTofu backend config values, one per line. This is used for discovering the OpenTofu version to use, if not otherwise specified. 
+  See [dflook/tofu-version](https://github.com/dflook/terraform-github-actions/tree/main/tofu-version#tofu-version-action) for details.
+
+  ```yaml
+  with:
+    backend_config: token=${{ secrets.BACKEND_TOKEN }}
+  ```
+
+  - Type: string
+  - Optional
+
+* `backend_config_file`
+
+  List of OpenTofu backend config files to use, one per line. This is used for discovering the OpenTofu version to use, if not otherwise specified. 
+  See [dflook/tofu-version](https://github.com/dflook/terraform-github-actions/tree/main/tofu-version#tofu-version-action) for details.
+  Paths should be relative to the GitHub Actions workspace
+
+  ```yaml
+  with:
+    backend_config_file: prod.backend.tfvars
+  ```
+
+  - Type: string
+  - Optional
+
+## Outputs
+
+* `failure-reason`
+
+  When the job outcome is `failure` because the validation failed, this will be set to 'validate-failed'.
+  If the job fails for any other reason this will not be set.
+  This can be used with the Actions expression syntax to conditionally run a step when the validate fails.
+
+## Environment Variables
+
+* `TERRAFORM_CLOUD_TOKENS`
+
+  API tokens for cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
+  These tokens may be used for fetching required modules from the registry, and discovering the OpenTofu version to use from a cloud workspace.
+
+  e.g:
+  ```yaml
+  env:
+    TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
+  ```
+
+  With other registries:
+  ```yaml
+  env:
+    TERRAFORM_CLOUD_TOKENS: |
+      app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
+      tofu.example.com=${{ secrets.TF_REGISTRY_TOKEN }}
+  ```
+
+  - Type: string
+  - Optional
+
+* `TERRAFORM_SSH_KEY`
+
+  A SSH private key that OpenTofu will use to fetch git module sources.
+
+  This should be in PEM format.
+
+  For example:
+  ```yaml
+  env:
+    TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
+  ```
+
+  - Type: string
+  - Optional
+
+* `TERRAFORM_PRE_RUN`
+
+  A set of commands that will be run prior to `tofu init`. This can be used to customise the environment before running OpenTofu. 
+  
+  The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
+  
+  The runtime image is currently based on `debian:bullseye`, with the command run using `bash -xeo pipefail`.
+
+  For example:
+  ```yaml
+  env:
+    TERRAFORM_PRE_RUN: |
+      # Install latest Azure CLI
+      curl -skL https://aka.ms/InstallAzureCLIDeb | bash
+      
+      # Install postgres client
+      apt-get install -y --no-install-recommends postgresql-client
+  ```
+
+  - Type: string
+  - Optional
+
+* `TERRAFORM_HTTP_CREDENTIALS`
+
+  Credentials that will be used for fetching modules sources with `git::http://`, `git::https://`, `http://` & `https://` schemes.
+
+  Credentials have the format `<host>=<username>:<password>`. Multiple credentials may be specified, one per line.
+
+  Each credential is evaluated in order, and the first matching credentials are used. 
+
+  Credentials that are used by git (`git::http://`, `git::https://`) allow a path after the hostname.
+  Paths are ignored by `http://` & `https://` schemes.
+  For git module sources, a credential matches if each mentioned path segment is an exact match.
+
+  For example:
+  ```yaml
+  env:
+    TERRAFORM_HTTP_CREDENTIALS: |
+      example.com=dflook:${{ secrets.HTTPS_PASSWORD }}
+      github.com/dflook/terraform-github-actions.git=dflook-actions:${{ secrets.ACTIONS_PAT }}
+      github.com/dflook=dflook:${{ secrets.DFLOOK_PAT }}
+      github.com=graham:${{ secrets.GITHUB_PAT }}  
+  ```
+
+  - Type: string
+  - Optional
+
+## Example usage
+
+This example workflow runs on every push and fails if the OpenTofu
+configuration is invalid.
+
+```yaml
+on: [push]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    name: Validate OpenTofu module
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: tofu validate
+        uses: dflook/tofu-validate@v1
+        with:
+          path: my-terraform-config
+```
+
+This example executes a run step only if the validation failed.
+
+```yaml
+on: [push]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    name: Validate OpenTofu module
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: tofu validate
+        uses: dflook/tofu-validate@v1
+        id: validate
+        with:
+          path: my-terraform-config
+
+      - name: Validate failed
+        if: ${{ failure() && steps.validate.outputs.failure-reason == 'validate-failed' }}
+        run: echo "tofu validate failed"
+```

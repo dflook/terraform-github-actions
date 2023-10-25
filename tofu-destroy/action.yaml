@@ -1,0 +1,46 @@
+name: tofu-destroy
+description: Destroys all resources in an OpenTofu workspace
+author: Daniel Flook
+
+inputs:
+  path:
+    description: Path to the OpenTofu configuration
+    required: false
+    default: .
+  workspace:
+    description: Name of the OpenTofu workspace
+    required: false
+    default: default
+  backend_config:
+    description: List of backend config values to set, one per line
+    required: false
+    default: ""
+  backend_config_file:
+    description: Path to a backend config file
+    required: false
+    default: ""
+  variables:
+    description: Variable definitions
+    required: false
+  var:
+    description: Comma separated list of vars to set, e.g. 'foo=bar'
+    required: false
+    deprecationMessage: Use the variables input instead.
+  var_file:
+    description: List of var file paths, one per line
+    required: false
+  parallelism:
+    description: Limit the number of concurrent operations
+    required: false
+    default: "0"
+
+runs:
+  env:
+    OPENTOFU: true
+  using: docker
+  image: ../image/Dockerfile
+  entrypoint: /entrypoints/destroy.sh
+
+branding:
+  icon: globe
+  color: purple

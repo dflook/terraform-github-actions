@@ -1,14 +1,14 @@
 # terraform-destroy-workspace action
 
-This is one of a suite of terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
+This is one of a suite of Terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
-This action uses the `terraform destroy` command to destroy all resources in a terraform workspace and then delete the workspace.
+This action uses the `terraform destroy` command to destroy all resources in a Terraform workspace and then delete the workspace.
 
 ## Inputs
 
 * `path`
 
-  Path to the terraform root module
+  Path to the Terraform root module
 
   - Type: string
   - Optional
@@ -23,7 +23,7 @@ This action uses the `terraform destroy` command to destroy all resources in a t
 
 * `variables`
 
-  Variables to set for the terraform plan. This should be valid terraform syntax - like a [variable definition file](https://www.terraform.io/docs/language/values/variables.html#variable-definitions-tfvars-files).
+  Variables to set for the terraform destroy. This should be valid Terraform syntax - like a [variable definition file](https://www.terraform.io/docs/language/values/variables.html#variable-definitions-tfvars-files).
 
   ```yaml
   with:
@@ -57,7 +57,7 @@ This action uses the `terraform destroy` command to destroy all resources in a t
 
 * `backend_config`
 
-  List of terraform backend config values, one per line.
+  List of Terraform backend config values, one per line.
 
   ```yaml
   with:
@@ -69,7 +69,7 @@ This action uses the `terraform destroy` command to destroy all resources in a t
 
 * `backend_config_file`
 
-  List of terraform backend config files to use, one per line.
+  List of Terraform backend config files to use, one per line.
   Paths should be relative to the GitHub Actions workspace
 
   ```yaml
@@ -87,15 +87,6 @@ This action uses the `terraform destroy` command to destroy all resources in a t
   - Type: number
   - Optional
   - Default: The terraform default (10)
-
-* ~~`var`~~
-
-  > :warning: **Deprecated**: Use the `variables` input instead.
-
-  Comma separated list of terraform vars to set
-
-  - Type: string
-  - Optional
 
 ## Outputs
 
@@ -130,16 +121,16 @@ This action uses the `terraform destroy` command to destroy all resources in a t
 
 * `TERRAFORM_CLOUD_TOKENS`
 
-  API tokens for terraform cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
+  API tokens for cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
   These tokens may be used with the `remote` backend and for fetching required modules from the registry.
 
-  e.g for terraform cloud:
+  e.g:
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
   ```
 
-  With Terraform Enterprise or other registries:
+  With other registries:
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: |
@@ -152,7 +143,7 @@ This action uses the `terraform destroy` command to destroy all resources in a t
 
 * `TERRAFORM_SSH_KEY`
 
-  A SSH private key that terraform will use to fetch git module sources.
+  A SSH private key that Terraform will use to fetch git module sources.
 
   This should be in PEM format.
 
@@ -167,7 +158,7 @@ This action uses the `terraform destroy` command to destroy all resources in a t
 
 * `TERRAFORM_PRE_RUN`
 
-  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running terraform. 
+  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running Terraform. 
   
   The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
   
@@ -250,7 +241,7 @@ on:
 jobs:
   destroy_workspace:
     runs-on: ubuntu-latest
-    name: Destroy terraform workspace
+    name: Destroy Terraform workspace
     steps:
       - name: Checkout
         uses: actions/checkout@v3

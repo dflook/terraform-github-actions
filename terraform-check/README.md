@@ -1,8 +1,8 @@
 # terraform-check action
 
-This is one of a suite of terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
+This is one of a suite of Terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
-Check for drift in terraform managed resources.
+Check for drift in Terraform managed resources.
 This action runs the terraform plan command, and fails the build if any changes are required.
 This is intended to run on a schedule to notify if manual changes to your infrastructure have been made.
 
@@ -10,7 +10,7 @@ This is intended to run on a schedule to notify if manual changes to your infras
 
 * `path`
 
-  Path to the terraform root module to check
+  Path to the Terraform root module to check
 
   - Type: string
   - Optional
@@ -26,7 +26,7 @@ This is intended to run on a schedule to notify if manual changes to your infras
 
 * `variables`
 
-  Variables to set for the terraform plan. This should be valid terraform syntax - like a [variable definition file](https://www.terraform.io/docs/language/values/variables.html#variable-definitions-tfvars-files).
+  Variables to set for the Terraform plan. This should be valid Terraform syntax - like a [variable definition file](https://www.terraform.io/docs/language/values/variables.html#variable-definitions-tfvars-files).
 
   ```yaml
   with:
@@ -39,7 +39,6 @@ This is intended to run on a schedule to notify if manual changes to your infras
   ```
 
   Variables set here override any given in `var_file`s.
-  This **can** be used with remote backends such as Terraform Cloud/Enterprise, with variables set in the remote workspace having precedence.
 
   - Type: string
   - Optional
@@ -56,14 +55,12 @@ This is intended to run on a schedule to notify if manual changes to your infras
       prod.tfvars
   ```
 
-  This **can** be used with remote backends such as Terraform Cloud/Enterprise, with variables set in the remote workspace having precedence.
-
   - Type: string
   - Optional
 
 * `backend_config`
 
-  List of terraform backend config values, one per line.
+  List of Terraform backend config values, one per line.
 
   ```yaml
   with:
@@ -75,7 +72,7 @@ This is intended to run on a schedule to notify if manual changes to your infras
 
 * `backend_config_file`
 
-  List of terraform backend config files to use, one per line.
+  List of Terraform backend config files to use, one per line.
   Paths should be relative to the GitHub Actions workspace
 
   ```yaml
@@ -94,15 +91,6 @@ This is intended to run on a schedule to notify if manual changes to your infras
   - Optional
   - Default: The terraform default (10)
 
-* ~~`var`~~
-
-  > :warning: **Deprecated**: Use the `variables` input instead.
-
-  Comma separated list of terraform vars to set
-
-  - Type: string
-  - Optional
-
 ## Outputs
 
 * `failure-reason`
@@ -115,16 +103,16 @@ This is intended to run on a schedule to notify if manual changes to your infras
 
 * `TERRAFORM_CLOUD_TOKENS`
 
-  API tokens for terraform cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
+  API tokens for cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
   These tokens may be used with the `remote` backend and for fetching required modules from the registry.
 
-  e.g for terraform cloud:
+  e.g:
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
   ```
 
-  With Terraform Enterprise or other registries:
+  With other registries:
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: |
@@ -137,7 +125,7 @@ This is intended to run on a schedule to notify if manual changes to your infras
 
 * `TERRAFORM_SSH_KEY`
 
-  A SSH private key that terraform will use to fetch git module sources.
+  A SSH private key that Terraform will use to fetch git module sources.
 
   This should be in PEM format.
 
@@ -152,7 +140,7 @@ This is intended to run on a schedule to notify if manual changes to your infras
 
 * `TERRAFORM_PRE_RUN`
 
-  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running terraform. 
+  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running Terraform. 
   
   The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
   
@@ -212,7 +200,7 @@ on:
 jobs:
   check_drift:
     runs-on: ubuntu-latest
-    name: Check for drift of terraform configuration
+    name: Check for drift of Terraform configuration
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -235,7 +223,7 @@ on:
 jobs:
   check_drift:
     runs-on: ubuntu-latest
-    name: Check for drift of terraform configuration
+    name: Check for drift of Terraform configuration
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -248,5 +236,5 @@ jobs:
 
       - name: Changes detected
         if: ${{ failure() && steps.check.outputs.failure-reason == 'changes-to-apply' }}
-        run: echo "There are outstanding terraform changes to apply"
+        run: echo "There are outstanding changes to apply"
 ```

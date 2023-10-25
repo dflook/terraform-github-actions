@@ -1,6 +1,6 @@
 # terraform-fmt action
 
-This is one of a suite of terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
+This is one of a suite of Terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
 This action uses the `terraform fmt -recursive` command to reformat files in a directory into a canonical format.
 
@@ -8,7 +8,7 @@ This action uses the `terraform fmt -recursive` command to reformat files in a d
 
 * `path`
 
-  Path containing terraform files
+  Path containing Terraform files
 
   - Type: string
   - Optional
@@ -16,7 +16,7 @@ This action uses the `terraform fmt -recursive` command to reformat files in a d
 
 * `workspace`
 
-  Terraform workspace to inspect when discovering the terraform version to use, if not otherwise specified. 
+  Terraform workspace to inspect when discovering the Terraform version to use, if not otherwise specified. 
   See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
 
   - Type: string
@@ -24,7 +24,7 @@ This action uses the `terraform fmt -recursive` command to reformat files in a d
 
 * `backend_config`
 
-  List of terraform backend config values, one per line. This is used for discovering the terraform version to use, if not otherwise specified. 
+  List of Terraform backend config values, one per line. This is used for discovering the Terraform version to use, if not otherwise specified. 
   See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
 
   ```yaml
@@ -37,7 +37,7 @@ This action uses the `terraform fmt -recursive` command to reformat files in a d
 
 * `backend_config_file`
 
-  List of terraform backend config files to use, one per line. This is used for discovering the terraform version to use, if not otherwise specified. 
+  List of Terraform backend config files to use, one per line. This is used for discovering the Terraform version to use, if not otherwise specified. 
   See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
   Paths should be relative to the GitHub Actions workspace
 
@@ -53,17 +53,17 @@ This action uses the `terraform fmt -recursive` command to reformat files in a d
 
 * `TERRAFORM_CLOUD_TOKENS`
 
-  For the purpose of detecting the terraform version to use from a TFC/E backend.
-  API tokens for terraform cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
+  For the purpose of detecting the Terraform version to use from a cloud backend.
+  API tokens for cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
   These tokens may be used with the `remote` backend and for fetching required modules from the registry.
 
-  e.g for terraform cloud:
+  e.g:
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
   ```
 
-  With Terraform Enterprise or other registries:
+  With other registries:
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: |
@@ -80,7 +80,7 @@ This example automatically creates a pull request to fix any formatting
 problems that get merged into the main branch.
 
 ```yaml
-name: Fix terraform file formatting
+name: Fix Terraform file formatting
 
 on:
   push:
@@ -90,7 +90,7 @@ on:
 jobs:
   format:
     runs-on: ubuntu-latest
-    name: Check terraform file are formatted correctly
+    name: Check Terraform file are formatted correctly
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -105,6 +105,6 @@ jobs:
         with:
           commit-message: terraform fmt
           title: Reformat terraform files
-          body: Update terraform files to canonical format using `terraform fmt`
+          body: Update Terraform files to canonical format using `terraform fmt`
           branch: automated-terraform-fmt
 ```

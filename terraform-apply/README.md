@@ -1,8 +1,8 @@
 # terraform-apply action
 
-This is one of a suite of terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
+This is one of a suite of Terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
-This action applies a terraform plan.
+This action applies a Terraform plan.
 The default behaviour is to apply the plan that has been added to a PR using the `terraform-plan` action.
 
 If the plan is not found or has changed, then the `apply` action will fail.
@@ -11,7 +11,7 @@ This is to ensure that the action only applies changes that have been reviewed b
 You can instead set `auto_approve: true` which will generate a plan and apply it immediately, without looking for a plan attached to a PR.
 
 ## Demo
-This a demo of the process for apply a terraform change using the [`dflook/terraform-plan`](https://github.com/dflook/terraform-github-actions/tree/main/terraform-plan) and [`dflook/terraform-apply`](https://github.com/dflook/terraform-github-actions/tree/main/terraform-apply) actions.
+This a demo of the process for apply a Terraform change using the [`dflook/terraform-plan`](https://github.com/dflook/terraform-github-actions/tree/main/terraform-plan) and [`dflook/terraform-apply`](https://github.com/dflook/terraform-github-actions/tree/main/terraform-apply) actions.
 
 <p align="center">
     <img src="planapply.gif" width="1000">
@@ -35,7 +35,7 @@ These input values must be the same as any `terraform-plan` for the same configu
 
 * `path`
 
-  Path to the terraform root module to apply
+  Path to the Terraform root module to apply
 
   - Type: string
   - Optional
@@ -51,7 +51,7 @@ These input values must be the same as any `terraform-plan` for the same configu
 
 * `label`
 
-  A friendly name for the environment the terraform configuration is for.
+  A friendly name for the environment the Terraform configuration is for.
   This will be used in the PR comment for easy identification.
 
   It must be the same as the `label` used in the corresponding `terraform-plan` command.
@@ -61,7 +61,7 @@ These input values must be the same as any `terraform-plan` for the same configu
 
 * `variables`
 
-  Variables to set for the terraform plan. This should be valid terraform syntax - like a [variable definition file](https://www.terraform.io/docs/language/values/variables.html#variable-definitions-tfvars-files).
+  Variables to set for the Terraform plan. This should be valid Terraform syntax - like a [variable definition file](https://www.terraform.io/docs/language/values/variables.html#variable-definitions-tfvars-files).
 
   ```yaml
   with:
@@ -74,7 +74,6 @@ These input values must be the same as any `terraform-plan` for the same configu
   ```
 
   Variables set here override any given in `var_file`s.
-  This **can** be used with remote backends such as Terraform Cloud/Enterprise, with variables set in the remote workspace having precedence.
 
   - Type: string
   - Optional
@@ -91,14 +90,12 @@ These input values must be the same as any `terraform-plan` for the same configu
       prod.tfvars
   ```
 
-  This **can** be used with remote backends such as Terraform Cloud/Enterprise, with variables set in the remote workspace having precedence.
-
   - Type: string
   - Optional
 
 * `backend_config`
 
-  List of terraform backend config values, one per line.
+  List of Terraform backend config values, one per line.
 
   ```yaml
   with:
@@ -110,7 +107,7 @@ These input values must be the same as any `terraform-plan` for the same configu
 
 * `backend_config_file`
 
-  List of terraform backend config files to use, one per line.
+  List of Terraform backend config files to use, one per line.
   Paths should be relative to the GitHub Actions workspace
 
   ```yaml
@@ -124,8 +121,6 @@ These input values must be the same as any `terraform-plan` for the same configu
 * `replace`
 
   List of resources to replace, one per line.
-
-  Only available with terraform versions that support replace (v0.15.2 onwards).
 
   ```yaml
   with:
@@ -157,7 +152,6 @@ These input values must be the same as any `terraform-plan` for the same configu
   Set to `true` to destroy all resources.
 
   This generates and applies a plan in [destroy mode](https://developer.hashicorp.com/terraform/cli/commands/plan#planning-modes).
-  This is only available in Terraform v0.15.2 and later.
 
   - Type: boolean
   - Optional
@@ -181,36 +175,6 @@ These input values must be the same as any `terraform-plan` for the same configu
   - Optional
   - Default: The terraform default (10)
 
-* ~~`var`~~
-
-  > :warning: **Deprecated**: Use the `variables` input instead.
-
-  Comma separated list of terraform vars to set.
-
-  This is deprecated due to the following limitations:
-  - Only primitive types can be set with `var` - number, bool and string.
-  - String values may not contain a comma.
-  - Values set with `var` will be overridden by values contained in `var_file`s
-  - Does not work with the `remote` backend
-
-  You can change from `var` to `variables` by putting each variable on a separate line and ensuring each string value is quoted.
-
-  For example:
-  ```yaml
-  with:
-    var: instance_type=m5.xlarge,nat_type=instance
-  ```
-  Becomes:
-  ```yaml
-  with:
-    variables: |
-      instance_type="m5.xlarge"
-      nat_type="instance"
-  ```
-
-  - Type: string
-  - Optional
-
 ## Outputs
 
 * `json_plan_path`
@@ -218,8 +182,7 @@ These input values must be the same as any `terraform-plan` for the same configu
   This is the path to the generated plan in [JSON Output Format](https://www.terraform.io/docs/internals/json-format.html)
   The path is relative to the Actions workspace.
 
-  This is not available when using terraform 0.11 or earlier.
-  This also won't be set if the backend type is `remote` - Terraform does not support saving remote plans.
+  This won't be set if the backend type is `remote` - Terraform does not support saving remote plans.
 
 * `text_plan_path`
 
@@ -263,9 +226,9 @@ These input values must be the same as any `terraform-plan` for the same configu
 
 * Terraform Outputs
 
-  An action output will be created for each output of the terraform configuration.
+  An action output will be created for each output of the Terraform configuration.
 
-  For example, with the terraform config:
+  For example, with the Terraform config:
   ```hcl
   output "service_hostname" {
     value = "example.com"
@@ -280,7 +243,7 @@ These input values must be the same as any `terraform-plan` for the same configu
 * `GITHUB_TOKEN`
 
   The GitHub authorization token to use to fetch an approved plan from a PR. 
-  This must belong to the same user/app as the token used by the terraform-plan action.
+  This must belong to the same user/app as the token used by the [terraform-plan](https://github.com/dflook/terraform-github-actions/tree/main/terraform-plan) action.
   The token provided by GitHub Actions can be used - it can be passed by
   using the `${{ secrets.GITHUB_TOKEN }}` expression, e.g.
 
@@ -308,24 +271,24 @@ These input values must be the same as any `terraform-plan` for the same configu
 * `TERRAFORM_ACTIONS_GITHUB_TOKEN`
 
   When this is set it is used instead of `GITHUB_TOKEN`, with the same behaviour.
-  The GitHub terraform provider also uses the `GITHUB_TOKEN` so this can be used to
-  make the github actions and the terraform provider use different tokens.
+  The GitHub Terraform provider also uses the `GITHUB_TOKEN` so this can be used to
+  make the github actions and the Terraform provider use different tokens.
 
   - Type: string
   - Optional
 
 * `TERRAFORM_CLOUD_TOKENS`
 
-  API tokens for terraform cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
+  API tokens for cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
   These tokens may be used with the `remote` backend and for fetching required modules from the registry.
 
-  e.g for terraform cloud:
+  e.g:
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
   ```
 
-  With Terraform Enterprise or other registries:
+  With other registries:
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: |
@@ -338,7 +301,7 @@ These input values must be the same as any `terraform-plan` for the same configu
 
 * `TERRAFORM_SSH_KEY`
 
-  A SSH private key that terraform will use to fetch git module sources.
+  A SSH private key that Terraform will use to fetch git module sources.
 
   This should be in PEM format.
 
@@ -353,7 +316,7 @@ These input values must be the same as any `terraform-plan` for the same configu
 
 * `TERRAFORM_PRE_RUN`
 
-  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running terraform. 
+  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running Terraform. 
   
   The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
   
@@ -506,7 +469,7 @@ on:
 jobs:
   apply:
     runs-on: ubuntu-latest
-    name: Apply terraform
+    name: Apply Terraform
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -564,7 +527,7 @@ jobs:
   apply:
     if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, 'terraform apply') }}
     runs-on: ubuntu-latest
-    name: Apply terraform plan
+    name: Apply Terraform plan
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -573,7 +536,7 @@ jobs:
         with:
           ref: refs/pull/${{ github.event.issue.number }}/merge
 
-      - name: terraform apply
+      - name: Terraform apply
         uses: dflook/terraform-apply@v1
         with:
           path: my-terraform-config
@@ -596,7 +559,7 @@ permissions:
 jobs:
   plan:
     runs-on: ubuntu-latest
-    name: Apply terraform plan
+    name: Apply Terraform plan
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
