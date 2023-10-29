@@ -28,6 +28,8 @@ function detect-terraform-version() {
     TERRAFORM_VER_MINOR=$(echo "$TF_VERSION" | cut -d. -f2)
     TERRAFORM_VER_PATCH=$(echo "$TF_VERSION" | cut -d. -f3)
 
+    terraform version
+
     if terraform version | grep --quiet OpenTofu; then
         export TOOL_PRODUCT_NAME="OpenTofu"
         export TOOL_COMMAND_NAME="tofu"

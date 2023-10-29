@@ -664,7 +664,7 @@ jobs:
             exit 1
           fi
 
-          if [[ "${{ steps.tofu-version.outputs.tofu }}" != "1.6.0-alpha3" ]]; then
+          if [[ "${{ steps.terraform-version.outputs.tofu }}" != "1.6.0-alpha3" ]]; then
             echo "::error:: Terraform version not set from OPENTOFU_VERSION"
             exit 1
           fi
@@ -715,11 +715,11 @@ jobs:
           path: tests/workflows/test-version/empty
 
       - name: Print the version
-        run: echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
+        run: echo "The terraform version was ${{ steps.tofu-version.outputs.terraform }}"
 
       - name: Check the version
         run: |
-          if [[ "${{ steps.terraform-version.outputs.terraform }}" != *"1.5"* ]]; then
+          if [[ "${{ steps.tofu-version.outputs.terraform }}" != *"1.5"* ]]; then
             echo "::error:: Terraform version not selected"
             exit 1
           fi
