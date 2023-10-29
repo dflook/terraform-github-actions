@@ -8,15 +8,32 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.36.2` to use an exact release
-- `@v1.36` to use the latest patch release for the specific minor version
+- `@v1.37.0` to use an exact release
+- `@v1.37` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
 
-## Unreleased
+## v1.37.0
 
 ### Added
 
-- Experimental support for OpenTofu. As OpenTofu currently only has prerelease versions, the version can only be selected by using the exact version number.
+- Experimental support for OpenTofu. 
+
+  New tofu actions have been added that are identical to the terraform actions, but use OpenTofu instead of Terraform for versions >= 1.6.0.:
+  - [dflook/tofu-version](tofu-version)
+  - [dflook/tofu-remote-state](tofu-remote-state)
+  - [dflook/tofu-output](tofu-output)
+  - [dflook/tofu-validate](tofu-validate)
+  - [dflook/tofu-fmt-check](tofu-fmt-check)
+  - [dflook/tofu-fmt](tofu-fmt)
+  - [dflook/tofu-check](tofu-check)
+  - [dflook/tofu-plan](tofu-plan)
+  - [dflook/tofu-apply](tofu-apply)
+  - [dflook/tofu-destroy](tofu-destroy)
+  - [dflook/tofu-new-workspace](tofu-new-workspace)
+  - [dflook/tofu-destroy-workspace](tofu-destroy-workspace)
+  - [dflook/tofu-unlock-state](tofu-unlock-state)
+
+  As OpenTofu currently only has pre-release versions, OpenTofu will only be selected by using the exact version number.
   The easiest way to do this is by setting the `OPENTOFU_VERSION` environment variable, e.g in your workflow:
 
   ```yaml
@@ -24,7 +41,7 @@ When using an action you can specify the version as:
         OPENTOFU_VERSION: 1.6.0-alpha3
   ```
   
-  Once OpenTofu has a full release, you can just set an `OPENTOFU=true` environment variable and specify the version in any of the ways listed in the [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version) docs.
+  Setting `OPENTOFU_VERSION` with the `dflook/terraform-*` actions will cause it to behave as if it was the `dflook/tofu-*` action.
 
 ## [1.36.2] - 2023-08-17
 
@@ -559,6 +576,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.37.0]: https://github.com/dflook/terraform-github-actions/compare/v1.36.2...v1.37.0
 [1.36.2]: https://github.com/dflook/terraform-github-actions/compare/v1.36.1...v1.36.2
 [1.36.1]: https://github.com/dflook/terraform-github-actions/compare/v1.36.0...v1.36.1
 [1.36.0]: https://github.com/dflook/terraform-github-actions/compare/v1.35.0...v1.36.0
