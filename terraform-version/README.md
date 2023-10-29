@@ -163,7 +163,11 @@ outputs yourself.
 
 * `terraform`
 
-  The Terraform version that is used by the configuration
+  The Hashicorp Terraform or OpenTofu version that is used by the configuration.
+
+* `tofu`
+
+  If the action chose a version of OpenTofu, this will be set to the version that is used by the configuration.
 
 * Provider Versions
 
@@ -199,7 +203,7 @@ jobs:
           path: my-configuration
 
       - name: Print the version
-        run: echo "The Terraform version was ${{ steps.terraform-version.outputs.terraform }}"
+        run: echo "The version was ${{ steps.terraform-version.outputs.terraform }}"
         
       - name: Print aws provider version
         run: echo "The aws provider version was ${{ steps.terraform-version.outputs.aws }}"        

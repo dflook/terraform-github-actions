@@ -3,7 +3,7 @@
 This is one of a suite of OpenTofu related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
 This action applies an OpenTofu plan.
-The default behaviour is to apply the plan that has been added to a PR using the `tofu-plan` action.
+The default behaviour is to apply the plan that has been added to a PR using the [`dflook/tofu-plan`](https://github.com/dflook/terraform-github-actions/tree/main/tofu-plan) action.
 
 If the plan is not found or has changed, then the `apply` action will fail.
 This is to ensure that the action only applies changes that have been reviewed by a human.
@@ -31,7 +31,7 @@ the main branch:
 
 ## Inputs
 
-These input values must be the same as any `tofu-plan` for the same configuration. (unless auto_approve: true)
+These input values must be the same as any [`dflook/tofu-plan`](https://github.com/dflook/terraform-github-actions/tree/main/tofu-plan) for the same configuration. (unless auto_approve: true)
 
 * `path`
 
@@ -54,7 +54,7 @@ These input values must be the same as any `tofu-plan` for the same configuratio
   A friendly name for the environment the OpenTofu configuration is for.
   This will be used in the PR comment for easy identification.
 
-  It must be the same as the `label` used in the corresponding `tofu-plan` command.
+  It must be the same as the `label` used in the corresponding [`dflook/tofu-plan`](https://github.com/dflook/terraform-github-actions/tree/main/tofu-plan) command.
 
   - Type: string
   - Optional
