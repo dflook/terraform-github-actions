@@ -146,7 +146,7 @@ def main() -> None:
                 sys.exit(1)
 
             if 'OPENTOFU' in os.environ and version.product == 'Terraform':
-                sys.stdout.write(f'OpenTofu is preferred, but only a version of Terraform matched the version constraints.')
+                sys.stdout.write(f'OpenTofu is preferred, but only a version of Terraform matched the version constraints.\n')
                 sys.stdout.write(f'Try specifying a version of OpenTofu. Pre-release versions must be explicit, e.g. OPENTOFU_VERSION=1.6.0-alpha3\n')
 
             switch(version)
