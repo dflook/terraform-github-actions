@@ -11,8 +11,8 @@ def find_actions(d) -> Iterable[Path]:
             yield path
 
 def rewrite(content: str) -> str:
-    rewritten = re.sub(r'(?<!hashicorp\.com/)(?<!\.)(?<!-)(?<!Hashicorp )(?<!\* `)terraform(?!-github-actions|\.io|\.workspace|-switcher|.html)', 'tofu', content)
-    rewritten = rewritten.replace('Terraform', 'OpenTofu')
+    rewritten = re.sub(r'(?<!hashicorp\.com/)(?<!\.)(?<!-)(?<!\* `)terraform(?!-github-actions|\.io|\.workspace|-switcher|.html)', 'tofu', content)
+    rewritten = re.sub(r'(?<!Hashicorp )Terraform', 'OpenTofu', rewritten)
     rewritten = re.sub(r' a OpenTofu', ' an OpenTofu', rewritten)
     return rewritten
 

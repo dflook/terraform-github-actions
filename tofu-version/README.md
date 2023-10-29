@@ -163,7 +163,7 @@ outputs yourself.
 
 * `terraform`
 
-  The Hashicorp OpenTofu or OpenTofu version that is used by the configuration.
+  The Hashicorp Terraform or OpenTofu version that is used by the configuration.
 
 * `tofu`
 
