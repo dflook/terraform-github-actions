@@ -639,9 +639,9 @@ jobs:
             exit 1
           fi
 
-  opentofu:
+  terraform_opentofu_version:
     runs-on: ubuntu-latest
-    name: OPENTOFU_VERSION
+    name: OPENTOFU_VERSION pre-release with terraform action
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -655,11 +655,71 @@ jobs:
           path: tests/workflows/test-version/empty
 
       - name: Print the version
-        run: echo "The tofu version was ${{ steps.terraform-version.outputs.terraform }}"
+        run: echo "The tofu version was ${{ steps.terraform-version.outputs.tofu }}"
 
       - name: Check the version
         run: |
           if [[ "${{ steps.terraform-version.outputs.terraform }}" != "1.6.0-alpha3" ]]; then
             echo "::error:: Terraform version not set from OPENTOFU_VERSION"
+            exit 1
+          fi
+
+          if [[ "${{ steps.tofu-version.outputs.tofu }}" != "1.6.0-alpha3" ]]; then
+            echo "::error:: Terraform version not set from OPENTOFU_VERSION"
+            exit 1
+          fi
+
+  opentofu_version:
+    runs-on: ubuntu-latest
+    name: OPENTOFU_VERSION pre-release with tofu action
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Test terraform-version
+        uses: ./tofu-version
+        id: tofu-version
+        env:
+          OPENTOFU_VERSION: "1.6.0-alpha3"
+        with:
+          path: tests/workflows/test-version/empty
+
+      - name: Print the version
+        run: echo "The tofu version was ${{ steps.tofu-version.outputs.tofu }}"
+
+      - name: Check the version
+        run: |
+          if [[ "${{ steps.tofu-version.outputs.terraform }}" != "1.6.0-alpha3" ]]; then
+            echo "::error:: Terraform version not set from OPENTOFU_VERSION"
+            exit 1
+          fi
+          
+          if [[ "${{ steps.tofu-version.outputs.tofu }}" != "1.6.0-alpha3" ]]; then
+            echo "::error:: Terraform version not set from OPENTOFU_VERSION"
+            exit 1
+          fi
+
+  opentofu_old_version:
+    runs-on: ubuntu-latest
+    name: Prefer OpenTofu, but only Terraform matches constraints
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Test terraform-version
+        uses: ./tofu-version
+        id: tofu-version
+        env:
+          OPENTOFU_VERSION: "<1.6.0"
+        with:
+          path: tests/workflows/test-version/empty
+
+      - name: Print the version
+        run: echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
+
+      - name: Check the version
+        run: |
+          if [[ "${{ steps.terraform-version.outputs.terraform }}" != *"1.5"* ]]; then
+            echo "::error:: Terraform version not selected"
             exit 1
           fi

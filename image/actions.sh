@@ -19,14 +19,22 @@ function detect-terraform-version() {
     debug_cmd ls -la "/usr/local/bin"
     debug_cmd ls -la "$JOB_TMP_DIR/terraform-bin-dir"
     TERRAFORM_BIN_CACHE_DIR="/var/terraform:$JOB_TMP_DIR/terraform-bin-dir" TERRAFORM_BIN_CHECKSUM_DIR="/var/terraform" terraform-version
-    debug_cmd ls -la "$(which $TOOL_COMMAND_NAME)"
+    debug_cmd ls -la "$(which terraform)"
 
     local TF_VERSION
-    TF_VERSION=$($TOOL_COMMAND_NAME version -json | jq -r '.terraform_version' 2>/dev/null || terraform version | grep 'Terraform v' | sed 's/Terraform v//')
+    TF_VERSION=$(terraform version -json | jq -r '.terraform_version' 2>/dev/null || terraform version | grep 'Terraform v' | sed 's/Terraform v//')
 
     TERRAFORM_VER_MAJOR=$(echo "$TF_VERSION" | cut -d. -f1)
     TERRAFORM_VER_MINOR=$(echo "$TF_VERSION" | cut -d. -f2)
     TERRAFORM_VER_PATCH=$(echo "$TF_VERSION" | cut -d. -f3)
+
+    if terraform version | grep --quiet OpenTofu; then
+        export TOOL_PRODUCT_NAME="OpenTofu"
+        export TOOL_COMMAND_NAME="tofu"
+    else
+        export TOOL_PRODUCT_NAME="Terraform"
+        export TOOL_COMMAND_NAME="terraform"
+    fi
 
     debug_log "$TOOL_PRODUCT_NAME version major $TERRAFORM_VER_MAJOR minor $TERRAFORM_VER_MINOR patch $TERRAFORM_VER_PATCH"
 }
@@ -86,14 +94,6 @@ function setup() {
         export OPENTOFU=true
     fi
 
-    if [[ -v OPENTOFU ]]; then
-        export TOOL_PRODUCT_NAME="OpenTofu"
-        export TOOL_COMMAND_NAME="tofu"
-    else
-        export TOOL_PRODUCT_NAME="Terraform"
-        export TOOL_COMMAND_NAME="terraform"
-    fi
-
     if ! github_comment_react +1 2>"$STEP_TMP_DIR/github_comment_react.stderr"; then
         debug_file "$STEP_TMP_DIR/github_comment_react.stderr"
     fi
@@ -106,7 +106,11 @@ function setup() {
 
     write_credentials
 
-    start_group "Installing $TOOL_PRODUCT_NAME"
+    if [[ -v OPENTOFU ]]; then
+        start_group "Installing OpenTofu"
+    else
+        start_group "Installing Terraform"
+    fi
 
     detect-terraform-version
 
