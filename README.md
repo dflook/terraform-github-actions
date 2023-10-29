@@ -5,6 +5,8 @@ This is a suite of terraform related GitHub Actions that can be used together to
 [GitHub Actions](https://github.com/features/actions) are a way to make automated workflows that trigger when events occur on your GitHub repository, using a YAML file that lives in your repo.
 These actions can be used to easily perform [Terraform](https://www.terraform.io/) tasks as part of your workflow.
 
+There is experimental support for OpenTofu, see [here](https://github.com/dflook/terraform-github-actions/blob/main/CHANGELOG.md#v1370)
+
 ## Actions
 See the documentation for the available actions:
 
