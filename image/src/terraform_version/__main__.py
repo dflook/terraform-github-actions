@@ -29,10 +29,11 @@ from opentofu.versions import get_opentofu_versions
 def determine_version(inputs: InitInputs, cli_config_path: Path, actions_env: ActionsEnv, github_env: GithubEnv) -> Version:
     """Determine the terraform version to use"""
 
+    versions = list(get_terraform_versions())
+
     if 'OPENTOFU' in os.environ:
-        versions = list(get_opentofu_versions())
-    else:
-        versions = list(get_terraform_versions())
+        versions = list(apply_constraints(versions, [Constraint('<1.6.0')]))
+        versions.extend(get_opentofu_versions())
 
     module = load_module(Path(inputs.get('INPUT_PATH', '.')))
 
@@ -143,6 +144,10 @@ def main() -> None:
                 else:
                     sys.stderr.write('No eligible versions found\n')
                 sys.exit(1)
+
+            if 'OPENTOFU' in os.environ and version.product == 'Terraform':
+                sys.stdout.write(f'OpenTofu is preferred, but only a version of Terraform matched the version constraints.\n')
+                sys.stdout.write(f'Try specifying a version of OpenTofu. Pre-release versions must be explicit, e.g. OPENTOFU_VERSION=1.6.0-alpha3\n')
 
             switch(version)
 
