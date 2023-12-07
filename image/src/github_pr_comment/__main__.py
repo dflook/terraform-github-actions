@@ -19,7 +19,7 @@ from github_actions.inputs import PlanPrInputs
 from github_pr_comment.backend_config import complete_config, partial_config
 from github_pr_comment.backend_fingerprint import fingerprint
 from github_pr_comment.cmp import plan_cmp, remove_warnings, remove_unchanged_attributes
-from github_pr_comment.comment import find_comment, TerraformComment, update_comment, serialize, deserialize, new_comment
+from github_pr_comment.comment import find_comment, TerraformComment, update_comment, serialize, deserialize
 from github_pr_comment.hash import comment_hash, plan_hash
 from plan_renderer.outputs import render_outputs
 from plan_renderer.variables import render_argument_list, Sensitive
