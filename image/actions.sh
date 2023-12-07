@@ -368,17 +368,7 @@ function set-remote-plan-args() {
 
 function output() {
     debug_log $TOOL_COMMAND_NAME output -json
-    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME output -json | convert_output)
-}
-
-function update_status() {
-    local status="$1"
-
-    if ! STATUS="$status" github_pr_comment status 2>"$STEP_TMP_DIR/github_pr_comment.stderr"; then
-        debug_file "$STEP_TMP_DIR/github_pr_comment.stderr"
-    else
-        debug_file "$STEP_TMP_DIR/github_pr_comment.stderr"
-    fi
+    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME output -json | tee "$STEP_TMP_DIR/terraform_output.json" | convert_output)
 }
 
 function random_string() {

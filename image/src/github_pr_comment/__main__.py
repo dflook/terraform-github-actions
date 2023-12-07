@@ -1,4 +1,5 @@
 import hashlib
+import json
 import os
 import subprocess
 import re
@@ -18,8 +19,9 @@ from github_actions.inputs import PlanPrInputs
 from github_pr_comment.backend_config import complete_config, partial_config
 from github_pr_comment.backend_fingerprint import fingerprint
 from github_pr_comment.cmp import plan_cmp, remove_warnings, remove_unchanged_attributes
-from github_pr_comment.comment import find_comment, TerraformComment, update_comment, serialize, deserialize
+from github_pr_comment.comment import find_comment, TerraformComment, update_comment, serialize, deserialize, new_comment
 from github_pr_comment.hash import comment_hash, plan_hash
+from plan_renderer.outputs import render_outputs
 from plan_renderer.variables import render_argument_list, Sensitive
 from terraform.module import load_module, get_sensitive_variables
 from terraform import hcl
@@ -286,6 +288,47 @@ def get_pr() -> PrUrl:
 
     return cast(PrUrl, pr_url)
 
+def new_pr_comment(backend_fingerprint: bytes) -> TerraformComment:
+    pr_url = get_pr()
+    issue_url = get_issue_url(pr_url)
+
+    headers = {
+        'workspace': os.environ.get('INPUT_WORKSPACE', 'default'),
+    }
+
+    if backend_type := os.environ.get('TERRAFORM_BACKEND_TYPE'):
+        if backend_type == 'cloud':
+            backend_type = 'remote'
+        headers['backend_type'] = backend_type
+
+    headers['label'] = os.environ.get('INPUT_LABEL') or None
+
+    plan_modifier = {}
+    if target := os.environ.get('INPUT_TARGET'):
+        plan_modifier['target'] = sorted(t.strip() for t in target.replace(',', '\n', ).split('\n') if t.strip())
+
+    if replace := os.environ.get('INPUT_REPLACE'):
+        plan_modifier['replace'] = sorted(t.strip() for t in replace.replace(',', '\n', ).split('\n') if t.strip())
+
+    if os.environ.get('INPUT_DESTROY') == 'true':
+        plan_modifier['destroy'] = 'true'
+
+    if plan_modifier:
+        debug(f'Plan modifier: {plan_modifier}')
+        headers['plan_modifier'] = hashlib.sha256(canonicaljson.encode_canonical_json(plan_modifier)).hexdigest()
+
+    headers['backend'] = comment_hash(backend_fingerprint, pr_url)
+
+    return TerraformComment(
+        issue_url=issue_url,
+        comment_url=None,
+        headers={k: v for k, v in headers.items() if v is not None},
+        description='',
+        summary='',
+        body='',
+        status=''
+    )
+
 def get_comment(action_inputs: PlanPrInputs, backend_fingerprint: bytes, backup_fingerprint: bytes) -> TerraformComment:
     if 'comment' in step_cache:
         return deserialize(step_cache['comment'])
@@ -298,6 +341,7 @@ def get_comment(action_inputs: PlanPrInputs, backend_fingerprint: bytes, backup_
 
     headers = {
         'workspace': os.environ.get('INPUT_WORKSPACE', 'default'),
+        'closed': None
     }
 
     if backend_type := os.environ.get('TERRAFORM_BACKEND_TYPE'):
@@ -365,13 +409,41 @@ def format_plan_text(plan_text: str) -> Tuple[str, str]:
     else:
         return 'text', plan_text
 
+def format_output_status(outputs: Optional[dict]) -> str:
+    status = f':white_check_mark: Plan applied in {job_markdown_ref()}'
+    if outputs is not None:
+        stripped_output = render_outputs(outputs).strip()
+        if '\n' in stripped_output:
+            status += f'''\n<details open><summary>Outputs</summary>
+
+        ```hcl
+        {stripped_output}
+        ```
+        </details>
+        '''
+        else:
+            status += f'\nOutputs: `{stripped_output}`'
+
+    return status
+
+def read_outputs(path: str) -> Optional[dict]:
+    try:
+        with open(path, 'w') as f:
+            return json.load(f)
+    except:
+        debug(f'Failed to read terraform outputs from {path}')
+        return None
+
 def main() -> int:
     if len(sys.argv) < 2:
         sys.stderr.write(f'''Usage:
     STATUS="<status>" {sys.argv[0]} plan <plan.txt
     STATUS="<status>" {sys.argv[0]} status
-    {sys.argv[0]} get plan.txt
-    {sys.argv[0]} approved plan.txt
+    {sys.argv[0]} begin-apply
+    {sys.argv[0]} error
+    {sys.argv[0]} apply-complete <OUTPUTS_JSON_FILE>
+    {sys.argv[0]} get <PLAN_TEXT_FILE>
+    {sys.argv[0]} approved <PLAN_TEXT_FILE>
 ''')
         return 1
 
@@ -398,6 +470,19 @@ def main() -> int:
         only_if_exists = False
         if action_inputs['INPUT_ADD_GITHUB_COMMENT'] == 'changes-only' and os.environ.get('TF_CHANGES', 'true') == 'false':
             only_if_exists = True
+
+        if action_inputs['INPUT_ADD_GITHUB_COMMENT'] == 'always-new' and comment.comment_url is not None:
+            # Close the existing comment
+            debug('Closing existing comment')
+            update_comment(
+                github,
+                comment,
+                headers=comment.headers | {'closed': True},
+                status=':wastebasket: Plan is outdated'
+            )
+
+            # Create the replacement comment
+            comment = new_pr_comment(backend_fingerprint)
 
         if comment.comment_url is None and only_if_exists:
             debug('Comment doesn\'t already exist - not creating it')
@@ -426,6 +511,28 @@ def main() -> int:
             return 1
         else:
             comment = update_comment(github, comment, status=status)
+
+    elif sys.argv[1] == 'begin-apply':
+        if comment.comment_url is None:
+            debug("Can't set status of comment that doesn't exist")
+            return 1
+        else:
+            comment = update_comment(github, comment, status=f':orange_circle: Applying plan in {job_markdown_ref()}')
+
+    elif sys.argv[1] == 'error':
+        if comment.comment_url is None:
+            debug("Can't set status of comment that doesn't exist")
+            return 1
+        else:
+            comment = update_comment(github, comment, headers=comment.headers | {'closed': True}, status=f':x: Error applying plan in {job_markdown_ref()}')
+
+    elif sys.argv[1] == 'apply-complete':
+        if comment.comment_url is None:
+            debug("Can't set status of comment that doesn't exist")
+            return 1
+        else:
+            outputs = read_outputs(sys.argv[2])
+            comment = update_comment(github, comment, headers=comment.headers | {'closed': True}, status=format_output_status(outputs))
 
     elif sys.argv[1] == 'get':
         if comment.comment_url is None:
