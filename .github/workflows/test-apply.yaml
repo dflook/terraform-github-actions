@@ -1173,3 +1173,22 @@ jobs:
         uses: ./terraform-apply
         with:
           path: tests/workflows/test-apply/long_outputs
+
+  outputs:
+    runs-on: ubuntu-latest
+    name: Apply a plan with outputs
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          path: tests/workflows/test-apply/outputs
+
+      - name: Apply
+        uses: ./terraform-apply
+        with:
+          path: tests/workflows/test-apply/outputs

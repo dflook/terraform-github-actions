@@ -411,13 +411,13 @@ def format_plan_text(plan_text: str) -> Tuple[str, str]:
 
 def format_output_status(outputs: Optional[dict], remaining_size: int) -> str:
     status = f':white_check_mark: Plan applied in {job_markdown_ref()}'
-    if outputs is not None:
-        stripped_output = render_outputs(outputs).strip()
+    stripped_output = render_outputs(outputs).strip()
 
+    if stripped_output:
         if len(stripped_output) > remaining_size:
             stripped_output = truncate(stripped_output, remaining_size, 'Outputs are too large to fit in a PR comment. See the full outputs in the workflow log.')
 
-        open_att = ' open' if len(stripped_output.splitlines()) > 6 else ''
+        open_att = ' open' if len(stripped_output.splitlines()) < 6 else ''
 
         status += f'''\n<details{open_att}><summary>Outputs</summary>
 
