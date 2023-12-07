@@ -428,10 +428,11 @@ def format_output_status(outputs: Optional[dict]) -> str:
 
 def read_outputs(path: str) -> Optional[dict]:
     try:
-        with open(path, 'w') as f:
+        with open(path, 'r') as f:
             return json.load(f)
-    except:
+    except Exception as e:
         debug(f'Failed to read terraform outputs from {path}')
+        debug(str(e))
         return None
 
 def main() -> int:
