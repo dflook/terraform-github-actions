@@ -872,3 +872,36 @@ jobs:
         with:
           path: tests/workflows/test-plan/plan
           label: arm64
+
+  always_new:
+    runs-on: ubuntu-latest
+    name: always-new
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Plan with label
+        uses: ./terraform-plan
+        with:
+          path: tests/workflows/test-plan/always-new
+          label: always-new SHOULD BE OUTDATED
+
+      - name: Plan 2 with label
+        uses: ./terraform-plan
+        with:
+          path: tests/workflows/test-plan/always-new
+          label: always-new SHOULD BE OUTDATED
+          add_github_comment: always-new
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          path: tests/workflows/test-plan/always-new
+
+      - name: Plan 2
+        uses: ./terraform-plan
+        with:
+          path: tests/workflows/test-plan/always-new
+          add_github_comment: always-new

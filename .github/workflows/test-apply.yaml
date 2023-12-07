@@ -1154,3 +1154,22 @@ jobs:
             echo "::error:: run_id should not be set"
             exit 1
           fi
+
+  long_outputs:
+    runs-on: ubuntu-latest
+    name: Apply a plan with long outputs
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          path: tests/workflows/test-apply/long_outputs
+
+      - name: Apply
+        uses: ./terraform-apply
+        with:
+          path: tests/workflows/test-apply/long_outputs

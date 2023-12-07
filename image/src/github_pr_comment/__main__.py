@@ -381,6 +381,21 @@ def is_approved(proposed_plan: str, comment: TerraformComment) -> bool:
         debug('Approving plan based on plan text')
         return plan_cmp(proposed_plan, comment.body)
 
+def truncate(text: str, max_size: int, too_big_message: str) -> str:
+    lines = []
+    total_size = 0
+
+    for line in text.splitlines():
+        line_size = len(line.encode()) + 1  # + newline
+        if total_size + line_size > max_size:
+            lines.append(too_big_message)
+            break
+
+        lines.append(line)
+        total_size += line_size
+
+    return '\n'.join(lines)
+
 def format_plan_text(plan_text: str) -> Tuple[str, str]:
     """
     Format the given plan for insertion into a PR comment
@@ -388,41 +403,29 @@ def format_plan_text(plan_text: str) -> Tuple[str, str]:
 
     max_body_size = 50000  # bytes
 
-    def truncate(t):
-        lines = []
-        total_size = 0
-
-        for line in t.splitlines():
-            line_size = len(line.encode()) + 1  # + newline
-            if total_size + line_size > max_body_size:
-                lines.append('Plan is too large to fit in a PR comment. See the full plan in the workflow log.')
-                break
-
-            lines.append(line)
-            total_size += line_size
-
-        return '\n'.join(lines)
-
     if len(plan_text.encode()) > max_body_size:
         # needs truncation
-        return 'trunc', truncate(plan_text)
+        return 'trunc', truncate(plan_text, max_body_size, 'Plan is too large to fit in a PR comment. See the full plan in the workflow log.')
     else:
         return 'text', plan_text
 
-def format_output_status(outputs: Optional[dict]) -> str:
+def format_output_status(outputs: Optional[dict], remaining_size: int) -> str:
     status = f':white_check_mark: Plan applied in {job_markdown_ref()}'
     if outputs is not None:
         stripped_output = render_outputs(outputs).strip()
-        if '\n' in stripped_output:
-            status += f'''\n<details open><summary>Outputs</summary>
 
-        ```hcl
-        {stripped_output}
-        ```
-        </details>
-        '''
-        else:
-            status += f'\nOutputs: `{stripped_output}`'
+        if len(stripped_output) > remaining_size:
+            stripped_output = truncate(stripped_output, remaining_size, 'Outputs are too large to fit in a PR comment. See the full outputs in the workflow log.')
+
+        open_att = ' open' if len(stripped_output.splitlines()) > 6 else ''
+
+        status += f'''\n<details{open_att}><summary>Outputs</summary>
+
+```hcl
+{stripped_output}
+```
+</details>
+'''
 
     return status
 
@@ -533,7 +536,10 @@ def main() -> int:
             return 1
         else:
             outputs = read_outputs(sys.argv[2])
-            comment = update_comment(github, comment, headers=comment.headers | {'closed': True}, status=format_output_status(outputs))
+
+            remaining_size = 55000 - len(comment.body)
+
+            comment = update_comment(github, comment, headers=comment.headers | {'closed': True}, status=format_output_status(outputs, remaining_size))
 
     elif sys.argv[1] == 'get':
         if comment.comment_url is None:
