@@ -11,9 +11,7 @@ set-plan-args
 PLAN_OUT="$STEP_TMP_DIR/plan.out"
 
 function update_comment() {
-    local status="$1"
-
-    if ! github_pr_comment "$status" 2>"$STEP_TMP_DIR/github_pr_comment.stderr"; then
+    if ! github_pr_comment "$@" 2>"$STEP_TMP_DIR/github_pr_comment.stderr"; then
         debug_file "$STEP_TMP_DIR/github_pr_comment.stderr"
     else
         debug_file "$STEP_TMP_DIR/github_pr_comment.stderr"
