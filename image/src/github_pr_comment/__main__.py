@@ -481,8 +481,9 @@ def main() -> int:
             update_comment(
                 github,
                 comment,
+                summary=f'<strike>{comment.summary}</strike>',
                 headers=comment.headers | {'closed': True},
-                status=':wastebasket: Plan is outdated'
+                status=':spider_web: Plan is outdated'
             )
 
             # Create the replacement comment
