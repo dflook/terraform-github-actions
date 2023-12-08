@@ -119,8 +119,8 @@ name: Lint
 
 on:
   push:
-    branches:
-      - '!main'
+    branches-ignore:
+      - main
 
 jobs:
   validate:
