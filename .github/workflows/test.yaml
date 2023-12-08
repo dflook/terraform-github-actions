@@ -55,3 +55,17 @@ jobs:
           TERRAFORM_ACTIONS_GITHUB_TOKEN: No
         run: |
            GNUPGHOME=$HOME/.gnupg PYTHONPATH=image/tools:image/src pytest tests
+
+  tofu:
+    runs-on: ubuntu-latest
+    name: OpenTofu
+    env:
+      GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Check tofu actions are up to date
+        run: |
+          python3 tofu/tofuize.py
+          git diff --exit-code
