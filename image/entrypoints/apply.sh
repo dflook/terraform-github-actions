@@ -10,8 +10,16 @@ set-plan-args
 
 PLAN_OUT="$STEP_TMP_DIR/plan.out"
 
+function update_comment() {
+    if ! github_pr_comment "$@" 2>"$STEP_TMP_DIR/github_pr_comment.stderr"; then
+        debug_file "$STEP_TMP_DIR/github_pr_comment.stderr"
+    else
+        debug_file "$STEP_TMP_DIR/github_pr_comment.stderr"
+    fi
+}
+
 if [[ -v TERRAFORM_ACTIONS_GITHUB_TOKEN ]]; then
-    update_status ":orange_circle: Applying plan in $(job_markdown_ref)"
+    update_comment begin-apply
 fi
 
 exec 3>&1
@@ -54,14 +62,15 @@ function apply() {
     set -e
 
     if [[ $APPLY_EXIT -eq 0 ]]; then
-        update_status ":white_check_mark: Plan applied in $(job_markdown_ref)"
+        output
+        update_comment apply-complete "$STEP_TMP_DIR/terraform_output.json"
     else
         if lock-info "$STEP_TMP_DIR/terraform_apply.stderr"; then
             set_output failure-reason state-locked
         else
             set_output failure-reason apply-failed
         fi
-        update_status ":x: Error applying plan in $(job_markdown_ref)"
+        update_comment error
         exit 1
     fi
 }
@@ -91,7 +100,7 @@ if [[ $PLAN_EXIT -eq 1 ]]; then
         set_output failure-reason state-locked
     fi
 
-    update_status ":x: Error applying plan in $(job_markdown_ref)"
+    update_comment error
     exit 1
 fi
 
@@ -141,4 +150,3 @@ else
 
 fi
 
-output

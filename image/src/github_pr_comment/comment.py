@@ -38,6 +38,7 @@ class TerraformComment:
         'plan_hash',      # A deterministic hash of the plan (without warnings or unchanged attributes, eventually with unmasked variables)
         'variables_hash', # A hash of input variables and values
         'truncated'       # If the plan text has been truncated (should not be used to approve plans, and will not show a complete diff)
+        'closed'          # If the comment has been closed for modifications
     ]
 
     """
