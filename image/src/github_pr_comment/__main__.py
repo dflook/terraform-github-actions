@@ -396,18 +396,52 @@ def truncate(text: str, max_size: int, too_big_message: str) -> str:
 
     return '\n'.join(lines)
 
-def format_plan_text(plan_text: str) -> Tuple[str, str]:
+def format_diff(plan_text: str) -> str:
+    lines = []
+
+    heredoc = False
+
+    for line in plan_text.splitlines():
+        if heredoc and line.lstrip().startswith('EOT'):
+            heredoc = False
+            lines.append(line)
+            continue
+        elif heredoc:
+            lines.append(line)
+            continue
+        elif line.endswith('EOT'):
+            heredoc = True
+            lines.append(line)
+            continue
+
+        lines.append(re.sub(
+            r'(?P<leading_space>\s+)(?P<operation>[+-/#]+)(?P<trailing>.*)',
+            '\g<operation>\g<leading_space><trailing>',
+            line
+        ))
+
+    return '\n'.join(lines)
+
+def format_plan_text(plan_text: str, format_type: str) -> Tuple[str, str]:
     """
     Format the given plan for insertion into a PR comment
     """
 
     max_body_size = 50000  # bytes
 
-    if len(plan_text.encode()) > max_body_size:
-        # needs truncation
-        return 'trunc', truncate(plan_text, max_body_size, 'Plan is too large to fit in a PR comment. See the full plan in the workflow log.')
+    if format_type == 'diff':
+        plan_text = format_diff(plan_text)
+        if len(plan_text.encode()) > max_body_size:
+            # needs truncation
+            return 'diff-trunc', truncate(plan_text, max_body_size, 'Plan is too large to fit in a PR comment. See the full plan in the workflow log.')
+        else:
+            return 'diff', plan_text
     else:
-        return 'text', plan_text
+        if len(plan_text.encode()) > max_body_size:
+            # needs truncation
+            return 'trunc', truncate(plan_text, max_body_size, 'Plan is too large to fit in a PR comment. See the full plan in the workflow log.')
+        else:
+            return 'text', plan_text
 
 def format_output_status(outputs: Optional[dict], remaining_size: int) -> str:
     status = f':white_check_mark: Plan applied in {job_markdown_ref()}'
@@ -496,7 +530,8 @@ def main() -> int:
         headers = comment.headers.copy()
         headers['plan_job_ref'] = job_workflow_ref()
         headers['plan_hash'] = plan_hash(body, comment.issue_url)
-        headers['plan_text_format'], plan_text = format_plan_text(body)
+        format_type = os.environ.get('TF_ACTIONS_PLAN_FORMAT', 'diff')
+        headers['plan_text_format'], plan_text = format_plan_text(body, format_type)
 
         changes = os.environ.get('TF_CHANGES') == 'true'
 
@@ -569,9 +604,11 @@ def main() -> int:
             approved_plan_path = os.path.join(os.environ['STEP_TMP_DIR'], 'approved-plan.txt')
             with open(approved_plan_path, 'w') as f:
                 f.write(comment.body.strip())
+
             proposed_plan_path = os.path.join(os.environ['STEP_TMP_DIR'], 'proposed-plan.txt')
             with open(proposed_plan_path, 'w') as f:
-                _, formatted_proposed_plan = format_plan_text(proposed_plan.strip())
+                format_type = 'diff' if comment.headers.get('plan_text_format', 'text') == 'diff' else 'text'
+                _, formatted_proposed_plan = format_plan_text(proposed_plan.strip(), format_type)
                 f.write(formatted_proposed_plan.strip())
 
             debug(f'diff {proposed_plan_path} {approved_plan_path}')
@@ -586,7 +623,7 @@ def main() -> int:
 Plan differences:
 """)
 
-            if comment.headers.get('plan_text_format', 'text') == 'trunc':
+            if comment.headers.get('plan_text_format', 'text').endswith('trunc'):
                 sys.stdout.write('\nThe plan text was too large for a PR comment, not all differences may be shown here.')
 
             if plan_ref := comment.headers.get('plan_job_ref'):
