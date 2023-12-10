@@ -35,7 +35,8 @@ Testing'''
         headers={},
         description='Terraform plan in __/test/terraform__',
         summary='Plan: 1 to add, 0 to change, 0 to destroy.',
-        body=plan
+        body=plan,
+        body_highlighting='hcl'
     )
 
     assert _from_api_payload({
@@ -66,7 +67,8 @@ Testing'''
         headers={},
         description='Terraform plan in __/test/terraform__ in the __myworkspace__ workspace',
         summary='Plan: 1 to add, 0 to change, 0 to destroy.',
-        body=plan
+        body=plan,
+        body_highlighting='hcl'
     )
 
     assert _from_api_payload({
@@ -99,7 +101,8 @@ Testing'''
         headers={},
         description='Terraform plan in __/test/terraform__\nWith variables: `var1="value"`',
         summary='Plan: 1 to add, 0 to change, 0 to destroy.',
-        body=plan
+        body=plan,
+        body_highlighting='hcl'
     )
 
     assert _from_api_payload({
@@ -143,7 +146,8 @@ var2="value2"
 ```
 </details>''',
         summary='Plan: 1 to add, 0 to change, 0 to destroy.',
-        body=plan
+        body=plan,
+        body_highlighting='hcl'
     )
 
     assert _from_api_payload({
@@ -176,7 +180,8 @@ Testing'''
         description='''Terraform plan in __/test/terraform__
 With vars: `var1=value`''',
         summary='Plan: 1 to add, 0 to change, 0 to destroy.',
-        body=plan
+        body=plan,
+        body_highlighting='hcl'
     )
 
     assert _from_api_payload({
@@ -209,7 +214,8 @@ Testing'''
         description='''Terraform plan in __/test/terraform__
 With var files: `vars.tf`''',
         summary='Plan: 1 to add, 0 to change, 0 to destroy.',
-        body=plan
+        body=plan,
+        body_highlighting='hcl'
     )
 
     assert _from_api_payload({
@@ -243,7 +249,8 @@ Testing'''
         description='''Terraform plan in __/test/terraform__
 With backend config: `bucket=test,key=backend`''',
         summary='Plan: 1 to add, 0 to change, 0 to destroy.',
-        body=plan
+        body=plan,
+        body_highlighting='hcl'
     )
 
     assert _from_api_payload({
@@ -276,7 +283,8 @@ Testing'''
         description='''Terraform plan in __/test/terraform__
 With backend config: `bucket=test,key=backend`''',
         summary='Plan: 1 to add, 0 to change, 0 to destroy.',
-        body=plan
+        body=plan,
+        body_highlighting='hcl'
     )
 
     assert _from_api_payload({
@@ -308,7 +316,8 @@ Testing'''
         description='''Terraform plan in __/test/terraform__
 Targeting resources: `kubernetes_secret.tls_cert_public[0]`, `kubernetes_secret.tls_cert_private`''',
         summary='Plan: 1 to add, 0 to change, 0 to destroy.',
-        body=plan
+        body=plan,
+        body_highlighting='hcl'
     )
 
     assert _from_api_payload({
@@ -340,7 +349,8 @@ Testing'''
         description='''Terraform plan in __/test/terraform__
 Replacing resources: `kubernetes_secret.tls_cert_public[0]`, `kubernetes_secret.tls_cert_private`''',
         summary='Plan: 1 to add, 0 to change, 0 to destroy.',
-        body=plan
+        body=plan,
+        body_highlighting='hcl'
     )
 
     assert _from_api_payload({
@@ -373,7 +383,8 @@ Testing'''
         description='''Terraform plan in __/test/terraform__
 With backend config files: `backend.tf`''',
         summary='Plan: 1 to add, 0 to change, 0 to destroy.',
-        body=plan
+        body=plan,
+        body_highlighting='hcl'
     )
 
     assert _from_api_payload({
@@ -416,7 +427,8 @@ With backend config files: `backend.tf`
 With vars: `myvar=hello`
 With var files: `vars.tf`''',
         summary='Plan: 1 to add, 0 to change, 0 to destroy.',
-        body=plan
+        body=plan,
+        body_highlighting='hcl'
     )
 
     assert _from_api_payload({
@@ -447,7 +459,77 @@ Testing'''
         headers={},
         description='''Terraform plan for __test_label__''',
         summary='Plan: 1 to add, 0 to change, 0 to destroy.',
-        body=plan
+        body=plan,
+        body_highlighting='hcl'
+    )
+
+    assert _from_api_payload({
+        'body': payload,
+        'url': comment_url,
+        'issue_url': issue_url
+    }) == expected
+
+def test_error():
+    payload = '''Terraform plan in __tests/workflows/test-plan/error__
+<details open>
+<summary>Error: Incorrect attribute value type</summary>
+
+```
+Error: Incorrect attribute value type
+
+  on main.tf line 2, in resource "random_string" "my_string":
+   2:   length      = "ten"
+
+Inappropriate value for attribute "length": a number is required.
+```
+</details>
+
+:x: Failed to generate plan in [Test terraform-plan #603](https://github.com/dflook/terraform-github-actions/actions/runs/6684032578)'''
+
+    expected = TerraformComment(
+        issue_url=issue_url,
+        comment_url=comment_url,
+        status=':x: Failed to generate plan in [Test terraform-plan #603](https://github.com/dflook/terraform-github-actions/actions/runs/6684032578)',
+        headers={},
+        description='''Terraform plan in __tests/workflows/test-plan/error__''',
+        summary='Error: Incorrect attribute value type',
+        body='''Error: Incorrect attribute value type
+
+  on main.tf line 2, in resource "random_string" "my_string":
+   2:   length      = "ten"
+
+Inappropriate value for attribute "length": a number is required.''',
+    )
+
+    assert _from_api_payload({
+        'body': payload,
+        'url': comment_url,
+        'issue_url': issue_url
+    }) == expected
+
+def test_diff():
+    payload = '''Terraform plan in __/test/terraform__ in the __myworkspace__ workspace
+<details open>
+<summary>Plan: 1 to add, 0 to change, 0 to destroy.</summary>
+
+```diff
+An execution plan has been generated and is shown below.
+...
+Plan: 1 to add, 0 to change, 0 to destroy.
+```
+</details>
+
+Testing'''
+
+    expected = TerraformComment(
+        issue_url=issue_url,
+        comment_url=comment_url,
+        status='Testing',
+        headers={},
+        description='Terraform plan in __/test/terraform__ in the __myworkspace__ workspace',
+        summary='Plan: 1 to add, 0 to change, 0 to destroy.',
+        body=plan,
+        body_highlighting='diff'
     )
 
     assert _from_api_payload({

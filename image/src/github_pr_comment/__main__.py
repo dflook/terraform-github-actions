@@ -21,6 +21,7 @@ from github_pr_comment.backend_fingerprint import fingerprint
 from github_pr_comment.cmp import plan_cmp, remove_warnings, remove_unchanged_attributes
 from github_pr_comment.comment import find_comment, TerraformComment, update_comment, serialize, deserialize
 from github_pr_comment.hash import comment_hash, plan_hash
+from github_pr_comment.plan_formatting import format_diff
 from plan_renderer.outputs import render_outputs
 from plan_renderer.variables import render_argument_list, Sensitive
 from terraform.module import load_module, get_sensitive_variables
@@ -396,32 +397,6 @@ def truncate(text: str, max_size: int, too_big_message: str) -> str:
 
     return '\n'.join(lines)
 
-def format_diff(plan_text: str) -> str:
-    lines = []
-
-    heredoc = False
-
-    for line in plan_text.splitlines():
-        if heredoc and line.lstrip().startswith('EOT'):
-            heredoc = False
-            lines.append(line)
-            continue
-        elif heredoc:
-            lines.append(line)
-            continue
-        elif line.endswith('EOT'):
-            heredoc = True
-            lines.append(line)
-            continue
-
-        lines.append(re.sub(
-            r'(?P<leading_space>\s+)(?P<operation>[+-/#]+)(?P<trailing>.*)',
-            '\g<operation>\g<leading_space><trailing>',
-            line
-        ))
-
-    return '\n'.join(lines)
-
 def format_plan_text(plan_text: str, format_type: str) -> Tuple[str, str]:
     """
     Format the given plan for insertion into a PR comment
@@ -535,6 +510,10 @@ def main() -> int:
 
         changes = os.environ.get('TF_CHANGES') == 'true'
 
+        highlighting = ''
+        if 'Plan:' in body:
+            highlighting = 'diff' if format_type.startswith('diff') else 'hcl'
+
         comment = update_comment(
             github,
             comment,
@@ -542,6 +521,7 @@ def main() -> int:
             summary=create_summary(body, changes),
             headers=headers,
             body=plan_text,
+            body_highlighting=highlighting,
             status=status
         )
 
