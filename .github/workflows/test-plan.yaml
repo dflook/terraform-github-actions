@@ -922,3 +922,5 @@ jobs:
         with:
           path: tests/workflows/test-plan/colours
           label: test-plan colours
+          variables:
+            diff=true
