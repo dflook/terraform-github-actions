@@ -28,7 +28,7 @@ def format_diff(plan_text: str) -> str:
         replaced = replaced.replace('~', '!')
 
         replaced = re.sub(
-            r'(?P<leading_space>\s+)\# (?P<trailing>\(.*)',
+            r'(?P<leading_space>\s+)\# (?P<trailing>\(.*hidden)',
             '#\g<leading_space>\g<trailing>',
             replaced,
             count=1
