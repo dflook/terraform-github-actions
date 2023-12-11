@@ -236,7 +236,7 @@ Terraform will perform the following actions:
 
   # random_string.add will be created
 +   resource "random_string" "add" {
-      + id          = <<EOT
++       id          = <<EOT
   + create
   - destroy
 -/+ destroy and then create replacement

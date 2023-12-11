@@ -15,8 +15,6 @@ def format_diff(plan_text: str) -> str:
             continue
         elif line.endswith('EOT'):
             heredoc = True
-            lines.append(line)
-            continue
 
         replaced = (re.sub(
             r'^(?P<leading_space>\s+)(?P<operation>[+-/~]+)(?P<trailing>.*)',

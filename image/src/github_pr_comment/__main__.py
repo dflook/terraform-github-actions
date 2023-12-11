@@ -511,7 +511,7 @@ def main() -> int:
         changes = os.environ.get('TF_CHANGES') == 'true'
 
         highlighting = ''
-        if 'Plan:' in body:
+        if os.environ.get('TF_CHANGES', 'true') == 'true':
             highlighting = 'diff' if format_type.startswith('diff') else 'hcl'
 
         comment = update_comment(
