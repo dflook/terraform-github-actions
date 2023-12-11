@@ -82,7 +82,7 @@ Changes to Outputs:
     expected = '''
 Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
 +   create
-!   update in-place
+!~  update in-place
 -   destroy
 -/+ destroy and then create replacement
 +/- create replacement and then destroy
@@ -90,8 +90,8 @@ Terraform used the selected providers to generate the following execution plan. 
 Terraform will perform the following actions:
 
   # aws_s3_object.update will be updated in-place
-!   resource "aws_s3_object" "update" {
-!       content                = "hello" -> "update"
+!~  resource "aws_s3_object" "update" {
+!~      content                = "hello" -> "update"
         id                     = "test-plan-colours-test-object"
         tags                   = {}
 +       version_id             = (known after apply)
@@ -116,9 +116,9 @@ Terraform will perform the following actions:
 
   # random_string.create_before_delete must be replaced
 +/- resource "random_string" "create_before_delete" {
-!       id          = "BW8p" -> (known after apply)
-!       length      = 4 -> 3 # forces replacement
-!       result      = "BW8p" -> (known after apply)
+!~      id          = "BW8p" -> (known after apply)
+!~      length      = 4 -> 3 # forces replacement
+!~      result      = "BW8p" -> (known after apply)
 #        (9 unchanged attributes hidden)
     }
 
@@ -141,9 +141,9 @@ Terraform will perform the following actions:
 
   # random_string.delete_before_create must be replaced
 -/+ resource "random_string" "delete_before_create" {
-!       id          = "S@M" -> (known after apply)
-!       length      = 3 -> 4 # forces replacement
-!       result      = "S@M" -> (known after apply)
+!~      id          = "S@M" -> (known after apply)
+!~      length      = 3 -> 4 # forces replacement
+!~      result      = "S@M" -> (known after apply)
 #        (9 unchanged attributes hidden)
     }
 
@@ -152,7 +152,7 @@ Plan: 3 to add, 1 to change, 3 to destroy.
 Changes to Outputs:
 +   add    = "hello"
 -   delete = "goodbye" -> null
-!   update = "hello" -> "update"
+!~  update = "hello" -> "update"
 '''
 
     print(format_diff(plan))
@@ -230,7 +230,7 @@ Terraform used the selected providers to generate the following execution plan. 
 -   destroy
 -/+ destroy and then create replacement
 +/- create replacement and then destroy
-!   update in-place
+!~  update in-place
 
 Terraform will perform the following actions:
 
@@ -287,4 +287,5 @@ EOT
 
 Plan: 3 to add, 1 to change, 3 to destroy.'''
 
+    print(format_diff(plan))
     assert format_diff(plan) == expected
