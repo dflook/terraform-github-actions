@@ -6,11 +6,11 @@ set -euo pipefail
 source /usr/local/workflow_commands.sh
 
 function debug() {
+    debug_cmd printenv
     debug_cmd ls -la /root
     debug_cmd pwd
     debug_cmd ls -la
     debug_cmd ls -la "$HOME"
-    debug_cmd printenv
     debug_file "$GITHUB_EVENT_PATH"
     echo
 }
