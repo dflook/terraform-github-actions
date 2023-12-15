@@ -905,3 +905,18 @@ jobs:
         with:
           path: tests/workflows/test-plan/always-new
           add_github_comment: always-new
+
+  self-hosted:
+    runs-on: self-hosted
+    name: self-hosted
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          path: tests/workflows/test-plan/self-hosted
+          label: test-plan self-hosted
