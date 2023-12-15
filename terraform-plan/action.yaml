@@ -72,7 +72,7 @@ outputs:
 
 runs:
   using: docker
-  image: docker://danielflook/terraform-github-actions:home
+  image: docker://danielflook/terraform-github-actions:self-hosted-2
   entrypoint: /entrypoints/plan.sh
 
 branding:
