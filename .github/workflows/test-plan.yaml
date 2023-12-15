@@ -24,3 +24,24 @@ jobs:
         with:
           path: tests/workflows/test-plan/self-hosted
           label: test-plan self-hosted
+
+  arc-runner-set:
+    runs-on: arc-runner-set
+    name: arc-runner-set
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          path: tests/workflows/test-plan/self-hosted
+          label: test-plan arc-runner-set
+
+      - name: Plan again
+        uses: ./terraform-plan
+        with:
+          path: tests/workflows/test-plan/self-hosted
+          label: test-plan arc-runner-set
