@@ -465,6 +465,8 @@ function fix_owners() {
     if [[ -d "$INPUT_PATH" ]]; then
         debug_cmd find "$INPUT_PATH" -regex '.*/zzzz-dflook-terraform-github-actions-[0-9]+\.auto\.tfvars' -print -delete || true
     fi
+
+    printenv
 }
 
 trap fix_owners EXIT
