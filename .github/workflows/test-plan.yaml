@@ -18,3 +18,9 @@ jobs:
         with:
           path: tests/workflows/test-plan/self-hosted
           label: test-plan self-hosted
+
+      - name: Plan again
+        uses: ./terraform-plan
+        with:
+          path: tests/workflows/test-plan/self-hosted
+          label: test-plan self-hosted
