@@ -6,6 +6,7 @@ set -euo pipefail
 source /usr/local/workflow_commands.sh
 
 function debug() {
+    debug_log "Start"
     debug_cmd printenv
     debug_cmd ls -la /root
     debug_cmd pwd
@@ -467,6 +468,8 @@ function fix_owners() {
     fi
 
     printenv
+    ls -la /__w
+    debug_log "Finished"
 }
 
 trap fix_owners EXIT

@@ -74,7 +74,7 @@ runs:
   env:
     OPENTOFU: true
   using: docker
-  image: ../image/Dockerfile
+  image: docker://danielflook/terraform-github-actions:self-hosted
   entrypoint: /entrypoints/plan.sh
 
 branding:
