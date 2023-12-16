@@ -14,7 +14,7 @@ function repair_environment() {
 
     if [[ ! -f "$GITHUB_EVENT_PATH" ]] && find / -name event.json -quit; then
         # GITHUB_EVENT_PATH is missing, but we can find it
-        GITHUB_EVENT_PATH=$(find / -name event.json -quit)
+        GITHUB_EVENT_PATH=$(find / -name event.json -print -quit)
         export GITHUB_EVENT_PATH
         echo "Repaired GITHUB_EVENT_PATH=$GITHUB_EVENT_PATH"
     fi
