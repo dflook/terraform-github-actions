@@ -12,9 +12,9 @@ function repair_environment() {
         echo "Currently using an actions runner with a broken environment, such as Actions Runner Controller (ARC) with containerMode: kubernetes"
     fi
 
-    if [[ ! -f "$GITHUB_EVENT_PATH" ]] && find / -name event.json -printf "%h\n" -quit; then
+    if [[ ! -f "$GITHUB_EVENT_PATH" ]] && find / -name event.json -quit; then
         # GITHUB_EVENT_PATH is missing, but we can find it
-        GITHUB_EVENT_PATH=$(find / -name event.json -printf "%h\n" -quit)
+        GITHUB_EVENT_PATH=$(find / -name event.json -quit)
         export GITHUB_EVENT_PATH
         echo "Repaired GITHUB_EVENT_PATH=$GITHUB_EVENT_PATH"
     fi
