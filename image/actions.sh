@@ -7,7 +7,6 @@ source /usr/local/workflow_commands.sh
 
 debug_log "Start"
 function repair_environment() {
-    set -x
     if [[ ! -f "$GITHUB_EVENT_PATH" || ! -d "$HOME" ]]; then
         echo "Currently using an actions runner with a broken environment, such as Actions Runner Controller (ARC) with containerMode: kubernetes"
     fi
@@ -23,8 +22,6 @@ function repair_environment() {
         ln -s "$(dirname $GITHUB_EVENT_PATH)/../_github_home" "$HOME"
         echo "Repaired HOME=$HOME"
     fi
-
-    set +x
 }
 repair_environment
 
@@ -34,6 +31,7 @@ function debug() {
     debug_cmd pwd
     debug_cmd ls -la
     debug_cmd ls -la "$HOME"
+    debug_cmd ls -la "$HOME/"
     debug_file "$GITHUB_EVENT_PATH"
     echo
 }
