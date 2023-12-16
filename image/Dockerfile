@@ -50,9 +50,4 @@ RUN git config --system credential.helper /usr/bin/git-credential-actions \
  && git config --system credential.useHttpPath true \
  && ln -s /usr/bin/git-credential-actions /usr/bin/netrc-credential-actions
 
-# This directory should be mounted from the host by the actions runner, but with some runners this doesn't happen.
-# These misbehaving runners still set the HOME env var, but to a directory that doesn't exist.
-# This includes ARC.
-RUN mkdir -p /github/home
-
 LABEL org.opencontainers.image.title="GitHub actions for terraform"

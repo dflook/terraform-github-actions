@@ -5,8 +5,30 @@ set -euo pipefail
 # shellcheck source=../workflow_commands.sh
 source /usr/local/workflow_commands.sh
 
+debug_log "Start"
+function repair_environment() {
+    set -x
+    if [[ ! -f "$GITHUB_EVENT_PATH" || ! -d "$HOME" ]]; then
+        echo "Currently using an actions runner with a broken environment, such as Actions Runner Controller (ARC) with containerMode: kubernetes"
+    fi
+
+    if [[ ! -f "$GITHUB_EVENT_PATH" ]] && find / -name event.json -printf "%h\n" -quit; then
+        # GITHUB_EVENT_PATH is missing, but we can find it
+        GITHUB_EVENT_PATH=$(find / -name event.json -printf "%h\n" -quit)
+        export GITHUB_EVENT_PATH
+        echo "Repaired GITHUB_EVENT_PATH=$GITHUB_EVENT_PATH"
+    fi
+
+    if [[ ! -d "$HOME" && -d "$(dirname $GITHUB_EVENT_PATH)/../_github_home" ]]; then
+        ln -s "$(dirname $GITHUB_EVENT_PATH)/../_github_home" "$HOME"
+        echo "Repaired HOME=$HOME"
+    fi
+
+    set +x
+}
+repair_environment
+
 function debug() {
-    debug_log "Start"
     debug_cmd printenv
     debug_cmd ls -la /root
     debug_cmd pwd
@@ -468,7 +490,6 @@ function fix_owners() {
     fi
 
     printenv
-    ls -la /__w
     debug_log "Finished"
 }
 
