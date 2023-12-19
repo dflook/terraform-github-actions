@@ -905,3 +905,22 @@ jobs:
         with:
           path: tests/workflows/test-plan/always-new
           add_github_comment: always-new
+
+  colours:
+    runs-on: ubuntu-latest
+    name: Full colour plan for diff highlighting
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Plan with colours
+        uses: ./terraform-plan
+        with:
+          path: tests/workflows/test-plan/colours
+          label: test-plan colours
+          variables:
+            diff=true
