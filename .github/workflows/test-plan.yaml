@@ -926,8 +926,8 @@ jobs:
             diff=true
 
   self-hosted:
-    runs-on: arc-runner-set
-    name: Arc Runner Test
+    runs-on: self-hosted
+    name: Self-hosted runner
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
