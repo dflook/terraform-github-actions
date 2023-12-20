@@ -43,13 +43,14 @@ class TerraformComment:
 
     """
 
-    def __init__(self, *, issue_url: IssueUrl, comment_url: Optional[CommentUrl], headers: dict[str, str], description: str, summary: str, body: str, status: str):
+    def __init__(self, *, issue_url: IssueUrl, comment_url: Optional[CommentUrl], headers: dict[str, str], description: str, summary: str, body: str, status: str, body_highlighting: str = ''):
         self._issue_url = issue_url
         self._comment_url = comment_url
         self._headers = headers
         self._description = description.strip()
         self._summary = summary.strip()
         self._body = body.strip()
+        self._body_highlighting = body_highlighting
         self._status = status.strip()
 
     def __eq__(self, other):
@@ -63,6 +64,7 @@ class TerraformComment:
             self._description == other._description and
             self._summary == other._summary and
             self._body == other._body and
+            self._body_highlighting == other._body_highlighting and
             self._status == other._status
         )
 
@@ -70,7 +72,7 @@ class TerraformComment:
         return not self.__eq__(other)
 
     def __repr__(self):
-        return f'TerraformComment(issue_url={self._issue_url!r}, comment_url={self._comment_url!r}, headers={self._headers!r}, description={self._description!r}, summary={self._summary!r}, body={self._body!r}, status={self._status!r})'
+        return f'TerraformComment(issue_url={self._issue_url!r}, comment_url={self._comment_url!r}, headers={self._headers!r}, description={self._description!r}, summary={self._summary!r}, body={self._body!r}, status={self._status!r}, body_highlighting={self._body_highlighting!r})'
 
     @property
     def comment_url(self) -> Optional[CommentUrl]:
@@ -99,6 +101,10 @@ class TerraformComment:
         return self._summary
 
     @property
+    def body_highlighting(self) -> str:
+        return self._body_highlighting
+
+    @property
     def body(self) -> str:
         return self._body
 
@@ -114,6 +120,7 @@ def serialize(comment: TerraformComment) -> str:
         'description': comment.description,
         'summary': comment.summary,
         'body': comment.body,
+        'body_highlighting': comment.body_highlighting,
         'status': comment.status
     })
 
@@ -127,6 +134,7 @@ def deserialize(s) -> TerraformComment:
         description=j['description'],
         summary=j['summary'],
         body=j['body'],
+        body_highlighting=j.get('body_highlighting', 'hcl'),
         status=j['status']
     )
 
@@ -152,7 +160,7 @@ def _from_api_payload(comment: dict[str, Any]) -> Optional[TerraformComment]:
             (?P<description>.*)
             <details(?:\sopen)?>\s*
             (?:<summary>(?P<summary>.*?)</summary>\s*)?
-            ```(?:hcl)?
+            ```(?P<body_highlighting>.*?)\n
             (?P<body>.*)
             ```\s*
             </details>
@@ -172,18 +180,17 @@ def _from_api_payload(comment: dict[str, Any]) -> Optional[TerraformComment]:
         description=match.group('description').strip(),
         summary=match.group('summary').strip(),
         body=match.group('body').strip(),
+        body_highlighting=match.group('body_highlighting').strip(),
         status=match.group('status').strip()
     )
 
 
 def _to_api_payload(comment: TerraformComment) -> str:
     details_open = False
-    hcl_highlighting = False
 
     if comment.body.startswith('Error'):
         details_open = True
     elif 'Plan:' in comment.body:
-        hcl_highlighting = True
         num_lines = len(comment.body.splitlines())
         if num_lines < collapse_threshold:
             details_open = True
@@ -198,7 +205,7 @@ def _to_api_payload(comment: TerraformComment) -> str:
 <details{' open' if details_open else ''}>
 {f'<summary>{comment.summary}</summary>' if comment.summary is not None else ''}
 
-```{'hcl' if hcl_highlighting else ''}
+```{comment.body_highlighting}
 {comment.body}
 ```
 </details>
@@ -287,6 +294,7 @@ def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers:
             description=backup_comment.description,
             summary=backup_comment.summary,
             body=backup_comment.body,
+            body_highlighting=backup_comment.body_highlighting,
             status=backup_comment.status
         )
 
@@ -301,6 +309,7 @@ def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers:
             description=legacy_comment.description,
             summary=legacy_comment.summary,
             body=legacy_comment.body,
+            body_highlighting=legacy_comment.body_highlighting,
             status=legacy_comment.status
         )
 
@@ -312,6 +321,7 @@ def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers:
         description='',
         summary='',
         body='',
+        body_highlighting='',
         status=''
     )
 
@@ -324,7 +334,8 @@ def update_comment(
     description: str = None,
     summary: str = None,
     body: str = None,
-    status: str = None
+    status: str = None,
+    body_highlighting: str = None
 ) -> TerraformComment:
 
     new_headers = headers if headers is not None else comment.headers
@@ -337,6 +348,7 @@ def update_comment(
         description=description if description is not None else comment.description,
         summary=summary if summary is not None else comment.summary,
         body=body if body is not None else comment.body,
+        body_highlighting=body_highlighting if body_highlighting is not None else comment.body_highlighting,
         status=status if status is not None else comment.status
     )
 
