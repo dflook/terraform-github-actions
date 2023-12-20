@@ -2,6 +2,33 @@
 
 set -euo pipefail
 
+function repair_environment() {
+    if [[ ! -f "$GITHUB_EVENT_PATH" || ! -d "$HOME" ]]; then
+        echo "Currently using an actions runner with a broken environment."
+    fi
+
+    if [[ ! -f "$GITHUB_EVENT_PATH" ]] && find / -name event.json -quit; then
+        # GITHUB_EVENT_PATH is missing, but we can find it
+        GITHUB_EVENT_PATH=$(find / -name event.json -print -quit)
+        export GITHUB_EVENT_PATH
+        echo "Repaired GITHUB_EVENT_PATH=$GITHUB_EVENT_PATH"
+    fi
+
+    if [[ ! -d "$HOME" ]]; then
+        # HOME doesn't exist... is it near GITHUB_EVENT_PATH?
+
+        local ACTUAL_HOME
+        ACTUAL_HOME=$(realpath "$(dirname $GITHUB_EVENT_PATH)/../_github_home")
+
+        if [[ -d "$ACTUAL_HOME" ]]; then
+          HOME="$ACTUAL_HOME"
+          export HOME
+          echo "Repaired HOME=$HOME"
+        fi
+    fi
+}
+repair_environment
+
 # shellcheck source=../workflow_commands.sh
 source /usr/local/workflow_commands.sh
 
@@ -9,8 +36,13 @@ function debug() {
     debug_cmd ls -la /root
     debug_cmd pwd
     debug_cmd ls -la
-    debug_cmd ls -la "$HOME"
     debug_cmd printenv
+
+    if [[ -L "$HOME" ]]; then
+      debug_cmd ls -la "$HOME"
+    fi
+
+    debug_cmd ls -la "$HOME/"
     debug_file "$GITHUB_EVENT_PATH"
     echo
 }

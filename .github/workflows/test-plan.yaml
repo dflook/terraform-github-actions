@@ -924,3 +924,24 @@ jobs:
           label: test-plan colours
           variables:
             diff=true
+
+  self-hosted:
+    runs-on: self-hosted
+    name: Self-hosted runner
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          label: test-plan self-hosted
+          path: tests/workflows/test-plan/self-hosted
+
+      - name: Plan Again
+        uses: ./terraform-plan
+        with:
+          label: test-plan self-hosted
+          path: tests/workflows/test-plan/self-hosted
