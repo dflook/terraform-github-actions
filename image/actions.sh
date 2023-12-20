@@ -33,23 +33,14 @@ repair_environment
 source /usr/local/workflow_commands.sh
 
 function debug() {
-    debug_cmd ls -la /root
     debug_cmd pwd
-    debug_cmd ls -la
     debug_cmd printenv
-
-    if [[ -L "$HOME" ]]; then
-      debug_cmd ls -la "$HOME"
-    fi
-
-    debug_cmd ls -la "$HOME/"
+    debug_tree "$HOME"
     debug_file "$GITHUB_EVENT_PATH"
     echo
 }
 
 function detect-terraform-version() {
-    debug_cmd ls -la "/usr/local/bin"
-    debug_cmd ls -la "$JOB_TMP_DIR/terraform-bin-dir"
     TERRAFORM_BIN_CACHE_DIR="/var/terraform:$JOB_TMP_DIR/terraform-bin-dir" TERRAFORM_BIN_CHECKSUM_DIR="/var/terraform" terraform-version
     debug_cmd ls -la "$(which terraform)"
 
@@ -393,7 +384,7 @@ function set-remote-plan-args() {
         cp "$STEP_TMP_DIR/variables.tfvars" "$INPUT_PATH/zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.auto.tfvars"
     fi
 
-    debug_cmd ls -la "$INPUT_PATH"
+    debug_cmd ls -la "$INPUT_PATH/zzzz-dflook-terraform-github-actions-*"
 
     export PLAN_ARGS
 }
@@ -408,6 +399,8 @@ function random_string() {
 }
 
 function write_credentials() {
+    mkdir /tmp/home
+
     format_tf_credentials >>"$HOME/.terraformrc"
     chown --reference "$HOME" "$HOME/.terraformrc"
     netrc-credential-actions >>"$HOME/.netrc"
@@ -418,8 +411,6 @@ function write_credentials() {
         echo "$TERRAFORM_SSH_KEY" >>/.ssh/id_rsa
         chmod 600 /.ssh/id_rsa
     fi
-
-    debug_cmd git config --list
 }
 
 function plan() {
@@ -478,21 +469,18 @@ readonly STEP_TMP_DIR JOB_TMP_DIR WORKSPACE_TMP_DIR
 export STEP_TMP_DIR JOB_TMP_DIR WORKSPACE_TMP_DIR
 
 function fix_owners() {
-    debug_cmd ls -la "$GITHUB_WORKSPACE"
     if [[ -d "$GITHUB_WORKSPACE/.dflook-terraform-github-actions" ]]; then
         chown -R --reference "$GITHUB_WORKSPACE" "$GITHUB_WORKSPACE/.dflook-terraform-github-actions" || true
-        debug_cmd ls -la "$GITHUB_WORKSPACE/.dflook-terraform-github-actions"
+        debug_tree "$GITHUB_WORKSPACE/.dflook-terraform-github-actions"
     fi
 
-    debug_cmd ls -la "$HOME"
     if [[ -d "$HOME/.dflook-terraform-github-actions" ]]; then
         chown -R --reference "$HOME" "$HOME/.dflook-terraform-github-actions" || true
-        debug_cmd ls -la "$HOME/.dflook-terraform-github-actions"
     fi
     if [[ -d "$HOME/.terraform.d" ]]; then
         chown -R --reference "$HOME" "$HOME/.terraform.d" || true
-        debug_cmd ls -la "$HOME/.terraform.d"
     fi
+    debug_tree "$HOME"
 
     if [[ -d "$INPUT_PATH" ]]; then
         debug_cmd find "$INPUT_PATH" -regex '.*/zzzz-dflook-terraform-github-actions-[0-9]+\.auto\.tfvars' -print -delete || true

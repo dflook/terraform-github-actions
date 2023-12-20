@@ -51,6 +51,14 @@ function debug_file() {
 }
 
 ##
+# Print a directory tree to the debug log
+#
+# This will be visible in the workflow log if ACTIONS_STEP_DEBUG workflow secret is set.
+function debug_tree () {
+    tree -ahuF --du "$@" | while IFS= read -r line; do echo "::debug::tree:${line}"; done
+}
+
+##
 # Set an output value
 #
 function set_output() {
