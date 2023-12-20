@@ -17,9 +17,11 @@ jobs:
       - name: Plan
         uses: ./terraform-plan
         with:
+          label: test-plan arc-runner-set
           path: tests/workflows/test-plan/arc-runner
 
-      - name: Plan
+      - name: Plan Again
         uses: ./terraform-plan
         with:
+          label: test-plan arc-runner-set
           path: tests/workflows/test-plan/arc-runner
