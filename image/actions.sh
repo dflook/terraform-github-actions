@@ -397,30 +397,30 @@ function random_string() {
 }
 
 function write_credentials() {
-    ISOLATED_HOME="/tmp/home"
-    mkdir -p "$ISOLATED_HOME"
+    CREDS_DIR="$STEP_TMP_DIR/credentials"
+    mkdir -p "$CREDS_DIR"
 
     if [[ -f "$HOME/.terraformrc" ]]; then
-        cp "$HOME/.terraformrc" "$ISOLATED_HOME/.dflook-terraformrc"
-        mv "$HOME/.terraformrc" "$HOME/.dflook-terraformrc"
+        cp "$HOME/.terraformrc" "$CREDS_DIR/.terraformrc"
+        mv "$HOME/.terraformrc" "$HOME/.dflook-terraformrc-backup"
     else
-        touch "$ISOLATED_HOME/.dflook-terraformrc"
+        touch "$CREDS_DIR/.terraformrc"
     fi
-    ln -s "$ISOLATED_HOME/.terraformrc" "$HOME/.terraformrc"
+    ln -s "$CREDS_DIR/.terraformrc" "$HOME/.terraformrc"
 
-    format_tf_credentials >>"$ISOLATED_HOME/.terraformrc"
-    chown --reference "$HOME" "$ISOLATED_HOME/.terraformrc"
+    format_tf_credentials >>"$CREDS_DIR/.terraformrc"
+    chown --reference "$HOME" "$CREDS_DIR/.terraformrc"
 
     if [[ -f "$HOME/.netrc" ]]; then
-        cp "$HOME/.netrc" "$ISOLATED_HOME/.dflook-netrc"
-        mv "$HOME/.netrc" "$HOME/.dflook-netrc"
+        cp "$HOME/.netrc" "$CREDS_DIR/.netrc"
+        mv "$HOME/.netrc" "$HOME/.dflook-netrc-backup"
     else
-        touch "$ISOLATED_HOME/.dflook-netrc"
+        touch "$CREDS_DIR/.netrc"
     fi
-    ln -s "$ISOLATED_HOME/.netrc" "$HOME/.netrc"
+    ln -s "$CREDS_DIR/.netrc" "$HOME/.netrc"
 
-    netrc-credential-actions >>"$ISOLATED_HOME/.netrc"
-    chown --reference "$HOME" "$ISOLATED_HOME/.netrc"
+    netrc-credential-actions >>"$CREDS_DIR/.netrc"
+    chown --reference "$HOME" "$CREDS_DIR/.netrc"
 
     chmod 700 /.ssh
     if [[ -v TERRAFORM_SSH_KEY ]]; then
@@ -505,15 +505,15 @@ function fix_owners() {
     if [[ -f "$HOME/.terraformrc" ]]; then
         rm -f "$HOME/.terraformrc"
     fi
-    if [[ -f "$HOME/.dflook-terraformrc" ]]; then
-        mv "$HOME/.dflook-terraformrc" "$HOME/.terraformrc"
+    if [[ -f "$HOME/.dflook-terraformrc-backup" ]]; then
+        mv "$HOME/.dflook-terraformrc-backup" "$HOME/.terraformrc"
     fi
 
     if [[ -f "$HOME/.netrc" ]]; then
         rm -f "$HOME/.netrc"
     fi
-    if [[ -f "$HOME/.dflook-netrc" ]]; then
-        mv "$HOME/.dflook-netrc" "$HOME/.netrc"
+    if [[ -f "$HOME/.dflook-netrc-backup" ]]; then
+        mv "$HOME/.dflook-netrc-backup" "$HOME/.netrc"
     fi
 
     debug_tree "$HOME"
