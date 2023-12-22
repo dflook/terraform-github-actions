@@ -384,8 +384,6 @@ function set-remote-plan-args() {
         cp "$STEP_TMP_DIR/variables.tfvars" "$INPUT_PATH/zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.auto.tfvars"
     fi
 
-    debug_cmd ls -la "$INPUT_PATH/zzzz-dflook-terraform-github-actions-*"
-
     export PLAN_ARGS
 }
 
@@ -399,12 +397,30 @@ function random_string() {
 }
 
 function write_credentials() {
-    mkdir /tmp/home
+    ISOLATED_HOME="/tmp/home"
+    mkdir -p "$ISOLATED_HOME"
 
-    format_tf_credentials >>"$HOME/.terraformrc"
-    chown --reference "$HOME" "$HOME/.terraformrc"
-    netrc-credential-actions >>"$HOME/.netrc"
-    chown --reference "$HOME" "$HOME/.netrc"
+    if [[ -f "$HOME/.terraformrc" ]]; then
+        cp "$HOME/.terraformrc" "$ISOLATED_HOME/.dflook-terraformrc"
+        mv "$HOME/.terraformrc" "$HOME/.dflook-terraformrc"
+    else
+        touch "$ISOLATED_HOME/.dflook-terraformrc"
+    fi
+    ln -s "$ISOLATED_HOME/.dflook-terraformrc" "$HOME/.terraformrc"
+
+    format_tf_credentials >>"$ISOLATED_HOME/.terraformrc"
+    chown --reference "$HOME" "$ISOLATED_HOME/.terraformrc"
+
+    if [[ -f "$HOME/.netrc" ]]; then
+        cp "$HOME/.netrc" "$ISOLATED_HOME/.dflook-netrc"
+        mv "$HOME/.netrc" "$HOME/.dflook-netrc"
+    else
+        touch "$ISOLATED_HOME/.dflook-netrc"
+    fi
+    ln -s "$ISOLATED_HOME/.dflook-netrc" "$HOME/.netrc"
+
+    netrc-credential-actions >>"$ISOLATED_HOME/.netrc"
+    chown --reference "$HOME" "$ISOLATED_HOME/.netrc"
 
     chmod 700 /.ssh
     if [[ -v TERRAFORM_SSH_KEY ]]; then
@@ -485,6 +501,21 @@ function fix_owners() {
     if [[ -d "$INPUT_PATH" ]]; then
         debug_cmd find "$INPUT_PATH" -regex '.*/zzzz-dflook-terraform-github-actions-[0-9]+\.auto\.tfvars' -print -delete || true
     fi
+
+    if [[ -f "$HOME/.terraformrc" ]]; then
+        rm -f "$HOME/.terraformrc"
+    fi
+    if [[ -f "$HOME/.dflook-terraformrc" ]]; then
+        mv "$HOME/.dflook-terraformrc" "$HOME/.terraformrc"
+    fi
+
+    if [[ -f "$HOME/.netrc" ]]; then
+        rm -f "$HOME/.netrc"
+    fi
+    if [[ -f "$HOME/.dflook-netrc" ]]; then
+        mv "$HOME/.dflook-netrc" "$HOME/.netrc"
+    fi
+
 }
 
 trap fix_owners EXIT
