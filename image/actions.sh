@@ -406,7 +406,7 @@ function write_credentials() {
     else
         touch "$ISOLATED_HOME/.dflook-terraformrc"
     fi
-    ln -s "$ISOLATED_HOME/.dflook-terraformrc" "$HOME/.terraformrc"
+    ln -s "$ISOLATED_HOME/.terraformrc" "$HOME/.terraformrc"
 
     format_tf_credentials >>"$ISOLATED_HOME/.terraformrc"
     chown --reference "$HOME" "$ISOLATED_HOME/.terraformrc"
@@ -417,7 +417,7 @@ function write_credentials() {
     else
         touch "$ISOLATED_HOME/.dflook-netrc"
     fi
-    ln -s "$ISOLATED_HOME/.dflook-netrc" "$HOME/.netrc"
+    ln -s "$ISOLATED_HOME/.netrc" "$HOME/.netrc"
 
     netrc-credential-actions >>"$ISOLATED_HOME/.netrc"
     chown --reference "$HOME" "$ISOLATED_HOME/.netrc"
@@ -516,6 +516,7 @@ function fix_owners() {
         mv "$HOME/.dflook-netrc" "$HOME/.netrc"
     fi
 
+    debug_tree "$HOME"
 }
 
 trap fix_owners EXIT
