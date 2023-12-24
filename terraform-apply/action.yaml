@@ -68,7 +68,7 @@ outputs:
 
 runs:
   using: docker
-  image: ../image/Dockerfile
+  image: docker://danielflook/terraform-github-actions-dev:isolate-home
   entrypoint: /entrypoints/apply.sh
 
 branding:
