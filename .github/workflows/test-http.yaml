@@ -3,9 +3,6 @@ name: Test HTTP Credentials
 on:
   - pull_request
 
-env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 jobs:
   http_credentials:
     runs-on: ubuntu-latest
