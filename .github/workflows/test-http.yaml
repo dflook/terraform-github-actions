@@ -119,7 +119,11 @@ jobs:
 
       - name: Create dummy credential file
         run:
+          ls -la ${{ runner.temp }}
+          mkdir -p ${{ runner.temp }}/_github_home
+          ls -la ${{ runner.temp }}
           cp tests/workflows/test-http/http-module/netrc ${{ runner.temp }}/_github_home/.netrc
+          ls -la ${{ runner.temp }}
 
       - name: Apply
         uses: ./terraform-apply
