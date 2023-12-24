@@ -16,7 +16,10 @@ jobs:
 
       - name: Create dummy credential file
         run:
+          ls -la ${{ runner.temp }}
+          mkdir -p ${{ runner.temp }}/_github_home/
           cp tests/workflows/test-registry/terraformrc ${{ runner.temp }}/_github_home/.terraformrc
+          ls -la ${{ runner.temp }}
 
       - name: Plan
         uses: ./terraform-plan
