@@ -18,10 +18,10 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Create dummy credential file
-        run:
-          ls -la ${{ runner.temp }}
-          mkdir -p ${{ runner.temp }}/_github_home/
+        run: |
+          mkdir -p ${{ runner.temp }}/_github_home
           cp tests/workflows/test-http/http-module/netrc ${{ runner.temp }}/_github_home/.netrc
+          ls -la ${{ runner.temp }}
 
       - name: Apply
         uses: ./terraform-apply

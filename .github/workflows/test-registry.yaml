@@ -15,8 +15,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Create dummy credential file
-        run:
-          ls -la ${{ runner.temp }}
+        run: |
           mkdir -p ${{ runner.temp }}/_github_home/
           cp tests/workflows/test-registry/terraformrc ${{ runner.temp }}/_github_home/.terraformrc
           ls -la ${{ runner.temp }}
