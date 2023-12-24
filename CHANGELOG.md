@@ -11,9 +11,21 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.38.0` to use an exact release
-- `@v1.38` to use the latest patch release for the specific minor version
+- `@v1.39.0` to use an exact release
+- `@v1.39` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.39.0] - 2023-12-24
+
+### Added
+- Coloured highlighting for the plan in PR comments.
+
+  The plan shown in PR comments now uses diff syntax highlighting, making it easier to see the effect of the plan.
+
+### Fixed
+- Some workarounds were added for defective self-hosted runners that run docker based actions in broken environments.
+
+  This includes Actions Runner Controller with containerMode: "kubernetes".
 
 ## [1.38.0] - 2023-12-08
 
@@ -604,6 +616,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.39.0]: https://github.com/dflook/terraform-github-actions/compare/v1.38.0...v1.39.0
 [1.38.0]: https://github.com/dflook/terraform-github-actions/compare/v1.37.0...v1.38.0
 [1.37.0]: https://github.com/dflook/terraform-github-actions/compare/v1.36.2...v1.37.0
 [1.36.2]: https://github.com/dflook/terraform-github-actions/compare/v1.36.1...v1.36.2
