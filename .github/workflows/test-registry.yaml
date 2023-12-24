@@ -14,6 +14,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Create dummy credential file
+        run: |
+          mkdir -p ${{ runner.temp }}/_github_home
+          cp tests/workflows/test-registry/terraformrc ${{ runner.temp }}/_github_home/.terraformrc
+          ls -la ${{ runner.temp }}
+
       - name: Plan
         uses: ./terraform-plan
         env:
@@ -37,6 +43,9 @@ jobs:
             echo "::error:: output not set correctly"
             exit 1
           fi
+          
+          # Check that terraformrc is as before
+          diff tests/workflows/test-registry/terraformrc ${{ runner.temp }}/_github_home/.terraformrc
 
   multiple_registry_module:
     runs-on: ubuntu-latest
