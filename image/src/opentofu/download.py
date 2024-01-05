@@ -28,11 +28,23 @@ def get_checksums(version: Version, checksum_dir: Path) -> Path:
     """
 
     checksums_path = Path(checksum_dir, f'tofu_{version}_SHA256SUMS')
-
-    # No point verifying the signature as we'd have to get the key from the same place
-    signature_path = Path(checksum_dir, f'tofu_{version}_SHA256SUMS.sig')
+    signature_path = Path(checksum_dir, f'tofu_{version}_SHA256SUMS.gpgsig')
 
     os.makedirs(checksum_dir, exist_ok=True)
+
+    if not signature_path.exists():
+        signature_url = f'https://github.com/opentofu/opentofu/releases/download/v{version}/tofu_{version}_SHA256SUMS.gpgsig'
+        debug(f'Downloading signature from {signature_url}')
+
+        try:
+            urlretrieve(
+                signature_url,
+                signature_path
+            )
+        except HTTPError as http_error:
+            if http_error.code == 404:
+                raise DownloadError(f'Could not download signature file for {version} - does this version exist?')
+            raise
 
     if not checksums_path.exists():
         checksum_url = f'https://github.com/opentofu/opentofu/releases/download/v{version}/tofu_{version}_SHA256SUMS'
@@ -47,6 +59,15 @@ def get_checksums(version: Version, checksum_dir: Path) -> Path:
             if http_error.code == 404:
                 raise DownloadError(f'Could not download checksums for {version} - does this version exist?')
             raise
+
+    try:
+        subprocess.run(
+            ['gpg', '--verify', signature_path, checksums_path],
+            check=True,
+            env={'GNUPGHOME': '/root/.gnupg'} | os.environ
+        )
+    except subprocess.CalledProcessError:
+        raise DownloadError(f'Could not verify checksums signature for {version}')
 
     return checksums_path
 

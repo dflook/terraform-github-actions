@@ -7,6 +7,10 @@ ARG VERSION=99.0.0
 
 RUN gpg --recv-keys C874011F0AB405110D02105534365D9472D7468F \
  && echo "C874011F0AB405110D02105534365D9472D7468F:6:" | gpg --import-ownertrust
+
+RUN curl https://get.opentofu.org/opentofu.gpg | gpg --import \
+ && echo "E3E6E43D84CB852EADB0051D0C0AF313E5FD9F80:6:" | gpg --import-ownertrust
+
 RUN gpg --check-trustdb
 
 COPY src/ /tmp/src/
