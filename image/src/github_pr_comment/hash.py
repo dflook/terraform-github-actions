@@ -23,3 +23,18 @@ def plan_hash(plan_text: str, salt: str) -> str:
     plan = remove_warnings(remove_unchanged_attributes(plan_text))
 
     return comment_hash(plan.encode(), salt)
+
+def plan_out_hash(plan_path: str, salt: str) -> str:
+    """
+    Compute a sha256 hash of the binary plan file
+    """
+
+    debug(f'Hashing {plan_path} with salt {salt}')
+
+    h = hashlib.sha256(f'dflook/terraform-github-actions/{salt}'.encode())
+
+    with open(plan_path, 'rb') as f:
+        while data := f.read(65536):
+            h.update(data)
+
+    return h.hexdigest()

@@ -1,0 +1,118 @@
+name: Test terraform-binary-plan
+
+on:
+  - pull_request
+
+jobs:
+  missing_plan_path:
+    runs-on: ubuntu-latest
+    name: Missing plan
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Apply
+        uses: ./terraform-apply
+        id: apply
+        continue-on-error: true
+        with:
+          path: tests/workflows/test-binary-plan
+          plan_path: hello.tfplan
+          auto_approve: true
+
+      - name: Verify outputs
+        run: |
+          if [[ "${{ steps.apply.outcome }}" != "failure" ]]; then
+            echo "Apply did not fail correctly"
+            exit 1
+          fi
+
+  apply:
+    runs-on: ubuntu-latest
+    name: Apply approved changes
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Plan
+        uses: ./terraform-plan
+        id: plan
+        with:
+          label: test-binary-plan apply
+          path: tests/workflows/test-binary-plan
+
+      - name: Apply
+        uses: ./terraform-apply
+        id: first-apply
+        with:
+          label: test-binary-plan apply
+          path: tests/workflows/test-binary-plan
+          plan_path: ${{ steps.plan.outputs.plan_path }}
+
+  auto_approve:
+    runs-on: ubuntu-latest
+    name: Apply auto approved changes
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Plan
+        uses: ./terraform-plan
+        id: plan
+        with:
+          label: test-binary-plan auto_approve
+          path: tests/workflows/test-binary-plan
+          add_github_comment: false
+
+      - name: Apply
+        uses: ./terraform-apply
+        with:
+          label: test-binary-plan auto_approve
+          path: tests/workflows/test-binary-plan
+          plan_path: ${{ steps.plan.outputs.plan_path }}
+          auto_approve: true
+
+  plan_changed:
+    runs-on: ubuntu-latest
+    name: Apply should fail if the approved plan has changed
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Plan
+        uses: ./terraform-plan
+        id: plan
+        with:
+          label: test-binary-plan plan_changed
+          path: tests/workflows/test-binary-plan
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          label: test-binary-plan plan_changed
+          path: tests/workflows/test-binary-plan
+
+      - name: Apply
+        uses: ./terraform-apply
+        continue-on-error: true
+        id: apply
+        with:
+          label: test-binary-plan plan_changed
+          path: tests/workflows/test-binary-plan
+          plan_path: ${{ steps.plan.outputs.plan_path }}
+
+      - name: Verify outputs
+        run: |
+          if [[ "${{ steps.apply.outcome }}" != "failure" ]]; then
+            echo "Apply did not fail correctly"
+            exit 1
+          fi
+
+          if [[ "${{ steps.apply.outputs.failure-reason }}" != "plan-changed" ]]; then
+            echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi

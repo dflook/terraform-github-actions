@@ -38,6 +38,11 @@ jobs:
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
+          
+          if ! [[ -f '${{ steps.plan.outputs.plan_path }}' ]]; then
+            echo "::error:: plan_path not set correctly"
+            exit 1
+          fi
 
           if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
             echo "::error:: run_id should not be set"

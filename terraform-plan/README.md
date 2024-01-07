@@ -308,6 +308,13 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
   - Type: boolean
 
+* `plan_path`
+
+  This is the path to the generated plan in an opaque binary format.
+  The path is relative to the Actions workspace.
+
+  - Type: string
+
 * `json_plan_path`
 
   This is the path to the generated plan in [JSON Output Format](https://www.terraform.io/docs/internals/json-format.html)
