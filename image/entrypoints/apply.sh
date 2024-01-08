@@ -79,7 +79,7 @@ function apply() {
 
 if [[ "$INPUT_PLAN_PATH" != "" ]]; then
   if [[ ! -f "$INPUT_PLAN_PATH" ]]; then
-      echo "Plan file '$INPUT_PLAN_PATH' does not exist"
+      error_log "Plan file '$INPUT_PLAN_PATH' does not exist"
       exit 1
   fi
 
