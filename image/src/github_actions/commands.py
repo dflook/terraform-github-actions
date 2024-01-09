@@ -9,6 +9,9 @@ def generate_delimiter():
     return ''.join(random.choice(string.ascii_lowercase) for _ in range(20))
 
 def output(name: str, value: Any) -> None:
+    if not isinstance(value, str):
+        value = str(value)
+
     if 'GITHUB_OUTPUT' in os.environ and Path(os.environ['GITHUB_OUTPUT']).is_file():
         with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
             if len(value.splitlines()) > 1:
