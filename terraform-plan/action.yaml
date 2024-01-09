@@ -63,6 +63,8 @@ outputs:
     description: The number of resources that would be changed by this plan
   to_destroy:
     description: The number of resources that would be destroyed by this plan
+  plan_path:
+    description: Path to a file in the workspace containing the generated plan in an opaque binary format.
   text_plan_path:
     description: Path to a file in the workspace containing the generated plan in human readable format.
   json_plan_path:

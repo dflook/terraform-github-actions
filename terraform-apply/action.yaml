@@ -55,6 +55,10 @@ inputs:
     description: Create and apply a plan to destroy all resources
     required: false
     default: "false"
+  plan_path:
+    description: Path to the plan file to apply.
+    required: false
+    default: ""
 
 outputs:
   text_plan_path:

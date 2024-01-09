@@ -60,7 +60,7 @@ if [[ "$GITHUB_EVENT_NAME" == "pull_request" || "$GITHUB_EVENT_NAME" == "issue_c
                 TF_CHANGES=true
             fi
 
-            if ! TF_CHANGES=$TF_CHANGES STATUS=":memo: Plan generated in $(job_markdown_ref)" github_pr_comment plan <"$STEP_TMP_DIR/plan.txt"; then
+            if ! PLAN_OUT="$PLAN_OUT" TF_CHANGES=$TF_CHANGES STATUS=":memo: Plan generated in $(job_markdown_ref)" github_pr_comment plan <"$STEP_TMP_DIR/plan.txt"; then
                 exit 1
             fi
         fi
@@ -91,6 +91,9 @@ cp "$STEP_TMP_DIR/plan.txt" "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/plan.txt"
 set_output text_plan_path "$WORKSPACE_TMP_DIR/plan.txt"
 
 if [[ -n "$PLAN_OUT" ]]; then
+    cp "$PLAN_OUT" "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/plan.tfplan"
+    set_output plan_path "$WORKSPACE_TMP_DIR/plan.tfplan"
+
     if (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME show -json "$PLAN_OUT") >"$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/plan.json" 2>"$STEP_TMP_DIR/terraform_show.stderr"; then
         set_output json_plan_path "$WORKSPACE_TMP_DIR/plan.json"
     else
