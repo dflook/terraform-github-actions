@@ -313,12 +313,18 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   This is the path to the generated plan in an opaque binary format.
   The path is relative to the Actions workspace.
 
+  The plan can be used as the `plan_file` input to the [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/main/terraform-apply) action.
+
+  Terraform plans often contain sensitive information, so this output should be treated with care.
+
   - Type: string
 
 * `json_plan_path`
 
   This is the path to the generated plan in [JSON Output Format](https://www.terraform.io/docs/internals/json-format.html)
   The path is relative to the Actions workspace.
+
+  Terraform plans often contain sensitive information, so this output should be treated with care.
 
   - Type: string
 
@@ -330,20 +336,12 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   - Type: string
 
 * `to_add`
-
-  The number of resources that would be added by this plan.
-
-  - Type: number
-
 * `to_change`
-
-  The number of resources that would be changed by this plan.
-
-  - Type: number
-
 * `to_destroy`
+* `to_move`
+* `to_import`
 
-  The number of resources that would be destroyed by this plan.
+  The number of resources that would be affected by each type of operation.
 
   - Type: number
 
