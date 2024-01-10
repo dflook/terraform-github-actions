@@ -11,9 +11,26 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.39.0` to use an exact release
-- `@v1.39` to use the latest patch release for the specific minor version
+- `@v1.40.0` to use an exact release
+- `@v1.40` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.40.0] - 2024-01-10
+
+### Added
+- An optional `plan_path` input for [dflook/terraform-apply](terraform-apply), and matching `plan_path` output for [dflook/terraform-plan](terraform-plan).
+
+  This allows passing the generated plan from the plan step to the apply step, if you have a secure place to store it.
+ 
+  The default behaviour when this is not set is unchanged - the apply step will generate a fresh plan and compare it to the plan from the PR comment.
+  By passing the plan from the plan step to the apply step, the apply step will skip generating a plan and use the passed plan instead.
+  It must still match the plan in the PR comment.
+
+  This can be much faster than planning the same change twice, but is not necessarily a better choice. See the [dflook/terraform-apply](terraform-apply) docs for details.
+
+- A new `to_import` output for [dflook/terraform-plan](terraform-plan), which is the number of resources that would be imported by the plan.
+
+  This joins the existing `to_add`, `to_change`, `to_destroy` and `to_move` outputs.
 
 ## [1.39.0] - 2023-12-24
 
@@ -616,6 +633,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.40.0]: https://github.com/dflook/terraform-github-actions/compare/v1.39.0...v1.40.0
 [1.39.0]: https://github.com/dflook/terraform-github-actions/compare/v1.38.0...v1.39.0
 [1.38.0]: https://github.com/dflook/terraform-github-actions/compare/v1.37.0...v1.38.0
 [1.37.0]: https://github.com/dflook/terraform-github-actions/compare/v1.36.2...v1.37.0
