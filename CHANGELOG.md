@@ -11,9 +11,14 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.40.0` to use an exact release
-- `@v1.40` to use the latest patch release for the specific minor version
+- `@v1.41.0` to use an exact release
+- `@v1.41` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.41.0] - 2024-01-12
+
+### Added
+- Downloaded OpenTofu checksum files are now verified using the OpenTofu public gpg key, beginning with OpenTofu v1.6.0.
 
 ## [1.40.0] - 2024-01-10
 
@@ -633,6 +638,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.41.0]: https://github.com/dflook/terraform-github-actions/compare/v1.40.0...v1.41.0
 [1.40.0]: https://github.com/dflook/terraform-github-actions/compare/v1.39.0...v1.40.0
 [1.39.0]: https://github.com/dflook/terraform-github-actions/compare/v1.38.0...v1.39.0
 [1.38.0]: https://github.com/dflook/terraform-github-actions/compare/v1.37.0...v1.38.0
