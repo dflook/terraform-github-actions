@@ -641,7 +641,7 @@ jobs:
 
   terraform_opentofu_version:
     runs-on: ubuntu-latest
-    name: OPENTOFU_VERSION pre-release with terraform action
+    name: OPENTOFU_VERSION with terraform action
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -650,7 +650,7 @@ jobs:
         uses: ./terraform-version
         id: terraform-version
         env:
-          OPENTOFU_VERSION: "1.6.0-alpha3"
+          OPENTOFU_VERSION: "1.6.0"
         with:
           path: tests/workflows/test-version/empty
 
@@ -659,17 +659,47 @@ jobs:
 
       - name: Check the version
         run: |
-          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "1.6.0-alpha3" ]]; then
+          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "1.6.0" ]]; then
             echo "::error:: Terraform version not set from OPENTOFU_VERSION"
             exit 1
           fi
 
-          if [[ "${{ steps.terraform-version.outputs.tofu }}" != "1.6.0-alpha3" ]]; then
+          if [[ "${{ steps.terraform-version.outputs.tofu }}" != "1.6.0" ]]; then
             echo "::error:: Terraform version not set from OPENTOFU_VERSION"
             exit 1
           fi
 
   opentofu_version:
+    runs-on: ubuntu-latest
+    name: OPENTOFU_VERSION with tofu action
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Test terraform-version
+        uses: ./tofu-version
+        id: tofu-version
+        env:
+          OPENTOFU_VERSION: "1.6.0"
+        with:
+          path: tests/workflows/test-version/empty
+
+      - name: Print the version
+        run: echo "The tofu version was ${{ steps.tofu-version.outputs.tofu }}"
+
+      - name: Check the version
+        run: |
+          if [[ "${{ steps.tofu-version.outputs.terraform }}" != "1.6.0" ]]; then
+            echo "::error:: Terraform version not set from OPENTOFU_VERSION"
+            exit 1
+          fi
+          
+          if [[ "${{ steps.tofu-version.outputs.tofu }}" != "1.6.0" ]]; then
+            echo "::error:: Terraform version not set from OPENTOFU_VERSION"
+            exit 1
+          fi
+
+  opentofu_version_pre_release_nosig:
     runs-on: ubuntu-latest
     name: OPENTOFU_VERSION pre-release with tofu action
     steps:
