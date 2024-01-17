@@ -115,7 +115,7 @@ jobs:
       - name: Check the version
         run: |
           if [[ "${{ steps.terraform-version.outputs.terraform }}" != "0.12.11" ]]; then
-            echo "::error:: Terraform version not set from .terraform-version"
+            echo "::error:: Terraform version not set from .tool-versions"
             exit 1
           fi
           
@@ -123,14 +123,14 @@ jobs:
 
       - name: Test getting version from root .tools-versions
         uses: ./terraform-version
-        id: terraform-version
+        id: root-version
         with:
           path: tests/workflows/test-version/asdf
 
       - name: Check the version
         run: |
-          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "0.12.11" ]]; then
-            echo "::error:: Terraform version not set from .terraform-version"
+          if [[ "${{ steps.root-version.outputs.terraform }}" != "0.12.11" ]]; then
+            echo "::error:: Terraform version not set from .tool-versions"
             exit 1
           fi
 
