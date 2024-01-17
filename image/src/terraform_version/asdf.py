@@ -28,7 +28,7 @@ def try_read_asdf(inputs: InitInputs, workspace_path: str, versions: Iterable[Ve
 
     module_path = os.path.abspath(inputs.get('INPUT_PATH', '.'))
 
-    while module_path not in ['/', workspace_path]:
+    while module_path != '/':
         asdf_path = os.path.join(module_path, '.tool-versions')
 
         if os.path.isfile(asdf_path):
@@ -37,6 +37,9 @@ def try_read_asdf(inputs: InitInputs, workspace_path: str, versions: Iterable[Ve
                     return parse_asdf(f.read(), versions)
             except Exception as e:
                 debug(str(e))
+
+        if module_path == workspace_path:
+            break
 
         module_path = os.path.dirname(module_path)
 
