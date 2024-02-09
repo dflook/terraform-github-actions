@@ -1,7 +1,9 @@
 terraform {
   cloud {
+
   }
-  required_version = "~> 1.5.0"
+
+  required_version = "~> 1.6.0"
 }
 
 resource "random_id" "the_id" {

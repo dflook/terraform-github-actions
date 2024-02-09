@@ -23,11 +23,14 @@ def get_cloud_json_plan(backend_config: BackendConfig, run_id: str) -> bytes:
 
 def remote_run_id():
     if len(sys.argv) < 2:
-        sys.stderr.write('Usage: remote-run-id <terraform_plan.txt>\n')
+        sys.stderr.write('Usage: remote-run-id <stdout_path> [<stderr_path>]\n')
         sys.exit(1)
 
-    with open(sys.argv[1]) as f:
-        run_id = get_run_id(f.read())
+    for path in sys.argv[1:]:
+        with open(path) as f:
+            run_id = get_run_id(f.read())
+            if run_id is not None:
+                break
 
     if run_id is None:
         sys.stderr.write('run_id not found in plan\n')

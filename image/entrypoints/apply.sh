@@ -11,16 +11,18 @@ set-plan-args
 PLAN_OUT="$STEP_TMP_DIR/plan.out"
 
 function update_comment() {
-    if ! github_pr_comment "$@" 2>"$STEP_TMP_DIR/github_pr_comment.stderr"; then
-        debug_file "$STEP_TMP_DIR/github_pr_comment.stderr"
-    else
-        debug_file "$STEP_TMP_DIR/github_pr_comment.stderr"
+    if [[ -v TERRAFORM_ACTIONS_GITHUB_TOKEN ]]; then
+
+        if ! github_pr_comment "$@" 2>"$STEP_TMP_DIR/github_pr_comment.stderr"; then
+            debug_file "$STEP_TMP_DIR/github_pr_comment.stderr"
+        else
+            debug_file "$STEP_TMP_DIR/github_pr_comment.stderr"
+        fi
+
     fi
 }
 
-if [[ -v TERRAFORM_ACTIONS_GITHUB_TOKEN ]]; then
-    update_comment begin-apply
-fi
+update_comment begin-apply
 
 exec 3>&1
 
@@ -29,12 +31,14 @@ function apply() {
 
     set +e
     if [[ -n "$PLAN_OUT" ]]; then
+
         # shellcheck disable=SC2086
-        debug_log $TOOL_COMMAND_NAME apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT
+        debug_log $TOOL_COMMAND_NAME apply -input=false -no-color -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT
         # shellcheck disable=SC2086
-        (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT) \
+        (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME apply -input=false -no-color -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT) \
             2>"$STEP_TMP_DIR/terraform_apply.stderr" \
-            | $TFMASK
+            | $TFMASK \
+            | tee "$STEP_TMP_DIR/terraform_apply.stdout"
         APPLY_EXIT=${PIPESTATUS[0]}
         >&2 cat "$STEP_TMP_DIR/terraform_apply.stderr"
     else
@@ -51,7 +55,11 @@ function apply() {
         APPLY_EXIT=${PIPESTATUS[0]}
         >&2 cat "$STEP_TMP_DIR/terraform_apply.stderr"
 
-        if remote-run-id "$STEP_TMP_DIR/terraform_apply.stdout" >"$STEP_TMP_DIR/remote-run-id.stdout" 2>"$STEP_TMP_DIR/remote-run-id.stderr"; then
+    fi
+    set -e
+
+    if [[ "$TERRAFORM_BACKEND_TYPE" == "cloud" || "$TERRAFORM_BACKEND_TYPE" == "remote" ]]; then
+        if remote-run-id "$STEP_TMP_DIR/terraform_apply.stdout" "$STEP_TMP_DIR/terraform_apply.stderr" >"$STEP_TMP_DIR/remote-run-id.stdout" 2>"$STEP_TMP_DIR/remote-run-id.stderr"; then
             RUN_ID="$(<"$STEP_TMP_DIR/remote-run-id.stdout")"
             set_output run_id "$RUN_ID"
         else
@@ -59,9 +67,13 @@ function apply() {
             debug_file "$STEP_TMP_DIR/remote-run-id.stderr"
         fi
     fi
-    set -e
 
-    if [[ $APPLY_EXIT -eq 0 ]]; then
+    if [[ "$TERRAFORM_BACKEND_TYPE" == "cloud" && $APPLY_EXIT -ne 0 ]] && grep -q "Error: Saved plan has no changes" "$STEP_TMP_DIR/terraform_apply.stderr"; then
+        # Not really an error then is it?
+        APPLY_EXIT=0
+        output
+        update_comment cloud-no-changes-to-apply "$STEP_TMP_DIR/terraform_output.json"
+    elif [[ $APPLY_EXIT -eq 0 ]]; then
         output
         update_comment apply-complete "$STEP_TMP_DIR/terraform_output.json"
     else
@@ -134,7 +146,13 @@ fi
 
 ### Apply the plan
 
-if [[ "$INPUT_AUTO_APPROVE" == "true" || $PLAN_EXIT -eq 0 ]]; then
+if [[ "$TERRAFORM_BACKEND_TYPE" == "cloud" && $PLAN_EXIT -eq 0 ]]; then
+    # Terraform cloud will just error if we try to apply a plan with no changes
+    echo "No changes to apply"
+    output
+    update_comment cloud-no-changes-to-apply "$STEP_TMP_DIR/terraform_output.json"
+
+elif [[ "$INPUT_AUTO_APPROVE" == "true" || $PLAN_EXIT -eq 0 ]]; then
     echo "Automatically approving plan"
     apply
 

@@ -421,8 +421,8 @@ def format_plan_text(plan_text: str, format_type: str) -> Tuple[str, str]:
         else:
             return 'text', plan_text
 
-def format_output_status(outputs: Optional[dict], remaining_size: int) -> str:
-    status = f':white_check_mark: Plan applied in {job_markdown_ref()}'
+def format_output_status(status: str, outputs: Optional[dict], remaining_size: int) -> str:
+
     stripped_output = render_outputs(outputs).strip()
 
     if stripped_output:
@@ -564,7 +564,18 @@ def main() -> int:
 
             remaining_size = 55000 - len(comment.body)
 
-            comment = update_comment(github, comment, headers=comment.headers | {'closed': True}, status=format_output_status(outputs, remaining_size))
+            comment = update_comment(github, comment, headers=comment.headers | {'closed': True}, status=format_output_status(f':white_check_mark: Plan applied in {job_markdown_ref()}', outputs, remaining_size))
+
+    elif sys.argv[1] == 'cloud-no-changes-to-apply':
+        if comment.comment_url is None:
+            debug("Can't set status of comment that doesn't exist")
+            return 1
+        else:
+            outputs = read_outputs(sys.argv[2])
+
+            remaining_size = 55000 - len(comment.body)
+
+            comment = update_comment(github, comment, headers=comment.headers | {'closed': True}, status=format_output_status(f':white_check_mark: No changes to apply in {job_markdown_ref()}', outputs, remaining_size))
 
     elif sys.argv[1] == 'get':
         if comment.comment_url is None:
