@@ -240,7 +240,7 @@ def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers:
     If no comment is found with the specified headers, tries to find a comment that matches the specified description instead.
     This is in case the comment was made with an earlier version, where comments were matched by description only.
 
-    If not existing comment is found a new TerraformComment object is returned which represents a PR comment yet to be created.
+    If no existing comment is found a new TerraformComment object is returned which represents a PR comment yet to be created.
 
     :param github: The github api object to make requests with
     :param issue_url: The issue to find the comment in
@@ -255,7 +255,7 @@ def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers:
     backup_comment = None
     legacy_comment = None
 
-    for comment_payload in github.paged_get(issue_url + '/comments'):
+    for comment_payload in github.paged_get(issue_url + '/comments', params={'per_page': 100}):
         if comment_payload['user']['login'] != username:
             continue
 
