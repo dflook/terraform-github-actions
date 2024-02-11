@@ -1,4 +1,5 @@
 requests
+requests-cache
 pytest
 python-hcl2
 canonicaljson

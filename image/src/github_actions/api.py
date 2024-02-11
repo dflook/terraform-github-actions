@@ -1,10 +1,11 @@
 import datetime
+import re
 import sys
 from typing import NewType, Iterable, Any, Optional
 
 import requests
 from requests import Response
-
+from requests_cache import CachedSession, EXPIRE_IMMEDIATELY
 from github_actions.debug import debug
 
 GitHubUrl = NewType('GitHubUrl', str)
@@ -15,11 +16,21 @@ CommentReactionUrl = NewType('CommentReactionUrl', GitHubUrl)
 
 
 class GithubApi:
-    def __init__(self, host: str, token: Optional[str]):
+    def __init__(self, host: str, token: Optional[str], cache_path: Optional[str] = None):
         self._host = host
         self._token = token
 
-        self._session = requests.Session()
+        if cache_path is not None:
+            urls_expire_after = {
+                re.compile(r'/repos/.*/.*/issues/\d+/comments'): 60 * 60 * 24 * 3,
+                re.compile(r'/repositories/.*/issues/.*/comments'): 60 * 60 * 24 * 3,
+                '*': EXPIRE_IMMEDIATELY
+            }
+
+            self._session = CachedSession(backend='sqlite', cache_name=f'{cache_path}/github_api_cache', urls_expire_after=urls_expire_after, always_revalidate=True)
+            self._session.cache.delete(expired=True)
+        else:
+            self._session = requests.Session()
 
         if token is not None:
             self._session.headers['authorization'] = f'token {token}'
@@ -64,12 +75,19 @@ class GithubApi:
 
     def paged_get(self, url: GitHubUrl, *args, **kwargs) -> Iterable[dict[str, Any]]:
         while True:
+
             response = self.api_request('GET', url, *args, **kwargs)
             response.raise_for_status()
+
+            if hasattr(response, 'from_cache'):
+                debug(f'Cache hit: {response.from_cache}')
 
             yield from response.json()
 
             if 'next' in response.links:
+                if 'params' in kwargs:
+                    # Relevant params are already in the link URL
+                    del kwargs['params']
                 url = response.links['next']['url']
             else:
                 return

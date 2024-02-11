@@ -503,7 +503,7 @@ jobs:
 
       - name: Check the version
         run: |
-          if [[ "${{ steps.terraform-version.outputs.terraform }}" != *"1.6"* ]]; then
+          if [[ "${{ steps.terraform-version.outputs.terraform }}" != *"1.7"* ]]; then
             echo "::error:: Latest version was not used"
             exit 1
           fi

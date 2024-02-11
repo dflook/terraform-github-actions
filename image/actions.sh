@@ -456,6 +456,16 @@ function plan() {
     # shellcheck disable=SC2034
     PLAN_EXIT=${PIPESTATUS[0]}
     set -e
+
+    if [[ "$TERRAFORM_BACKEND_TYPE" == "remote" || "$TERRAFORM_BACKEND_TYPE" == "cloud" ]]; then
+        if remote-run-id "$STEP_TMP_DIR/terraform_plan.stdout" >"$STEP_TMP_DIR/remote-run-id.stdout" 2>"$STEP_TMP_DIR/remote-run-id.stderr"; then
+            RUN_ID="$(<"$STEP_TMP_DIR/remote-run-id.stdout")"
+            set_output run_id "$RUN_ID"
+        else
+            debug_log "Failed to get remote run-id"
+            debug_file "$STEP_TMP_DIR/remote-run-id.stderr"
+        fi
+    fi
 }
 
 function destroy() {

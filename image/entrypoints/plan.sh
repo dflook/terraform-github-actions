@@ -27,16 +27,6 @@ fi
 
 cat "$STEP_TMP_DIR/terraform_plan.stderr"
 
-if [[ -z "$PLAN_OUT" ]]; then
-    if remote-run-id "$STEP_TMP_DIR/terraform_plan.stdout" >"$STEP_TMP_DIR/remote-run-id.stdout" 2>"$STEP_TMP_DIR/remote-run-id.stderr"; then
-        RUN_ID="$(<"$STEP_TMP_DIR/remote-run-id.stdout")"
-        set_output run_id "$RUN_ID"
-    else
-        debug_log "Failed to get remote run-id"
-        debug_file "$STEP_TMP_DIR/remote-run-id.stderr"
-    fi
-fi
-
 if [[ "$GITHUB_EVENT_NAME" == "pull_request" || "$GITHUB_EVENT_NAME" == "issue_comment" || "$GITHUB_EVENT_NAME" == "pull_request_review_comment" || "$GITHUB_EVENT_NAME" == "pull_request_target" || "$GITHUB_EVENT_NAME" == "pull_request_review" || "$GITHUB_EVENT_NAME" == "repository_dispatch" ]]; then
     if [[ "$INPUT_ADD_GITHUB_COMMENT" == "true" || "$INPUT_ADD_GITHUB_COMMENT" == "changes-only" || "$INPUT_ADD_GITHUB_COMMENT" == "always-new" ]]; then
 
