@@ -23,6 +23,7 @@ class GithubApi:
         if cache_path is not None:
             urls_expire_after = {
                 re.compile(r'/repos/.*/.*/issues/\d+/comments'): 60 * 60 * 24 * 3,
+                re.compile(r'/repositories/.*/issues/.*/comments'): 60 * 60 * 24 * 3,
                 '*': EXPIRE_IMMEDIATELY
             }
 
@@ -74,6 +75,7 @@ class GithubApi:
 
     def paged_get(self, url: GitHubUrl, *args, **kwargs) -> Iterable[dict[str, Any]]:
         while True:
+
             response = self.api_request('GET', url, *args, **kwargs)
             response.raise_for_status()
 
@@ -83,6 +85,9 @@ class GithubApi:
             yield from response.json()
 
             if 'next' in response.links:
+                if 'params' in kwargs:
+                    # Relevant params are already in the link URL
+                    del kwargs['params']
                 url = response.links['next']['url']
             else:
                 return
