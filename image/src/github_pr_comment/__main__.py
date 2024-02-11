@@ -35,7 +35,7 @@ step_cache = ActionsCache(Path(os.environ.get('STEP_TMP_DIR', '.')), 'step_cache
 
 env = cast(GithubEnv, os.environ)
 github_token = env['TERRAFORM_ACTIONS_GITHUB_TOKEN']
-github = GithubApi(env.get('GITHUB_API_URL', 'https://api.github.com'), github_token)
+github = GithubApi(env.get('GITHUB_API_URL', 'https://api.github.com'), github_token, os.environ.get('JOB_TMP_DIR', '.'))
 
 ToolProductName = os.environ.get('TOOL_PRODUCT_NAME', 'Terraform')
 
