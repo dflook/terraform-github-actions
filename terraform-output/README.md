@@ -49,6 +49,15 @@ Retrieve the root-level outputs from a Terraform configuration.
 
 ## Environment Variables
 
+* `GITHUB_DOT_COM_TOKEN`
+
+  This is used to specify a token for GitHub.com when the action is running on a GitHub Enterprise instance.
+  This is only used for downloading OpenTofu binaries from GitHub.com.
+  If this is not set, an unauthenticated request will be made to GitHub.com to download the binary, which may be rate limited.
+
+  - Type: string
+  - Optional
+
 * `TERRAFORM_CLOUD_TOKENS`
 
   API tokens for cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
