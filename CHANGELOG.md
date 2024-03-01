@@ -11,9 +11,19 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.41.2` to use an exact release
-- `@v1.41` to use the latest patch release for the specific minor version
+- `@v1.42.0` to use an exact release
+- `@v1.42` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.42.0] - 2024-03-01
+
+### Added
+- A new `GITHUB_DOT_COM_TOKEN` environment variable may be set to an authentication token to use for GitHub.com API requests.
+
+  This is only useful to avoid rate limiting when using the actions with GitHub Enterprise together with OpenTofu.
+
+  Normally the `GITHUB_TOKEN` environment variable is used for API requests. When using GitHub Enterprise, the `GITHUB_TOKEN` is the token for the GitHub Enterprise instance, and not the GitHub.com API.
+  OpenTofu requires the GitHub.com API to fetch release information. 
 
 ## [1.41.2] - 2024-02-11
 
@@ -650,6 +660,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.42.0]: https://github.com/dflook/terraform-github-actions/compare/v1.41.2...v1.42.0
 [1.41.2]: https://github.com/dflook/terraform-github-actions/compare/v1.41.1...v1.41.2
 [1.41.1]: https://github.com/dflook/terraform-github-actions/compare/v1.41.0...v1.41.1
 [1.41.0]: https://github.com/dflook/terraform-github-actions/compare/v1.40.0...v1.41.0
