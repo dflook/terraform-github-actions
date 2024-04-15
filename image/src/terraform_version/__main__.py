@@ -39,13 +39,22 @@ def determine_version(inputs: InitInputs, cli_config_path: Path, actions_env: Ac
 
     version: Optional[Version]
 
-    if version := try_get_remote_workspace_version(inputs, module, cli_config_path, versions):
-        sys.stdout.write(f'Using remote workspace terraform version, which is set to {version!r}\n')
-        return version
+    remote_version = try_get_remote_workspace_version(inputs, module, cli_config_path, versions)
+    required_version = try_get_required_version(module, versions)
 
-    if version := try_get_required_version(module, versions):
-        sys.stdout.write(f'Using latest {version.product} version that matches the required_version constraints\n')
-        return version
+    if remote_version and required_version:
+        if remote_version < required_version:
+            sys.stdout.write(f'Using newer required terraform version {required_version!r}\n')
+            return required_version
+        else:
+            sys.stdout.write(f'Using remote workspace terraform version, which is set to {remote_version!r}\n')
+            return remote_version
+    elif remote_version:
+        sys.stdout.write(f'Using remote workspace terraform version, which is set to {remote_version!r}\n')
+        return remote_version
+    elif required_version:
+        sys.stdout.write(f'Using latest {required_version.product} version that matches the required_version constraints\n')
+        return required_version
 
     if version := try_read_tfswitch(inputs):
         sys.stdout.write(f'Using {version.product} version specified in .tfswitchrc file\n')
