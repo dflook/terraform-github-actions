@@ -126,7 +126,7 @@ def get_version_constraints(module: TerraformModule) -> Optional[list[Constraint
         try:
             return [Constraint(c) for c in str(block['required_version']).split(',')]
         except Exception:
-            debug('required_version constraint is malformed')
+            debug(f'required_version constraint is malformed: {str(block["required_version"])}')
 
     return None
 
