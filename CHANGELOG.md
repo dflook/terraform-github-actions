@@ -18,7 +18,7 @@ When using an action you can specify the version as:
 ## [1.42.1] - 2024-05-28
 
 ### Fixed
-- `required_version` constraints that prefix with version number with `v` now work correctly.
+- `required_version` constraints that prefix the version number with `v` now work correctly.
 
   Previously a `required_version` constraint like `>=v1.0.0` would not be recognised as a valid constraint.
   This does not appear to be documented anywhere, but Terraform does accept them.
