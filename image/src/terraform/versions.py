@@ -80,7 +80,7 @@ class Constraint:
         else:
             raise ValueError(f'Invalid version constraint {constraint}')
 
-        if match := re.match(r'(?P<major>\d+)(?:\.(?P<minor>\d+))?(?:\.(?P<patch>\d+))?(?:-(?P<pre_release>.*))?', constraint):
+        if match := re.match(r'v?(?P<major>\d+)(?:\.(?P<minor>\d+))?(?:\.(?P<patch>\d+))?(?:-(?P<pre_release>.*))?', constraint):
             self.major = int(match.group('major'))
             self.minor = int(match.group('minor')) if match.group('minor') else None
             self.patch = int(match.group('patch')) if match.group('patch') else None

@@ -50,6 +50,29 @@ jobs:
             exit 1
           fi
 
+  required_version_v_prefix:
+    runs-on: ubuntu-latest
+    name: required_version with a v prefix
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Test terraform-version
+        uses: ./terraform-version
+        id: terraform-version
+        with:
+          path: tests/workflows/test-version/v-prefix
+
+      - name: Print the version
+        run: echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
+
+      - name: Check the version
+        run: |
+          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "0.12.26" ]]; then
+            echo "::error:: Terraform version not set from required_version range"
+            exit 1
+          fi
+
   tfswitch:
     runs-on: ubuntu-latest
     name: tfswitch
@@ -503,7 +526,7 @@ jobs:
 
       - name: Check the version
         run: |
-          if [[ "${{ steps.terraform-version.outputs.terraform }}" != *"1.7"* ]]; then
+          if [[ "${{ steps.terraform-version.outputs.terraform }}" != *"1.8"* ]]; then
             echo "::error:: Latest version was not used"
             exit 1
           fi
