@@ -11,9 +11,17 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.42.0` to use an exact release
+- `@v1.42.1` to use an exact release
 - `@v1.42` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.42.1] - 2024-05-28
+
+### Fixed
+- `required_version` constraints that prefix with version number with `v` now work correctly.
+
+  Previously a `required_version` constraint like `>=v1.0.0` would not be recognised as a valid constraint.
+  This does not appear to be documented anywhere, but Terraform does accept them.
 
 ## [1.42.0] - 2024-03-01
 
@@ -660,6 +668,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.42.0]: https://github.com/dflook/terraform-github-actions/compare/v1.42.0...v1.42.1
 [1.42.0]: https://github.com/dflook/terraform-github-actions/compare/v1.41.2...v1.42.0
 [1.41.2]: https://github.com/dflook/terraform-github-actions/compare/v1.41.1...v1.41.2
 [1.41.1]: https://github.com/dflook/terraform-github-actions/compare/v1.41.0...v1.41.1
