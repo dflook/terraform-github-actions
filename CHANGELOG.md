@@ -11,9 +11,16 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.42.1` to use an exact release
-- `@v1.42` to use the latest patch release for the specific minor version
+- `@v1.43.0` to use an exact release
+- `@v1.43` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.43.0] - 2024-06-01
+
+### Added
+- New [dflook/terraform-test](https://github.com/dflook/terraform-github-actions/tree/main/terraform-test) and [dflook/tofu-test](https://github.com/dflook/terraform-github-actions/tree/main/tofu-test) actions.
+
+  These can be used to run automated tests on Terraform/OpenTofu modules using the built-in `test` command.
 
 ## [1.42.1] - 2024-05-28
 
@@ -668,6 +675,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.43.0]: https://github.com/dflook/terraform-github-actions/compare/v1.42.1...v1.43.0
 [1.42.1]: https://github.com/dflook/terraform-github-actions/compare/v1.42.0...v1.42.1
 [1.42.0]: https://github.com/dflook/terraform-github-actions/compare/v1.41.2...v1.42.0
 [1.41.2]: https://github.com/dflook/terraform-github-actions/compare/v1.41.1...v1.41.2
