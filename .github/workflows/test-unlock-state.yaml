@@ -13,7 +13,7 @@ jobs:
     name: Default workspace
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Check state is not locked
         uses: ./terraform-apply
@@ -111,7 +111,7 @@ jobs:
     name: Non Default workspace
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Create first workspace
         uses: ./terraform-new-workspace

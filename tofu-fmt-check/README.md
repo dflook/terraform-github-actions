@@ -110,7 +110,7 @@ jobs:
     name: Check OpenTofu file are formatted correctly
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: tofu fmt
         uses: dflook/tofu-fmt-check@v1
@@ -131,7 +131,7 @@ jobs:
     name: Check OpenTofu file are formatted correctly
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: tofu fmt
         uses: dflook/tofu-fmt-check@v1

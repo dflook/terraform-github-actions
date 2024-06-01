@@ -173,7 +173,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout current branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Terraform Unlock
         uses: dflook/terraform-unlock-state@v1

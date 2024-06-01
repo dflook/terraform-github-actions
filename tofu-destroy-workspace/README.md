@@ -229,7 +229,7 @@ jobs:
     name: Cleanup after integration tests
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: tofu destroy
         uses: dflook/tofu-destroy-workspace@v1
@@ -253,7 +253,7 @@ jobs:
     name: Destroy OpenTofu workspace
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: tofu destroy
         uses: dflook/tofu-destroy-workspace@v1

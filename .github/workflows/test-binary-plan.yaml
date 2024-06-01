@@ -9,7 +9,7 @@ jobs:
     name: Missing plan
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Apply
         uses: ./terraform-apply
@@ -34,7 +34,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Plan
         uses: ./terraform-plan
@@ -56,7 +56,7 @@ jobs:
     name: Apply auto approved changes
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Plan
         uses: ./terraform-plan
@@ -81,7 +81,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Plan
         uses: ./terraform-plan

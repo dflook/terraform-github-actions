@@ -65,7 +65,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: terraform plan
         uses: dflook/terraform-plan@v1
@@ -95,7 +95,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: terraform apply
         uses: dflook/terraform-apply@v1
@@ -128,7 +128,7 @@ jobs:
     name: Validate terraform configuration
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: terraform validate
         uses: dflook/terraform-validate@v1
@@ -140,7 +140,7 @@ jobs:
     name: Check formatting of terraform files
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: terraform fmt
         uses: dflook/terraform-fmt-check@v1
@@ -169,7 +169,7 @@ jobs:
     name: Check for drift of example terraform configuration
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Check for drift
         uses: dflook/terraform-check@v1
@@ -197,7 +197,7 @@ jobs:
     name: Rotate TLS certificates in example terraform configuration
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Rotate certs
         uses: dflook/terraform-apply@v1
@@ -227,7 +227,7 @@ jobs:
     name: Check terraform file are formatted correctly
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: terraform fmt
         uses: dflook/terraform-fmt@v1
@@ -265,7 +265,7 @@ jobs:
     name: Run integration tests
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Use branch workspace
         uses: dflook/terraform-new-workspace@v1
@@ -301,7 +301,7 @@ jobs:
     name: Cleanup after integration tests
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: terraform destroy
         uses: dflook/terraform-destroy-workspace@v1

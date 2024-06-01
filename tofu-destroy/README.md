@@ -233,7 +233,7 @@ jobs:
     name: Destroy OpenTofu workspace
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: tofu destroy
         uses: dflook/tofu-destroy@v1
@@ -257,7 +257,7 @@ jobs:
     name: Destroy OpenTofu workspace
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: tofu destroy
         uses: dflook/tofu-destroy@v1

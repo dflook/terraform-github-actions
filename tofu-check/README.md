@@ -212,7 +212,7 @@ jobs:
     name: Check for drift of OpenTofu configuration
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Check
         uses: dflook/tofu-check@v1
@@ -235,7 +235,7 @@ jobs:
     name: Check for drift of OpenTofu configuration
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Check
         uses: dflook/tofu-check@v1

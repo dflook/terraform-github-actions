@@ -229,7 +229,7 @@ jobs:
     name: Cleanup after integration tests
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: terraform destroy
         uses: dflook/terraform-destroy-workspace@v1
@@ -253,7 +253,7 @@ jobs:
     name: Destroy Terraform workspace
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: terraform destroy
         uses: dflook/terraform-destroy-workspace@v1
