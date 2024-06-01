@@ -1,0 +1,155 @@
+name: Test terraform-test
+
+on:
+  - push
+
+jobs:
+  default:
+    runs-on: ubuntu-latest
+    name: Default inputs
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Test
+        uses: ./terraform-test
+        id: test
+        with:
+          path: tests/workflows/test-test/local
+
+      - name: Check Passed
+        run: |
+          if [[ "${{ steps.test.outputs.failure-reason }}" != "" ]]; then
+            echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+  filter:
+    runs-on: ubuntu-latest
+    name: Default path with a filter
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Test
+        uses: ./terraform-test
+        id: test
+        with:
+          path: tests/workflows/test-test/local
+          test_filter: tests/main.tftest.hcl
+
+      - name: Check Passed
+        run: |
+          if [[ "${{ steps.test.outputs.failure-reason }}" != "" ]]; then
+            echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+  test_dir:
+    runs-on: ubuntu-latest
+    name: Custom test directory
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Test
+        uses: ./terraform-test
+        id: test
+        with:
+          path: tests/workflows/test-test/local
+          test_directory: custom-test-dir
+          test_filter: |
+            custom-test-dir/another.tftest.hcl
+            custom-test-dir/a-third.tftest.hcl
+
+      - name: Check Passed
+        run: |
+          if [[ "${{ steps.test.outputs.failure-reason }}" != "" ]]; then
+            echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+  nonexistent_test_dir:
+    runs-on: ubuntu-latest
+    name: Missing test directory
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Test
+        uses: ./terraform-test
+        id: nonexistent_test_dir
+        continue-on-error: true
+        with:
+          path: tests/workflows/test-test/local
+          test_directory: i-dont-exist
+
+      - name: Check failure
+        run: |
+          if [[ "${{ steps.nonexistent_test_dir.outcome }}" != "failure" ]]; then
+            echo "Test did not fail correctly"
+            exit 1
+          fi
+
+          if [[ "${{ steps.nonexistent_test_dir.outputs.failure-reason }}" != "no-tests" ]]; then
+            echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+  faulty_filter:
+    runs-on: ubuntu-latest
+    name: Filter matches no tests
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Test
+        uses: ./terraform-test
+        id: faulty_filter
+        continue-on-error: true
+        with:
+          path: tests/workflows/test-test/local
+          test_filter: |
+            tests/this-test-does-not-exist.tftest.hcl
+            tests/nor-does-this-one.tftest.hcl
+
+      - name: Check failure
+        run: |
+          if [[ "${{ steps.faulty_filter.outcome }}" != "failure" ]]; then
+            echo "Test did not fail correctly"
+            exit 1
+          fi
+
+          if [[ "${{ steps.faulty_filter.outputs.failure-reason }}" != "no-tests" ]]; then
+            echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+  failing:
+    runs-on: ubuntu-latest
+    name: A failing test using variables
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Test
+        uses: ./terraform-test
+        id: failing
+        continue-on-error: true
+        with:
+          path: tests/workflows/test-test/local
+          test_filter: tests/main.tftest.hcl
+          variables: |
+            length = 1
+
+      - name: Check failure-reason
+        run: |
+          if [[ "${{ steps.failing.outcome }}" != "failure" ]]; then
+            echo "Test did not fail correctly"
+            exit 1
+          fi
+          
+          if [[ "${{ steps.failing.outputs.failure-reason }}" != "tests-failed" ]]; then
+            echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi

@@ -176,6 +176,26 @@ function init() {
     end_group
 }
 
+##
+# Initialize terraform for running tests
+#
+# This installs modules and providers for the module and all tests
+function init-test() {
+    start_group "Initializing $TOOL_PRODUCT_NAME"
+
+    rm -rf "$TF_DATA_DIR"
+
+    if [[ -n "$INPUT_TEST_DIRECTORY" ]]; then
+        debug_log $TOOL_COMMAND_NAME init -input=false -backend=false -test-directory "$INPUT_TEST_DIRECTORY"
+        (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME init -input=false -backend=false -test-directory $INPUT_TEST_DIRECTORY)
+    else
+        debug_log $TOOL_COMMAND_NAME init -input=false -backend=false
+        (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME init -input=false -backend=false)
+    fi
+
+    end_group
+}
+
 function set-init-args() {
     INIT_ARGS=""
 
@@ -339,15 +359,7 @@ function set-common-plan-args() {
     fi
 }
 
-function set-plan-args() {
-    set-common-plan-args
-
-    if [[ -n "$INPUT_VAR" ]]; then
-        for var in $(echo "$INPUT_VAR" | tr ',' '\n'); do
-            PLAN_ARGS="$PLAN_ARGS -var $var"
-        done
-    fi
-
+function set-variable-args() {
     if [[ -n "$INPUT_VAR_FILE" ]]; then
         for file in $(echo "$INPUT_VAR_FILE" | tr ',' '\n'); do
 
@@ -364,6 +376,18 @@ function set-plan-args() {
         echo "$INPUT_VARIABLES" >"$STEP_TMP_DIR/variables.tfvars"
         PLAN_ARGS="$PLAN_ARGS -var-file=$STEP_TMP_DIR/variables.tfvars"
     fi
+}
+
+function set-plan-args() {
+    set-common-plan-args
+
+    if [[ -n "$INPUT_VAR" ]]; then
+        for var in $(echo "$INPUT_VAR" | tr ',' '\n'); do
+            PLAN_ARGS="$PLAN_ARGS -var $var"
+        done
+    fi
+
+    set-variable-args
 
     export PLAN_ARGS
 }
