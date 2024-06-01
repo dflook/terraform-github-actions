@@ -1,0 +1,38 @@
+name: tofu-test
+description: Execute automated tests for an OpenTofu module
+author: Daniel Flook
+
+inputs:
+  path:
+    description: Path to the OpenTofu module under test
+    required: false
+    default: .
+  test_directory:
+    description: Path to the OpenTofu tests
+    required: false
+    default: ""
+  test_filter:
+    description: Test files to run within the test_directory
+    required: false
+    default: ""
+  variables:
+    description: Variable definitions
+    required: false
+  var_file:
+    description: List of var file paths, one per line
+    required: false
+
+outputs:
+  failure-reason:
+    description: The reason for the build failure. May be `no-tests` or `tests-failed`.
+
+runs:
+  env:
+    OPENTOFU: true
+  using: docker
+  image: ../image/Dockerfile
+  entrypoint: /entrypoints/test.sh
+
+branding:
+  icon: globe
+  color: purple
