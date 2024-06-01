@@ -12,7 +12,7 @@ jobs:
     name: Use registry module
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Create dummy credential file
         run: |
@@ -58,7 +58,7 @@ jobs:
         app.terraform.io   =   ${{ secrets.TF_API_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Plan
         uses: ./terraform-plan
@@ -85,7 +85,7 @@ jobs:
     name: Nonsense cloud credentials
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Plan
         uses: ./terraform-plan

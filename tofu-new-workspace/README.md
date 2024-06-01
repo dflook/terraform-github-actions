@@ -157,7 +157,7 @@ jobs:
     name: Run integration tests
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Use branch workspace
         uses: dflook/tofu-new-workspace@v1

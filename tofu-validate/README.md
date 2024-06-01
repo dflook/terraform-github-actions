@@ -178,7 +178,7 @@ jobs:
     name: Validate OpenTofu module
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: tofu validate
         uses: dflook/tofu-validate@v1
@@ -197,7 +197,7 @@ jobs:
     name: Validate OpenTofu module
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: tofu validate
         uses: dflook/tofu-validate@v1

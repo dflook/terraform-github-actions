@@ -9,7 +9,7 @@ jobs:
     name: Default inputs
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Test
         uses: ./terraform-test
@@ -29,7 +29,7 @@ jobs:
     name: Default path with a filter
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Test
         uses: ./terraform-test
@@ -50,7 +50,7 @@ jobs:
     name: Custom test directory
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Test
         uses: ./terraform-test
@@ -74,7 +74,7 @@ jobs:
     name: Missing test directory
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Test
         uses: ./terraform-test
@@ -101,7 +101,7 @@ jobs:
     name: Filter matches no tests
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Test
         uses: ./terraform-test
@@ -130,7 +130,7 @@ jobs:
     name: A failing test using variables
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Test
         uses: ./terraform-test

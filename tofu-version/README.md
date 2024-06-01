@@ -203,7 +203,7 @@ jobs:
     name: Print the required OpenTofu and provider versions
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Test tofu-version
         uses: dflook/tofu-version@v1

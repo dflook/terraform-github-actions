@@ -9,7 +9,7 @@ jobs:
     name: specific required_version
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Test terraform-version
         uses: ./terraform-version
@@ -32,7 +32,7 @@ jobs:
     name: required_version range
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Test terraform-version
         uses: ./terraform-version
@@ -55,7 +55,7 @@ jobs:
     name: required_version with a v prefix
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Test terraform-version
         uses: ./terraform-version
@@ -78,7 +78,7 @@ jobs:
     name: tfswitch
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Test terraform-version
         uses: ./terraform-version
@@ -101,7 +101,7 @@ jobs:
     name: tfenv
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Test terraform-version
         uses: ./terraform-version
@@ -124,7 +124,7 @@ jobs:
     name: asdf
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Test getting version from .tools-versions
         uses: ./terraform-version
@@ -162,7 +162,7 @@ jobs:
     name: TERRAFORM_VERSION range
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Test terraform-version
         uses: ./terraform-version
@@ -187,7 +187,7 @@ jobs:
     name: TFC Workspace
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Create workspace
         uses: ./terraform-new-workspace
@@ -227,7 +227,7 @@ jobs:
     name: TFC Cloud Configuration
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Create workspace
         uses: ./terraform-new-workspace
@@ -269,7 +269,7 @@ jobs:
     name: Partial TFC Cloud Configuration
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Create workspace
         uses: ./terraform-new-workspace
@@ -314,7 +314,7 @@ jobs:
     name: Partial TFC Cloud Configuration with tags
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Create workspace
         uses: ./terraform-new-workspace
@@ -359,7 +359,7 @@ jobs:
     name: Local State file
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Test terraform-version
         uses: ./terraform-version
@@ -382,7 +382,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Apply default workspace
         uses: ./terraform-apply
@@ -513,7 +513,7 @@ jobs:
     name: latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Test terraform-version
         uses: ./terraform-version
@@ -553,7 +553,7 @@ jobs:
     name: provider versions
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Test terraform-version with 0.12
         uses: ./terraform-version
@@ -632,7 +632,7 @@ jobs:
     name: Version detection on arm
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Version unsupported on arm
         uses: ./terraform-version
@@ -682,7 +682,7 @@ jobs:
     name: OPENTOFU_VERSION with terraform action
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Test terraform-version
         uses: ./terraform-version
@@ -712,7 +712,7 @@ jobs:
     name: OPENTOFU_VERSION with tofu action
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Test terraform-version
         uses: ./tofu-version
@@ -742,7 +742,7 @@ jobs:
     name: OPENTOFU_VERSION pre-release with tofu action
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Test terraform-version
         uses: ./tofu-version
@@ -772,7 +772,7 @@ jobs:
     name: Prefer OpenTofu, but only Terraform matches constraints
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Test terraform-version
         uses: ./tofu-version
