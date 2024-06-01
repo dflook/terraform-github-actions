@@ -2,7 +2,7 @@
 
 This is one of a suite of OpenTofu related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
-Execute automated tests on OpenTofu configuration
+Execute automated tests on an OpenTofu module using the built-in `tofu test` command.
 
 ## Inputs
 
