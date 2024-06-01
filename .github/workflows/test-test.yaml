@@ -1,7 +1,7 @@
 name: Test terraform-test
 
 on:
-  - push
+  - pull_request
 
 jobs:
   default:
