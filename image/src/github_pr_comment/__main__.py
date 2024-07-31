@@ -19,7 +19,7 @@ from github_actions.inputs import PlanPrInputs
 from github_pr_comment.backend_config import complete_config, partial_config
 from github_pr_comment.backend_fingerprint import fingerprint
 from github_pr_comment.cmp import plan_cmp, remove_warnings, remove_unchanged_attributes
-from github_pr_comment.comment import find_comment, TerraformComment, update_comment, serialize, deserialize
+from github_pr_comment.comment import find_comment, TerraformComment, update_comment, serialize, deserialize, hide_comment
 from github_pr_comment.hash import comment_hash, plan_hash, plan_out_hash
 from github_pr_comment.plan_formatting import format_diff
 from plan_renderer.outputs import render_outputs
@@ -323,6 +323,7 @@ def new_pr_comment(backend_fingerprint: bytes) -> TerraformComment:
     return TerraformComment(
         issue_url=issue_url,
         comment_url=None,
+        node_id=None,
         headers={k: v for k, v in headers.items() if v is not None},
         description='',
         summary='',
@@ -496,6 +497,11 @@ def main() -> int:
                 summary=f'<strike>{comment.summary}</strike>',
                 headers=comment.headers | {'closed': True},
                 status=':spider_web: Plan is outdated'
+            )
+            hide_comment(
+                github,
+                comment,
+                'OUTDATED'
             )
 
             # Create the replacement comment

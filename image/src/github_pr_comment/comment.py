@@ -4,7 +4,7 @@ import re
 from json import JSONDecodeError
 from typing import Optional, Any
 
-from github_actions.api import IssueUrl, GithubApi, CommentUrl
+from github_actions.api import IssueUrl, GithubApi, CommentUrl, NodeId
 from github_actions.debug import debug
 
 try:
@@ -43,9 +43,10 @@ class TerraformComment:
 
     """
 
-    def __init__(self, *, issue_url: IssueUrl, comment_url: Optional[CommentUrl], headers: dict[str, str], description: str, summary: str, body: str, status: str, body_highlighting: str = ''):
+    def __init__(self, *, issue_url: IssueUrl, comment_url: Optional[CommentUrl], node_id: Optional[NodeId], headers: dict[str, str], description: str, summary: str, body: str, status: str, body_highlighting: str = ''):
         self._issue_url = issue_url
         self._comment_url = comment_url
+        self._node_id = node_id
         self._headers = headers
         self._description = description.strip()
         self._summary = summary.strip()
@@ -60,6 +61,7 @@ class TerraformComment:
         return (
             self._issue_url == other._issue_url and
             self._comment_url == other._comment_url and
+            self._node_id == other._node_id and
             self._headers == other._headers and
             self._description == other._description and
             self._summary == other._summary and
@@ -72,7 +74,7 @@ class TerraformComment:
         return not self.__eq__(other)
 
     def __repr__(self):
-        return f'TerraformComment(issue_url={self._issue_url!r}, comment_url={self._comment_url!r}, headers={self._headers!r}, description={self._description!r}, summary={self._summary!r}, body={self._body!r}, status={self._status!r}, body_highlighting={self._body_highlighting!r})'
+        return f'TerraformComment(issue_url={self._issue_url!r}, comment_url={self._comment_url!r}, node_id={self.node_id}, headers={self._headers!r}, description={self._description!r}, summary={self._summary!r}, body={self._body!r}, status={self._status!r}, body_highlighting={self._body_highlighting!r})'
 
     @property
     def comment_url(self) -> Optional[CommentUrl]:
@@ -83,6 +85,16 @@ class TerraformComment:
         if self._comment_url is not None:
             raise Exception('Can only set url for comments that don\'t exist yet')
         self._comment_url = comment_url
+
+    @property
+    def node_id(self) -> Optional[NodeId]:
+        return self._node_id
+
+    @node_id.setter
+    def node_id(self, node_id: NodeId) -> None:
+        if self._node_id is not None:
+            raise Exception('Can only set node_id for comments that don\'t exist yet')
+        self._node_id = node_id
 
     @property
     def issue_url(self) -> IssueUrl:
@@ -116,6 +128,7 @@ def serialize(comment: TerraformComment) -> str:
     return json.dumps({
         'issue_url': comment.issue_url,
         'comment_url': comment.comment_url,
+        'node_id': comment.node_id,
         'headers': comment.headers,
         'description': comment.description,
         'summary': comment.summary,
@@ -130,6 +143,7 @@ def deserialize(s) -> TerraformComment:
     return TerraformComment(
         issue_url=j['issue_url'],
         comment_url=j['comment_url'],
+        node_id=j.get('node_id'),
         headers=j['headers'],
         description=j['description'],
         summary=j['summary'],
@@ -176,6 +190,7 @@ def _from_api_payload(comment: dict[str, Any]) -> Optional[TerraformComment]:
     return TerraformComment(
         issue_url=comment['issue_url'],
         comment_url=comment['url'],
+        node_id=comment.get('node_id'),
         headers=_parse_comment_header(match.group('headers')),
         description=match.group('description').strip(),
         summary=match.group('summary').strip(),
@@ -290,6 +305,7 @@ def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers:
         return TerraformComment(
             issue_url=backup_comment.issue_url,
             comment_url=backup_comment.comment_url,
+            node_id=backup_comment.node_id,
             headers=backup_comment.headers | headers,
             description=backup_comment.description,
             summary=backup_comment.summary,
@@ -305,6 +321,7 @@ def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers:
         return TerraformComment(
             issue_url=legacy_comment.issue_url,
             comment_url=legacy_comment.comment_url,
+            node_id=legacy_comment.node_id,
             headers={k: v for k, v in headers.items() if v is not None},
             description=legacy_comment.description,
             summary=legacy_comment.summary,
@@ -317,6 +334,7 @@ def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers:
     return TerraformComment(
         issue_url=issue_url,
         comment_url=None,
+        node_id=None,
         headers={k: v for k, v in headers.items() if v is not None},
         description='',
         summary='',
@@ -344,6 +362,7 @@ def update_comment(
     new_comment = TerraformComment(
         issue_url=comment.issue_url,
         comment_url=comment.comment_url,
+        node_id=comment.node_id,
         headers=new_headers,
         description=description if description is not None else comment.description,
         summary=summary if summary is not None else comment.summary,
@@ -359,5 +378,27 @@ def update_comment(
         response = github.post(comment.issue_url + '/comments', json={'body': _to_api_payload(new_comment)})
         response.raise_for_status()
         new_comment.comment_url = response.json()['url']
+        new_comment.node_id = response.json().get('node_id')
 
     return new_comment
+
+def hide_comment(
+        github: GithubApi,
+        comment: TerraformComment,
+        classifier: str
+) -> None:
+
+    graphql_url = os.environ.get('GITHUB_GRAPHQL_URL', f'{os.environ["GITHUB_API_URL"]}/graphql')
+
+    response = github.post(
+        graphql_url, json={
+            'query': '''
+                mutation {
+                    minimizeComment(input: {subjectId: "''' + comment.node_id + '''", classifier: ''' + classifier + '''}) {
+                        clientMutationId
+                    }
+                }
+            '''
+        }
+    )
+    debug(f'graphql response: {response.content}')
