@@ -374,6 +374,7 @@ def update_comment(
     if comment.comment_url is not None:
         response = github.patch(comment.comment_url, json={'body': _to_api_payload(new_comment)})
         response.raise_for_status()
+        comment.node_id = response.json().get('node_id')
     else:
         response = github.post(comment.issue_url + '/comments', json={'body': _to_api_payload(new_comment)})
         response.raise_for_status()
@@ -387,6 +388,10 @@ def hide_comment(
         comment: TerraformComment,
         classifier: str
 ) -> None:
+
+    if comment.node_id is None:
+        debug('Comment has unknown node_id - not hiding')
+        return
 
     graphql_url = os.environ.get('GITHUB_GRAPHQL_URL', f'{os.environ["GITHUB_API_URL"]}/graphql')
 
