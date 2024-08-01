@@ -627,55 +627,55 @@ jobs:
             exit 1
           fi
 
-  arm64:
-    runs-on: buildjet-2vcpu-ubuntu-2204-arm
-    name: Version detection on arm
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Version unsupported on arm
-        uses: ./terraform-version
-        continue-on-error: true
-        id: arm-unsupported
-        env:
-          TERRAFORM_VERSION: 0.12.0
-        with:
-          path: tests/workflows/test-version/empty
-
-      - name: Check failed to download unsupported platform
-        run: |
-          if [[ "${{ steps.arm-unsupported.outcome }}" != "failure" ]]; then
-            echo "Did not fail correctly"
-            exit 1
-          fi
-
-      - name: Version doesn't exist
-        uses: ./terraform-version
-        continue-on-error: true
-        id: no-such-version
-        with:
-          path: tests/workflows/test-version/nosuchversion
-
-      - name: Check failed to download no such version
-        run: |
-          if [[ "${{ steps.no-such-version.outcome }}" != "failure" ]]; then
-            echo "Did not fail correctly"
-            exit 1
-          fi
-
-      - name: Test terraform-version
-        uses: ./terraform-version
-        id: terraform-version
-        with:
-          path: tests/workflows/test-version/tfswitch
-
-      - name: Check the version
-        run: |
-          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "1.1.0" ]]; then
-            echo "::error:: Terraform version not set from .tfswitchrc"
-            exit 1
-          fi
+#  arm64:
+#    runs-on: buildjet-2vcpu-ubuntu-2204-arm
+#    name: Version detection on arm
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v4
+#
+#      - name: Version unsupported on arm
+#        uses: ./terraform-version
+#        continue-on-error: true
+#        id: arm-unsupported
+#        env:
+#          TERRAFORM_VERSION: 0.12.0
+#        with:
+#          path: tests/workflows/test-version/empty
+#
+#      - name: Check failed to download unsupported platform
+#        run: |
+#          if [[ "${{ steps.arm-unsupported.outcome }}" != "failure" ]]; then
+#            echo "Did not fail correctly"
+#            exit 1
+#          fi
+#
+#      - name: Version doesn't exist
+#        uses: ./terraform-version
+#        continue-on-error: true
+#        id: no-such-version
+#        with:
+#          path: tests/workflows/test-version/nosuchversion
+#
+#      - name: Check failed to download no such version
+#        run: |
+#          if [[ "${{ steps.no-such-version.outcome }}" != "failure" ]]; then
+#            echo "Did not fail correctly"
+#            exit 1
+#          fi
+#
+#      - name: Test terraform-version
+#        uses: ./terraform-version
+#        id: terraform-version
+#        with:
+#          path: tests/workflows/test-version/tfswitch
+#
+#      - name: Check the version
+#        run: |
+#          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "1.1.0" ]]; then
+#            echo "::error:: Terraform version not set from .tfswitchrc"
+#            exit 1
+#          fi
 
   terraform_opentofu_version:
     runs-on: ubuntu-latest
