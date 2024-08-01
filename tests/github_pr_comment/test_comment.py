@@ -1,6 +1,8 @@
 import random
 import string
+from typing import cast
 
+from github_actions.api import NodeId
 from github_pr_comment.comment import _format_comment_header, _parse_comment_header, TerraformComment, _to_api_payload, _from_api_payload
 
 
@@ -23,6 +25,7 @@ def test_comment_header():
 def test_no_headers():
     issue_url = ''.join(random.choice(string.ascii_letters) for _ in range(10))
     comment_url = ''.join(random.choice(string.ascii_letters) for _ in range(10))
+    node_id = cast(NodeId, ''.join(random.choice(string.ascii_letters) for _ in range(10)))
     status = 'Testing'
     description = 'Hello, this is a description'
     summary = 'Some changes'
@@ -34,6 +37,7 @@ Plan: 1 to add, 0 to change, 0 to destroy.
     expected = TerraformComment(
         issue_url=issue_url,
         comment_url=comment_url,
+        node_id=node_id,
         status=status,
         headers={},
         description=description,
@@ -44,6 +48,7 @@ Plan: 1 to add, 0 to change, 0 to destroy.
     assert _from_api_payload({
         'body': _to_api_payload(expected),
         'url': comment_url,
+        'node_id': node_id,
         'issue_url': issue_url
     }) == expected
 
@@ -51,6 +56,7 @@ Plan: 1 to add, 0 to change, 0 to destroy.
 def test_headers():
     issue_url = ''.join(random.choice(string.ascii_letters) for _ in range(10))
     comment_url = ''.join(random.choice(string.ascii_letters) for _ in range(10))
+    node_id = cast(NodeId, ''.join(random.choice(string.ascii_letters) for _ in range(10)))
     status = 'Testing'
     description = 'Hello, this is a description'
     summary = 'Some changes'
@@ -66,6 +72,7 @@ Plan: 1 to add, 0 to change, 0 to destroy.
     expected = TerraformComment(
         issue_url=issue_url,
         comment_url=comment_url,
+        node_id=node_id,
         status=status,
         headers=headers,
         description=description,
@@ -76,6 +83,7 @@ Plan: 1 to add, 0 to change, 0 to destroy.
     assert _from_api_payload({
         'body': _to_api_payload(expected),
         'url': comment_url,
+        'node_id': node_id,
         'issue_url': issue_url
     }) == expected
 
@@ -83,6 +91,7 @@ Plan: 1 to add, 0 to change, 0 to destroy.
 def test_bad_description():
     issue_url = ''.join(random.choice(string.ascii_letters) for _ in range(10))
     comment_url = ''.join(random.choice(string.ascii_letters) for _ in range(10))
+    node_id = cast(NodeId, ''.join(random.choice(string.ascii_letters) for _ in range(10)))
     status = 'Testing'
     summary = 'Some changes'
     body = '''blah blah body'''
@@ -96,6 +105,7 @@ def test_bad_description():
     expected = TerraformComment(
         issue_url=issue_url,
         comment_url=comment_url,
+        node_id=node_id,
         status=status,
         headers=headers,
         description=description,
@@ -106,6 +116,7 @@ def test_bad_description():
     assert _from_api_payload({
         'body': _to_api_payload(expected),
         'url': comment_url,
+        'node_id': node_id,
         'issue_url': issue_url
     }) == expected
 
@@ -113,6 +124,7 @@ def test_bad_description():
 def test_bad_body():
     issue_url = ''.join(random.choice(string.ascii_letters) for _ in range(10))
     comment_url = ''.join(random.choice(string.ascii_letters) for _ in range(10))
+    node_id = cast(NodeId, ''.join(random.choice(string.ascii_letters) for _ in range(10)))
     status = 'Testing'
     summary = 'Some changes'
     description = '''blah blah description'''
@@ -126,6 +138,7 @@ def test_bad_body():
     expected = TerraformComment(
         issue_url=issue_url,
         comment_url=comment_url,
+        node_id=node_id,
         status=status,
         headers=headers,
         description=description,
@@ -136,5 +149,6 @@ def test_bad_body():
     assert _from_api_payload({
         'body': _to_api_payload(expected),
         'url': comment_url,
+        'node_id': node_id,
         'issue_url': issue_url
     }) == expected

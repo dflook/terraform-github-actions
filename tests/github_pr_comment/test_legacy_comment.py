@@ -13,6 +13,7 @@ Plan: 1 to add, 0 to change, 0 to destroy.'''
 
 issue_url = ''.join(random.choice(string.ascii_letters) for _ in range(10))
 comment_url = ''.join(random.choice(string.ascii_letters) for _ in range(10))
+node_id = ''.join(random.choice(string.ascii_letters) for _ in range(10))
 
 def test_path_only():
     payload = '''Terraform plan in __/test/terraform__
@@ -31,6 +32,7 @@ Testing'''
     expected = TerraformComment(
         issue_url=issue_url,
         comment_url=comment_url,
+        node_id=node_id,
         status='Testing',
         headers={},
         description='Terraform plan in __/test/terraform__',
@@ -42,6 +44,7 @@ Testing'''
     assert _from_api_payload({
         'body': payload,
         'url': comment_url,
+        'node_id': node_id,
         'issue_url': issue_url
     }) == expected
 
@@ -63,6 +66,7 @@ Testing'''
     expected = TerraformComment(
         issue_url=issue_url,
         comment_url=comment_url,
+        node_id=node_id,
         status='Testing',
         headers={},
         description='Terraform plan in __/test/terraform__ in the __myworkspace__ workspace',
@@ -74,6 +78,7 @@ Testing'''
     assert _from_api_payload({
         'body': payload,
         'url': comment_url,
+        'node_id': node_id,
         'issue_url': issue_url
     }) == expected
 
@@ -97,6 +102,7 @@ Testing'''
     expected = TerraformComment(
         issue_url=issue_url,
         comment_url=comment_url,
+        node_id=node_id,
         status='Testing',
         headers={},
         description='Terraform plan in __/test/terraform__\nWith variables: `var1="value"`',
@@ -108,6 +114,7 @@ Testing'''
     assert _from_api_payload({
         'body': payload,
         'url': comment_url,
+        'node_id': node_id,
         'issue_url': issue_url
     }) == expected
 
@@ -136,6 +143,7 @@ Testing'''
     expected = TerraformComment(
         issue_url=issue_url,
         comment_url=comment_url,
+        node_id=node_id,
         status='Testing',
         headers={},
         description='''Terraform plan in __/test/terraform__<details><summary>With variables</summary>
@@ -153,6 +161,7 @@ var2="value2"
     assert _from_api_payload({
         'body': payload,
         'url': comment_url,
+        'node_id': node_id,
         'issue_url': issue_url
     }) == expected
 
@@ -175,6 +184,7 @@ Testing'''
     expected = TerraformComment(
         issue_url=issue_url,
         comment_url=comment_url,
+        node_id=node_id,
         status='Testing',
         headers={},
         description='''Terraform plan in __/test/terraform__
@@ -187,6 +197,7 @@ With vars: `var1=value`''',
     assert _from_api_payload({
         'body': payload,
         'url': comment_url,
+        'node_id': node_id,
         'issue_url': issue_url
     }) == expected
 
@@ -209,6 +220,7 @@ Testing'''
     expected = TerraformComment(
         issue_url=issue_url,
         comment_url=comment_url,
+        node_id=node_id,
         status='Testing',
         headers={},
         description='''Terraform plan in __/test/terraform__
@@ -221,6 +233,7 @@ With var files: `vars.tf`''',
     assert _from_api_payload({
         'body': payload,
         'url': comment_url,
+        'node_id': node_id,
         'issue_url': issue_url
     }) == expected
 
@@ -244,6 +257,7 @@ Testing'''
     expected = TerraformComment(
         issue_url=issue_url,
         comment_url=comment_url,
+        node_id=node_id,
         status='Testing',
         headers={},
         description='''Terraform plan in __/test/terraform__
@@ -256,6 +270,7 @@ With backend config: `bucket=test,key=backend`''',
     assert _from_api_payload({
         'body': payload,
         'url': comment_url,
+        'node_id': node_id,
         'issue_url': issue_url
     }) == expected
 
@@ -278,6 +293,7 @@ Testing'''
     expected = TerraformComment(
         issue_url=issue_url,
         comment_url=comment_url,
+        node_id=node_id,
         status='Testing',
         headers={},
         description='''Terraform plan in __/test/terraform__
@@ -290,6 +306,7 @@ With backend config: `bucket=test,key=backend`''',
     assert _from_api_payload({
         'body': payload,
         'url': comment_url,
+        'node_id': node_id,
         'issue_url': issue_url
     }) == expected
 
@@ -311,6 +328,7 @@ Testing'''
     expected = TerraformComment(
         issue_url=issue_url,
         comment_url=comment_url,
+        node_id=node_id,
         status='Testing',
         headers={},
         description='''Terraform plan in __/test/terraform__
@@ -323,6 +341,7 @@ Targeting resources: `kubernetes_secret.tls_cert_public[0]`, `kubernetes_secret.
     assert _from_api_payload({
         'body': payload,
         'url': comment_url,
+        'node_id': node_id,
         'issue_url': issue_url
     }) == expected
 
@@ -344,6 +363,7 @@ Testing'''
     expected = TerraformComment(
         issue_url=issue_url,
         comment_url=comment_url,
+        node_id=node_id,
         status='Testing',
         headers={},
         description='''Terraform plan in __/test/terraform__
@@ -356,6 +376,7 @@ Replacing resources: `kubernetes_secret.tls_cert_public[0]`, `kubernetes_secret.
     assert _from_api_payload({
         'body': payload,
         'url': comment_url,
+        'node_id': node_id,
         'issue_url': issue_url
     }) == expected
 
@@ -378,6 +399,7 @@ Testing'''
     expected = TerraformComment(
         issue_url=issue_url,
         comment_url=comment_url,
+        node_id=node_id,
         status='Testing',
         headers={},
         description='''Terraform plan in __/test/terraform__
@@ -390,6 +412,7 @@ With backend config files: `backend.tf`''',
     assert _from_api_payload({
         'body': payload,
         'url': comment_url,
+        'node_id': node_id,
         'issue_url': issue_url
     }) == expected
 
@@ -417,6 +440,7 @@ Testing'''
     expected = TerraformComment(
         issue_url=issue_url,
         comment_url=comment_url,
+        node_id=node_id,
         status='Testing',
         headers={},
         description='''Terraform plan in __/test/terraform__ in the __test__ workspace
@@ -434,6 +458,7 @@ With var files: `vars.tf`''',
     assert _from_api_payload({
         'body': payload,
         'url': comment_url,
+        'node_id': node_id,
         'issue_url': issue_url
     }) == expected
 
@@ -455,6 +480,7 @@ Testing'''
     expected = TerraformComment(
         issue_url=issue_url,
         comment_url=comment_url,
+        node_id=node_id,
         status='Testing',
         headers={},
         description='''Terraform plan for __test_label__''',
@@ -466,6 +492,7 @@ Testing'''
     assert _from_api_payload({
         'body': payload,
         'url': comment_url,
+        'node_id': node_id,
         'issue_url': issue_url
     }) == expected
 
@@ -489,6 +516,7 @@ Inappropriate value for attribute "length": a number is required.
     expected = TerraformComment(
         issue_url=issue_url,
         comment_url=comment_url,
+        node_id=node_id,
         status=':x: Failed to generate plan in [Test terraform-plan #603](https://github.com/dflook/terraform-github-actions/actions/runs/6684032578)',
         headers={},
         description='''Terraform plan in __tests/workflows/test-plan/error__''',
@@ -504,6 +532,7 @@ Inappropriate value for attribute "length": a number is required.''',
     assert _from_api_payload({
         'body': payload,
         'url': comment_url,
+        'node_id': node_id,
         'issue_url': issue_url
     }) == expected
 
@@ -524,6 +553,7 @@ Testing'''
     expected = TerraformComment(
         issue_url=issue_url,
         comment_url=comment_url,
+        node_id=node_id,
         status='Testing',
         headers={},
         description='Terraform plan in __/test/terraform__ in the __myworkspace__ workspace',
@@ -535,5 +565,6 @@ Testing'''
     assert _from_api_payload({
         'body': payload,
         'url': comment_url,
+        'node_id': node_id,
         'issue_url': issue_url
     }) == expected

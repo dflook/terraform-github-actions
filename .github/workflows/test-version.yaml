@@ -526,7 +526,7 @@ jobs:
 
       - name: Check the version
         run: |
-          if [[ "${{ steps.terraform-version.outputs.terraform }}" != *"1.8"* ]]; then
+          if [[ "${{ steps.terraform-version.outputs.terraform }}" != *"1.9"* ]]; then
             echo "::error:: Latest version was not used"
             exit 1
           fi
@@ -740,6 +740,8 @@ jobs:
   opentofu_version_pre_release_nosig:
     runs-on: ubuntu-latest
     name: OPENTOFU_VERSION pre-release with tofu action
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -770,6 +772,8 @@ jobs:
   opentofu_old_version:
     runs-on: ubuntu-latest
     name: Prefer OpenTofu, but only Terraform matches constraints
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
