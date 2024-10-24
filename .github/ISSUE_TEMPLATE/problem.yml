@@ -50,5 +50,5 @@ body:
     attributes:
       label: Has debug logging been enabled?
       options: 
-        - label: Yes, the `ACTIONS_STEP_DEBUG` secret was set to `true` when capturing the workflow log above.
+        - label: Yes, the `ACTIONS_STEP_DEBUG` secret was set to `true` when capturing the workflow log above. I understand that if I have not done this, I may not recieve a response.
           required: true
