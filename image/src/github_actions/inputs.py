@@ -29,6 +29,7 @@ class PlanPrInputs(PlanInputs):
     INPUT_TARGET: str
     INPUT_REPLACE: str
     INPUT_DESTROY: str
+    INPUT_REFRESH: str
 
 
 class Plan(PlanPrInputs):

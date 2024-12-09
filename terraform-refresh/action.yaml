@@ -1,0 +1,38 @@
+name: terraform-apply
+description: Apply a Terraform plan
+author: Daniel Flook
+
+inputs:
+  path:
+    description: Path to the Terraform configuration
+    required: false
+    default: .
+  workspace:
+    description: Name of the Terraform workspace
+    required: false
+    default: default
+  backend_config:
+    description: List of backend config values to set, one per line
+    required: false
+    default: ""
+  backend_config_file:
+    description: Path to a backend config file
+    required: false
+    default: ""
+  parallelism:
+    description: Limit the number of concurrent operations
+    required: false
+    default: "0"
+
+outputs:
+  run_id:
+    description: If the root module uses the `remote` or `cloud` backend in remote execution mode, this output will be set to the remote run id.
+
+runs:
+  using: docker
+  image: ../image/Dockerfile
+  entrypoint: /entrypoints/refresh.sh
+
+branding:
+  icon: globe
+  color: purple

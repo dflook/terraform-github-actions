@@ -139,6 +139,16 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   - Optional
   - Default: false
 
+* `refresh`
+
+  Set to `false` to skip synchronisation of the Terraform state with actual resources.
+  
+  This will make the plan faster but may be out of date with the actual resources, which can lead to incorrect plans.
+
+  - Type: boolean
+  - Optional
+  - Default: true
+
 * `add_github_comment`
 
   Controls whether a comment is added to the PR with the generated plan.
