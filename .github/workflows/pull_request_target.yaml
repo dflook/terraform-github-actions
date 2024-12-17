@@ -1,4 +1,4 @@
-name: pull_request_target test
+name: Test pull_request_target event
 
 on:
   - pull_request_target

@@ -3,6 +3,9 @@ name: Retain images
 on:
   schedule:
     - cron: 0 0 1 * *
+  push:
+    paths:
+      - .github/workflows/retain-images.yaml
 
 permissions:
   contents: read
@@ -22,4 +25,5 @@ jobs:
         run: |
           for tag in $(git tag); do
             docker pull --quiet danielflook/terraform-github-actions:$tag
+            docker system prune --all --force
           done
