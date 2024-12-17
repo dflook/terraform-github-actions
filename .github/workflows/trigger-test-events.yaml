@@ -1,0 +1,44 @@
+name: Trigger test events
+
+on:
+  - pull_request
+
+permissions:
+  contents: read
+
+jobs:
+  repository_dispatch:
+    runs-on: ubuntu-24.04
+    name: Trigger repository_dispatch event
+    permissions:
+      contents: write
+    steps:
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          event-type: test
+          client-payload: '{"pull_request": { "url": "${{ github.event.pull_request.url }}" } }'
+
+  pull_request_review:
+    runs-on: ubuntu-24.04
+    name: Trigger pull_request_review event
+    steps:
+      - name: Trigger pull_request_review event
+        env:
+          PULL_REQUEST_URL: ${{ github.event.pull_request.url }}
+        run: |
+          cat >review.json <<EOF
+          {
+            "body": "Triggering pull_request_review event...",
+            "event": "COMMENT"
+          }
+          EOF
+
+          curl \
+            --request POST \
+            -H "Authorization: token ${{ secrets.REVIEW_GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "User-Agent: terraform-github-actions" \
+            -H "Content-Type: application/json" \
+            --data-binary @review.json \
+            "${PULL_REQUEST_URL}/reviews"
