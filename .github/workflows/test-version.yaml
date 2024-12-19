@@ -585,7 +585,7 @@ jobs:
         run: |
           echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
 
-          if [[ "$DETECTED_TERRAFORM_VERSION" != *"1.9"* ]]; then
+          if [[ "$DETECTED_TERRAFORM_VERSION" != *"1.10"* ]]; then
             echo "::error:: Latest version was not used"
             exit 1
           fi
@@ -598,7 +598,6 @@ jobs:
           TERRAFORM_VERSION: 99.0.0
         with:
           path: tests/workflows/test-version/empty
-          workspace: not-used
 
       - name: Check failed to download no such version
         env:
@@ -847,7 +846,7 @@ jobs:
             exit 1
           fi
           
-          if [[ "$DETECETD_TOFU_VERSION" != "1.6.0-alpha3" ]]; then
+          if [[ "$DETECTED_TOFU_VERSION" != "1.6.0-alpha3" ]]; then
             echo "::error:: Terraform version not set from OPENTOFU_VERSION"
             exit 1
           fi

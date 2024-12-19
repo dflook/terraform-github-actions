@@ -3,9 +3,12 @@ name: Test terraform-new/destroy-workspace
 on:
   - pull_request
 
+permissions:
+  contents: read
+
 jobs:
   workspace_management:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Workspace management
     strategy:
       fail-fast: false
@@ -17,6 +20,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Setup remote backend
         run: |
@@ -81,13 +86,16 @@ jobs:
           workspace: ${{ github.head_ref }}
 
       - name: Verify outputs
+        env:
+          FIRST_MY_STRING: ${{ steps.first.outputs.my_string }}
+          SECOND_MY_STRING: ${{ steps.second.outputs.my_string }}
         run: |
-          if [[ "${{ steps.first.outputs.my_string }}" != "hello" ]]; then
+          if [[ "$FIRST_MY_STRING" != "hello" ]]; then
             echo "::error:: output my_string not set correctly for first workspace"
             exit 1
           fi
 
-          if [[ "${{ steps.second.outputs.my_string }}" != "world" ]]; then
+          if [[ "$SECOND_MY_STRING" != "world" ]]; then
             echo "::error:: output my_string not set correctly for second workspace"
             exit 1
           fi

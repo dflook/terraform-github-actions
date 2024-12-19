@@ -3,17 +3,22 @@ name: Test terraform-output
 on:
   - pull_request
 
+permissions:
+  contents: read
+
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
   terraform-output:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: verify outputs
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Get outputs
         uses: ./terraform-output
@@ -21,64 +26,63 @@ jobs:
         with:
           path: tests/workflows/test-output
 
-      - name: Print the outputs
-        run: |
-          echo "my_number = ${{ steps.terraform-output.outputs.my_number }}"
-          echo "my_sensitive_number = ${{ steps.terraform-output.outputs.my_sensitive_number }}"
-          echo "my_string = ${{ steps.terraform-output.outputs.my_string }}"
-          echo "my_sensitive_string = ${{ steps.terraform-output.outputs.my_sensitive_string }}"
-          echo "my_multiline_string = ${{ steps.terraform-output.outputs.my_multiline_string }}"              
-          echo "my_sensitive_multiline_string = ${{ steps.terraform-output.outputs.my_sensitive_multiline_string }}"          
-          echo "my_bool = ${{ steps.terraform-output.outputs.my_bool }}"
-          echo "my_sensitive_bool = ${{ steps.terraform-output.outputs.my_sensitive_bool }}"
-
       - name: Verify outputs
         env:
+          MY_NUMBER: ${{ steps.terraform-output.outputs.my_number }}
+          MY_SENSITIVE_NUMBER: ${{ steps.terraform-output.outputs.my_sensitive_number }}
+          MY_STRING: ${{ steps.terraform-output.outputs.my_string }}
+          MY_SENSITIVE_STRING: ${{ steps.terraform-output.outputs.my_sensitive_string }}
+          MY_MULTILINE_STRING: ${{ steps.terraform-output.outputs.my_multiline_string }}
+          MY_SENSITIVE_MULTILINE_STRING: ${{ steps.terraform-output.outputs.my_sensitive_multiline_string }}
+          MY_BOOL: ${{ steps.terraform-output.outputs.my_bool }}
+          MY_SENSITIVE_BOOL: ${{ steps.terraform-output.outputs.my_sensitive_bool }}
           AWKWARD_STRING: ${{ steps.terraform-output.outputs.awkward_string }}
           AWKWARD_OBJ: ${{ join(fromJson(steps.terraform-output.outputs.awkward_compound_output).nested.thevalue) }}
-
+          MY_OBJECT_FIRST: ${{ fromJson(steps.terraform-output.outputs.my_object).first }}
+          MY_TUPLE: ${{ join(fromJson(steps.terraform-output.outputs.my_tuple)) }}
+          MY_SET: ${{ contains(fromJson(steps.terraform-output.outputs.my_set), 'one') }}
         run: |
-          if [[ "${{ steps.terraform-output.outputs.my_number }}" != "5" ]]; then
+          if [[ "$MY_NUMBER" != "5" ]]; then
             echo "::error:: output my_number not set correctly"
             exit 1
           fi
 
-          if [[ "${{ steps.terraform-output.outputs.my_sensitive_number }}" != "6" ]]; then
+          if [[ "$MY_SENSITIVE_NUMBER" != "6" ]]; then
             echo "::error:: output my_sensitive_number not set correctly"
             exit 1
           fi
 
-          if [[ "${{ steps.terraform-output.outputs.my_string }}" != "hello" ]]; then
+          if [[ "$MY_STRING" != "hello" ]]; then
             echo "::error:: output my_string not set correctly"
             exit 1
           fi
 
-          if [[ "${{ steps.terraform-output.outputs.my_sensitive_string }}" != "password" ]]; then
+          if [[ "$MY_SENSITIVE_STRING" != "password" ]]; then
             echo "::error:: output my_sensitive_string not set correctly"
             exit 1
           fi
 
-          if [[ "${{ steps.terraform-output.outputs.my_bool }}" != "true" ]]; then
+          if [[ "$MY_BOOL" != "true" ]]; then
             echo "::error:: output my_bool not set correctly"
             exit 1
           fi
 
-          if [[ "${{ steps.terraform-output.outputs.my_sensitive_bool }}" != "false" ]]; then
+          if [[ "$MY_SENSITIVE_BOOL" != "false" ]]; then
             echo "::error:: output my_number not set correctly"
             exit 1
           fi
 
-          if [[ "${{ fromJson(steps.terraform-output.outputs.my_object).first }}" != "one" ]]; then
+          if [[ "$MY_OBJECT_FIRST" != "one" ]]; then
             echo "::error:: fromJson(my_object).first not set correctly"
             exit 1
           fi
 
-          if [[ "${{ join(fromJson(steps.terraform-output.outputs.my_tuple)) }}" != "one,two" ]]; then
+          if [[ "$MY_TUPLE" != "one,two" ]]; then
             echo "::error:: join(fromJson(my_set)) not set correctly"
             exit 1
           fi
 
-          if [[ "${{ contains(fromJson(steps.terraform-output.outputs.my_set), 'one') }}" != "true" ]]; then
+          if [[ "$MY_SET" != "true" ]]; then
             echo "::error:: contains(fromJson(my_set)) not set correctly"
             exit 1
           fi
@@ -97,9 +101,7 @@ jobs:
           trewptonopce
           zxicvbnoberg"
 
-          actual_sensitive_multiline="${{ steps.terraform-output.outputs.my_sensitive_multiline_string }}"
-
-          if [[ "$expected_sensitive_multiline" != "$actual_sensitive_multiline" ]]; then
+          if [[ "$expected_sensitive_multiline" != "$MY_SENSITIVE_MULTILINE_STRING" ]]; then
             echo "::error:: steps.terraform-output.outputs.my_sensitive_multiline_string not set correctly"
             exit 1
           fi
@@ -108,9 +110,7 @@ jobs:
           iyriuytifdcv
           pydrtdxfgcvj"
 
-          actual_multiline="${{ steps.terraform-output.outputs.my_multiline_string }}"
-
-          if [[ "$expected_multiline" != "$actual_multiline" ]]; then
+          if [[ "$expected_multiline" != "$MY_MULTILINE_STRING" ]]; then
             echo "::error:: steps.terraform-output.outputs.my_multiline_string not set correctly"
             exit 1
           fi

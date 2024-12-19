@@ -1,17 +1,25 @@
-name: Test changes-only PR comment
+name: Test terraform-apply changes-only PR comment
 
 on:
   - pull_request
 
+permissions:
+  contents: read
+
 jobs:
   no_changes:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: changes-only should not create a comment
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan without changes
         uses: ./terraform-plan
@@ -22,10 +30,10 @@ jobs:
           add_github_comment: changes-only
 
       - name: Verify outputs
+        env:
+          CHANGES: ${{ steps.plan.outputs.changes }}
         run: |
-          echo "changes=${{ steps.plan.outputs.changes }}"
-
-          if [[ "${{ steps.plan.outputs.changes }}" != "false" ]]; then
+          if [[ "$CHANGES" != "false" ]]; then
             echo "::error:: output changes not set correctly"
             exit 1
           fi
@@ -38,20 +46,27 @@ jobs:
           path: tests/workflows/test-changes-only
 
       - name: Check failure-reason
+        env:
+          FAILURE_REASON: ${{ steps.apply.outputs.failure-reason }}
         run: |
-          if [[ "${{ steps.apply.outputs.failure-reason }}" != "" ]]; then
+          if [[ "$FAILURE_REASON" != "" ]]; then
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
 
   change_then_no_changes:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: changes-only should still replace a change comment
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan changes
         uses: ./terraform-plan
@@ -64,10 +79,10 @@ jobs:
           add_github_comment: changes-only
 
       - name: Verify changes
+        env:
+          CHANGES: ${{ steps.changes-plan.outputs.changes }}
         run: |
-          echo "changes=${{ steps.changes-plan.outputs.changes }}"
-
-          if [[ "${{ steps.changes-plan.outputs.changes }}" != "true" ]]; then
+          if [[ "$CHANGES" != "true" ]]; then
             echo "::error:: output changes not set correctly"
             exit 1
           fi
@@ -83,10 +98,10 @@ jobs:
           add_github_comment: changes-only
 
       - name: Verify no changes
+        env:
+          CHANGES: ${{ steps.plan.outputs.changes }}
         run: |
-          echo "changes=${{ steps.plan.outputs.changes }}"
-
-          if [[ "${{ steps.plan.outputs.changes }}" != "false" ]]; then
+          if [[ "$CHANGES" != "false" ]]; then
             echo "::error:: output changes not set correctly"
             exit 1
           fi
@@ -101,20 +116,27 @@ jobs:
             cause-changes=false
 
       - name: Check failure-reason
+        env:
+          FAILURE_REASON: ${{ steps.apply.outputs.failure-reason }}
         run: |
-          if [[ "${{ steps.apply.outputs.failure-reason }}" != "" ]]; then
+          if [[ "$FAILURE_REASON" != "" ]]; then
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
 
   no_changes_then_changes:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Apply with changes should fail after a changes-only plan with no changes
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan no changes
         uses: ./terraform-plan
@@ -127,10 +149,10 @@ jobs:
           add_github_comment: changes-only
 
       - name: Verify no changes
+        env:
+          CHANGES: ${{ steps.plan.outputs.changes }}
         run: |
-          echo "changes=${{ steps.plan.outputs.changes }}"
-
-          if [[ "${{ steps.plan.outputs.changes }}" != "false" ]]; then
+          if [[ "$CHANGES" != "false" ]]; then
             echo "::error:: output changes not set correctly"
             exit 1
           fi
@@ -146,25 +168,33 @@ jobs:
             cause-changes=true
 
       - name: Check failed to apply
+        env:
+          OUTCOME: ${{ steps.apply.outcome }}
+          FAILURE_REASON: ${{ steps.apply.outputs.failure-reason }}
         run: |
-          if [[ "${{ steps.apply.outcome }}" != "failure" ]]; then
+          if [[ "$OUTCOME" != "failure" ]]; then
             echo "Apply did not fail correctly"
             exit 1
           fi
 
-          if [[ "${{ steps.apply.outputs.failure-reason }}" != "plan-changed" ]]; then
+          if [[ "$FAILURE_REASON" != "plan-changed" ]]; then
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
 
   apply_when_plan_has_changed:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Apply should fail if the approved plan has changed
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan Changes
         uses: ./terraform-plan
@@ -186,13 +216,17 @@ jobs:
             len=4
 
       - name: Check failed to apply
+        env:
+          OUTCOME: ${{ steps.apply.outcome }}
+          FAILURE_REASON: ${{ steps.apply.outputs.failure-reason }}
         run: |
-          if [[ "${{ steps.apply.outcome }}" != "failure" ]]; then
+          if [[ "$OUTCOME" != "failure" ]]; then
             echo "Apply did not fail correctly"
             exit 1
           fi
 
-          if [[ "${{ steps.apply.outputs.failure-reason }}" != "plan-changed" ]]; then
+          if [[ "$FAILURE_REASON" != "plan-changed" ]]; then
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
+

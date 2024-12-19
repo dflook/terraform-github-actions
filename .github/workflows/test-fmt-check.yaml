@@ -3,13 +3,18 @@ name: Test terraform-fmt-check
 on:
   - pull_request
 
+permissions:
+  contents: read
+
 jobs:
   canonical_fmt:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Canonical fmt
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: fmt-check
         uses: ./terraform-fmt-check
@@ -18,19 +23,23 @@ jobs:
           path: tests/workflows/test-fmt-check/canonical
 
       - name: Check valid
+        env:
+          FAILURE_REASON: ${{ steps.fmt-check.outputs.failure-reason }}
         run: |
-          if [[ "${{ steps.fmt-check.outputs.failure-reason }}" != "" ]]; then
+          if [[ "$FAILURE_REASON" != "" ]]; then
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
 
   non_canonical_fmt:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Non canonical fmt
     continue-on-error: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: fmt-check
         uses: ./terraform-fmt-check
@@ -40,13 +49,16 @@ jobs:
           path: tests/workflows/test-fmt-check/non-canonical
 
       - name: Check invalid
+        env:
+          OUTCOME: ${{ steps.fmt-check.outcome }}
+          FAILURE_REASON: ${{ steps.fmt-check.outputs.failure-reason }}
         run: |
-          if [[ "${{ steps.fmt-check.outcome }}" != "failure" ]]; then
+          if [[ "$OUTCOME" != "failure" ]]; then
             echo "fmt-check did not fail correctly"
             exit 1
           fi
 
-          if [[ "${{ steps.fmt-check.outputs.failure-reason }}" != "check-failed" ]]; then
+          if [[ "$FAILURE_REASON" != "check-failed" ]]; then
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi

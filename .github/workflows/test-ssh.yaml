@@ -1,22 +1,28 @@
-name: Test SSH Keys
+name: Test actions using SSH Keys
 
 on:
   - pull_request
 
-env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+permissions:
+  contents: read
 
 jobs:
   ssh_key:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Git module source
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan
         uses: ./terraform-plan
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
         with:
           path: tests/workflows/test-ssh
@@ -26,24 +32,29 @@ jobs:
         uses: ./terraform-apply
         id: output
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
         with:
           path: tests/workflows/test-ssh
           label: test-ssh ssh_key
 
       - name: Verify outputs
+        env:
+          WORD: ${{ steps.output.outputs.word }}
         run: |
-          if [[ "${{ steps.output.outputs.word }}" != "hello" ]]; then
+          if [[ "$WORD" != "hello" ]]; then
             echo "::error:: output not set correctly"
             exit 1
           fi
 
   no_ssh_key:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Git module source with no key
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan
         uses: ./terraform-plan
@@ -55,8 +66,10 @@ jobs:
           add_github_comment: false
 
       - name: Check failed
+        env:
+          OUTCOME: ${{ steps.plan.outcome }}
         run: |
-          if [[ "${{ steps.plan.outcome }}" != "failure" ]]; then
+          if [[ "$OUTCOME" != "failure" ]]; then
             echo "did not fail correctly with no SSH key"
             exit 1
           fi

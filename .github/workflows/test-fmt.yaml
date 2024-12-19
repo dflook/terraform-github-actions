@@ -3,13 +3,18 @@ name: Test terraform-fmt
 on:
   - pull_request
 
+permissions:
+  contents: read
+
 jobs:
   canonical_fmt:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Canonical fmt
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: terraform fmt
         uses: ./terraform-fmt

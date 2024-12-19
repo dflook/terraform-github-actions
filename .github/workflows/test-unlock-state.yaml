@@ -3,17 +3,22 @@ name: Test terraform-unlock-state
 on:
   - pull_request
 
+permissions:
+  contents: read
+
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
   default_workspace:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Default workspace
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Check state is not locked
         uses: ./terraform-apply
@@ -34,13 +39,16 @@ jobs:
       # State is now locked
 
       - name: Check apply-failed
+        env:
+          OUTCOME: ${{ steps.failed-apply.outcome }}
+          FAILURE_REASON: ${{ steps.failed-apply.outputs.failure-reason }}
         run: |
-          if [[ "${{ steps.failed-apply.outcome }}" != "failure" ]]; then
+          if [[ "$OUTCOME" != "failure" ]]; then
             echo "Apply did not fail correctly"
             exit 1
           fi
 
-          if [[ "${{ steps.failed-apply.outputs.failure-reason }}" != "apply-failed" ]]; then
+          if [[ "$FAILURE_REASON" != "apply-failed" ]]; then
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
@@ -55,20 +63,24 @@ jobs:
           auto_approve: true
 
       - name: Check terraform-apply state locked failure-reason
+        env:
+          OUTCOME: ${{ steps.locked-state-apply.outcome }}
+          FAILURE_REASON: ${{ steps.locked-state-apply.outputs.failure-reason }}
+          LOCK_INFO: ${{ steps.locked-state-apply.outputs.lock-info }}
+          LOCK_ID: ${{ fromJson(steps.locked-state-apply.outputs.lock-info).ID }}
         run: |
-          if [[ "${{ steps.locked-state-apply.outcome }}" != "failure" ]]; then
+          if [[ "$OUTCOME" != "failure" ]]; then
             echo "Apply did not fail correctly"
             exit 1
           fi
 
-          if [[ "${{ steps.locked-state-apply.outputs.failure-reason }}" != "state-locked" ]]; then
+          if [[ "$FAILURE_REASON" != "state-locked" ]]; then
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
           
-          echo '"${{ steps.locked-state-apply.outputs.lock-info }}"'
-          
-          echo 'Lock id is ${{ fromJson(steps.locked-state-apply.outputs.lock-info).ID }}'
+          echo "$LOCK_INFO"          
+          echo "Lock id is $LOCK_ID"
 
       - name: Try using locked state using terraform-destroy
         uses: ./terraform-destroy
@@ -78,20 +90,24 @@ jobs:
           path: tests/workflows/test-unlock-state
 
       - name: Check terraform-destroy state locked failure-reason
+        env:
+          OUTCOME: ${{ steps.locked-state-destroy.outcome }}
+          FAILURE_REASON: ${{ steps.locked-state-destroy.outputs.failure-reason }}
+          LOCK_INFO: ${{ steps.locked-state-destroy.outputs.lock-info }}
+          LOCK_ID: ${{ fromJson(steps.locked-state-destroy.outputs.lock-info).ID }}
         run: |
-          if [[ "${{ steps.locked-state-destroy.outcome }}" != "failure" ]]; then
+          if [[ "$OUTCOME" != "failure" ]]; then
             echo "Apply did not fail correctly"
             exit 1
           fi
 
-          if [[ "${{ steps.locked-state-destroy.outputs.failure-reason }}" != "state-locked" ]]; then
+          if [[ "$FAILURE_REASON" != "state-locked" ]]; then
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
           
-          echo '"${{ steps.locked-state-destroy.outputs.lock-info }}"'
-          
-          echo 'Lock id is ${{ fromJson(steps.locked-state-destroy.outputs.lock-info).ID }}'
+          echo "$LOCK_INFO"          
+          echo "Lock id is $LOCK_ID"
 
       - name: Unlock the state
         uses: ./terraform-unlock-state
@@ -107,11 +123,13 @@ jobs:
           auto_approve: true
 
   nondefault_workspace:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Non Default workspace
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Create first workspace
         uses: ./terraform-new-workspace
@@ -140,13 +158,16 @@ jobs:
       # State is now locked
 
       - name: Check apply-failed
+        env:
+          OUTCOME: ${{ steps.failed-apply-workspace.outcome }}
+          FAILURE_REASON: ${{ steps.failed-apply-workspace.outputs.failure-reason }}
         run: |
-          if [[ "${{ steps.failed-apply-workspace.outcome }}" != "failure" ]]; then
+          if [[ "$OUTCOME" != "failure" ]]; then
             echo "Apply did not fail correctly"
             exit 1
           fi
 
-          if [[ "${{ steps.failed-apply-workspace.outputs.failure-reason }}" != "apply-failed" ]]; then
+          if [[ "$FAILURE_REASON" != "apply-failed" ]]; then
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
@@ -162,20 +183,24 @@ jobs:
           auto_approve: true
 
       - name: Check state locked failure-reason
+        env:
+          OUTCOME: ${{ steps.locked-state-workspace.outcome }}
+          FAILURE_REASON: ${{ steps.locked-state-workspace.outputs.failure-reason }}
+          LOCK_INFO: ${{ steps.locked-state-workspace.outputs.lock-info }}
+          LOCK_ID: ${{ fromJson(steps.locked-state-workspace.outputs.lock-info).ID }}
         run: |
-          if [[ "${{ steps.locked-state-workspace.outcome }}" != "failure" ]]; then
+          if [[ "$OUTCOME" != "failure" ]]; then
             echo "Apply did not fail correctly"
             exit 1
           fi
 
-          if [[ "${{ steps.locked-state-workspace.outputs.failure-reason }}" != "state-locked" ]]; then
+          if [[ "$FAILURE_REASON" != "state-locked" ]]; then
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
           
-          echo '"${{ steps.locked-state-workspace.outputs.lock-info }}"'
-          
-          echo 'Lock id is ${{ fromJson(steps.locked-state-workspace.outputs.lock-info).ID }}'
+          echo "$LOCK_INFO"          
+          echo "Lock id is $LOCK_ID"
 
       - name: Try using locked state using terraform-destroy-workspace
         uses: ./terraform-destroy-workspace
@@ -186,20 +211,24 @@ jobs:
           workspace: hello
 
       - name: Check terraform-destroy-workspace state locked failure-reason
+        env:
+          OUTCOME: ${{ steps.locked-state-destroy-workspace.outcome }}
+          FAILURE_REASON: ${{ steps.locked-state-destroy-workspace.outputs.failure-reason }}
+          LOCK_INFO: ${{ steps.locked-state-destroy-workspace.outputs.lock-info }}
+          LOCK_ID: ${{ fromJson(steps.locked-state-destroy-workspace.outputs.lock-info).ID }}
         run: |
-          if [[ "${{ steps.locked-state-destroy-workspace.outcome }}" != "failure" ]]; then
+          if [[ "$OUTCOME" != "failure" ]]; then
             echo "Apply did not fail correctly"
             exit 1
           fi
 
-          if [[ "${{ steps.locked-state-destroy-workspace.outputs.failure-reason }}" != "state-locked" ]]; then
+          if [[ "$FAILURE_REASON" != "state-locked" ]]; then
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
           
-          echo '"${{ steps.locked-state-destroy-workspace.outputs.lock-info }}"'
-          
-          echo 'Lock id is ${{ fromJson(steps.locked-state-destroy-workspace.outputs.lock-info).ID }}'
+          echo "$LOCK_INFO"          
+          echo "Lock id is $LOCK_ID"
 
       - name: Unlock the state
         uses: ./terraform-unlock-state

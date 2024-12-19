@@ -1,15 +1,20 @@
-name: Test terraform-binary-plan
+name: Test terraform-plan using binary plan
 
 on:
   - pull_request
 
+permissions:
+  contents: read
+
 jobs:
   missing_plan_path:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Missing plan
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Apply
         uses: ./terraform-apply
@@ -21,20 +26,27 @@ jobs:
           auto_approve: true
 
       - name: Verify outputs
+        env:
+          OUTCOME: ${{ steps.apply.outcome }}
         run: |
-          if [[ "${{ steps.apply.outcome }}" != "failure" ]]; then
+          if [[ "$OUTCOME" != "failure" ]]; then
             echo "Apply did not fail correctly"
             exit 1
           fi
 
   apply:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Apply approved changes
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan
         uses: ./terraform-plan
@@ -52,11 +64,13 @@ jobs:
           plan_path: ${{ steps.plan.outputs.plan_path }}
 
   auto_approve:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Apply auto approved changes
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan
         uses: ./terraform-plan
@@ -75,13 +89,18 @@ jobs:
           auto_approve: true
 
   plan_changed:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Apply should fail if the approved plan has changed
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan
         uses: ./terraform-plan
@@ -106,13 +125,16 @@ jobs:
           plan_path: ${{ steps.plan.outputs.plan_path }}
 
       - name: Verify outputs
+        env:
+          OUTCOME: ${{ steps.apply.outcome }}
+          FAILURE_REASON: ${{ steps.apply.outputs.failure-reason }}
         run: |
-          if [[ "${{ steps.apply.outcome }}" != "failure" ]]; then
+          if [[ "$OUTCOME" != "failure" ]]; then
             echo "Apply did not fail correctly"
             exit 1
           fi
 
-          if [[ "${{ steps.apply.outputs.failure-reason }}" != "plan-changed" ]]; then
+          if [[ "$FAILURE_REASON" != "plan-changed" ]]; then
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
