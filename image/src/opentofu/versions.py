@@ -7,7 +7,7 @@ from opentofu.github import github
 def get_opentofu_versions() -> Iterable[Version]:
     """Return the currently available opentofu versions."""
 
-    response = github.get('https://api.github.com/repos/opentofu/opentofu/releases')
+    response = github.paged_get('https://api.github.com/repos/opentofu/opentofu/releases')
 
-    for release in response.json():
+    for release in response:
         yield Version(release['tag_name'].lstrip('v'), 'OpenTofu')
