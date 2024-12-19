@@ -3,13 +3,18 @@ name: Test terraform-version
 on:
   - pull_request
 
+permissions:
+  contents: read
+
 jobs:
   required_version:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: specific required_version
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Test terraform-version
         uses: ./terraform-version
@@ -17,22 +22,25 @@ jobs:
         with:
           path: tests/workflows/test-version/required_version
 
-      - name: Print the version
-        run: echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
-
       - name: Check the version
+        env:
+          DETECTED_TERRAFORM_VERSION: ${{ steps.terraform-version.outputs.terraform }}
         run: |
-          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "0.12.26" ]]; then
+          echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
+
+          if [[ "$DETECTED_TERRAFORM_VERSION" != "0.12.26" ]]; then
             echo "::error:: Terraform version not set from required_version"
             exit 1
           fi
 
   required_version_range:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: required_version range
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Test terraform-version
         uses: ./terraform-version
@@ -40,22 +48,25 @@ jobs:
         with:
           path: tests/workflows/test-version/range
 
-      - name: Print the version
-        run: echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
-
       - name: Check the version
+        env:
+          DETECTED_TERRAFORM_VERSION: ${{ steps.terraform-version.outputs.terraform }}
         run: |
-          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "0.12.5" ]]; then
+          echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
+
+          if [[ "$DETECTED_TERRAFORM_VERSION" != "0.12.5" ]]; then
             echo "::error:: Terraform version not set from required_version range"
             exit 1
           fi
 
   required_version_v_prefix:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: required_version with a v prefix
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Test terraform-version
         uses: ./terraform-version
@@ -63,22 +74,25 @@ jobs:
         with:
           path: tests/workflows/test-version/v-prefix
 
-      - name: Print the version
-        run: echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
-
       - name: Check the version
+        env:
+          DETECTED_TERRAFORM_VERSION: ${{ steps.terraform-version.outputs.terraform }}
         run: |
-          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "0.12.26" ]]; then
+          echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
+
+          if [[ "$DETECTED_TERRAFORM_VERSION" != "0.12.26" ]]; then
             echo "::error:: Terraform version not set from required_version range"
             exit 1
           fi
 
   tfswitch:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: tfswitch
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Test terraform-version
         uses: ./terraform-version
@@ -86,22 +100,25 @@ jobs:
         with:
           path: tests/workflows/test-version/tfswitch
 
-      - name: Print the version
-        run: echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
-
       - name: Check the version
+        env:
+          DETECTED_TERRAFORM_VERSION: ${{ steps.terraform-version.outputs.terraform }}
         run: |
-          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "1.1.0" ]]; then
+          echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
+          
+          if [[ "$DETECTED_TERRAFORM_VERSION" != "1.1.0" ]]; then
             echo "::error:: Terraform version not set from .tfswitchrc"
             exit 1
           fi
 
   tfenv:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: tfenv
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Test terraform-version
         uses: ./terraform-version
@@ -109,22 +126,25 @@ jobs:
         with:
           path: tests/workflows/test-version/tfenv
 
-      - name: Print the version
-        run: echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
-
       - name: Check the version
+        env:
+          DETECTED_TERRAFORM_VERSION: ${{ steps.terraform-version.outputs.terraform }}
         run: |
-          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "0.12.17" ]]; then
+          echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
+          
+          if [[ "$DETECTED_TERRAFORM_VERSION" != "0.12.17" ]]; then
             echo "::error:: Terraform version not set from .terraform-version"
             exit 1
           fi
 
   asdf:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: asdf
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Test getting version from .tools-versions
         uses: ./terraform-version
@@ -132,12 +152,13 @@ jobs:
         with:
           path: tests/workflows/test-version/asdf
 
-      - name: Print the version
-        run: echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
-
       - name: Check the version
+        env:
+          DETECTED_TERRAFORM_VERSION: ${{ steps.terraform-version.outputs.terraform }}
         run: |
-          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "0.12.11" ]]; then
+          echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
+
+          if [[ "$DETECTED_TERRAFORM_VERSION" != "0.12.11" ]]; then
             echo "::error:: Terraform version not set from .tool-versions"
             exit 1
           fi
@@ -151,18 +172,22 @@ jobs:
           path: tests/workflows/test-version/asdf
 
       - name: Check the version
+        env:
+          DETECTED_TERRAFORM_VERSION: ${{ steps.root-version.outputs.terraform }}
         run: |
-          if [[ "${{ steps.root-version.outputs.terraform }}" != "0.12.11" ]]; then
+          if [[ "$DETECTED_TERRAFORM_VERSION" != "0.12.11" ]]; then
             echo "::error:: Terraform version not set from .tool-versions"
             exit 1
           fi
 
   env:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: TERRAFORM_VERSION range
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Test terraform-version
         uses: ./terraform-version
@@ -172,22 +197,25 @@ jobs:
         with:
           path: tests/workflows/test-version/empty
 
-      - name: Print the version
-        run: echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
-
       - name: Check the version
+        env:
+          DETECTED_TERRAFORM_VERSION: ${{ steps.terraform-version.outputs.terraform }}
         run: |
-          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "0.12.5" ]]; then
+          echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
+
+          if [[ "$DETECTED_TERRAFORM_VERSION" != "0.12.5" ]]; then
             echo "::error:: Terraform version not set from required_version range"
             exit 1
           fi
 
   tfc_workspace:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: TFC Workspace
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Create workspace
         uses: ./terraform-new-workspace
@@ -213,21 +241,25 @@ jobs:
           workspace: test-1
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
-      - name: Print the version
+      - name: Check the version
+        env:
+          DETECTED_TERRAFORM_VERSION: ${{ steps.terraform-version.outputs.terraform }}
         run: |
-          echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
+          echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
 
-          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "0.12.13" ]]; then
+          if [[ "$DETECTED_TERRAFORM_VERSION" != "0.12.13" ]]; then
             echo "::error:: Terraform version not set from remote workspace"
             exit 1
           fi
 
   tfc_cloud_workspace:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: TFC Cloud Configuration
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Create workspace
         uses: ./terraform-new-workspace
@@ -255,21 +287,25 @@ jobs:
           path: tests/workflows/test-version/cloud
           workspace: tfc_cloud_workspace-1
 
-      - name: Print the version
+      - name: Check the version
+        env:
+          DETECTED_TERRAFORM_VERSION: ${{ steps.terraform-version.outputs.terraform }}
         run: |
-          echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
+          echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
 
-          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "1.1.2" ]]; then
+          if [[ "$DETECTED_TERRAFORM_VERSION" != "1.1.2" ]]; then
             echo "::error:: Terraform version not set from remote workspace"
             exit 1
           fi
 
   tfc_partial_cloud_workspace:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Partial TFC Cloud Configuration
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Create workspace
         uses: ./terraform-new-workspace
@@ -300,21 +336,25 @@ jobs:
           path: tests/workflows/test-version/partial-cloud
           workspace: tfc_partial_cloud_workspace-1
 
-      - name: Print the version
+      - name: Check the version
+        env:
+          DETECTED_TERRAFORM_VERSION: ${{ steps.terraform-version.outputs.terraform }}
         run: |
-          echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
+          echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
 
-          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "1.2.1" ]]; then
+          if [[ "$DETECTED_TERRAFORM_VERSION" != "1.2.1" ]]; then
             echo "::error:: Terraform version not set from remote workspace"
             exit 1
           fi
 
   tfc_partial_cloud_tags_workspace:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Partial TFC Cloud Configuration with tags
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Create workspace
         uses: ./terraform-new-workspace
@@ -345,21 +385,25 @@ jobs:
           path: tests/workflows/test-version/partial-cloud-tags
           workspace: tfc_partial_cloud_tags_workspace-1
 
-      - name: Print the version
+      - name: Check the version
+        env:
+          DETECTED_TERRAFORM_VERSION: ${{ steps.terraform-version.outputs.terraform }}
         run: |
-          echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
+          echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
 
-          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "1.2.1" ]]; then
+          if [[ "$DETECTED_TERRAFORM_VERSION" != "1.2.1" ]]; then
             echo "::error:: Terraform version not set from remote workspace"
             exit 1
           fi
 
   local_state:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Local State file
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Test terraform-version
         uses: ./terraform-version
@@ -367,15 +411,17 @@ jobs:
         with:
           path: tests/workflows/test-version/local
 
-      - name: Print the version
+      - name: Check the version
+        env:
+          DETECTED_TERRAFORM_VERSION: ${{ steps.terraform-version.outputs.terraform }}
         run: |
-          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "0.15.4" ]]; then
+          if [[ "$DETECTED_TERRAFORM_VERSION" != "0.15.4" ]]; then
             echo "::error:: Terraform version not set from state file"
             exit 1
           fi
 
   remote_state:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Remote State file
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -383,6 +429,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Apply default workspace
         uses: ./terraform-apply
@@ -405,11 +453,13 @@ jobs:
           path: tests/workflows/test-version/state
           variables: my_variable="goodbye"
 
-      - name: Print the version
+      - name: Check the version
+        env:
+          DETECTED_TERRAFORM_VERSION: ${{ steps.terraform-version.outputs.terraform }}
         run: |
-          echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
+          echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
 
-          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "0.12.9" ]]; then
+          if [[ "$DETECTED_TERRAFORM_VERSION" != "0.12.9" ]]; then
             echo "::error:: Terraform version not set from state file"
             exit 1
           fi
@@ -444,11 +494,13 @@ jobs:
           workspace: second
           variables: my_variable="goodbye"
 
-      - name: Print the version
+      - name: Check the version
+        env:
+          DETECTED_TERRAFORM_VERSION: ${{ steps.terraform-version-second.outputs.terraform }}
         run: |
-          echo "The terraform version was ${{ steps.terraform-version-second.outputs.terraform }}"
+          echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
 
-          if [[ "${{ steps.terraform-version-second.outputs.terraform }}" != "1.1.0" ]]; then
+          if [[ "$DETECTED_TERRAFORM_VERSION" != "1.1.0" ]]; then
             echo "::error:: Terraform version not set from state file"
             exit 1
           fi
@@ -483,11 +535,13 @@ jobs:
           workspace: third
           variables: my_variable="goodbye"
 
-      - name: Print the version
+      - name: Check the version
+        env:
+          DETECTED_TERRAFORM_VERSION: ${{ steps.terraform-version-third.outputs.terraform }}
         run: |
-          echo "The terraform version was ${{ steps.terraform-version-third.outputs.terraform }}"
+          echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
 
-          if [[ "${{ steps.terraform-version-third.outputs.terraform }}" != "0.13.0" ]]; then
+          if [[ "$DETECTED_TERRAFORM_VERSION" != "0.13.0" ]]; then
             echo "::error:: Terraform version not set from state file"
             exit 1
           fi
@@ -499,21 +553,25 @@ jobs:
           path: tests/workflows/test-version/state
           workspace: fourth
 
-      - name: Print the version
+      - name: Check the version
+        env:
+          DETECTED_TERRAFORM_VERSION: ${{ steps.terraform-version-fourth.outputs.terraform }}
         run: |
-          echo "The terraform version was ${{ steps.terraform-version-fourth.outputs.terraform }}"
+          echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
 
-          if [[ "${{ steps.terraform-version-fourth.outputs.terraform }}" != "1."* ]]; then
+          if [[ "$DETECTED_TERRAFORM_VERSION" != "1."* ]]; then
             echo "::error:: Terraform version not set to latest when no existing state"
             exit 1
           fi
 
   empty_path:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Test terraform-version
         uses: ./terraform-version
@@ -521,12 +579,13 @@ jobs:
         with:
           path: tests/workflows/test-version/empty
 
-      - name: Print the version
-        run: echo "The terraform version was ${{ steps.terraform-version.outputs.terraform }}"
-
       - name: Check the version
+        env:
+          DETECTED_TERRAFORM_VERSION: ${{ steps.terraform-version.outputs.terraform }}
         run: |
-          if [[ "${{ steps.terraform-version.outputs.terraform }}" != *"1.9"* ]]; then
+          echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
+
+          if [[ "$DETECTED_TERRAFORM_VERSION" != *"1.9"* ]]; then
             echo "::error:: Latest version was not used"
             exit 1
           fi
@@ -539,21 +598,25 @@ jobs:
           TERRAFORM_VERSION: 99.0.0
         with:
           path: tests/workflows/test-version/empty
+          workspace: not-used
 
       - name: Check failed to download no such version
+        env:
+          OUTCOME: ${{ steps.no-such-version.outcome }}
         run: |
-          if [[ "${{ steps.no-such-version.outcome }}" != "failure" ]]; then
+          if [[ "$OUTCOME" != "failure" ]]; then
             echo "Did not fail correctly"
             exit 1
           fi
 
-
   provider_versions:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: provider versions
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Test terraform-version with 0.12
         uses: ./terraform-version
@@ -561,20 +624,22 @@ jobs:
         with:
           path: tests/workflows/test-version/providers/0.12
 
-      - name: Print the version
-        run: |
-          echo "The terraform version was ${{ steps.terraform-version-12.outputs.terraform }}"
-          echo "The random version was ${{ steps.terraform-version-12.outputs.random }}"
-          echo "The acme version was ${{ steps.terraform-version-12.outputs.acme }}"
-
       - name: Check the version
+        env:
+          DETECTED_TERRAFORM_VERSION: ${{ steps.terraform-version-12.outputs.terraform }}
+          DETECTED_RANDOM_VERSION: ${{ steps.terraform-version-12.outputs.random }}
+          DETECTED_ACME_VERSION: ${{ steps.terraform-version-12.outputs.acme }}
         run: |
-          if [[ "${{ steps.terraform-version-12.outputs.random }}" != "2.2.0" ]]; then
+          echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
+          echo "The random version was $DETECTED_RANDOM_VERSION"
+          echo "The acme version was $DETECTED_ACME_VERSION"
+
+          if [[ "$DETECTED_RANDOM_VERSION" != "2.2.0" ]]; then
             echo "::error:: random provider version has not been set"
             exit 1
           fi
 
-          if [[ -z "${{ steps.terraform-version-12.outputs.acme }}" ]]; then
+          if [[ -z "$DETECTED_ACME_VERSION" ]]; then
             echo "::error:: acme provider version has not been set"
             exit 1
           fi
@@ -585,20 +650,22 @@ jobs:
         with:
           path: tests/workflows/test-version/providers/0.13
 
-      - name: Print the version
+      - name: Check versions
+        env:
+            DETECTED_TERRAFORM_VERSION: ${{ steps.terraform-version-13.outputs.terraform }}
+            DETECTED_RANDOM_VERSION: ${{ steps.terraform-version-13.outputs.random }}
+            DETECTED_ACME_VERSION: ${{ steps.terraform-version-13.outputs.acme }}
         run: |
-          echo "The terraform version was ${{ steps.terraform-version-13.outputs.terraform }}"
-          echo "The random version was ${{ steps.terraform-version-13.outputs.random }}"
-          echo "The acme version was ${{ steps.terraform-version-13.outputs.acme }}"
+          echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
+          echo "The random version was $DETECTED_RANDOM_VERSION"
+          echo "The acme version was $DETECTED_ACME_VERSION"
 
-      - name: Check the version
-        run: |
-          if [[ "${{ steps.terraform-version-13.outputs.random }}" != "2.2.0" ]]; then
+          if [[ "$DETECTED_RANDOM_VERSION" != "2.2.0" ]]; then
             echo "::error:: random provider version has not been set"
             exit 1
           fi
 
-          if [[ -z "${{ steps.terraform-version-13.outputs.acme }}" ]]; then
+          if [[ -z "$DETECTED_ACME_VERSION" ]]; then
             echo "::error:: acme provider version has not been set"
             exit 1
           fi
@@ -609,20 +676,22 @@ jobs:
         with:
           path: tests/workflows/test-version/providers/0.11
 
-      - name: Print the version
+      - name: Check versions
+        env:
+          DETECTED_TERRAFORM_VERSION: ${{ steps.terraform-version-11.outputs.terraform }}
+          DETECTED_RANDOM_VERSION: ${{ steps.terraform-version-11.outputs.random }}
+          DETECTED_ACME_VERSION: ${{ steps.terraform-version-11.outputs.acme }}
         run: |
-          echo "The terraform version was ${{ steps.terraform-version-11.outputs.terraform }}"
-          echo "The random version was ${{ steps.terraform-version-11.outputs.random }}"
-          echo "The acme version was ${{ steps.terraform-version-11.outputs.acme }}"
+          echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
+          echo "The random version was $DETECTED_RANDOM_VERSION"
+          echo "The acme version was $DETECTED_ACME_VERSION"
 
-      - name: Check the version
-        run: |
-          if [[ "${{ steps.terraform-version-11.outputs.random }}" != "2.2.0" ]]; then
+          if [[ "$DETECTED_RANDOM_VERSION" != "2.2.0" ]]; then
             echo "::error:: random provider version has not been set"
             exit 1
           fi
 
-          if [[ -z "${{ steps.terraform-version-11.outputs.acme }}" ]]; then
+          if [[ -z "$DETECTED_ACME_VERSION" ]]; then
             echo "::error:: acme provider version has not been set"
             exit 1
           fi
@@ -633,6 +702,8 @@ jobs:
 #    steps:
 #      - name: Checkout
 #        uses: actions/checkout@v4
+#        with:
+#          persist-credentials: false
 #
 #      - name: Version unsupported on arm
 #        uses: ./terraform-version
@@ -672,17 +743,19 @@ jobs:
 #
 #      - name: Check the version
 #        run: |
-#          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "1.1.0" ]]; then
+#          if [[ "$DETECTED_TERRAFORM_VERSION" != "1.1.0" ]]; then
 #            echo "::error:: Terraform version not set from .tfswitchrc"
 #            exit 1
 #          fi
 
   terraform_opentofu_version:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: OPENTOFU_VERSION with terraform action
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Test terraform-version
         uses: ./terraform-version
@@ -692,27 +765,31 @@ jobs:
         with:
           path: tests/workflows/test-version/empty
 
-      - name: Print the version
-        run: echo "The tofu version was ${{ steps.terraform-version.outputs.tofu }}"
-
       - name: Check the version
+        env:
+          DETECTED_TERRAFORM_VERSION: ${{ steps.terraform-version.outputs.terraform }}
+          DETECTED_TOFU_VERSION: ${{ steps.terraform-version.outputs.tofu }}
         run: |
-          if [[ "${{ steps.terraform-version.outputs.terraform }}" != "1.6.0" ]]; then
+          echo "The tofu version was $DETECTED_TOFU_VERSION"
+
+          if [[ "$DETECTED_TERRAFORM_VERSION" != "1.6.0" ]]; then
             echo "::error:: Terraform version not set from OPENTOFU_VERSION"
             exit 1
           fi
 
-          if [[ "${{ steps.terraform-version.outputs.tofu }}" != "1.6.0" ]]; then
+          if [[ "$DETECTED_TOFU_VERSION" != "1.6.0" ]]; then
             echo "::error:: Terraform version not set from OPENTOFU_VERSION"
             exit 1
           fi
 
   opentofu_version:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: OPENTOFU_VERSION with tofu action
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Test terraform-version
         uses: ./tofu-version
@@ -722,29 +799,33 @@ jobs:
         with:
           path: tests/workflows/test-version/empty
 
-      - name: Print the version
-        run: echo "The tofu version was ${{ steps.tofu-version.outputs.tofu }}"
-
       - name: Check the version
+        env:
+          DETECTED_TERRAFORM_VERSION: ${{ steps.tofu-version.outputs.terraform }}
+          DETECTED_TOFU_VERSION: ${{ steps.tofu-version.outputs.tofu }}
         run: |
-          if [[ "${{ steps.tofu-version.outputs.terraform }}" != "1.6.0" ]]; then
+          echo "The tofu version was $DETECTED_TOFU_VERSION"
+
+          if [[ "$DETECTED_TERRAFORM_VERSION" != "1.6.0" ]]; then
             echo "::error:: Terraform version not set from OPENTOFU_VERSION"
             exit 1
           fi
-          
-          if [[ "${{ steps.tofu-version.outputs.tofu }}" != "1.6.0" ]]; then
+
+          if [[ "$DETECTED_TOFU_VERSION" != "1.6.0" ]]; then
             echo "::error:: Terraform version not set from OPENTOFU_VERSION"
             exit 1
           fi
 
   opentofu_version_pre_release_nosig:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: OPENTOFU_VERSION pre-release with tofu action
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Test terraform-version
         uses: ./tofu-version
@@ -754,29 +835,33 @@ jobs:
         with:
           path: tests/workflows/test-version/empty
 
-      - name: Print the version
-        run: echo "The tofu version was ${{ steps.tofu-version.outputs.tofu }}"
-
       - name: Check the version
+        env:
+          DETECTED_TERRAFORM_VERSION: ${{ steps.tofu-version.outputs.terraform }}
+          DETECTED_TOFU_VERSION: ${{ steps.tofu-version.outputs.tofu }}
         run: |
-          if [[ "${{ steps.tofu-version.outputs.terraform }}" != "1.6.0-alpha3" ]]; then
+          echo "The tofu version was $DETECTED_TOFU_VERSION"
+
+          if [[ "$DETECTED_TERRAFORM_VERSION" != "1.6.0-alpha3" ]]; then
             echo "::error:: Terraform version not set from OPENTOFU_VERSION"
             exit 1
           fi
           
-          if [[ "${{ steps.tofu-version.outputs.tofu }}" != "1.6.0-alpha3" ]]; then
+          if [[ "$DETECETD_TOFU_VERSION" != "1.6.0-alpha3" ]]; then
             echo "::error:: Terraform version not set from OPENTOFU_VERSION"
             exit 1
           fi
 
   opentofu_old_version:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Prefer OpenTofu, but only Terraform matches constraints
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Test terraform-version
         uses: ./tofu-version
@@ -786,12 +871,14 @@ jobs:
         with:
           path: tests/workflows/test-version/empty
 
-      - name: Print the version
-        run: echo "The terraform version was ${{ steps.tofu-version.outputs.terraform }}"
-
       - name: Check the version
+        env:
+          DETECTED_TERRAFORM_VERSION: ${{ steps.tofu-version.outputs.terraform }}
+          DETECTED_TOFU_VERSION: ${{ steps.tofu-version.outputs.tofu }}
         run: |
-          if [[ "${{ steps.tofu-version.outputs.terraform }}" != *"1.5"* ]]; then
+          echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
+
+          if [[ "$DETECTED_TERRAFORM_VERSION" != *"1.5"* ]]; then
             echo "::error:: Terraform version not selected"
             exit 1
           fi

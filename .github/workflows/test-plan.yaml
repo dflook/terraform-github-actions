@@ -3,15 +3,23 @@ name: Test terraform-plan
 on:
   - pull_request
 
+permissions:
+  contents: read
+
 jobs:
   no_changes:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: No changes
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan
         uses: ./terraform-plan
@@ -20,31 +28,37 @@ jobs:
           path: tests/workflows/test-plan/no_changes
 
       - name: Verify outputs
+        env:
+          CHANGES: ${{ steps.plan.outputs.changes }}
+          JSON_PLAN_PATH: ${{ steps.plan.outputs.json_plan_path }}
+          TEXT_PLAN_PATH: ${{ steps.plan.outputs.text_plan_path }}
+          PLAN_PATH: ${{ steps.plan.outputs.plan_path }}
+          RUN_ID: ${{ steps.apply.outputs.run_id }}
         run: |
-          echo "changes=${{ steps.plan.outputs.changes }}"
+          echo "changes=$CHANGES"
 
-          if [[ "${{ steps.plan.outputs.changes }}" != "false" ]]; then
+          if [[ "$CHANGES" != "false" ]]; then
             echo "::error:: output changes not set correctly"
             exit 1
           fi
 
-          cat '${{ steps.plan.outputs.json_plan_path }}'
-          if [[ $(jq -r .format_version "${{ steps.plan.outputs.json_plan_path }}") != "1.2" ]]; then
+          cat "$JSON_PLAN_PATH"
+          if [[ $(jq -r .format_version "$JSON_PLAN_PATH") != "1.2" ]]; then
             echo "::error:: json_plan_path not set correctly"
             exit 1
           fi
 
-          if ! grep -q "No changes" '${{ steps.plan.outputs.text_plan_path }}'; then
+          if ! grep -q "No changes" "$TEXT_PLAN_PATH"; then
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
           
-          if ! [[ -f '${{ steps.plan.outputs.plan_path }}' ]]; then
+          if ! [[ -f "$PLAN_PATH" ]]; then
             echo "::error:: plan_path not set correctly"
             exit 1
           fi
 
-          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+          if [[ -n "$RUN_ID" ]]; then
             echo "::error:: run_id should not be set"
             exit 1
           fi
@@ -56,13 +70,18 @@ jobs:
           exit 1
 
   no_changes_no_comment:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: No changes without comment
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan
         uses: ./terraform-plan
@@ -72,31 +91,40 @@ jobs:
           add_github_comment: false
 
       - name: Verify outputs
+        env:
+          JSON_PLAN_PATH: ${{ steps.plan.outputs.json_plan_path }}
+          TEXT_PLAN_PATH: ${{ steps.plan.outputs.text_plan_path }}
+          RUN_ID: ${{ steps.apply.outputs.run_id }}
         run: |
-          cat '${{ steps.plan.outputs.json_plan_path }}'
-          if [[ $(jq -r .format_version "${{ steps.plan.outputs.json_plan_path }}") != "1.2" ]]; then
+          cat "$JSON_PLAN_PATH"
+          if [[ $(jq -r .format_version "$JSON_PLAN_PATH") != "1.2" ]]; then
             echo "::error:: json_plan_path not set correctly"
             exit 1
           fi
 
-          if ! grep -q "No changes" '${{ steps.plan.outputs.text_plan_path }}'; then
+          if ! grep -q "No changes" "$TEXT_PLAN_PATH"; then
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
 
-          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+          if [[ -n "$RUN_ID" ]]; then
             echo "::error:: run_id should not be set"
             exit 1
           fi
 
   plan_change_comment_11:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Change terraform 11
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan
         uses: ./terraform-plan
@@ -105,40 +133,48 @@ jobs:
           path: tests/workflows/test-plan/plan_11
 
       - name: Verify outputs
+        env:
+          CHANGES: ${{ steps.plan.outputs.changes }}
+          JSON_PLAN_PATH: ${{ steps.plan.outputs.json_plan_path }}
+          TEXT_PLAN_PATH: ${{ steps.plan.outputs.text_plan_path }}
+          TO_ADD: ${{ steps.plan.outputs.to_add }}
+          TO_CHANGE: ${{ steps.plan.outputs.to_change }}
+          TO_DESTROY: ${{ steps.plan.outputs.to_destroy }}
+          RUN_ID: ${{ steps.plan.outputs.run_id }}
         run: |
-          echo "changes=${{ steps.plan.outputs.changes }}"
+          echo "changes=$CHANGES"
 
-          if [[ "${{ steps.plan.outputs.changes }}" != "true" ]]; then
+          if [[ "$CHANGES" != "true" ]]; then
             echo "::error:: output changes not set correctly"
             exit 1
           fi
 
-          if [[ -n "${{ steps.plan.outputs.json_plan_path }}" ]]; then
+          if [[ -n "$JSON_PLAN_PATH" ]]; then
             echo "::error:: json_plan_path should not be set - not available with terraform 11"
             exit 1
           fi
 
-          if ! grep -q "Terraform will perform the following actions" '${{ steps.plan.outputs.text_plan_path }}'; then
+          if ! grep -q "Terraform will perform the following actions" "$TEXT_PLAN_PATH"; then
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
 
-          if [[ ${{ steps.plan.outputs.to_add }} -ne 1 ]]; then
+          if [[ "$TO_ADD" -ne 1 ]]; then
             echo "::error:: to_add not set correctly"
             exit 1
           fi
 
-          if [[ ${{ steps.plan.outputs.to_change }} -ne 0 ]]; then
+          if [[ "$TO_CHANGE" -ne 0 ]]; then
             echo "::error:: to_change not set correctly"
             exit 1
           fi
 
-          if [[ ${{ steps.plan.outputs.to_destroy }} -ne 0 ]]; then
+          if [[ "$TO_DESTROY" -ne 0 ]]; then
             echo "::error:: to_destroy not set correctly"
             exit 1
           fi
 
-          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+          if [[ -n "$RUN_ID" ]]; then
             echo "::error:: run_id should not be set"
             exit 1
           fi
@@ -150,13 +186,18 @@ jobs:
           exit 1
 
   plan_change_comment_12:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Change terraform 12
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan
         uses: ./terraform-plan
@@ -165,41 +206,49 @@ jobs:
           path: tests/workflows/test-plan/plan_12
 
       - name: Verify outputs
+        env:
+          CHANGES: ${{ steps.plan.outputs.changes }}
+          JSON_PLAN_PATH: ${{ steps.plan.outputs.json_plan_path }}
+          TEXT_PLAN_PATH: ${{ steps.plan.outputs.text_plan_path }}
+          TO_ADD: ${{ steps.plan.outputs.to_add }}
+          TO_CHANGE: ${{ steps.plan.outputs.to_change }}
+          TO_DESTROY: ${{ steps.plan.outputs.to_destroy }}
+          RUN_ID: ${{ steps.plan.outputs.run_id }}
         run: |
-          echo "changes=${{ steps.plan.outputs.changes }}"
+          echo "changes=$CHANGES"
 
-          if [[ "${{ steps.plan.outputs.changes }}" != "true" ]]; then
+          if [[ "$CHANGES" != "true" ]]; then
             echo "::error:: output changes not set correctly"
             exit 1
           fi
 
-          cat '${{ steps.plan.outputs.json_plan_path }}'
-          if [[ $(jq -r .output_changes.s.actions[0] "${{ steps.plan.outputs.json_plan_path }}") != "create" ]]; then
+          cat "$JSON_PLAN_PATH"
+          if [[ $(jq -r .output_changes.s.actions[0] "$JSON_PLAN_PATH") != "create" ]]; then
             echo "::error:: json_plan_path not set correctly"
             exit 1
           fi
 
-          if ! grep -q "Terraform will perform the following actions" '${{ steps.plan.outputs.text_plan_path }}'; then
+          if ! grep -q "Terraform will perform the following actions" "$TEXT_PLAN_PATH"; then
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
           
-          if [[ ${{ steps.plan.outputs.to_add }} -ne 1 ]]; then
+          if [[ "$TO_ADD" -ne 1 ]]; then
             echo "::error:: to_add not set correctly"
             exit 1
           fi
 
-          if [[ ${{ steps.plan.outputs.to_change }} -ne 0 ]]; then
+          if [[ "$TO_CHANGE" -ne 0 ]]; then
             echo "::error:: to_change not set correctly"
             exit 1
           fi
 
-          if [[ ${{ steps.plan.outputs.to_destroy }} -ne 0 ]]; then
+          if [[ "$TO_DESTROY" -ne 0 ]]; then
             echo "::error:: to_destroy not set correctly"
             exit 1
           fi
 
-          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+          if [[ -n "$RUN_ID" ]]; then
             echo "::error:: run_id should not be set"
             exit 1
           fi
@@ -211,13 +260,18 @@ jobs:
           exit 1
 
   plan_change_comment_13:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Change terraform 13
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan
         uses: ./terraform-plan
@@ -226,41 +280,49 @@ jobs:
           path: tests/workflows/test-plan/plan_13
 
       - name: Verify outputs
+        env:
+          CHANGES: ${{ steps.plan.outputs.changes }}
+          JSON_PLAN_PATH: ${{ steps.plan.outputs.json_plan_path }}
+          TEXT_PLAN_PATH: ${{ steps.plan.outputs.text_plan_path }}
+          TO_ADD: ${{ steps.plan.outputs.to_add }}
+          TO_CHANGE: ${{ steps.plan.outputs.to_change }}
+          TO_DESTROY: ${{ steps.plan.outputs.to_destroy }}
+          RUN_ID: ${{ steps.plan.outputs.run_id }}
         run: |
-          echo "changes=${{ steps.plan.outputs.changes }}"
+          echo "changes=$CHANGES"
 
-          if [[ "${{ steps.plan.outputs.changes }}" != "true" ]]; then
+          if [[ "$CHANGES" != "true" ]]; then
             echo "::error:: output changes not set correctly"
             exit 1
           fi
 
-          cat '${{ steps.plan.outputs.json_plan_path }}'
-          if [[ $(jq -r .output_changes.s.actions[0] "${{ steps.plan.outputs.json_plan_path }}") != "create" ]]; then
+          cat "$JSON_PLAN_PATH"
+          if [[ $(jq -r .output_changes.s.actions[0] "$JSON_PLAN_PATH") != "create" ]]; then
             echo "::error:: json_plan_path not set correctly"
             exit 1
           fi
 
-          if ! grep -q "Terraform will perform the following actions" '${{ steps.plan.outputs.text_plan_path }}'; then
+          if ! grep -q "Terraform will perform the following actions" "$TEXT_PLAN_PATH"; then
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
 
-          if [[ ${{ steps.plan.outputs.to_add }} -ne 1 ]]; then
+          if [[ "$TO_ADD" -ne 1 ]]; then
             echo "::error:: to_add not set correctly"
             exit 1
           fi
 
-          if [[ ${{ steps.plan.outputs.to_change }} -ne 0 ]]; then
+          if [[ "$TO_CHANGE" -ne 0 ]]; then
             echo "::error:: to_change not set correctly"
             exit 1
           fi
 
-          if [[ ${{ steps.plan.outputs.to_destroy }} -ne 0 ]]; then
+          if [[ "$TO_DESTROY" -ne 0 ]]; then
             echo "::error:: to_destroy not set correctly"
             exit 1
           fi
 
-          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+          if [[ -n "$RUN_ID" ]]; then
             echo "::error:: run_id should not be set"
             exit 1
           fi
@@ -272,14 +334,19 @@ jobs:
           exit 1
 
   plan_change_comment_14:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Change terraform 14
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       TF_PLAN_COLLAPSE_LENGTH: 30
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan
         uses: ./terraform-plan
@@ -288,41 +355,49 @@ jobs:
           path: tests/workflows/test-plan/plan_14
 
       - name: Verify outputs
+        env:
+          CHANGES: ${{ steps.plan.outputs.changes }}
+          JSON_PLAN_PATH: ${{ steps.plan.outputs.json_plan_path }}
+          TEXT_PLAN_PATH: ${{ steps.plan.outputs.text_plan_path }}
+          TO_ADD: ${{ steps.plan.outputs.to_add }}
+          TO_CHANGE: ${{ steps.plan.outputs.to_change }}
+          TO_DESTROY: ${{ steps.plan.outputs.to_destroy }}
+          RUN_ID: ${{ steps.plan.outputs.run_id }}
         run: |
-          echo "changes=${{ steps.plan.outputs.changes }}"
+          echo "changes=$CHANGES"
 
-          if [[ "${{ steps.plan.outputs.changes }}" != "true" ]]; then
+          if [[ "$CHANGES" != "true" ]]; then
             echo "::error:: output changes not set correctly"
             exit 1
           fi
 
-          cat '${{ steps.plan.outputs.json_plan_path }}'
-          if [[ $(jq -r .output_changes.s.actions[0] "${{ steps.plan.outputs.json_plan_path }}") != "create" ]]; then
+          cat "$JSON_PLAN_PATH"
+          if [[ $(jq -r .output_changes.s.actions[0] "$JSON_PLAN_PATH") != "create" ]]; then
             echo "::error:: json_plan_path not set correctly"
             exit 1
           fi
 
-          if ! grep -q "Terraform will perform the following actions" '${{ steps.plan.outputs.text_plan_path }}'; then
+          if ! grep -q "Terraform will perform the following actions" "$TEXT_PLAN_PATH"; then
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
 
-          if [[ ${{ steps.plan.outputs.to_add }} -ne 1 ]]; then
+          if [[ "$TO_ADD" -ne 1 ]]; then
             echo "::error:: to_add not set correctly"
             exit 1
           fi
 
-          if [[ ${{ steps.plan.outputs.to_change }} -ne 0 ]]; then
+          if [[ "$TO_CHANGE" -ne 0 ]]; then
             echo "::error:: to_change not set correctly"
             exit 1
           fi
 
-          if [[ ${{ steps.plan.outputs.to_destroy }} -ne 0 ]]; then
+          if [[ "$TO_DESTROY" -ne 0 ]]; then
             echo "::error:: to_destroy not set correctly"
             exit 1
           fi
 
-          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+          if [[ -n "$RUN_ID" ]]; then
             echo "::error:: run_id should not be set"
             exit 1
           fi
@@ -334,14 +409,19 @@ jobs:
           exit 1
 
   plan_change_comment_15:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Change terraform 15
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       TF_PLAN_COLLAPSE_LENGTH: 30
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan
         uses: ./terraform-plan
@@ -350,41 +430,49 @@ jobs:
           path: tests/workflows/test-plan/plan_15
 
       - name: Verify outputs
+        env:
+          CHANGES: ${{ steps.plan.outputs.changes }}
+          JSON_PLAN_PATH: ${{ steps.plan.outputs.json_plan_path }}
+          TEXT_PLAN_PATH: ${{ steps.plan.outputs.text_plan_path }}
+          TO_ADD: ${{ steps.plan.outputs.to_add }}
+          TO_CHANGE: ${{ steps.plan.outputs.to_change }}
+          TO_DESTROY: ${{ steps.plan.outputs.to_destroy }}
+          RUN_ID: ${{ steps.plan.outputs.run_id }}
         run: |
-          echo "changes=${{ steps.plan.outputs.changes }}"
+          echo "changes=$CHANGES"
 
-          if [[ "${{ steps.plan.outputs.changes }}" != "true" ]]; then
+          if [[ "$CHANGES" != "true" ]]; then
             echo "::error:: output changes not set correctly"
             exit 1
           fi
 
-          cat '${{ steps.plan.outputs.json_plan_path }}'
-          if [[ $(jq -r .output_changes.s.actions[0] "${{ steps.plan.outputs.json_plan_path }}") != "create" ]]; then
+          cat "$JSON_PLAN_PATH"
+          if [[ $(jq -r .output_changes.s.actions[0] "$JSON_PLAN_PATH") != "create" ]]; then
             echo "::error:: json_plan_path not set correctly"
             exit 1
           fi
 
-          if ! grep -q "Terraform will perform the following actions" '${{ steps.plan.outputs.text_plan_path }}'; then
+          if ! grep -q "Terraform will perform the following actions" "$TEXT_PLAN_PATH"; then
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
 
-          if [[ ${{ steps.plan.outputs.to_add }} -ne 1 ]]; then
+          if [[ "$TO_ADD" -ne 1 ]]; then
             echo "::error:: to_add not set correctly"
             exit 1
           fi
 
-          if [[ ${{ steps.plan.outputs.to_change }} -ne 0 ]]; then
+          if [[ "$TO_CHANGE" -ne 0 ]]; then
             echo "::error:: to_change not set correctly"
             exit 1
           fi
 
-          if [[ ${{ steps.plan.outputs.to_destroy }} -ne 0 ]]; then
+          if [[ "$TO_DESTROY" -ne 0 ]]; then
             echo "::error:: to_destroy not set correctly"
             exit 1
           fi
 
-          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+          if [[ -n "$RUN_ID" ]]; then
             echo "::error:: run_id should not be set"
             exit 1
           fi
@@ -396,13 +484,18 @@ jobs:
           exit 1
 
   plan_change_comment_15_4:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Change terraform 15.4
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan
         uses: ./terraform-plan
@@ -411,41 +504,49 @@ jobs:
           path: tests/workflows/test-plan/plan_15_4
 
       - name: Verify outputs
+        env:
+          CHANGES: ${{ steps.plan.outputs.changes }}
+          JSON_PLAN_PATH: ${{ steps.plan.outputs.json_plan_path }}
+          TEXT_PLAN_PATH: ${{ steps.plan.outputs.text_plan_path }}
+          TO_ADD: ${{ steps.plan.outputs.to_add }}
+          TO_CHANGE: ${{ steps.plan.outputs.to_change }}
+          TO_DESTROY: ${{ steps.plan.outputs.to_destroy }}
+          RUN_ID: ${{ steps.plan.outputs.run_id }}
         run: |
-          echo "changes=${{ steps.plan.outputs.changes }}"
+          echo "changes=$CHANGES"
 
-          if [[ "${{ steps.plan.outputs.changes }}" != "true" ]]; then
+          if [[ "$CHANGES" != "true" ]]; then
             echo "::error:: output changes not set correctly"
             exit 1
           fi
 
-          cat '${{ steps.plan.outputs.json_plan_path }}'
-          if [[ $(jq -r .output_changes.s.actions[0] "${{ steps.plan.outputs.json_plan_path }}") != "create" ]]; then
+          cat "$JSON_PLAN_PATH"
+          if [[ $(jq -r .output_changes.s.actions[0] "$JSON_PLAN_PATH") != "create" ]]; then
             echo "::error:: json_plan_path not set correctly"
             exit 1
           fi
 
-          if ! grep -q "Terraform will perform the following actions" '${{ steps.plan.outputs.text_plan_path }}'; then
+          if ! grep -q "Terraform will perform the following actions" "$TEXT_PLAN_PATH"; then
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
 
-          if [[ ${{ steps.plan.outputs.to_add }} -ne 1 ]]; then
+          if [[ "$TO_ADD" -ne 1 ]]; then
             echo "::error:: to_add not set correctly"
             exit 1
           fi
 
-          if [[ ${{ steps.plan.outputs.to_change }} -ne 0 ]]; then
+          if [[ "$TO_CHANGE" -ne 0 ]]; then
             echo "::error:: to_change not set correctly"
             exit 1
           fi
 
-          if [[ ${{ steps.plan.outputs.to_destroy }} -ne 0 ]]; then
+          if [[ "$TO_DESTROY" -ne 0 ]]; then
             echo "::error:: to_destroy not set correctly"
             exit 1
           fi
 
-          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+          if [[ -n "$RUN_ID" ]]; then
             echo "::error:: run_id should not be set"
             exit 1
           fi
@@ -457,13 +558,18 @@ jobs:
           exit 1
 
   plan_change_comment_latest:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Change latest terraform
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan
         uses: ./terraform-plan
@@ -472,41 +578,49 @@ jobs:
           path: tests/workflows/test-plan/plan
 
       - name: Verify outputs
+        env:
+          CHANGES: ${{ steps.plan.outputs.changes }}
+          JSON_PLAN_PATH: ${{ steps.plan.outputs.json_plan_path }}
+          TEXT_PLAN_PATH: ${{ steps.plan.outputs.text_plan_path }}
+          TO_ADD: ${{ steps.plan.outputs.to_add }}
+          TO_CHANGE: ${{ steps.plan.outputs.to_change }}
+          TO_DESTROY: ${{ steps.plan.outputs.to_destroy }}
+          RUN_ID: ${{ steps.plan.outputs.run_id }}
         run: |
-          echo "changes=${{ steps.plan.outputs.changes }}"
+          echo "changes=$CHANGES"
 
-          if [[ "${{ steps.plan.outputs.changes }}" != "true" ]]; then
+          if [[ "$CHANGES" != "true" ]]; then
             echo "::error:: output changes not set correctly"
             exit 1
           fi
 
-          cat '${{ steps.plan.outputs.json_plan_path }}'
-          if [[ $(jq -r .output_changes.s.actions[0] "${{ steps.plan.outputs.json_plan_path }}") != "create" ]]; then
+          cat "$JSON_PLAN_PATH"
+          if [[ $(jq -r .output_changes.s.actions[0] "$JSON_PLAN_PATH") != "create" ]]; then
             echo "::error:: json_plan_path not set correctly"
             exit 1
           fi
 
-          if ! grep -q "Terraform will perform the following actions" '${{ steps.plan.outputs.text_plan_path }}'; then
+          if ! grep -q "Terraform will perform the following actions" "$TEXT_PLAN_PATH"; then
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
 
-          if [[ ${{ steps.plan.outputs.to_add }} -ne 1 ]]; then
+          if [[ "$TO_ADD" -ne 1 ]]; then
             echo "::error:: to_add not set correctly"
             exit 1
           fi
 
-          if [[ ${{ steps.plan.outputs.to_change }} -ne 0 ]]; then
+          if [[ "$TO_CHANGE" -ne 0 ]]; then
             echo "::error:: to_change not set correctly"
             exit 1
           fi
 
-          if [[ ${{ steps.plan.outputs.to_destroy }} -ne 0 ]]; then
+          if [[ "$TO_DESTROY" -ne 0 ]]; then
             echo "::error:: to_destroy not set correctly"
             exit 1
           fi
 
-          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+          if [[ -n "$RUN_ID" ]]; then
             echo "::error:: run_id should not be set"
             exit 1
           fi
@@ -518,13 +632,18 @@ jobs:
           exit 1
 
   plan_change_no_comment:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Change without github comment
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan
         uses: ./terraform-plan
@@ -534,31 +653,40 @@ jobs:
           add_github_comment: false
 
       - name: Verify outputs
+        env:
+          JSON_PLAN_PATH: ${{ steps.plan.outputs.json_plan_path }}
+          TEXT_PLAN_PATH: ${{ steps.plan.outputs.text_plan_path }}
+          RUN_ID: ${{ steps.apply.outputs.run_id }}
         run: |
-          cat '${{ steps.plan.outputs.json_plan_path }}'
-          if [[ $(jq -r .output_changes.s.actions[0] "${{ steps.plan.outputs.json_plan_path }}") != "create" ]]; then
+          cat "$JSON_PLAN_PATH"
+          if [[ $(jq -r .output_changes.s.actions[0] "$JSON_PLAN_PATH") != "create" ]]; then
             echo "::error:: json_plan_path not set correctly"
             exit 1
           fi
 
-          if ! grep -q "Terraform will perform the following actions" '${{ steps.plan.outputs.text_plan_path }}'; then
+          if ! grep -q "Terraform will perform the following actions" "$TEXT_PLAN_PATH"; then
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
 
-          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+          if [[ -n "$RUN_ID" ]]; then
             echo "::error:: run_id should not be set"
             exit 1
           fi
 
   error:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Error
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan
         uses: ./terraform-plan
@@ -568,23 +696,27 @@ jobs:
           path: tests/workflows/test-plan/error
 
       - name: Check invalid
+        env:
+          OUTCOME: ${{ steps.plan.outcome }}
+          TEXT_PLAN_PATH: ${{ steps.plan.outputs.text_plan_path }}
+          RUN_ID: ${{ steps.apply.outputs.run_id }}
         run: |
-          if [[ "${{ steps.plan.outcome }}" != "failure" ]]; then
+          if [[ "$OUTCOME" != "failure" ]]; then
             echo "Plan did not fail correctly"
             exit 1
           fi
 
-          if [[ -n "${{ steps.plan.outputs.json_plan_path }}" ]]; then
+          if [[ -n "$JSON_PLAN_PATH" ]]; then
             echo "::error:: json_plan_path should not be set"
             exit 1
           fi
 
-          if [[ -n "${{ steps.plan.outputs.text_plan_path }}" ]]; then
+          if [[ -n "$TEXT_PLAN_PATH" ]]; then
             echo "::error:: text_plan_path should not be set"
             exit 1
           fi
 
-          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+          if [[ -n "$RUN_ID" ]]; then
             echo "::error:: run_id should not be set"
             exit 1
           fi
@@ -596,13 +728,18 @@ jobs:
           exit 1
 
   error_no_comment:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Error without comment
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan
         uses: ./terraform-plan
@@ -613,33 +750,43 @@ jobs:
           add_github_comment: false
 
       - name: Check invalid
+        env:
+          OUTCOME: ${{ steps.plan.outcome }}
+          JSON_PLAN_PATH: ${{ steps.plan.outputs.json_plan_path }}
+          TEXT_PLAN_PATH: ${{ steps.plan.outputs.text_plan_path }}
+          RUN_ID: ${{ steps.apply.outputs.run_id }}
         run: |
-          if [[ "${{ steps.plan.outcome }}" != "failure" ]]; then
+          if [[ "$OUTCOME" != "failure" ]]; then
             echo "Plan did not fail correctly"
             exit 1
           fi
 
-          if [[ -n "${{ steps.plan.outputs.json_plan_path }}" ]]; then
+          if [[ -n "$JSON_PLAN_PATH" ]]; then
             echo "::error:: json_plan_path should not be set"
             exit 1
           fi
 
-          if [[ -n "${{ steps.plan.outputs.text_plan_path }}" ]]; then
+          if [[ -n "$TEXT_PLAN_PATH" ]]; then
             echo "::error:: text_plan_path should not be set"
             exit 1
           fi
 
-          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+          if [[ -n "$RUN_ID" ]]; then
             echo "::error:: run_id should not be set"
             exit 1
           fi
 
   plan_without_token:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Add comment without token
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan
         uses: ./terraform-plan
@@ -649,35 +796,45 @@ jobs:
           path: tests/workflows/test-plan/error
 
       - name: Check invalid
+        env:
+          OUTCOME: ${{ steps.plan.outcome }}
+          JSON_PLAN_PATH: ${{ steps.plan.outputs.json_plan_path }}
+          TEXT_PLAN_PATH: ${{ steps.plan.outputs.text_plan_path }}
+          RUN_ID: ${{ steps.apply.outputs.run_id }}
         run: |
-          if [[ "${{ steps.plan.outcome }}" != "failure" ]]; then
+          if [[ "$OUTCOME" != "failure" ]]; then
             echo "Plan did not fail correctly"
             exit 1
           fi
 
-          if [[ -n "${{ steps.plan.outputs.json_plan_path }}" ]]; then
+          if [[ -n "$JSON_PLAN_PATH" ]]; then
             echo "::error:: json_plan_path should not be set"
             exit 1
           fi
 
-          if [[ -n "${{ steps.plan.outputs.text_plan_path }}" ]]; then
+          if [[ -n "$TEXT_PLAN_PATH" ]]; then
             echo "::error:: text_plan_path should not be set"
             exit 1
           fi
 
-          if [[ -n "${{ steps.apply.outputs.run_id }}" ]]; then
+          if [[ -n "$RUN_ID" ]]; then
             echo "::error:: run_id should not be set"
             exit 1
           fi
 
   plan_single_variable:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Plan single variable
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan
         uses: ./terraform-plan
@@ -688,13 +845,18 @@ jobs:
           var_file: tests/workflows/test-plan/test.tfvars
 
   plan_single_sensitive_variable:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Plan single sensitive variable
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan
         uses: ./terraform-plan
@@ -705,13 +867,18 @@ jobs:
      
 
   plan_sensitive_variables:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Plan variables some which are sensitive
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan
         uses: ./terraform-plan
@@ -740,13 +907,18 @@ jobs:
             ]   
 
   plan_sensitive_var:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Plan using deprecated var and sensitive variable
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan
         uses: ./terraform-plan
@@ -755,13 +927,18 @@ jobs:
           var: my_sensitive_var=hello
 
   plan_change_run_commands:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Change with shell init commands
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan
         uses: ./terraform-plan
@@ -774,13 +951,18 @@ jobs:
             echo "testing command 2"
 
   default_path:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Default path
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Copy
         run: cp tests/workflows/test-plan/plan/main.tf ./main.tf
@@ -791,11 +973,16 @@ jobs:
           label: test-plan default_path
 
   path_does_not_exist:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Error with invalid paths
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: path
         uses: ./terraform-plan
@@ -826,30 +1013,39 @@ jobs:
           add_github_comment: false
 
       - name: Check invalid
+        env:
+          PATH_OUTCOME: ${{ steps.path.outcome }}
+          VAR_FILE_OUTCOME: ${{ steps.var_file.outcome }}
+          BACKEND_CONFIG_FILE_OUTCOME: ${{ steps.backend_config_file.outcome }}
         run: |
-          if [[ "${{ steps.path.outcome }}" != "failure" ]]; then
+          if [[ "$PATH_OUTCOME" != "failure" ]]; then
             echo "Non existant path did not fail correctly"
             exit 1
           fi
 
-          if [[ "${{ steps.var_file.outcome }}" != "failure" ]]; then
+          if [[ "$VAR_FILE_OUTCOME" != "failure" ]]; then
             echo "Non existant var_file did not fail correctly"
             exit 1
           fi
           
-          if [[ "${{ steps.backend_config_file.outcome }}" != "failure" ]]; then
+          if [[ "$BACKEND_CONFIG_FILE_OUTCOME" != "failure" ]]; then
             echo "Non existant backend_config_file did not fail correctly"
             exit 1
           fi          
 
   test_plan_1_4:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Test plan text on Terraform 1.4
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Apply
         uses: ./terraform-apply
@@ -866,11 +1062,16 @@ jobs:
 #  arm64:
 #    runs-on: buildjet-2vcpu-ubuntu-2204-arm
 #    name: Test on arm64
+#    permissions:
+#      contents: read
+#      pull-requests: write
 #    env:
 #      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 #    steps:
 #      - name: Checkout
 #        uses: actions/checkout@v4
+#        with:
+#          persist-credentials: false
 #
 #      - name: Plan
 #        uses: ./terraform-plan
@@ -879,13 +1080,18 @@ jobs:
 #          label: arm64
 
   always_new:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: always-new
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan with label
         uses: ./terraform-plan
@@ -912,8 +1118,11 @@ jobs:
           add_github_comment: always-new
 
   colours:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Full colour plan for diff highlighting
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -921,6 +1130,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan with colours
         uses: ./terraform-plan
@@ -930,23 +1141,28 @@ jobs:
           variables:
             diff=true
 
-  self-hosted:
-    runs-on: self-hosted
-    name: Self-hosted runner
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Plan
-        uses: ./terraform-plan
-        with:
-          label: test-plan self-hosted
-          path: tests/workflows/test-plan/self-hosted
-
-      - name: Plan Again
-        uses: ./terraform-plan
-        with:
-          label: test-plan self-hosted
-          path: tests/workflows/test-plan/self-hosted
+#  self-hosted:
+#    runs-on: self-hosted
+#    name: Self-hosted runner
+#    permissions:
+#      contents: read
+#      pull-requests: write
+#    env:
+#      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v4
+#        with:
+#          persist-credentials: false
+#
+#      - name: Plan
+#        uses: ./terraform-plan
+#        with:
+#          label: test-plan self-hosted
+#          path: tests/workflows/test-plan/self-hosted
+#
+#      - name: Plan Again
+#        uses: ./terraform-plan
+#        with:
+#          label: test-plan self-hosted
+#          path: tests/workflows/test-plan/self-hosted
