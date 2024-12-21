@@ -51,7 +51,12 @@ def determine_version(inputs: InitInputs, cli_config_path: Path, actions_env: Ac
         sys.stdout.write(f'Using {version.product} version specified in .tfswitchrc file\n')
         return version
 
-    if version := try_read_tfenv(inputs, versions):
+    if 'OPENTOFU' in os.environ:
+        if version := try_read_tfenv('.opentofu-version', inputs, versions):
+            sys.stdout.write(f'Using {version.product} version specified in .opentofu-version file\n')
+            return version
+
+    if version := try_read_tfenv('.terraform-version', inputs, versions):
         sys.stdout.write(f'Using {version.product} version specified in .terraform-version file\n')
         return version
 
