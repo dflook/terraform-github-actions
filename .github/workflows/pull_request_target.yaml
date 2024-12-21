@@ -10,6 +10,9 @@ jobs:
   apply:
     runs-on: ubuntu-24.04
     name: Apply approved changes on pull_request_target
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
