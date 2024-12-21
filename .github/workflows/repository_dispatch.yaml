@@ -12,6 +12,9 @@ jobs:
   plan:
     runs-on: ubuntu-24.04
     name: Create terraform plan
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
