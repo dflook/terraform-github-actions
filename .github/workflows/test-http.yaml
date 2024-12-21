@@ -1,4 +1,4 @@
-name: Test HTTP Credentials
+name: Test terraform-apply using HTTP Credentials
 
 on:
   - pull_request
@@ -6,9 +6,12 @@ on:
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+permissions:
+  contents: read
+
 jobs:
   git_http_full_path_credentials:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: git+http full path creds
     env:
       TERRAFORM_HTTP_CREDENTIALS: |
@@ -18,6 +21,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Apply
         uses: ./terraform-apply
@@ -27,14 +32,16 @@ jobs:
           auto_approve: true
 
       - name: Verify outputs
+        env:
+          OUTPUT_GIT_HTTPS: ${{ steps.output.outputs.git_https }}
         run: |
-          if [[ "${{ steps.output.outputs.git_https }}" != "hello" ]]; then
+          if [[ "$OUTPUT_GIT_HTTPS" != "hello" ]]; then
             echo "::error:: output not set correctly"
             exit 1
           fi
 
   git_http_partial_path_credentials:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: git+http partial path creds
     env:
       TERRAFORM_HTTP_CREDENTIALS: |
@@ -44,6 +51,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Apply
         uses: ./terraform-apply
@@ -53,14 +62,16 @@ jobs:
           auto_approve: true
 
       - name: Verify outputs
+        env:
+          OUTPUT_GIT_HTTPS: ${{ steps.output.outputs.git_https }}
         run: |
-          if [[ "${{ steps.output.outputs.git_https }}" != "hello" ]]; then
+          if [[ "$OUTPUT_GIT_HTTPS" != "hello" ]]; then
             echo "::error:: output not set correctly"
             exit 1
           fi
 
   git_http_no_path_credentials:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: git+http no path
     env:
       TERRAFORM_HTTP_CREDENTIALS: |
@@ -70,6 +81,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Apply
         uses: ./terraform-apply
@@ -79,18 +92,22 @@ jobs:
           auto_approve: true
 
       - name: Verify outputs
+        env:
+          OUTPUT_GIT_HTTPS: ${{ steps.output.outputs.git_https }}
         run: |
-          if [[ "${{ steps.output.outputs.git_https }}" != "hello" ]]; then
+          if [[ "$OUTPUT_GIT_HTTPS" != "hello" ]]; then
             echo "::error:: output not set correctly"
             exit 1
           fi
 
   git_no_credentials:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: git+http no creds
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Apply
         uses: ./terraform-apply
@@ -101,14 +118,16 @@ jobs:
           auto_approve: true
 
       - name: Check failed
+        env:
+          OUTCOME: ${{ steps.apply.outcome }}
         run: |
-          if [[ "${{ steps.apply.outcome }}" != "failure" ]]; then
+          if [[ "$OUTCOME" != "failure" ]]; then
             echo "did not fail correctly with no http credentials"
             exit 1
           fi
 
   http_credentials:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: http module source
     env:
       TERRAFORM_HTTP_CREDENTIALS: |
@@ -116,12 +135,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Create dummy credential file
+        env:
+          RUNNER_TEMP_D: ${{ runner.temp }}
         run: |
-          mkdir -p ${{ runner.temp }}/_github_home
-          cp tests/workflows/test-http/http-module/netrc ${{ runner.temp }}/_github_home/.netrc
-          ls -la ${{ runner.temp }}
+          mkdir -p "$RUNNER_TEMP_D/_github_home"
+          cp tests/workflows/test-http/http-module/netrc "$RUNNER_TEMP_D/_github_home/.netrc"
+          ls -la "$RUNNER_TEMP_D"
 
       - name: Apply
         uses: ./terraform-apply
@@ -131,21 +154,26 @@ jobs:
           auto_approve: true
 
       - name: Verify outputs
+        env:
+          OUTPUT_HTTPS: ${{ steps.output.outputs.https }}
+          RUNNER_TEMP_D: ${{ runner.temp }}
         run: |
-          if [[ "${{ steps.output.outputs.https }}" != "hello" ]]; then
+          if [[ "$OUTPUT_HTTPS" != "hello" ]]; then
             echo "::error:: output not set correctly"
             exit 1
           fi
           
           # Check the credential file is as before
-          diff tests/workflows/test-http/http-module/netrc ${{ runner.temp }}/_github_home/.netrc
+          diff tests/workflows/test-http/http-module/netrc "$RUNNER_TEMP_D/_github_home/.netrc"
 
   http_no_credentials:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: http module source with no credentials
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Apply
         uses: ./terraform-apply
@@ -156,8 +184,10 @@ jobs:
           auto_approve: true
 
       - name: Check failed
+        env:
+          OUTCOME: ${{ steps.apply.outcome }}
         run: |
-          if [[ "${{ steps.apply.outcome }}" != "failure" ]]; then
+          if [[ "$OUTCOME" != "failure" ]]; then
             echo "did not fail correctly with no http credentials"
             exit 1
           fi

@@ -1,24 +1,34 @@
-name: Test registry
+name: Test actions using registry
 
 on:
   - pull_request
+
+permissions:
+  contents: read
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   registry_module:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Use registry module
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Create dummy credential file
+        env:
+          RUNNER_TEMP_D: ${{ runner.temp }}
         run: |
-          mkdir -p ${{ runner.temp }}/_github_home
-          cp tests/workflows/test-registry/terraformrc ${{ runner.temp }}/_github_home/.terraformrc
-          ls -la ${{ runner.temp }}
+          mkdir -p "$RUNNER_TEMP_D/_github_home"
+          cp tests/workflows/test-registry/terraformrc "$RUNNER_TEMP_D/_github_home/.terraformrc"
+          ls -la "$RUNNER_TEMP_D"
 
       - name: Plan
         uses: ./terraform-plan
@@ -38,18 +48,24 @@ jobs:
           TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_API_TOKEN }}
 
       - name: Verify outputs
+        env:
+          WORD: ${{ steps.output.outputs.word }}
+          RUNNER_TEMP_D: ${{ runner.temp }}
         run: |
-          if [[ "${{ steps.output.outputs.word }}" != "hello" ]]; then
+          if [[ "$WORD" != "hello" ]]; then
             echo "::error:: output not set correctly"
             exit 1
           fi
           
           # Check that terraformrc is as before
-          diff tests/workflows/test-registry/terraformrc ${{ runner.temp }}/_github_home/.terraformrc
+          diff tests/workflows/test-registry/terraformrc "$RUNNER_TEMP_D/_github_home/.terraformrc"
 
   multiple_registry_module:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Multiple registries
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       TERRAFORM_CLOUD_TOKENS: |
 
@@ -59,6 +75,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan
         uses: ./terraform-plan
@@ -74,18 +92,22 @@ jobs:
           label: test-registry multiple_registry_module
 
       - name: Verify outputs
+        env:
+          WORD: ${{ steps.output.outputs.word }}
         run: |
-          if [[ "${{ steps.output.outputs.word }}" != "hello" ]]; then
+          if [[ "$WORD" != "hello" ]]; then
             echo "::error:: output not set correctly"
             exit 1
           fi
 
   nonsense_credentials:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Nonsense cloud credentials
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan
         uses: ./terraform-plan
@@ -97,8 +119,10 @@ jobs:
           path: tests/workflows/test-registry
 
       - name: Check failed
+        env:
+          OUTCOME: ${{ steps.plan.outcome }}
         run: |
-          if [[ "${{ steps.plan.outcome }}" != "failure" ]]; then
+          if [[ "$OUTCOME" != "failure" ]]; then
             echo "did not fail correctly with nonsense credentials"
             exit 1
           fi

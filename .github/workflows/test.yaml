@@ -3,13 +3,18 @@ name: Unit test
 on:
   - push
 
+permissions:
+  contents: read
+
 jobs:
   pytest_amd64:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: pytest amd64
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -40,6 +45,8 @@ jobs:
 #    steps:
 #      - name: Checkout
 #        uses: actions/checkout@v4
+#        with:
+#          persist-credentials: false
 #
 #      - name: Install dependencies
 #        run: |
@@ -58,13 +65,15 @@ jobs:
 #           GNUPGHOME=$HOME/.gnupg PYTHONPATH=image/tools:image/src pytest tests
 
   tofu:
-    runs-on: ubuntu-latest
-    name: OpenTofu
+    runs-on: ubuntu-24.04
+    name: OpenTofu actions
     env:
       GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Check tofu actions are up to date
         run: |

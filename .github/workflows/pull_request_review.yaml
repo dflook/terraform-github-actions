@@ -1,17 +1,22 @@
-name: pull_request_review test
+name: Test pull_request_review event
 
 on:
   - pull_request_review
 
 jobs:
   apply:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Apply approved changes on pull_request_review
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan
         uses: ./terraform-plan
@@ -27,8 +32,10 @@ jobs:
           path: tests/workflows/pull_request_review
 
       - name: Verify outputs
+        env:
+          OUTPUT_STRING: ${{ steps.output.outputs.output_string }}
         run: |
-          if [[ "${{ steps.output.outputs.output_string }}" != "the_string" ]]; then
+          if [[ "$OUTPUT_STRING" != "the_string" ]]; then
             echo "::error:: output s not set correctly"
             exit 1
           fi

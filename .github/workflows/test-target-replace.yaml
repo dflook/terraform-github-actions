@@ -1,18 +1,26 @@
-name: Test plan target and replace
+name: Test actions using target and replace
 
 on:
   - pull_request
+
+permissions:
+  contents: read
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   plan_targeting:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Plan targeting
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Plan with no changes in targets
         uses: ./terraform-plan
@@ -26,8 +34,10 @@ jobs:
             length = 5
 
       - name: Verify outputs
+        env:
+          CHANGES: ${{ steps.plan.outputs.changes }}
         run: |
-          if [[ "${{ steps.plan.outputs.changes }}" != "false" ]]; then
+          if [[ "$CHANGES" != "false" ]]; then
             echo "::error:: Should not be any changes with this targeted plan"
             exit 1
           fi
@@ -43,8 +53,10 @@ jobs:
             length = 5
 
       - name: Verify outputs
+        env:
+          CHANGES: ${{ steps.plan-first-change.outputs.changes }}
         run: |
-          if [[ "${{ steps.plan-first-change.outputs.changes }}" != "true" ]]; then
+          if [[ "$CHANGES" != "true" ]]; then
             echo "::error:: Targeted plan should have changes"
             exit 1
           fi
@@ -60,8 +72,10 @@ jobs:
             length = 5
 
       - name: Verify outputs
+        env:
+          COUNT: ${{ steps.apply-first-change.outputs.count }}
         run: |
-          if [[ "${{ steps.apply-first-change.outputs.count }}" == "" ]]; then
+          if [[ "$COUNT" == "" ]]; then
             echo "::error:: output count not set correctly"
             exit 1
           fi
@@ -77,8 +91,10 @@ jobs:
             length = 6
 
       - name: Verify outputs
+        env:
+          CHANGES: ${{ steps.plan-second-change.outputs.changes }}
         run: |
-          if [[ "${{ steps.plan-second-change.outputs.changes }}" != "true" ]]; then
+          if [[ "$CHANGES" != "true" ]]; then
             echo "::error:: Targeted plan should have changes"
             exit 1
           fi
@@ -94,13 +110,17 @@ jobs:
             length = 6
 
       - name: Verify outputs
+        env:
+          FIRST_COUNT: ${{ steps.apply-first-change.outputs.count }}
+          SECOND_COUNT: ${{ steps.apply-second-change.outputs.count }}
+          FOREACH: ${{ steps.apply-second-change.outputs.foreach }}
         run: |
-          if [[ "${{ steps.apply-second-change.outputs.foreach }}" == "" ]]; then
+          if [[ "$FOREACH" == "" ]]; then
             echo "::error:: output foreach not set correctly"
             exit 1
           fi
 
-          if [[ "${{ steps.apply-second-change.outputs.count }}" != "${{ steps.apply-first-change.outputs.count }}" ]]; then
+          if [[ "$SECOND_COUNT" != "$FIRST_COUNT" ]]; then
             echo "::error:: Targeted change has affected untargeted resources"
             exit 1
           fi
@@ -118,13 +138,18 @@ jobs:
           auto_approve: true
 
       - name: Verify outputs
+        env:
+          THIRD_COUNT: ${{ steps.apply-third-change.outputs.count }}
+          SECOND_COUNT: ${{ steps.apply-second-change.outputs.count }}
+          THIRD_FOREACH: ${{ steps.apply-third-change.outputs.foreach }}
+          SECOND_FOREACH: ${{ steps.apply-second-change.outputs.foreach }}
         run: |
-          if [[ "${{ steps.apply-third-change.outputs.count }}" == "${{ steps.apply-second-change.outputs.count }}" ]]; then
+          if [[ "$THIRD_COUNT" == "$SECOND_COUNT" ]]; then
             echo "::error:: Targeted change has not affected targeted resources"
             exit 1
           fi
 
-          if [[ "${{ steps.apply-third-change.outputs.foreach }}" == "${{ steps.apply-second-change.outputs.foreach }}" ]]; then
+          if [[ "$THIRD_FOREACH" == "$SECOND_FOREACH" ]]; then
             echo "::error:: Targeted change has not affected targeted resources"
             exit 1
           fi
@@ -143,8 +168,10 @@ jobs:
             length = 10
 
       - name: Verify outputs
+        env:
+          CHANGES: ${{ steps.plan-targeted-replacement.outputs.changes }}
         run: |
-          if [[ "${{ steps.plan-targeted-replacement.outputs.changes }}" != "true" ]]; then
+          if [[ "$CHANGES" != "true" ]]; then
             echo "::error:: Targeted replacement should have changes"
             exit 1
           fi
@@ -163,13 +190,18 @@ jobs:
             length = 10
 
       - name: Verify outputs
+        env:
+          THIRD_COUNT: ${{ steps.apply-third-change.outputs.count }}
+          TARGETED_COUNT: ${{ steps.apply-targeted-replacement.outputs.count }}
+          THIRD_FOREACH: ${{ steps.apply-third-change.outputs.foreach }}
+          TARGETED_FOREACH: ${{ steps.apply-targeted-replacement.outputs.foreach }}
         run: |
-          if [[ "${{ steps.apply-targeted-replacement.outputs.count }}" != "${{ steps.apply-third-change.outputs.count }}" ]]; then
+          if [[ "$TARGETED_COUNT" != "$THIRD_COUNT" ]]; then
             echo "::error:: Targeted replacement has affected non targeted resources"
             exit 1
           fi
 
-          if [[ "${{ steps.apply-targeted-replacement.outputs.foreach }}" == "${{ steps.apply-third-change.outputs.foreach }}" ]]; then
+          if [[ "$TARGETED_FOREACH" == "$THIRD_FOREACH" ]]; then
             echo "::error:: Targeted replacement has not affected targeted resources"
             exit 1
           fi
@@ -186,8 +218,10 @@ jobs:
             length = 10
 
       - name: Verify outputs
+        env:
+          CHANGES: ${{ steps.plan-replacement.outputs.changes }}
         run: |
-          if [[ "${{ steps.plan-replacement.outputs.changes }}" != "true" ]]; then
+          if [[ "$CHANGES" != "true" ]]; then
             echo "::error:: Replacement should have changes"
             exit 1
           fi
@@ -204,23 +238,33 @@ jobs:
             length = 10
 
       - name: Verify outputs
+        env:
+          TARGETED_COUNT: ${{ steps.apply-targeted-replacement.outputs.count }}
+          REPLACEMENT_COUNT: ${{ steps.apply-replacement.outputs.count }}
+          TARGETED_FOREACH: ${{ steps.apply-targeted-replacement.outputs.foreach }}
+          REPLACEMENT_FOREACH: ${{ steps.apply-replacement.outputs.foreach }}
         run: |
-          if [[ "${{ steps.apply-replacement.outputs.count }}" == "${{ steps.apply-targeted-replacement.outputs.count }}" ]]; then
+          if [[ "$REPLACEMENT_COUNT" == "$TARGETED_COUNT" ]]; then
             echo "::error:: Replacement has not affected targeted resources"
             exit 1
           fi
 
-          if [[ "${{ steps.apply-replacement.outputs.foreach }}" == "${{ steps.apply-targeted-replacement.outputs.foreach }}" ]]; then
+          if [[ "$REPLACEMENT_FOREACH" == "$TARGETED_FOREACH" ]]; then
             echo "::error:: Replacement has not affected targeted resources"
             exit 1
           fi
 
   remote_plan_targeting:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Remote Plan targeting
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Setup remote backend
         run: |
@@ -258,8 +302,10 @@ jobs:
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Verify outputs
+        env:
+          CHANGES: ${{ steps.plan.outputs.changes }}
         run: |
-          if [[ "${{ steps.plan.outputs.changes }}" != "false" ]]; then
+          if [[ "$CHANGES" != "false" ]]; then
             echo "::error:: Should not be any changes with this targeted plan"
             exit 1
           fi
@@ -277,8 +323,10 @@ jobs:
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Verify outputs
+        env:
+          CHANGES: ${{ steps.plan-first-change.outputs.changes }}
         run: |
-          if [[ "${{ steps.plan-first-change.outputs.changes }}" != "true" ]]; then
+          if [[ "$CHANGES" != "true" ]]; then
             echo "::error:: Targeted plan should have changes"
             exit 1
           fi
@@ -296,8 +344,10 @@ jobs:
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Verify outputs
+        env:
+          COUNT: ${{ steps.apply-first-change.outputs.count }}
         run: |
-          if [[ "${{ steps.apply-first-change.outputs.count }}" == "" ]]; then
+          if [[ "$COUNT" == "" ]]; then
             echo "::error:: output count not set correctly"
             exit 1
           fi
@@ -315,8 +365,10 @@ jobs:
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Verify outputs
+        env:
+          CHANGES: ${{ steps.plan-second-change.outputs.changes }}
         run: |
-          if [[ "${{ steps.plan-second-change.outputs.changes }}" != "true" ]]; then
+          if [[ "$CHANGES" != "true" ]]; then
             echo "::error:: Targeted plan should have changes"
             exit 1
           fi
@@ -334,13 +386,17 @@ jobs:
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Verify outputs
+        env:
+          FIRST_COUNT: ${{ steps.apply-first-change.outputs.count }}
+          SECOND_COUNT: ${{ steps.apply-second-change.outputs.count }}
+          FOREACH: ${{ steps.apply-second-change.outputs.foreach }}
         run: |
-          if [[ "${{ steps.apply-second-change.outputs.foreach }}" == "" ]]; then
+          if [[ "$FOREACH" == "" ]]; then
             echo "::error:: output foreach not set correctly"
             exit 1
           fi
 
-          if [[ "${{ steps.apply-second-change.outputs.count }}" != "${{ steps.apply-first-change.outputs.count }}" ]]; then
+          if [[ "$SECOND_COUNT" != "$FIRST_COUNT" ]]; then
             echo "::error:: Targeted change has affected untargeted resources"
             exit 1
           fi
@@ -360,13 +416,18 @@ jobs:
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Verify outputs
+        env:
+          THIRD_COUNT: ${{ steps.apply-third-change.outputs.count }}
+          SECOND_COUNT: ${{ steps.apply-second-change.outputs.count }}
+          THIRD_FOREACH: ${{ steps.apply-third-change.outputs.foreach }}
+          SECOND_FOREACH: ${{ steps.apply-second-change.outputs.foreach }}
         run: |
-          if [[ "${{ steps.apply-third-change.outputs.count }}" == "${{ steps.apply-second-change.outputs.count }}" ]]; then
+          if [[ "$THIRD_COUNT" == "$SECOND_COUNT" ]]; then
             echo "::error:: Targeted change has not affected targeted resources"
             exit 1
           fi
 
-          if [[ "${{ steps.apply-third-change.outputs.foreach }}" == "${{ steps.apply-second-change.outputs.foreach }}" ]]; then
+          if [[ "$THIRD_FOREACH" == "$SECOND_FOREACH" ]]; then
             echo "::error:: Targeted change has not affected targeted resources"
             exit 1
           fi
@@ -387,8 +448,10 @@ jobs:
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Verify outputs
+        env:
+          CHANGES: ${{ steps.plan-targeted-replacement.outputs.changes }}
         run: |
-          if [[ "${{ steps.plan-targeted-replacement.outputs.changes }}" != "true" ]]; then
+          if [[ "$CHANGES" != "true" ]]; then
             echo "::error:: Targeted replacement should have changes"
             exit 1
           fi
@@ -409,13 +472,18 @@ jobs:
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Verify outputs
+        env:
+          THIRD_COUNT: ${{ steps.apply-third-change.outputs.count }}
+          TARGETED_COUNT: ${{ steps.apply-targeted-replacement.outputs.count }}
+          THIRD_FOREACH: ${{ steps.apply-third-change.outputs.foreach }}
+          TARGETED_FOREACH: ${{ steps.apply-targeted-replacement.outputs.foreach }}
         run: |
-          if [[ "${{ steps.apply-targeted-replacement.outputs.count }}" != "${{ steps.apply-third-change.outputs.count }}" ]]; then
+          if [[ "$TARGETED_COUNT" != "$THIRD_COUNT" ]]; then
             echo "::error:: Targeted replacement has affected non targeted resources"
             exit 1
           fi
 
-          if [[ "${{ steps.apply-targeted-replacement.outputs.foreach }}" == "${{ steps.apply-third-change.outputs.foreach }}" ]]; then
+          if [[ "$TARGETED_FOREACH" == "$THIRD_FOREACH" ]]; then
             echo "::error:: Targeted replacement has not affected targeted resources"
             exit 1
           fi
@@ -434,8 +502,10 @@ jobs:
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Verify outputs
+        env:
+          CHANGES: ${{ steps.plan-replacement.outputs.changes }}
         run: |
-          if [[ "${{ steps.plan-replacement.outputs.changes }}" != "true" ]]; then
+          if [[ "$CHANGES" != "true" ]]; then
             echo "::error:: Replacement should have changes"
             exit 1
           fi
@@ -454,13 +524,18 @@ jobs:
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Verify outputs
+        env:
+          TARGETED_COUNT: ${{ steps.apply-targeted-replacement.outputs.count }}
+          REPLACEMENT_COUNT: ${{ steps.apply-replacement.outputs.count }}
+          TARGETED_FOREACH: ${{ steps.apply-targeted-replacement.outputs.foreach }}
+          REPLACEMENT_FOREACH: ${{ steps.apply-replacement.outputs.foreach }}
         run: |
-          if [[ "${{ steps.apply-replacement.outputs.count }}" == "${{ steps.apply-targeted-replacement.outputs.count }}" ]]; then
+          if [[ "$REPLACEMENT_COUNT" == "$TARGETED_COUNT" ]]; then
             echo "::error:: Replacement has not affected targeted resources"
             exit 1
           fi
 
-          if [[ "${{ steps.apply-replacement.outputs.foreach }}" == "${{ steps.apply-targeted-replacement.outputs.foreach }}" ]]; then
+          if [[ "$REPLACEMENT_FOREACH" == "$TARGETED_FOREACH" ]]; then
             echo "::error:: Replacement has not affected targeted resources"
             exit 1
           fi

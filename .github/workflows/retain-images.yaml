@@ -3,19 +3,27 @@ name: Retain images
 on:
   schedule:
     - cron: 0 0 1 * *
+  push:
+    paths:
+      - .github/workflows/retain-images.yaml
+
+permissions:
+  contents: read
 
 jobs:
   pull_image:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Pull images
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          persist-credentials: false
           fetch-depth: 0
 
       - name: docker pull
         run: |
           for tag in $(git tag); do
             docker pull --quiet danielflook/terraform-github-actions:$tag
+            docker system prune --all --force
           done

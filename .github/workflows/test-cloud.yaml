@@ -3,10 +3,16 @@ name: Test Terraform cloud
 on:
   - pull_request
 
+permissions:
+  contents: read
+
 jobs:
   workspaces:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Terraform Cloud
+    permissions:
+      contents: read
+      pull-requests: write
     strategy:
       fail-fast: false
       matrix:
@@ -14,6 +20,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Create a new workspace with no existing workspaces
         uses: ./terraform-new-workspace
@@ -50,34 +58,40 @@ jobs:
             from_variables="from_variables"
 
       - name: Verify auto_apply terraform outputs
+        env:
+          OUTPUT_DEFAULT: ${{ steps.auto_apply.outputs.default }}
+          FROM_TFVARS: ${{ steps.auto_apply.outputs.from_tfvars }}
+          FROM_VARIABLES: ${{ steps.auto_apply.outputs.from_variables }}
+          TEXT_PLAN_PATH: ${{ steps.auto_apply.outputs.text_plan_path }}
+          JSON_PLAN_PATH: ${{ steps.auto_apply.outputs.json_plan_path }}
+          RUN_ID: ${{ steps.auto_apply.outputs.run_id }}
         run: |
-          if [[ "${{ steps.auto_apply.outputs.default }}" != "default" ]]; then
+          if [[ "$OUTPUT_DEFAULT" != "default" ]]; then
             echo "::error:: Variables not set correctly"
             exit 1
           fi
 
-          if [[ "${{ steps.auto_apply.outputs.from_tfvars }}" != "from_tfvars" ]]; then
+          if [[ "$FROM_TFVARS" != "from_tfvars" ]]; then
             echo "::error:: Variables not set correctly"
             exit 1
           fi
 
-          if [[ "${{ steps.auto_apply.outputs.from_variables }}" != "from_variables" ]]; then
+          if [[ "$FROM_VARIABLES" != "from_variables" ]]; then
             echo "::error:: Variables not set correctly"
             exit 1
           fi
 
-          if [[ -n "${{ steps.auto_apply.outputs.text_plan_path }}" ]]; then
+          if [[ -n "$TEXT_PLAN_PATH" ]]; then
             echo "::error:: text_plan_path should not be set"
             exit 1
           fi
 
-          if [[ -n "${{ steps.auto_apply.outputs.json_plan_path }}" ]]; then
+          if [[ -n "$JSON_PLAN_PATH" ]]; then
             echo "::error:: json_plan_path should not be set"
             exit 1
           fi
 
-          echo '${{ steps.auto_apply.outputs.run_id }}'
-          if [[ "${{ steps.auto_apply.outputs.run_id }}" != "run-"* ]]; then
+          if [[ "$RUN_ID" != "run-"* ]]; then
             echo "::error:: output run_id not set correctly"
             exit 1
           fi
@@ -91,19 +105,23 @@ jobs:
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Verify auto_apply terraform outputs with workspace prefix
+        env:
+          OUTPUT_DEFAULT: ${{ steps.output.outputs.default }}
         run: |
-          if [[ "${{ steps.output.outputs.default }}" != "default" ]]; then
+          if [[ "$OUTPUT_DEFAULT" != "default" ]]; then
             echo "::error:: Variables not set correctly"
             exit 1
           fi
 
       - name: Setup terraform with workspace name
+        env:
+          HEAD_REF: ${{ github.head_ref }}
         run: |
           mkdir fixed-workspace-name
           if [[ "${{ matrix.tf_version }}" == "0.13" ]]; then
-            sed -e 's/prefix.*/name = "github-actions-0-13-${{ github.head_ref }}-1"/' tests/workflows/test-cloud/${{ matrix.tf_version }}/main.tf > fixed-workspace-name/main.tf
+            sed -e 's/prefix.*/name = "github-actions-0-13-'"$HEAD_REF"'-1"/' tests/workflows/test-cloud/${{ matrix.tf_version }}/main.tf > fixed-workspace-name/main.tf
           else
-            sed -e 's/prefix.*/name = "github-actions-1-1-${{ github.head_ref }}-1"/' tests/workflows/test-cloud/${{ matrix.tf_version }}/main.tf > fixed-workspace-name/main.tf
+            sed -e 's/prefix.*/name = "github-actions-1-1-'"$HEAD_REF"'-1"/' tests/workflows/test-cloud/${{ matrix.tf_version }}/main.tf > fixed-workspace-name/main.tf
           fi
 
       - name: Get outputs
@@ -114,8 +132,10 @@ jobs:
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Verify auto_apply terraform outputs with workspace name
+        env:
+          OUTPUT_DEFAULT: ${{ steps.name-output.outputs.default }}
         run: |
-          if [[ "${{ steps.name-output.outputs.default }}" != "default" ]]; then
+          if [[ "$OUTPUT_DEFAULT" != "default" ]]; then
             echo "::error:: Variables not set correctly"
             exit 1
           fi
@@ -145,13 +165,16 @@ jobs:
             from_variables="Changed!"
 
       - name: Verify changes detected
+        env:
+          CHECK_OUTCOME: ${{ steps.check.outcome }}
+          FAILURE_REASON: ${{ steps.check.outputs.failure-reason }}
         run: |
-          if [[ "${{ steps.check.outcome }}" != "failure" ]]; then
+          if [[ "$CHECK_OUTCOME" != "failure" ]]; then
             echo "Check didn't fail correctly"
             exit 1
           fi
 
-          if [[ "${{ steps.check.outputs.failure-reason }}" != "changes-to-apply" ]]; then
+          if [[ "$FAILURE_REASON" != "changes-to-apply" ]]; then
             echo "failure-reason not set correctly"
             exit 1
           fi
@@ -178,26 +201,29 @@ jobs:
             from_variables="from_variables"
 
       - name: Verify plan outputs
+        env:
+          PLAN_CHANGES: ${{ steps.plan.outputs.changes }}
+          TEXT_PLAN_PATH: ${{ steps.plan.outputs.text_plan_path }}
+          JSON_PLAN_PATH: ${{ steps.plan.outputs.json_plan_path }}
+          RUN_ID: ${{ steps.plan.outputs.run_id }}
         run: |
-          if [[ "${{ steps.plan.outputs.changes }}" != "true" ]]; then
+          if [[ "$PLAN_CHANGES" != "true" ]]; then
             echo "::error:: output changes not set correctly"
             exit 1
           fi
 
-          if ! grep -q "Terraform will perform the following actions" '${{ steps.plan.outputs.text_plan_path }}'; then
+          if ! grep -q "Terraform will perform the following actions" "$TEXT_PLAN_PATH"; then
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
 
-          echo '${{ steps.plan.outputs.run_id }}'
-          if [[ "${{ steps.plan.outputs.run_id }}" != "run-"* ]]; then
+          if [[ "$RUN_ID" != "run-"* ]]; then
             echo "::error:: output run_id not set correctly"
             exit 1
           fi
 
-          echo '${{ steps.plan.outputs.json_plan_path }}'
-          jq .output_changes.from_variables.actions[0] "${{ steps.plan.outputs.json_plan_path }}"
-          if [[ $(jq -r .output_changes.from_variables.actions[0] "${{ steps.plan.outputs.json_plan_path }}") != "create" ]]; then
+          jq .output_changes.from_variables.actions[0] "$JSON_PLAN_PATH"
+          if [[ $(jq -r .output_changes.from_variables.actions[0] "$JSON_PLAN_PATH") != "create" ]]; then
             echo "::error:: json_plan_path not set correctly"
             exit 1
           fi
@@ -217,34 +243,40 @@ jobs:
             from_variables="from_variables"
 
       - name: Verify apply terraform outputs
+        env:
+          OUTPUT_DEFAULT: ${{ steps.apply.outputs.default }}
+          FROM_TFVARS: ${{ steps.apply.outputs.from_tfvars }}
+          FROM_VARIABLES: ${{ steps.apply.outputs.from_variables }}
+          TEXT_PLAN_PATH: ${{ steps.apply.outputs.text_plan_path }}
+          JSON_PLAN_PATH: ${{ steps.apply.outputs.json_plan_path }}
+          RUN_ID: ${{ steps.apply.outputs.run_id }}
         run: |
-          if [[ "${{ steps.apply.outputs.default }}" != "default" ]]; then
+          if [[ "$OUTPUT_DEFAULT" != "default" ]]; then
             echo "::error:: Variables not set correctly"
             exit 1
           fi
 
-          if [[ "${{ steps.apply.outputs.from_tfvars }}" != "from_tfvars" ]]; then
+          if [[ "$FROM_TFVARS" != "from_tfvars" ]]; then
             echo "::error:: Variables not set correctly"
             exit 1
           fi
 
-          if [[ "${{ steps.apply.outputs.from_variables }}" != "from_variables" ]]; then
+          if [[ "$FROM_VARIABLES" != "from_variables" ]]; then
             echo "::error:: Variables not set correctly"
             exit 1
           fi
-
-          if ! grep -q "Terraform will perform the following actions" '${{ steps.apply.outputs.text_plan_path }}'; then
+          
+          if ! grep -q "Terraform will perform the following actions" "$TEXT_PLAN_PATH"; then
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
 
-          if [[ -n "${{ steps.apply.outputs.json_plan_path }}" ]]; then
+          if [[ -n "$JSON_PLAN_PATH" ]]; then
             echo "::error:: json_plan_path should not be set"
             exit 1
           fi
-
-          echo '${{ steps.apply.outputs.run_id }}'
-          if [[ "${{ steps.apply.outputs.run_id }}" != "run-"* ]]; then
+          
+          if [[ "$RUN_ID" != "run-"* ]]; then
             echo "::error:: output run_id not set correctly"
             exit 1
           fi
@@ -264,22 +296,30 @@ jobs:
           path: tests/workflows/test-cloud/${{ matrix.tf_version }}
           workspace: ${{ github.head_ref }}-1
           backend_config: token=${{ secrets.TF_API_TOKEN }}
+
       - name: Check failed to destroy
+        env:
+          DESTROY_OUTCOME: ${{ steps.destroy-non-existant-workspace.outcome }}
         run: |
-          if [[ "${{ steps.destroy-non-existant-workspace.outcome }}" != "failure" ]]; then
+          if [[ "$DESTROY_OUTCOME" != "failure" ]]; then
             echo "Destroy non-existant workspace"
             exit 1
           fi
 
   cloud:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Partial cloud config
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       TF_CLOUD_ORGANIZATION: flooktech
       TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_API_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Create a new workspace with no existing workspaces
         uses: ./terraform-new-workspace
@@ -308,24 +348,28 @@ jobs:
           auto_approve: true
 
       - name: Verify auto_apply terraform outputs
+        env:
+          OUTPUT_LEN: ${{ steps.auto_apply.outputs.len }}
+          TEXT_PLAN_PATH: ${{ steps.auto_apply.outputs.text_plan_path }}
+          JSON_PLAN_PATH: ${{ steps.auto_apply.outputs.json_plan_path }}
+          RUN_ID: ${{ steps.auto_apply.outputs.run_id }}
         run: |
-          if [[ "${{ steps.auto_apply.outputs.len }}" != "5" ]]; then
+          if [[ "$OUTPUT_LEN" != "5" ]]; then
             echo "::error:: output not set correctly"
             exit 1
           fi
           
-          if ! grep -q "Terraform will perform the following actions" '${{ steps.auto_apply.outputs.text_plan_path }}'; then
+          if ! grep -q "Terraform will perform the following actions" "$TEXT_PLAN_PATH"; then
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
 
-          if [[ ! -f "${{ steps.auto_apply.outputs.json_plan_path }}" ]]; then
+          if [[ ! -f "$JSON_PLAN_PATH" ]]; then
             echo "::error:: json_plan_path should be set"
             exit 1
           fi
 
-          echo '${{ steps.auto_apply.outputs.run_id }}'
-          if [[ "${{ steps.auto_apply.outputs.run_id }}" != "run-"* ]]; then
+          if [[ "$RUN_ID" != "run-"* ]]; then
             echo "::error:: output run_id not set correctly"
             exit 1
           fi
@@ -338,8 +382,10 @@ jobs:
           workspace: ${{ github.head_ref }}-cloud-1
 
       - name: Verify terraform-output outputs
+        env:
+          OUTPUT_LEN: ${{ steps.output.outputs.len }}
         run: |
-          if [[ "${{ steps.output.outputs.len }}" != "5" ]]; then
+          if [[ "$OUTPUT_LEN" != "5" ]]; then
             echo "::error:: output not set correctly"
             exit 1
           fi
@@ -361,13 +407,16 @@ jobs:
             length=6
 
       - name: Verify changes detected
+        env:
+          CHECK_OUTCOME: ${{ steps.check.outcome }}
+          FAILURE_REASON: ${{ steps.check.outputs.failure-reason }}
         run: |
-          if [[ "${{ steps.check.outcome }}" != "failure" ]]; then
+          if [[ "$CHECK_OUTCOME" != "failure" ]]; then
             echo "Check didn't fail correctly"
             exit 1
           fi
 
-          if [[ "${{ steps.check.outputs.failure-reason }}" != "changes-to-apply" ]]; then
+          if [[ "$FAILURE_REASON" != "changes-to-apply" ]]; then
             echo "failure-reason not set correctly"
             exit 1
           fi
@@ -389,24 +438,28 @@ jobs:
           workspace: ${{ github.head_ref }}-cloud-2
 
       - name: Verify plan outputs
+        env:
+          PLAN_CHANGES: ${{ steps.plan.outputs.changes }}
+          TEXT_PLAN_PATH: ${{ steps.plan.outputs.text_plan_path }}
+          JSON_PLAN_PATH: ${{ steps.plan.outputs.json_plan_path }}
+          RUN_ID: ${{ steps.plan.outputs.run_id }}
         run: |
-          if [[ "${{ steps.plan.outputs.changes }}" != "true" ]]; then
+          if [[ "$PLAN_CHANGES" != "true" ]]; then
             echo "::error:: output changes not set correctly"
             exit 1
           fi
-
-          if ! grep -q "Terraform will perform the following actions" '${{ steps.plan.outputs.text_plan_path }}'; then
+          
+          if ! grep -q "Terraform will perform the following actions" "$TEXT_PLAN_PATH"; then
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
 
-          if [[ ! -f "${{ steps.auto_apply.outputs.json_plan_path }}" ]]; then
+          if [[ ! -f "$JSON_PLAN_PATH" ]]; then
             echo "::error:: json_plan_path should be set"
             exit 1
           fi
-
-          echo '${{ steps.plan.outputs.run_id }}'
-          if [[ "${{ steps.plan.outputs.run_id }}" != "run-"* ]]; then
+          
+          if [[ "$RUN_ID" != "run-"* ]]; then
             echo "::error:: output run_id not set correctly"
             exit 1
           fi
@@ -422,24 +475,28 @@ jobs:
           workspace: ${{ github.head_ref }}-cloud-2
 
       - name: Verify apply terraform outputs
+        env:
+          OUTPUT_LEN: ${{ steps.apply.outputs.len }}
+          TEXT_PLAN_PATH: ${{ steps.apply.outputs.text_plan_path }}
+          JSON_PLAN_PATH: ${{ steps.apply.outputs.json_plan_path }}
+          RUN_ID: ${{ steps.apply.outputs.run_id }}
         run: |
-          if [[ "${{ steps.apply.outputs.len }}" != "5" ]]; then
+          if [[ "$OUTPUT_LEN" != "5" ]]; then
             echo "::error:: Variables not set correctly"
             exit 1
           fi
-
-          if ! grep -q "Terraform will perform the following actions" '${{ steps.apply.outputs.text_plan_path }}'; then
+          
+          if ! grep -q "Terraform will perform the following actions" "$TEXT_PLAN_PATH"; then
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
           
-          if [[ ! -f "${{ steps.apply.outputs.json_plan_path }}" ]]; then
+          if [[ ! -f "$JSON_PLAN_PATH" ]]; then
             echo "::error:: json_plan_path should be set"
             exit 1
           fi
 
-          echo '${{ steps.apply.outputs.run_id }}'
-          if [[ "${{ steps.apply.outputs.run_id }}" != "run-"* ]]; then
+          if [[ "$RUN_ID" != "run-"* ]]; then
             echo "::error:: output run_id not set correctly"
             exit 1
           fi
@@ -465,45 +522,52 @@ jobs:
           workspace: ${{ github.head_ref }}-cloud-2
 
       - name: Verify apply with no changes
+        env:
+          PLAN_CHANGES: ${{ steps.plan-no-changes.outputs.changes }}
+          APPLY_OUTPUT_LEN: ${{ steps.apply-no-changes.outputs.len }}
+          PLAN_TEXT_PLAN_PATH: ${{ steps.plan-no-changes.outputs.text_plan_path }}
+          APPLY_TEXT_PLAN_PATH: ${{ steps.apply-no-changes.outputs.text_plan_path }}
+          PLAN_JSON_PLAN_PATH: ${{ steps.plan-no-changes.outputs.json_plan_path }}
+          APPLY_JSON_PLAN_PATH: ${{ steps.apply-no-changes.outputs.json_plan_path }}
+          PLAN_RUN_ID: ${{ steps.plan-no-changes.outputs.run_id }}
+          APPLY_RUN_ID: ${{ steps.apply-no-changes.outputs.run_id }}
         run: |
-          if [[ "${{ steps.plan-no-changes.outputs.changes }}" != "false" ]]; then
+          if [[ "$PLAN_CHANGES" != "false" ]]; then
             echo "::error:: changes output not set correctly"
             exit 1
           fi
           
-          if [[ "${{ steps.apply-no-changes.outputs.len }}" != "5" ]]; then
+          if [[ "$APPLY_OUTPUT_LEN" != "5" ]]; then
             echo "::error:: Variables not set correctly"
             exit 1
           fi
 
-          if ! grep -q "No changes. Your infrastructure matches the configuration." '${{ steps.plan-no-changes.outputs.text_plan_path }}'; then
+          if ! grep -q "No changes. Your infrastructure matches the configuration." "$PLAN_TEXT_PLAN_PATH"; then
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
 
-          if ! grep -q "No changes. Your infrastructure matches the configuration." '${{ steps.apply-no-changes.outputs.text_plan_path }}'; then
+          if ! grep -q "No changes. Your infrastructure matches the configuration." "$APPLY_TEXT_PLAN_PATH"; then
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
 
-          if [[ ! -f "${{ steps.plan-no-changes.outputs.json_plan_path }}" ]]; then
+          if [[ ! -f "$PLAN_JSON_PLAN_PATH" ]]; then
             echo "::error:: json_plan_path should be set"
             exit 1
           fi
 
-          if [[ ! -f "${{ steps.apply-no-changes.outputs.json_plan_path }}" ]]; then
+          if [[ ! -f "$APPLY_JSON_PLAN_PATH" ]]; then
             echo "::error:: json_plan_path should be set"
             exit 1
           fi
 
-          echo '${{ steps.plan-no-changes.outputs.run_id }}'
-          if [[ "${{ steps.plan-no-changes.outputs.run_id }}" != "run-"* ]]; then
+          if [[ "$PLAN_RUN_ID}" != "run-"* ]]; then
             echo "::error:: output run_id not set correctly"
             exit 1
           fi
 
-          echo '${{ steps.apply-no-changes.outputs.run_id }}'
-          if [[ "${{ steps.apply-no-changes.outputs.run_id }}" != "run-"* ]]; then
+          if [[ "$APPLY_RUN_ID" != "run-"* ]]; then
             echo "::error:: output run_id not set correctly"
             exit 1
           fi
@@ -534,35 +598,40 @@ jobs:
             length=8
 
       - name: Verify saved apply with changes
+        env:
+          SAVED_PLAN_CHANGES: ${{ steps.saved-plan-changes.outputs.changes }}
+          SAVED_APPLY_OUTPUT_LEN: ${{ steps.saved-apply-changes.outputs.len }}
+          SAVED_PLAN_TEXT_PLAN_PATH: ${{ steps.saved-plan-changes.outputs.text_plan_path }}
+          SAVED_PLAN_JSON_PLAN_PATH: ${{ steps.saved-plan-changes.outputs.json_plan_path }}
+          SAVED_PLAN_RUN_ID: ${{ steps.saved-plan-changes.outputs.run_id }}
+          SAVED_APPLY_RUN_ID: ${{ steps.saved-apply-changes.outputs.run_id }}
         run: |
-          if [[ "${{ steps.saved-plan-changes.outputs.changes }}" != "true" ]]; then
+          if [[ "$SAVED_PLAN_CHANGES" != "true" ]]; then
             echo "::error:: changes output not set correctly"
             exit 1
           fi
           
-          if [[ "${{ steps.saved-apply-changes.outputs.len }}" != "8" ]]; then
+          if [[ "$SAVED_APPLY_OUTPUT_LEN" != "8" ]]; then
             echo "::error:: Variables not set correctly"
             exit 1
           fi
 
-          if ! grep -q "Terraform will perform the following actions" '${{ steps.saved-plan-changes.outputs.text_plan_path }}'; then
+          if ! grep -q "Terraform will perform the following actions" $SAVED_PLAN_TEXT_PLAN_PATH; then
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
           
-          if [[ ! -f "${{ steps.saved-plan-changes.outputs.json_plan_path }}" ]]; then
+          if [[ ! -f "$SAVED_PLAN_JSON_PLAN_PATH" ]]; then
             echo "::error:: json_plan_path should be set"
             exit 1
           fi
 
-          echo '${{ steps.saved-plan-changes.outputs.run_id }}'
-          if [[ "${{ steps.saved-plan-changes.outputs.run_id }}" != "run-"* ]]; then
+          if [[ "$SAVED_PLAN_RUN_ID" != "run-"* ]]; then
             echo "::error:: output run_id not set correctly"
             exit 1
           fi
           
-          echo '${{ steps.saved-apply-changes.outputs.run_id }}'
-          if [[ "${{ steps.saved-apply-changes.outputs.run_id }}" != "run-"* ]]; then
+          if [[ "$SAVED_APPLY_RUN_ID" != "run-"* ]]; then
             echo "::error:: output run_id not set correctly"
             exit 1
           fi
@@ -593,35 +662,40 @@ jobs:
             length=8
 
       - name: Verify saved apply with no changes
+        env:
+          SAVED_PLAN_NO_CHANGES: ${{ steps.saved-plan-no-changes.outputs.changes }}
+          SAVED_APPLY_OUTPUT_LEN: ${{ steps.saved-apply-no-changes.outputs.len }}
+          SAVED_PLAN_TEXT_PLAN_PATH: ${{ steps.saved-plan-no-changes.outputs.text_plan_path }}
+          SAVED_PLAN_JSON_PLAN_PATH: ${{ steps.saved-plan-no-changes.outputs.json_plan_path }}
+          SAVED_PLAN_RUN_ID: ${{ steps.saved-plan-no-changes.outputs.run_id }}
+          SAVED_APPLY_RUN_ID: ${{ steps.saved-apply-no-changes.outputs.run_id }}
         run: |
-          if [[ "${{ steps.saved-plan-no-changes.outputs.changes }}" != "false" ]]; then
+          if [[ "$SAVED_PLAN_NO_CHANGES" != "false" ]]; then
             echo "::error:: changes output not set correctly"
             exit 1
           fi
           
-          if [[ "${{ steps.saved-apply-no-changes.outputs.len }}" != "8" ]]; then
+          if [[ "$SAVED_APPLY_OUTPUT_LEN" != "8" ]]; then
             echo "::error:: Variables not set correctly"
             exit 1
           fi
 
-          if ! grep -q "No changes. Your infrastructure matches the configuration." '${{ steps.saved-plan-no-changes.outputs.text_plan_path }}'; then
+          if ! grep -q "No changes. Your infrastructure matches the configuration." "$SAVED_PLAN_TEXT_PLAN_PATH"; then
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
 
-          if [[ ! -f "${{ steps.saved-plan-no-changes.outputs.json_plan_path }}" ]]; then
+          if [[ ! -f "$SAVED_PLAN_JSON_PLAN_PATH" ]]; then
             echo "::error:: json_plan_path should be set"
             exit 1
           fi
 
-          echo '${{ steps.saved-plan-no-changes.outputs.run_id }}'
-          if [[ "${{ steps.saved-plan-no-changes.outputs.run_id }}" != "run-"* ]]; then
+          if [[ "$SAVED_PLAN_RUN_ID" != "run-"* ]]; then
             echo "::error:: output run_id not set correctly"
             exit 1
           fi
 
-          echo '${{ steps.saved-apply-no-changes.outputs.run_id }}'
-          if [[ "${{ steps.saved-apply-no-changes.outputs.run_id }}" != "run-"* ]]; then
+          if [[ "$SAVED_APPLY_RUN_ID" != "run-"* ]]; then
             echo "::error:: output run_id not set correctly"
             exit 1
           fi
@@ -641,8 +715,10 @@ jobs:
           workspace: ${{ github.head_ref }}-cloud-1
 
       - name: Check failed to destroy
+        env:
+          DESTROY_OUTCOME: ${{ steps.destroy-non-existent-workspace.outcome }}
         run: |
-          if [[ "${{ steps.destroy-non-existent-workspace.outcome }}" != "failure" ]]; then
+          if [[ "$DESTROY_OUTCOME" != "failure" ]]; then
             echo "Destroy non-existant workspace"
             exit 1
           fi

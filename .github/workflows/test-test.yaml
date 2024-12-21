@@ -3,13 +3,18 @@ name: Test terraform-test
 on:
   - pull_request
 
+permissions:
+  contents: read
+
 jobs:
   default:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Default inputs
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Test
         uses: ./terraform-test
@@ -18,18 +23,22 @@ jobs:
           path: tests/workflows/test-test/local
 
       - name: Check Passed
+        env:
+          FAILURE_REASON: ${{ steps.test.outputs.failure-reason }}
         run: |
-          if [[ "${{ steps.test.outputs.failure-reason }}" != "" ]]; then
+          if [[ "$FAILURE_REASON" != "" ]]; then
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
 
   filter:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Default path with a filter
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Test
         uses: ./terraform-test
@@ -39,18 +48,22 @@ jobs:
           test_filter: tests/main.tftest.hcl
 
       - name: Check Passed
+        env:
+          FAILURE_REASON: ${{ steps.test.outputs.failure-reason }}
         run: |
-          if [[ "${{ steps.test.outputs.failure-reason }}" != "" ]]; then
+          if [[ "$FAILURE_REASON" != "" ]]; then
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
 
   test_dir:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Custom test directory
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Test
         uses: ./terraform-test
@@ -63,18 +76,22 @@ jobs:
             custom-test-dir/a-third.tftest.hcl
 
       - name: Check Passed
+        env:
+          FAILURE_REASON: ${{ steps.test.outputs.failure-reason }}
         run: |
-          if [[ "${{ steps.test.outputs.failure-reason }}" != "" ]]; then
+          if [[ "$FAILURE_REASON" != "" ]]; then
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
 
   nonexistent_test_dir:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Missing test directory
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Test
         uses: ./terraform-test
@@ -85,23 +102,28 @@ jobs:
           test_directory: i-dont-exist
 
       - name: Check failure
+        env:
+          OUTCOME: ${{ steps.nonexistent_test_dir.outcome }}
+          FAILURE_REASON: ${{ steps.nonexistent_test_dir.outputs.failure-reason }}
         run: |
-          if [[ "${{ steps.nonexistent_test_dir.outcome }}" != "failure" ]]; then
+          if [[ "$OUTCOME" != "failure" ]]; then
             echo "Test did not fail correctly"
             exit 1
           fi
 
-          if [[ "${{ steps.nonexistent_test_dir.outputs.failure-reason }}" != "no-tests" ]]; then
+          if [[ "$FAILURE_REASON" != "no-tests" ]]; then
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
 
   faulty_filter:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Filter matches no tests
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Test
         uses: ./terraform-test
@@ -114,23 +136,28 @@ jobs:
             tests/nor-does-this-one.tftest.hcl
 
       - name: Check failure
+        env:
+          OUTCOME: ${{ steps.faulty_filter.outcome }}
+          FAILURE_REASON: ${{ steps.faulty_filter.outputs.failure-reason }}
         run: |
-          if [[ "${{ steps.faulty_filter.outcome }}" != "failure" ]]; then
+          if [[ "$OUTCOME" != "failure" ]]; then
             echo "Test did not fail correctly"
             exit 1
           fi
 
-          if [[ "${{ steps.faulty_filter.outputs.failure-reason }}" != "no-tests" ]]; then
+          if [[ "$FAILURE_REASON" != "no-tests" ]]; then
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
 
   failing:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: A failing test using variables
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Test
         uses: ./terraform-test
@@ -143,13 +170,16 @@ jobs:
             length = 1
 
       - name: Check failure-reason
+        env:
+          OUTCOME: ${{ steps.failing.outcome }}
+          FAILURE_REASON: ${{ steps.failing.outputs.failure-reason }}
         run: |
-          if [[ "${{ steps.failing.outcome }}" != "failure" ]]; then
+          if [[ "$OUTCOME" != "failure" ]]; then
             echo "Test did not fail correctly"
             exit 1
           fi
           
-          if [[ "${{ steps.failing.outputs.failure-reason }}" != "tests-failed" ]]; then
+          if [[ "$FAILURE_REASON" != "tests-failed" ]]; then
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
