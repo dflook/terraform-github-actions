@@ -38,16 +38,17 @@ def parse_tfenv(terraform_version_file: str, versions: Iterable[Version]) -> Ver
     return Version(version)
 
 
-def try_read_tfenv(inputs: InitInputs, versions: Iterable[Version]) -> Optional[Version]:
+def try_read_tfenv(filename: str, inputs: InitInputs, versions: Iterable[Version]) -> Optional[Version]:
     """
     Return the terraform version specified by any .terraform-version file.
 
+    :param filename: The name of the version file
     :param inputs: The action inputs
     :param versions: The available terraform versions
     :returns: The terraform version specified by any .terraform-version file, which may be None.
     """
 
-    tfenv_path = os.path.join(inputs.get('INPUT_PATH', '.'), '.terraform-version')
+    tfenv_path = os.path.join(inputs.get('INPUT_PATH', '.'), filename)
 
     if not os.path.exists(tfenv_path):
         return None

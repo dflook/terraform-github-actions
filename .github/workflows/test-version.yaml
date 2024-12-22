@@ -137,6 +137,32 @@ jobs:
             exit 1
           fi
 
+  tofuenv:
+    runs-on: ubuntu-24.04
+    name: tofuenv
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Test tofu-version
+        uses: ./tofu-version
+        id: tofu-version
+        with:
+          path: tests/workflows/test-version/tofuenv
+
+      - name: Check the version
+        env:
+          DETECTED_TERRAFORM_VERSION: ${{ steps.tofu-version.outputs.terraform }}
+        run: |
+          echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
+          
+          if [[ "$DETECTED_TERRAFORM_VERSION" != "1.8.5" ]]; then
+            echo "::error:: Terraform version not set from .opentofu-version"
+            exit 1
+          fi
+
   asdf:
     runs-on: ubuntu-24.04
     name: asdf

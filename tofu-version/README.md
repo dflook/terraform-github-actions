@@ -11,12 +11,13 @@ The version to use is discovered from the first of:
 2. A [`required_version`](https://www.terraform.io/docs/configuration/terraform.html#specifying-a-required-terraform-version)
    constraint in the OpenTofu configuration. If the constraint is range, the latest matching version is used.
 3. A [tfswitch](https://warrensbox.github.io/terraform-switcher/) `.tfswitchrc` file in the module path
-4. A [tfenv](https://github.com/tfutils/tfenv) `.terraform-version` file in the module path
-5. An [asdf](https://asdf-vm.com/) `.tool-versions` file in the module path or any parent path
-6. An `OPENTOFU_VERSION` environment variable containing a [version constraint](https://www.terraform.io/language/expressions/version-constraints). If the constraint allows multiple versions, the latest matching version is used.
-7. A `TERRAFORM_VERSION` environment variable containing a [version constraint](https://www.terraform.io/language/expressions/version-constraints). If the constraint allows multiple versions, the latest matching version is used.
-8. The OpenTofu version that created the current state file (best effort).
-9. The latest OpenTofu version
+4. When using a `dflook/tofu-*` action, a [tofuenv](https://github.com/tofuutils/tofuenv) `.opentofu-version` file in the module path
+5. A [tfenv](https://github.com/tfutils/tfenv) `.terraform-version` file in the module path
+6. An [asdf](https://asdf-vm.com/) `.tool-versions` file in the module path or any parent path
+7. An `OPENTOFU_VERSION` environment variable containing a [version constraint](https://www.terraform.io/language/expressions/version-constraints). If the constraint allows multiple versions, the latest matching version is used.
+8. A `TERRAFORM_VERSION` environment variable containing a [version constraint](https://www.terraform.io/language/expressions/version-constraints). If the constraint allows multiple versions, the latest matching version is used.
+9. The OpenTofu version that created the current state file (best effort).
+10. The latest OpenTofu version
 
 The version of OpenTofu and all required providers will be output to the workflow log.
 
