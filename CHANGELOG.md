@@ -11,9 +11,15 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.44.0` to use an exact release
-- `@v1.44` to use the latest patch release for the specific minor version
+- `@v1.45.0` to use an exact release
+- `@v1.45` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.45.0] - 2024-12-24
+
+### Added
+- `dflook/tofu-*` actions can now read the OpenTofu version from a [tofuenv](https://github.com/tofuutils/tofuenv) `.opentofu-version` file in the module path.
+  See the [dflook/tofu-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version) for details.
 
 ## [1.44.0] - 2024-08-04
 
