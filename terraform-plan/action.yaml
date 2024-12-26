@@ -45,6 +45,10 @@ inputs:
     description: Create a plan to destroy all resources
     required: false
     default: "false"
+  refresh:
+    description: Skip checking for external changes to remote objects while creating the plan
+    required: false
+    default: "true"
   label:
     description: A friendly name for this plan
     required: false
