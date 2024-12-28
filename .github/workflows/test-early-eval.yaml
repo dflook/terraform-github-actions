@@ -1,0 +1,22 @@
+name: Test OpenTofu early eval
+
+on:
+  - pull_request
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    name: Plan with early eval
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: terraform plan
+        uses: ./terraform-plan
+        with:
+          path: tests/workflows/test-plan/early-eval/tofu
