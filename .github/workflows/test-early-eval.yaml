@@ -21,4 +21,4 @@ jobs:
         with:
           path: tests/workflows/test-plan/early-eval/tofu
           variables: |
-            passphrase = "tofu"
+            passphrase = "tofuqwertyuiopasdfgh"
