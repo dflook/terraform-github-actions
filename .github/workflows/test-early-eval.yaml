@@ -1,0 +1,28 @@
+name: Test OpenTofu early eval
+
+on:
+  - pull_request
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    name: Plan with early eval
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: terraform plan
+        uses: ./tofu-plan
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        with:
+          path: tests/workflows/test-plan/early-eval/tofu
+          add_github_comment: false
+          variables: |
+            passphrase = "tofuqwertyuiopasdfgh"
