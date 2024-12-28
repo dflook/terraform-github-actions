@@ -18,6 +18,9 @@ jobs:
 
       - name: terraform plan
         uses: ./tofu-plan
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         with:
           path: tests/workflows/test-plan/early-eval/tofu
           variables: |
