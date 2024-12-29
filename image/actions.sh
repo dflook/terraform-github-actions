@@ -217,6 +217,14 @@ function set-init-args() {
         done
     fi
 
+    if [[ -v OPENTOFU && $TERRAFORM_VER_MINOR -ge 8 ]]; then
+        debug "Preparing variables for early evaluation"
+        set-variable-args
+        INIT_ARGS="$INIT_ARGS $VARIABLE_ARGS"
+    else
+        VARIABLE_ARGS=""
+    fi
+
     export INIT_ARGS
 }
 
@@ -299,9 +307,9 @@ function init-backend-default-workspace() {
 function select-workspace() {
     local WORKSPACE_EXIT
 
-    debug_log $TOOL_COMMAND_NAME workspace select "$INPUT_WORKSPACE"
+    debug_log $TOOL_COMMAND_NAME workspace select "$VARIABLE_ARGS" "$INPUT_WORKSPACE"  # don't expand VARIABLE_ARGS
     set +e
-    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME workspace select "$INPUT_WORKSPACE") >"$STEP_TMP_DIR/workspace_select" 2>&1
+    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME workspace select "$VARIABLE_ARGS" "$INPUT_WORKSPACE") >"$STEP_TMP_DIR/workspace_select" 2>&1
     WORKSPACE_EXIT=$?
     set -e
 
@@ -360,6 +368,8 @@ function set-common-plan-args() {
 }
 
 function set-variable-args() {
+    VARIABLE_ARGS=""
+
     if [[ -n "$INPUT_VAR_FILE" ]]; then
         for file in $(echo "$INPUT_VAR_FILE" | tr ',' '\n'); do
 
@@ -368,13 +378,13 @@ function set-variable-args() {
                 exit 1
             fi
 
-            PLAN_ARGS="$PLAN_ARGS -var-file=$(relative_to "$INPUT_PATH" "$file")"
+            VARIABLE_ARGS="$VARIABLE_ARGS -var-file=$(relative_to "$INPUT_PATH" "$file")"
         done
     fi
 
     if [[ -n "$INPUT_VARIABLES" ]]; then
         echo "$INPUT_VARIABLES" >"$STEP_TMP_DIR/variables.tfvars"
-        PLAN_ARGS="$PLAN_ARGS -var-file=$STEP_TMP_DIR/variables.tfvars"
+        VARIABLE_ARGS="$VARIABLE_ARGS -var-file=$STEP_TMP_DIR/variables.tfvars"
     fi
 }
 
@@ -388,6 +398,7 @@ function set-plan-args() {
     fi
 
     set-variable-args
+    PLAN_ARGS="$PLAN_ARGS $VARIABLE_ARGS"
 
     export PLAN_ARGS
 }
