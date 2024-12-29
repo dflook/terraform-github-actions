@@ -217,11 +217,12 @@ function set-init-args() {
         done
     fi
 
-    set-variable-args
-
     if [[ -v OPENTOFU && $TERRAFORM_VER_MINOR -ge 8 ]]; then
         debug "Preparing variables for early evaluation"
+        set-variable-args
         INIT_ARGS="$INIT_ARGS $VARIABLE_ARGS"
+    else
+        VARIABLE_ARGS=""
     fi
 
     export INIT_ARGS
