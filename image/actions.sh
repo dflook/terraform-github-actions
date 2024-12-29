@@ -305,9 +305,9 @@ function init-backend-default-workspace() {
 function select-workspace() {
     local WORKSPACE_EXIT
 
-    debug_log $TOOL_COMMAND_NAME workspace select "$INPUT_WORKSPACE"
+    debug_log $TOOL_COMMAND_NAME workspace select '$VARIABLE_ARGS' "$INPUT_WORKSPACE"  # don't expand VARIABLE_ARGS
     set +e
-    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME workspace select "$INPUT_WORKSPACE") >"$STEP_TMP_DIR/workspace_select" 2>&1
+    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME workspace select "$VARIABLE_ARGS" "$INPUT_WORKSPACE") >"$STEP_TMP_DIR/workspace_select" 2>&1
     WORKSPACE_EXIT=$?
     set -e
 
