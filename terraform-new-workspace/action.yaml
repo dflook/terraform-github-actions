@@ -1,21 +1,23 @@
 name: terraform-new-workspace
-description: Create a new Terraform workspace
+description: Creates a new Terraform workspace. If the workspace already exists, succeeds without doing anything.
 author: Daniel Flook
 
 inputs:
   path:
-    description: Path to the Terraform configuration
+    description: The path to the Terraform root module directory.
     required: false
-    default: .
+    default: "."
   workspace:
-    description: Name of the Terraform workspace
+    description: The name of the Terraform workspace to create.
     required: true
   backend_config:
-    description: List of backend config values to set, one per line
+    description: List of Terraform backend config values, one per line.
     required: false
     default: ""
   backend_config_file:
-    description: Path to a backend config file
+    description: |
+      List of Terraform backend config files to use, one per line.
+      Paths should be relative to the GitHub Actions workspace
     required: false
     default: ""
 

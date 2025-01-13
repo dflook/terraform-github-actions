@@ -1,28 +1,39 @@
 name: tofu-version
-description: Prints OpenTofu and providers versions
+description: Prints Terraform and providers versions
 author: Daniel Flook
 
 inputs:
   path:
-    description: Path to the OpenTofu configuration
+    description: The path to the OpenTofu root module directory.
     required: false
-    default: .
+    default: "."
   workspace:
-    description: Name of the OpenTofu workspace to get the version for
+    description: The workspace to determine the OpenTofu version for.
     required: false
-    default: default
+    default: "default"
   backend_config:
-    description: List of backend config values to set, one per line
+    description: |
+      List of OpenTofu backend config values, one per line.
+
+      This will be used to fetch the OpenTofu version set in the cloud workspace if using the `remote` backend.
+      For other backend types, this is used to fetch the version that most recently wrote to the OpenTofu state.
     required: false
     default: ""
   backend_config_file:
-    description: Path to a backend config file
+    description: |
+      List of OpenTofu backend config files to use, one per line.
+      Paths should be relative to the GitHub Actions workspace
+
+      This will be used to fetch the OpenTofu version set in the cloud workspace if using the `remote` backend.
+      For other backend types, this is used to fetch the version that most recently wrote to the OpenTofu state.
     required: false
     default: ""
 
 outputs:
+  terraform:
+    description: The Hashicorp Terraform or OpenTofu version that is used by the configuration.
   tofu:
-    description: The OpenTofu version used by the configuration
+    description: If the action chose a version of OpenTofu, this will be set to the version that is used by the configuration.
 
 runs:
   env:

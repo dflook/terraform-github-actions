@@ -8,7 +8,7 @@ This action uses the `tofu fmt -recursive` command to reformat files in a direct
 
 * `path`
 
-  Path containing OpenTofu files
+  The path containing OpenTofu files to format.
 
   - Type: string
   - Optional
@@ -16,15 +16,16 @@ This action uses the `tofu fmt -recursive` command to reformat files in a direct
 
 * `workspace`
 
-  OpenTofu workspace to inspect when discovering the OpenTofu version to use, if not otherwise specified. 
+  OpenTofu workspace to inspect when discovering the OpenTofu version to use, if the version is not otherwise specified. 
   See [dflook/tofu-version](https://github.com/dflook/terraform-github-actions/tree/main/tofu-version#tofu-version-action) for details.
 
   - Type: string
   - Optional
+  - Default: `default`
 
 * `backend_config`
 
-  List of OpenTofu backend config values, one per line. This is used for discovering the OpenTofu version to use, if not otherwise specified. 
+  List of OpenTofu backend config values, one per line. This is used for discovering the OpenTofu version to use, if the version is not otherwise specified. 
   See [dflook/tofu-version](https://github.com/dflook/terraform-github-actions/tree/main/tofu-version#tofu-version-action) for details.
 
   ```yaml
@@ -37,7 +38,7 @@ This action uses the `tofu fmt -recursive` command to reformat files in a direct
 
 * `backend_config_file`
 
-  List of OpenTofu backend config files to use, one per line. This is used for discovering the OpenTofu version to use, if not otherwise specified. 
+  List of OpenTofu backend config files to use, one per line. This is used for discovering the OpenTofu version to use, if the version is not otherwise specified. 
   See [dflook/tofu-version](https://github.com/dflook/terraform-github-actions/tree/main/tofu-version#tofu-version-action) for details.
   Paths should be relative to the GitHub Actions workspace
 
@@ -107,7 +108,7 @@ jobs:
       - name: tofu fmt
         uses: dflook/tofu-fmt@v1
         with:
-          path: my-terraform-config
+          path: my-tofu-config
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
@@ -115,5 +116,5 @@ jobs:
           commit-message: tofu fmt
           title: Reformat tofu files
           body: Update OpenTofu files to canonical format using `tofu fmt`
-          branch: automated-terraform-fmt
+          branch: automated-tofu-fmt
 ```

@@ -9,7 +9,7 @@ If the tests fail, the job will stop with a failure status.
 
 * `path`
 
-  Path to the Terraform module under test
+  The path to the Terraform module under test
 
   - Type: string
   - Optional
@@ -31,7 +31,7 @@ If the tests fail, the job will stop with a failure status.
 * `test_filter`
 
   The test files to run, one per line.
-  
+
   If not specified, all test files in the `test_directory` will be run.
   The are paths relative to the module path.
 
@@ -44,11 +44,12 @@ If the tests fail, the job will stop with a failure status.
 
   - Type: string
   - Optional
-  - Default: All test files in the `test_directory`
+  - Default: All test files in the `test_directory`.
 
 * `variables`
 
-  Variables to set for the tests. This should be valid Terraform syntax - like a [variable definition file](https://www.terraform.io/docs/language/values/variables.html#variable-definitions-tfvars-files).
+  Variables to set for the tests. This should be valid Terraform syntax - like a [variable definition file](https://developer.hashicorp.com/terraform/language/values/variables#variable-definitions-tfvars-files).
+  Variables set here override any given in `var_file`s.
 
   ```yaml
   with:
@@ -60,8 +61,6 @@ If the tests fail, the job will stop with a failure status.
       ]
   ```
 
-  Variables set here override any given in `var_file`s.
-
   - Type: string
   - Optional
 
@@ -69,7 +68,7 @@ If the tests fail, the job will stop with a failure status.
 
   List of tfvars files to use, one per line.
   Paths should be relative to the GitHub Actions workspace
-  
+
   ```yaml
   with:
     var_file: |
@@ -91,6 +90,8 @@ If the tests fail, the job will stop with a failure status.
 
   If the job fails for any other reason this will not be set.
   This can be used with the Actions expression syntax to conditionally run steps.
+
+  - Type: string
 
 ## Environment Variables
 
@@ -168,9 +169,9 @@ If the tests fail, the job will stop with a failure status.
 * `TERRAFORM_PRE_RUN`
 
   A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running Terraform. 
-  
+
   The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
-  
+
   The runtime image is currently based on `debian:bullseye`, with the command run using `bash -xeo pipefail`.
 
   For example:
@@ -179,7 +180,7 @@ If the tests fail, the job will stop with a failure status.
     TERRAFORM_PRE_RUN: |
       # Install latest Azure CLI
       curl -skL https://aka.ms/InstallAzureCLIDeb | bash
-      
+
       # Install postgres client
       apt-get install -y --no-install-recommends postgresql-client
   ```

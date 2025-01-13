@@ -17,7 +17,7 @@ If the OpenTofu configuration is not valid, the build is failed.
 
 * `path`
 
-  Path to the OpenTofu root module
+  The path to the OpenTofu module to validate
 
   - Type: string
   - Optional
@@ -28,7 +28,7 @@ If the OpenTofu configuration is not valid, the build is failed.
   OpenTofu workspace to use for the `terraform.workspace` value while validating. Note that for remote operations in a cloud backend, this is always `default`.
 
   Also used for discovering the OpenTofu version to use, if not otherwise specified. 
-  See [dflook/tofu-version](https://github.com/dflook/terraform-github-actions/tree/main/tofu-version#tofu-version-action) for details. 
+  See [dflook/tofu-version](https://github.com/dflook/terraform-github-actions/tree/main/tofu-version#tofu-version-action) for details.
 
   - Type: string
   - Optional
@@ -36,7 +36,8 @@ If the OpenTofu configuration is not valid, the build is failed.
 
 * `backend_config`
 
-  List of OpenTofu backend config values, one per line. This is used for discovering the OpenTofu version to use, if not otherwise specified. 
+  List of OpenTofu backend config values, one per line.
+  This is used for discovering the OpenTofu version to use, if not otherwise specified. 
   See [dflook/tofu-version](https://github.com/dflook/terraform-github-actions/tree/main/tofu-version#tofu-version-action) for details.
 
   ```yaml
@@ -49,9 +50,10 @@ If the OpenTofu configuration is not valid, the build is failed.
 
 * `backend_config_file`
 
-  List of OpenTofu backend config files to use, one per line. This is used for discovering the OpenTofu version to use, if not otherwise specified. 
-  See [dflook/tofu-version](https://github.com/dflook/terraform-github-actions/tree/main/tofu-version#tofu-version-action) for details.
+  List of OpenTofu backend config files to use, one per line.
   Paths should be relative to the GitHub Actions workspace
+  This is used for discovering the OpenTofu version to use, if not otherwise specified. 
+  See [dflook/tofu-version](https://github.com/dflook/terraform-github-actions/tree/main/tofu-version#tofu-version-action) for details.
 
   ```yaml
   with:
@@ -69,6 +71,8 @@ If the OpenTofu configuration is not valid, the build is failed.
   If the job fails for any other reason this will not be set.
   This can be used with the Actions expression syntax to conditionally run a step when the validate fails.
 
+  - Type: string
+
 ## Environment Variables
 
 * `GITHUB_DOT_COM_TOKEN`
@@ -83,7 +87,7 @@ If the OpenTofu configuration is not valid, the build is failed.
 * `TERRAFORM_CLOUD_TOKENS`
 
   API tokens for cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
-  These tokens may be used for fetching required modules from the registry, and discovering the OpenTofu version to use from a cloud workspace.
+  These tokens may be used with the `remote` backend and for fetching required modules from the registry.
 
   e.g:
   ```yaml
@@ -104,7 +108,7 @@ If the OpenTofu configuration is not valid, the build is failed.
 
 * `TERRAFORM_SSH_KEY`
 
-  A SSH private key that OpenTofu will use to fetch git module sources.
+  A SSH private key that OpenTofu will use to fetch git/mercurial module sources.
 
   This should be in PEM format.
 
@@ -112,28 +116,6 @@ If the OpenTofu configuration is not valid, the build is failed.
   ```yaml
   env:
     TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
-  ```
-
-  - Type: string
-  - Optional
-
-* `TERRAFORM_PRE_RUN`
-
-  A set of commands that will be run prior to `tofu init`. This can be used to customise the environment before running OpenTofu. 
-  
-  The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
-  
-  The runtime image is currently based on `debian:bullseye`, with the command run using `bash -xeo pipefail`.
-
-  For example:
-  ```yaml
-  env:
-    TERRAFORM_PRE_RUN: |
-      # Install latest Azure CLI
-      curl -skL https://aka.ms/InstallAzureCLIDeb | bash
-      
-      # Install postgres client
-      apt-get install -y --no-install-recommends postgresql-client
   ```
 
   - Type: string
@@ -164,6 +146,28 @@ If the OpenTofu configuration is not valid, the build is failed.
   - Type: string
   - Optional
 
+* `TERRAFORM_PRE_RUN`
+
+  A set of commands that will be ran prior to `tofu init`. This can be used to customise the environment before running OpenTofu. 
+
+  The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
+
+  The runtime image is currently based on `debian:bullseye`, with the command run using `bash -xeo pipefail`.
+
+  For example:
+  ```yaml
+  env:
+    TERRAFORM_PRE_RUN: |
+      # Install latest Azure CLI
+      curl -skL https://aka.ms/InstallAzureCLIDeb | bash
+
+      # Install postgres client
+      apt-get install -y --no-install-recommends postgresql-client
+  ```
+
+  - Type: string
+  - Optional
+
 ## Example usage
 
 This example workflow runs on every push and fails if the OpenTofu
@@ -183,7 +187,7 @@ jobs:
       - name: tofu validate
         uses: dflook/tofu-validate@v1
         with:
-          path: my-terraform-config
+          path: my-tofu-config
 ```
 
 This example executes a run step only if the validation failed.
@@ -203,7 +207,7 @@ jobs:
         uses: dflook/tofu-validate@v1
         id: validate
         with:
-          path: my-terraform-config
+          path: my-tofu-config
 
       - name: Validate failed
         if: ${{ failure() && steps.validate.outputs.failure-reason == 'validate-failed' }}

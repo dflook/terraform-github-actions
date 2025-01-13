@@ -2,7 +2,7 @@
 
 This is one of a suite of OpenTofu related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
-This actions generates an OpenTofu plan.
+This action generates an OpenTofu plan.
 If the triggering event relates to a PR it will add a comment on the PR containing the generated plan.
 
 <p align="center">
@@ -18,7 +18,7 @@ The [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
 
 * `path`
 
-  Path to the OpenTofu root module to apply
+  The path to the OpenTofu root module to generate a plan for.
 
   - Type: string
   - Optional
@@ -26,7 +26,7 @@ The [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
 
 * `workspace`
 
-  OpenTofu workspace to run the plan for
+  OpenTofu workspace to run the plan for.
 
   - Type: string
   - Optional
@@ -37,14 +37,16 @@ The [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
   A friendly name for the environment the OpenTofu configuration is for.
   This will be used in the PR comment for easy identification.
 
-  If set, must be the same as the `label` used in the corresponding `tofu-apply` command.
+  If this is set, it must be the same as the `label` used in any corresponding [`dflook/tofu-apply`](https://github.com/dflook/terraform-github-actions/tree/main/tofu-apply) action.
 
   - Type: string
   - Optional
 
 * `variables`
 
-  Variables to set for the tofu plan. This should be valid OpenTofu syntax - like a [variable definition file](https://www.terraform.io/docs/language/values/variables.html#variable-definitions-tfvars-files).
+  Variables to set for the tofu plan. This should be valid OpenTofu syntax - like a [variable definition file](https://opentofu.org/docs/language/values/variables/#variable-definitions-tfvars-files).
+
+  Variables set here override any given in `var_file`s.
 
   ```yaml
   with:
@@ -56,8 +58,6 @@ The [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
       ]
   ```
 
-  Variables set here override any given in `var_file`s.
-
   - Type: string
   - Optional
 
@@ -65,7 +65,7 @@ The [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
 
   List of tfvars files to use, one per line.
   Paths should be relative to the GitHub Actions workspace
-  
+
   ```yaml
   with:
     var_file: |
@@ -133,11 +133,11 @@ The [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
 
   Set to `true` to generate a plan to destroy all resources.
 
-  This generates a plan in [destroy mode](https://developer.hashicorp.com/terraform/cli/commands/plan#planning-modes).
+  This generates a plan in [destroy mode](https://opentofu.org/docs/cli/commands/plan/#planning-modes).
 
   - Type: boolean
   - Optional
-  - Default: false
+  - Default: `false`
 
 * `add_github_comment`
 
@@ -150,7 +150,7 @@ The [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
 
   - Type: string
   - Optional
-  - Default: true
+  - Default: `true`
 
 * `parallelism`
 
@@ -158,13 +158,65 @@ The [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
 
   - Type: number
   - Optional
-  - Default: The tofu default (10)
+  - Default: The OpenTofu default (10).
+
+## Outputs
+
+* `changes`
+
+  Set to 'true' if the plan would apply any changes, 'false' if it wouldn't.
+
+  - Type: boolean
+
+* `plan_path`
+
+  This is the path to the generated plan in an opaque binary format.
+  The path is relative to the Actions workspace.
+
+  The plan can be used as the `plan_file` input to the [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/main/tofu-apply) action.
+
+  OpenTofu plans often contain sensitive information, so this output should be treated with care.
+
+  - Type: string
+
+* `json_plan_path`
+
+  This is the path to the generated plan in [JSON Output Format](https://opentofu.org/docs/internals/json-format/).
+  The path is relative to the Actions workspace.
+
+  OpenTofu plans often contain sensitive information, so this output should be treated with care.
+
+  - Type: string
+
+* `text_plan_path`
+
+  This is the path to the generated plan in a human-readable format.
+  The path is relative to the Actions workspace.
+
+  - Type: string
+
+* `to_add`
+* `to_change`
+* `to_destroy`
+* `to_move`
+* `to_import`
+
+  The number of resources that would be affected by each type of operation.
+
+  - Type: number
+
+* `run_id`
+
+  If the root module uses the `remote` or `cloud` backend in remote execution mode, this output will be set to the remote run id.
+
+  - Type: string
 
 ## Environment Variables
 
 * `GITHUB_TOKEN`
 
   The GitHub authorization token to use to create comments on a PR.
+
   The token provided by GitHub Actions can be used - it can be passed by
   using the `${{ secrets.GITHUB_TOKEN }}` expression, e.g.
 
@@ -274,7 +326,7 @@ The [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
 * `TF_PLAN_COLLAPSE_LENGTH`
 
   When PR comments are enabled, the tofu output is included in a collapsable pane.
-  
+
   If a tofu plan has fewer lines than this value, the pane is expanded
   by default when the comment is displayed.
 
@@ -285,14 +337,14 @@ The [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
 
   - Type: integer
   - Optional
-  - Default: 10
+  - Default: `10`
 
 * `TERRAFORM_PRE_RUN`
 
   A set of commands that will be ran prior to `tofu init`. This can be used to customise the environment before running OpenTofu. 
-  
+
   The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
-  
+
   The runtime image is currently based on `debian:bullseye`, with the command run using `bash -xeo pipefail`.
 
   For example:
@@ -301,64 +353,13 @@ The [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
     TERRAFORM_PRE_RUN: |
       # Install latest Azure CLI
       curl -skL https://aka.ms/InstallAzureCLIDeb | bash
-      
+
       # Install postgres client
       apt-get install -y --no-install-recommends postgresql-client
   ```
 
   - Type: string
   - Optional
-
-## Outputs
-
-* `changes`
-
-  Set to 'true' if the plan would apply any changes, 'false' if it wouldn't.
-
-  - Type: boolean
-
-* `plan_path`
-
-  This is the path to the generated plan in an opaque binary format.
-  The path is relative to the Actions workspace.
-
-  The plan can be used as the `plan_file` input to the [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/main/tofu-apply) action.
-
-  OpenTofu plans often contain sensitive information, so this output should be treated with care.
-
-  - Type: string
-
-* `json_plan_path`
-
-  This is the path to the generated plan in [JSON Output Format](https://www.terraform.io/docs/internals/json-format.html)
-  The path is relative to the Actions workspace.
-
-  OpenTofu plans often contain sensitive information, so this output should be treated with care.
-
-  - Type: string
-
-* `text_plan_path`
-
-  This is the path to the generated plan in a human-readable format.
-  The path is relative to the Actions workspace.
-
-  - Type: string
-
-* `to_add`
-* `to_change`
-* `to_destroy`
-* `to_move`
-* `to_import`
-
-  The number of resources that would be affected by each type of operation.
-
-  - Type: number
-
-* `run_id`
-
-  If the root module uses the `remote` or `cloud` backend in remote execution mode, this output will be set to the remote run id.
-
-  - Type: string
 
 ## Workflow events
 
@@ -397,7 +398,7 @@ jobs:
       - name: tofu apply
         uses: dflook/tofu-plan@v1
         with:
-          path: my-terraform-config
+          path: my-tofu-config
 ```
 
 ### push
@@ -446,7 +447,7 @@ jobs:
       - name: tofu plan
         uses: dflook/tofu-plan@v1
         with:
-          path: my-terraform-config
+          path: my-tofu-config
 ```
 
 ### A full example of inputs
@@ -482,7 +483,7 @@ jobs:
       - name: tofu plan
         uses: dflook/tofu-plan@v1
         with:
-          path: my-terraform-config
+          path: my-tofu-config
           label: production
           workspace: prod
           var_file: env/prod.tfvars
@@ -523,5 +524,5 @@ jobs:
       - name: tofu plan
         uses: dflook/tofu-plan@v1
         with:
-          path: my-terraform-config
+          path: my-tofu-config
 ```

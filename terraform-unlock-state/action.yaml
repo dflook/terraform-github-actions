@@ -1,26 +1,28 @@
 name: terraform-unlock-state
-description: Unlock previously locked Terraform state
-author: Patrick Almeida
+description: Force unlocks a Terraform remote state.
+author: Daniel Flook
 
 inputs:
   path:
-    description: Path to the Terraform configuration
+    description: Path to the Terraform root module that defines the remote state to unlock
     required: false
-    default: .
+    default: "."
   workspace:
-    description: Name of the Terraform workspace
+    description: Terraform workspace to unlock the remote state for
     required: false
-    default: default
+    default: "default"
   backend_config:
-    description: List of backend config values to set, one per line
+    description: List of Terraform backend config values, one per line.
     required: false
     default: ""
   backend_config_file:
-    description: Path to a backend config file
+    description: |
+      List of Terraform backend config files to use, one per line.
+      Paths should be relative to the GitHub Actions workspace
     required: false
     default: ""
   lock_id:
-    description: Lock ID of the state lock to unlock
+    description: The ID of the state lock to release.
     required: true
 
 runs:

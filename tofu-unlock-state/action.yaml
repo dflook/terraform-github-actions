@@ -1,26 +1,28 @@
 name: tofu-unlock-state
-description: Unlock previously locked OpenTofu state
-author: Patrick Almeida
+description: Force unlocks an OpenTofu remote state.
+author: Daniel Flook
 
 inputs:
   path:
-    description: Path to the OpenTofu configuration
+    description: Path to the OpenTofu root module that defines the remote state to unlock
     required: false
-    default: .
+    default: "."
   workspace:
-    description: Name of the OpenTofu workspace
+    description: OpenTofu workspace to unlock the remote state for
     required: false
-    default: default
+    default: "default"
   backend_config:
-    description: List of backend config values to set, one per line
+    description: List of OpenTofu backend config values, one per line.
     required: false
     default: ""
   backend_config_file:
-    description: Path to a backend config file
+    description: |
+      List of OpenTofu backend config files to use, one per line.
+      Paths should be relative to the GitHub Actions workspace
     required: false
     default: ""
   lock_id:
-    description: Lock ID of the state lock to unlock
+    description: The ID of the state lock to release.
     required: true
 
 runs:

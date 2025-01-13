@@ -26,7 +26,9 @@ This is intended to run on a schedule to notify if manual changes to your infras
 
 * `variables`
 
-  Variables to set for the OpenTofu plan. This should be valid OpenTofu syntax - like a [variable definition file](https://www.terraform.io/docs/language/values/variables.html#variable-definitions-tfvars-files).
+  Variables to set for the tofu plan. This should be valid OpenTofu syntax - like a [variable definition file](https://opentofu.org/docs/language/values/variables/#variable-definitions-tfvars-files).
+
+  Variables set here override any given in `var_file`s.
 
   ```yaml
   with:
@@ -38,8 +40,6 @@ This is intended to run on a schedule to notify if manual changes to your infras
       ]
   ```
 
-  Variables set here override any given in `var_file`s.
-
   - Type: string
   - Optional
 
@@ -47,7 +47,7 @@ This is intended to run on a schedule to notify if manual changes to your infras
 
   List of tfvars files to use, one per line.
   Paths should be relative to the GitHub Actions workspace
-  
+
   ```yaml
   with:
     var_file: |
@@ -89,7 +89,7 @@ This is intended to run on a schedule to notify if manual changes to your infras
 
   - Type: number
   - Optional
-  - Default: The tofu default (10)
+  - Default: The OpenTofu default (10).
 
 ## Outputs
 
@@ -98,6 +98,8 @@ This is intended to run on a schedule to notify if manual changes to your infras
   When the job outcome is `failure` because the there are outstanding changes to apply, this will be set to 'changes-to-apply'.
   If the job fails for any other reason this will not be set.
   This can be used with the Actions expression syntax to conditionally run a step when there are changes to apply.
+
+  - Type: string
 
 ## Environment Variables
 
@@ -134,7 +136,7 @@ This is intended to run on a schedule to notify if manual changes to your infras
 
 * `TERRAFORM_SSH_KEY`
 
-  A SSH private key that OpenTofu will use to fetch git module sources.
+  A SSH private key that OpenTofu will use to fetch git/mercurial module sources.
 
   This should be in PEM format.
 
@@ -142,28 +144,6 @@ This is intended to run on a schedule to notify if manual changes to your infras
   ```yaml
   env:
     TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
-  ```
-
-  - Type: string
-  - Optional
-
-* `TERRAFORM_PRE_RUN`
-
-  A set of commands that will be ran prior to `tofu init`. This can be used to customise the environment before running OpenTofu. 
-  
-  The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
-  
-  The runtime image is currently based on `debian:bullseye`, with the command run using `bash -xeo pipefail`.
-
-  For example:
-  ```yaml
-  env:
-    TERRAFORM_PRE_RUN: |
-      # Install latest Azure CLI
-      curl -skL https://aka.ms/InstallAzureCLIDeb | bash
-      
-      # Install postgres client
-      apt-get install -y --no-install-recommends postgresql-client
   ```
 
   - Type: string
@@ -194,6 +174,28 @@ This is intended to run on a schedule to notify if manual changes to your infras
   - Type: string
   - Optional
 
+* `TERRAFORM_PRE_RUN`
+
+  A set of commands that will be ran prior to `tofu init`. This can be used to customise the environment before running OpenTofu. 
+
+  The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
+
+  The runtime image is currently based on `debian:bullseye`, with the command run using `bash -xeo pipefail`.
+
+  For example:
+  ```yaml
+  env:
+    TERRAFORM_PRE_RUN: |
+      # Install latest Azure CLI
+      curl -skL https://aka.ms/InstallAzureCLIDeb | bash
+
+      # Install postgres client
+      apt-get install -y --no-install-recommends postgresql-client
+  ```
+
+  - Type: string
+  - Optional
+
 ## Example usage
 
 This example workflow runs every morning and will fail if there has been
@@ -217,7 +219,7 @@ jobs:
       - name: Check
         uses: dflook/tofu-check@v1
         with:
-          path: my-terraform-configuration
+          path: my-tofu-configuration
 ```
 
 This example executes a run step only if there are changes to apply.
@@ -241,7 +243,7 @@ jobs:
         uses: dflook/tofu-check@v1
         id: check
         with:
-          path: my-terraform-configuration
+          path: my-tofu-configuration
 
       - name: Changes detected
         if: ${{ failure() && steps.check.outputs.failure-reason == 'changes-to-apply' }}

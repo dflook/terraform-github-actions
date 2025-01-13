@@ -8,7 +8,7 @@ This action uses the `terraform fmt -recursive` command to reformat files in a d
 
 * `path`
 
-  Path containing Terraform files
+  The path containing Terraform files to format.
 
   - Type: string
   - Optional
@@ -16,15 +16,16 @@ This action uses the `terraform fmt -recursive` command to reformat files in a d
 
 * `workspace`
 
-  Terraform workspace to inspect when discovering the Terraform version to use, if not otherwise specified. 
+  Terraform workspace to inspect when discovering the Terraform version to use, if the version is not otherwise specified. 
   See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
 
   - Type: string
   - Optional
+  - Default: `default`
 
 * `backend_config`
 
-  List of Terraform backend config values, one per line. This is used for discovering the Terraform version to use, if not otherwise specified. 
+  List of Terraform backend config values, one per line. This is used for discovering the Terraform version to use, if the version is not otherwise specified. 
   See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
 
   ```yaml
@@ -37,7 +38,7 @@ This action uses the `terraform fmt -recursive` command to reformat files in a d
 
 * `backend_config_file`
 
-  List of Terraform backend config files to use, one per line. This is used for discovering the Terraform version to use, if not otherwise specified. 
+  List of Terraform backend config files to use, one per line. This is used for discovering the Terraform version to use, if the version is not otherwise specified. 
   See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
   Paths should be relative to the GitHub Actions workspace
 

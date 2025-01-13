@@ -11,7 +11,7 @@ If any files are not correctly formatted a failing GitHub check will be added fo
 
 * `path`
 
-  Path containing Terraform files
+  The path containing Terraform files to check the formatting of.
 
   - Type: string
   - Optional
@@ -19,15 +19,16 @@ If any files are not correctly formatted a failing GitHub check will be added fo
 
 * `workspace`
 
-  Terraform workspace to inspect when discovering the Terraform version to use, if not otherwise specified. 
+  Terraform workspace to inspect when discovering the Terraform version to use, if the version is not otherwise specified. 
   See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
 
   - Type: string
   - Optional
+  - Default: `default`
 
 * `backend_config`
 
-  List of Terraform backend config values, one per line. This is used for discovering the Terraform version to use, if not otherwise specified. 
+  List of Terraform backend config values, one per line. This is used for discovering the Terraform version to use, if the version is not otherwise specified. 
   See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
 
   ```yaml
@@ -40,7 +41,7 @@ If any files are not correctly formatted a failing GitHub check will be added fo
 
 * `backend_config_file`
 
-  List of Terraform backend config files to use, one per line. This is used for discovering the Terraform version to use, if not otherwise specified. 
+  List of Terraform backend config files to use, one per line. This is used for discovering the Terraform version to use, if the version is not otherwise specified. 
   See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
   Paths should be relative to the GitHub Actions workspace
 
@@ -59,6 +60,8 @@ If any files are not correctly formatted a failing GitHub check will be added fo
   When the job outcome is `failure` because the format check failed, this will be set to 'check-failed'.
   If the job fails for any other reason this will not be set.
   This can be used with the Actions expression syntax to conditionally run a step when the format check fails.
+
+  - Type: string
 
 ## Environment Variables
 

@@ -1,21 +1,25 @@
 name: tofu-remote-state
-description: Retrieve remote state from a backend
+description: Retrieves the root-level outputs from an OpenTofu remote state.
 author: Daniel Flook
 
 inputs:
   backend_type:
-    description: The backend plugin name
+    description: The name of the OpenTofu plugin used for backend state
     required: true
   workspace:
-    description: Name of the OpenTofu workspace
+    description: OpenTofu workspace to get the outputs for
     required: false
-    default: default
+    default: "default"
   backend_config:
-    description: List of backend config values to set, one per line
+    description: List of OpenTofu backend config values, one per line.
     required: false
+    default: ""
   backend_config_file:
-    description: Path to a backend config file
+    description: |
+      List of OpenTofu backend config files to use, one per line.
+      Paths should be relative to the GitHub Actions workspace
     required: false
+    default: ""
 
 runs:
   env:

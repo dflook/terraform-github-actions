@@ -8,7 +8,7 @@ Retrieve the root-level outputs from a Terraform configuration.
 
 * `path`
 
-  Path to the Terraform root module
+  The path to the Terraform root module directory.
 
   - Type: string
   - Optional
@@ -47,6 +47,31 @@ Retrieve the root-level outputs from a Terraform configuration.
   - Type: string
   - Optional
 
+## Outputs
+
+* Terraform Outputs
+
+  An action output will be created for each output of the Terraform configuration.
+
+  For example, with the Terraform config:
+  ```hcl
+  output "service_hostname" {
+    value = "example.com"
+  }
+  ```
+
+  Running this action will produce a `service_hostname` output with the value `example.com`.
+
+  ### Primitive types (string, number, bool)
+
+  The values for these types get cast to a string with boolean values being 'true' and 'false'.
+
+  ### Complex types (list/set/tuple & map/object)
+
+  The values for complex types are output as a JSON string. Terraform `list`, `set` & `tuple` types are cast to a JSON array, `map` and `object` types are cast to a JSON object.
+
+  These values can be used in a workflow expression by using the [fromJSON](https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#fromjson) function
+
 ## Environment Variables
 
 * `GITHUB_DOT_COM_TOKEN`
@@ -82,7 +107,7 @@ Retrieve the root-level outputs from a Terraform configuration.
 
 * `TERRAFORM_SSH_KEY`
 
-  A SSH private key that Terraform will use to fetch git module sources.
+  A SSH private key that Terraform will use to fetch git/mercurial module sources.
 
   This should be in PEM format.
 
@@ -90,28 +115,6 @@ Retrieve the root-level outputs from a Terraform configuration.
   ```yaml
   env:
     TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
-  ```
-
-  - Type: string
-  - Optional
-
-* `TERRAFORM_PRE_RUN`
-
-  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running Terraform. 
-  
-  The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
-  
-  The runtime image is currently based on `debian:bullseye`, with the command run using `bash -xeo pipefail`.
-
-  For example:
-  ```yaml
-  env:
-    TERRAFORM_PRE_RUN: |
-      # Install latest Azure CLI
-      curl -skL https://aka.ms/InstallAzureCLIDeb | bash
-      
-      # Install postgres client
-      apt-get install -y --no-install-recommends postgresql-client
   ```
 
   - Type: string
@@ -132,12 +135,6 @@ Retrieve the root-level outputs from a Terraform configuration.
   For example:
   ```yaml
   env:
-    TERRAFORM_PRE_RUN: |
-      # Install latest Azure CLI
-      curl -skL https://aka.ms/InstallAzureCLIDeb | bash
-      
-      # Install postgres client
-      apt-get install -y --no-install-recommends postgresql-client
     TERRAFORM_HTTP_CREDENTIALS: |
       example.com=dflook:${{ secrets.HTTPS_PASSWORD }}
       github.com/dflook/terraform-github-actions.git=dflook-actions:${{ secrets.ACTIONS_PAT }}
@@ -148,28 +145,27 @@ Retrieve the root-level outputs from a Terraform configuration.
   - Type: string
   - Optional
 
-## Outputs
+* `TERRAFORM_PRE_RUN`
 
-An action output will be created for each output of the Terraform configuration.
+  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running Terraform. 
 
-For example, with the Terraform config:
-```hcl
-output "service_hostname" {
-  value = "example.com"
-}
-```
+  The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
 
-Running this action will produce a `service_hostname` output with the value `example.com`.
+  The runtime image is currently based on `debian:bullseye`, with the command run using `bash -xeo pipefail`.
 
-### Primitive types (string, number, bool)
+  For example:
+  ```yaml
+  env:
+    TERRAFORM_PRE_RUN: |
+      # Install latest Azure CLI
+      curl -skL https://aka.ms/InstallAzureCLIDeb | bash
 
-The values for these types get cast to a string with boolean values being 'true' and 'false'.
+      # Install postgres client
+      apt-get install -y --no-install-recommends postgresql-client
+  ```
 
-### Complex types (list/set/tuple & map/object)
-
-The values for complex types are output as a JSON string. Terraform `list`, `set` & `tuple` types are cast to a JSON array, `map` and `object` types are cast to a JSON object.
-
-These values can be used in a workflow expression by using the [fromJSON](https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#fromjson) function
+  - Type: string
+  - Optional
 
 ## Example usage
 

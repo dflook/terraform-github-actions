@@ -4,18 +4,18 @@ This is one of a suite of OpenTofu related actions - find them at [dflook/terraf
 
 This action determines the OpenTofu and provider versions to use for the root module.
 
-The best way to specify the version is using a [`required_version`](https://www.terraform.io/docs/configuration/terraform.html#specifying-a-required-terraform-version) constraint.
+The best way to specify the version is using a [`required_version`](https://opentofu.org/docs/language/settings/#specifying-a-required-opentofu-version) constraint.
 
 The version to use is discovered from the first of:
 1. The version set in the cloud workspace if the module uses a `remote` backend or `cloud` configuration, and the remote workspace exists.
-2. A [`required_version`](https://www.terraform.io/docs/configuration/terraform.html#specifying-a-required-terraform-version)
+2. A [`required_version`](https://opentofu.org/docs/language/settings/#specifying-a-required-opentofu-version)
    constraint in the OpenTofu configuration. If the constraint is range, the latest matching version is used.
 3. A [tfswitch](https://warrensbox.github.io/terraform-switcher/) `.tfswitchrc` file in the module path
-4. When using a `dflook/tofu-*` action, a [tofuenv](https://github.com/tofuutils/tofuenv) `.opentofu-version` file in the module path
+4. A [tofuenv](https://github.com/tofuutils/tofuenv) `.opentofu-version` file in the module path
 5. A [tfenv](https://github.com/tfutils/tfenv) `.terraform-version` file in the module path
 6. An [asdf](https://asdf-vm.com/) `.tool-versions` file in the module path or any parent path
-7. An `OPENTOFU_VERSION` environment variable containing a [version constraint](https://www.terraform.io/language/expressions/version-constraints). If the constraint allows multiple versions, the latest matching version is used.
-8. A `TERRAFORM_VERSION` environment variable containing a [version constraint](https://www.terraform.io/language/expressions/version-constraints). If the constraint allows multiple versions, the latest matching version is used.
+7. An `OPENTOFU_VERSION` environment variable containing a [version constraint](https://opentofu.org/docs/language/expressions/version-constraints/). If the constraint allows multiple versions, the latest matching version is used.
+8. A `TERRAFORM_VERSION` environment variable containing a [version constraint](https://opentofu.org/docs/language/expressions/version-constraints/). If the constraint allows multiple versions, the latest matching version is used.
 9. The OpenTofu version that created the current state file (best effort).
 10. The latest OpenTofu version
 
@@ -29,7 +29,7 @@ outputs yourself.
 
 * `path`
 
-  Path to the OpenTofu root module
+  The path to the OpenTofu root module directory.
 
   - Type: string
   - Optional
@@ -74,6 +74,36 @@ outputs yourself.
   - Type: string
   - Optional
 
+## Outputs
+
+* `terraform`
+
+  The Hashicorp Terraform or OpenTofu version that is used by the configuration.
+
+  - Type: string
+
+* `tofu`
+
+  If the action chose a version of OpenTofu, this will be set to the version that is used by the configuration.
+
+  - Type: string
+
+* Provider Versions
+
+  Additional outputs are added with the version of each provider that
+  is used by the OpenTofu configuration. For example, if the random
+  provider is used:
+
+  ```hcl
+  provider "random" {
+    version = "2.2.0"
+  }
+  ```
+
+  A `random` output will be created with the value `2.2.0`.
+
+  - Type: string
+
 ## Environment Variables
 
 * `GITHUB_DOT_COM_TOKEN`
@@ -88,7 +118,7 @@ outputs yourself.
 * `TERRAFORM_CLOUD_TOKENS`
 
   API tokens for cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
-  These tokens may be used for fetching required modules from the registry, and determining the OpenTofu version set in the remote workspace.
+  These tokens may be used with the `remote` backend and for fetching required modules from the registry.
 
   e.g:
   ```yaml
@@ -109,7 +139,7 @@ outputs yourself.
 
 * `TERRAFORM_SSH_KEY`
 
-  A SSH private key that OpenTofu will use to fetch git module sources.
+  A SSH private key that OpenTofu will use to fetch git/mercurial module sources.
 
   This should be in PEM format.
 
@@ -117,28 +147,6 @@ outputs yourself.
   ```yaml
   env:
     TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
-  ```
-
-  - Type: string
-  - Optional
-
-* `TERRAFORM_PRE_RUN`
-
-  A set of commands that will be ran prior to `tofu init`. This can be used to customise the environment before running OpenTofu. 
-  
-  The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
-  
-  The runtime image is currently based on `debian:bullseye`, with the command run using `bash -xeo pipefail`.
-
-  For example:
-  ```yaml
-  env:
-    TERRAFORM_PRE_RUN: |
-      # Install latest Azure CLI
-      curl -skL https://aka.ms/InstallAzureCLIDeb | bash
-      
-      # Install postgres client
-      apt-get install -y --no-install-recommends postgresql-client
   ```
 
   - Type: string
@@ -169,29 +177,27 @@ outputs yourself.
   - Type: string
   - Optional
 
-## Outputs
+* `TERRAFORM_PRE_RUN`
 
-* `terraform`
+  A set of commands that will be ran prior to `tofu init`. This can be used to customise the environment before running OpenTofu. 
 
-  The Hashicorp Terraform or OpenTofu version that is used by the configuration.
+  The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
 
-* `tofu`
+  The runtime image is currently based on `debian:bullseye`, with the command run using `bash -xeo pipefail`.
 
-  If the action chose a version of OpenTofu, this will be set to the version that is used by the configuration.
+  For example:
+  ```yaml
+  env:
+    TERRAFORM_PRE_RUN: |
+      # Install latest Azure CLI
+      curl -skL https://aka.ms/InstallAzureCLIDeb | bash
 
-* Provider Versions
-
-  Additional outputs are added with the version of each provider that
-  is used by the OpenTofu configuration. For example, if the random
-  provider is used:
-
-  ```hcl
-  provider "random" {
-    version = "2.2.0"
-  }
+      # Install postgres client
+      apt-get install -y --no-install-recommends postgresql-client
   ```
 
-  A `random` output will be created with the value `2.2.0`.
+  - Type: string
+  - Optional
 
 ## Example usage
 
@@ -213,8 +219,8 @@ jobs:
           path: my-configuration
 
       - name: Print the version
-        run: echo "The version was ${{ steps.terraform-version.outputs.terraform }}"
-        
+        run: echo "The version was ${{ steps.tofu-version.outputs.tofu }}"
+
       - name: Print aws provider version
-        run: echo "The aws provider version was ${{ steps.terraform-version.outputs.aws }}"        
+        run: echo "The aws provider version was ${{ steps.tofu-version.outputs.aws }}"        
 ```

@@ -64,9 +64,9 @@ jobs:
 #        run: |
 #           GNUPGHOME=$HOME/.gnupg PYTHONPATH=image/tools:image/src pytest tests
 
-  tofu:
+  docs:
     runs-on: ubuntu-24.04
-    name: OpenTofu actions
+    name: Check documentation
     env:
       GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
     steps:
@@ -77,5 +77,6 @@ jobs:
 
       - name: Check tofu actions are up to date
         run: |
-          python3 tofu/tofuize.py
+          PYTHONPATH=docs-gen python3 docs-gen/generate.py
           git diff --exit-code
+
