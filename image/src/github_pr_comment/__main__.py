@@ -642,8 +642,6 @@ def main() -> int:
 
             debug(f'diff {proposed_plan_path} {approved_plan_path}')
             diff_complete = subprocess.run(['diff', proposed_plan_path, approved_plan_path], check=False, capture_output=True, encoding='utf-8')
-            sys.stdout.write(diff_complete.stdout)
-            sys.stderr.write(diff_complete.stderr)
 
             if diff_complete.returncode != 0:
                 sys.stdout.write("""Performing diff between the pull request plan and the plan generated at execution time.
@@ -651,6 +649,9 @@ def main() -> int:
 < are lines from the plan generated at execution
 Plan differences:
 """)
+
+            sys.stdout.write(diff_complete.stdout)
+            sys.stderr.write(diff_complete.stderr)
 
             if comment.headers.get('plan_text_format', 'text').endswith('trunc'):
                 sys.stdout.write('\nThe plan text was too large for a PR comment, not all differences may be shown here.')
