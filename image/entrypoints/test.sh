@@ -30,11 +30,11 @@ function set-test-args() {
 
 function test() {
 
-    debug_log $TOOL_COMMAND_NAME test -no-color $TEST_ARGS '$PLAN_ARGS'  # don't expand PLAN_ARGS
+    debug_log $TOOL_COMMAND_NAME test -no-color $TEST_ARGS $VARIABLE_ARGS
 
     set +e
     # shellcheck disable=SC2086
-    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME test -no-color $TEST_ARGS $PLAN_ARGS) \
+    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME test -no-color $TEST_ARGS $VARIABLE_ARGS) \
         2>"$STEP_TMP_DIR/terraform_test.stderr" \
         | tee /dev/fd/3 \
             >"$STEP_TMP_DIR/terraform_test.stdout"
@@ -59,7 +59,6 @@ function test() {
 }
 
 set-test-args
-PLAN_ARGS=""
 set-variable-args
 
 test

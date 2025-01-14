@@ -32,23 +32,33 @@ function apply() {
     set +e
     if [[ -n "$PLAN_OUT" ]]; then
 
+        # With Terrraform >= 1.10 Ephemeral variables must be specified again in the apply command.
+        # Non-ephemeral variables may be specified again, but may not be different from the plan.
+        # Terraform < 1.1.0 must not specify any variables when applying a saved plan.
+
+        SAVED_PLAN_VARIABLES=""
+        if [[ "$TOOL_PRODUCT_NAME" == "Terraform" ]] && test-terraform-version ">=" "1.10.0"; then
+          SAVED_PLAN_VARIABLES="$VARIABLE_ARGS"
+        fi
+
         # shellcheck disable=SC2086
-        debug_log $TOOL_COMMAND_NAME apply -input=false -no-color -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT
+        debug_log $TOOL_COMMAND_NAME apply -input=false -no-color -lock-timeout=300s $PARALLEL_ARG $SAVED_PLAN_VARIABLES $PLAN_OUT
         # shellcheck disable=SC2086
-        (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME apply -input=false -no-color -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT) \
+        (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME apply -input=false -no-color -lock-timeout=300s $PARALLEL_ARG $SAVED_PLAN_VARIABLES $PLAN_OUT) \
             2>"$STEP_TMP_DIR/terraform_apply.stderr" \
             | $TFMASK \
             | tee "$STEP_TMP_DIR/terraform_apply.stdout"
         APPLY_EXIT=${PIPESTATUS[0]}
         >&2 cat "$STEP_TMP_DIR/terraform_apply.stderr"
+
     else
         # There is no plan file to apply, since the remote backend can't produce them.
         # Instead we need to do an auto approved apply using the arguments we would normally use for the plan
 
+        # shellcheck disable=SC2086,SC2016
+        debug_log $TOOL_COMMAND_NAME apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS "$(masked-deprecated-vars)" $VARIABLE_ARGS
         # shellcheck disable=SC2086
-        debug_log $TOOL_COMMAND_NAME apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG '$PLAN_ARGS'  # don't expand plan args
-        # shellcheck disable=SC2086
-        (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS) \
+        (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS $DEPRECATED_VAR_ARGS $VARIABLE_ARGS) \
             2>"$STEP_TMP_DIR/terraform_apply.stderr" \
             | $TFMASK \
             | tee "$STEP_TMP_DIR/terraform_apply.stdout"
@@ -95,7 +105,7 @@ if [[ "$INPUT_PLAN_PATH" != "" ]]; then
       exit 1
   fi
 
-  PLAN_OUT=$(realpath $INPUT_PLAN_PATH)
+  PLAN_OUT=$(realpath "$INPUT_PLAN_PATH")
   PLAN_EXIT=2
 else
   plan

@@ -360,6 +360,8 @@ function set-common-plan-args() {
 }
 
 function set-variable-args() {
+    VARIABLE_ARGS=""
+
     if [[ -n "$INPUT_VAR_FILE" ]]; then
         for file in $(echo "$INPUT_VAR_FILE" | tr ',' '\n'); do
 
@@ -368,25 +370,37 @@ function set-variable-args() {
                 exit 1
             fi
 
-            PLAN_ARGS="$PLAN_ARGS -var-file=$(relative_to "$INPUT_PATH" "$file")"
+            VARIABLE_ARGS="$VARIABLE_ARGS -var-file=$(relative_to "$INPUT_PATH" "$file")"
         done
     fi
 
     if [[ -n "$INPUT_VARIABLES" ]]; then
         echo "$INPUT_VARIABLES" >"$STEP_TMP_DIR/variables.tfvars"
-        PLAN_ARGS="$PLAN_ARGS -var-file=$STEP_TMP_DIR/variables.tfvars"
+        VARIABLE_ARGS="$VARIABLE_ARGS -var-file=$STEP_TMP_DIR/variables.tfvars"
     fi
+}
+
+function set-deprecated-var-args() {
+    DEPRECATED_VAR_ARGS=""
+
+    if [[ -n "$INPUT_VAR" ]]; then
+        for var in $(echo "$INPUT_VAR" | tr ',' '\n'); do
+            DEPRECATED_VAR_ARGS="$DEPRECATED_VAR_ARGS -var $var"
+        done
+    fi
+}
+
+function masked-deprecated-vars() {
+  if [[ -n "$DEPRECATED_VAR_ARGS" ]]; then
+    echo "-var <masked>"
+  else
+    echo ""
+  fi
 }
 
 function set-plan-args() {
     set-common-plan-args
-
-    if [[ -n "$INPUT_VAR" ]]; then
-        for var in $(echo "$INPUT_VAR" | tr ',' '\n'); do
-            PLAN_ARGS="$PLAN_ARGS -var $var"
-        done
-    fi
-
+    set-deprecated-var-args
     set-variable-args
 
     export PLAN_ARGS
@@ -394,6 +408,8 @@ function set-plan-args() {
 
 function set-remote-plan-args() {
     set-common-plan-args
+    VARIABLE_ARGS=""
+    DEPRECATED_VAR_ARGS=""
 
     local AUTO_TFVARS_COUNTER=0
 
@@ -466,11 +482,11 @@ function plan() {
     fi
 
     # shellcheck disable=SC2086
-    debug_log $TOOL_COMMAND_NAME plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT_ARG '$PLAN_ARGS'  # don't expand PLAN_ARGS
+    debug_log $TOOL_COMMAND_NAME plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT_ARG $PLAN_ARGS "$(masked-deprecated-vars)" $VARIABLE_ARGS
 
     set +e
     # shellcheck disable=SC2086
-    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT_ARG $PLAN_ARGS) \
+    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT_ARG $PLAN_ARGS $DEPRECATED_VAR_ARGS $VARIABLE_ARGS ) \
         2>"$STEP_TMP_DIR/terraform_plan.stderr" \
         | $TFMASK \
         | tee /dev/fd/3 "$STEP_TMP_DIR/terraform_plan.stdout" \
@@ -494,11 +510,11 @@ function plan() {
 
 function destroy() {
     # shellcheck disable=SC2086
-    debug_log $TOOL_COMMAND_NAME destroy -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS
+    debug_log $TOOL_COMMAND_NAME destroy -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS "$(masked-deprecated-vars)" $VARIABLE_ARGS
 
     set +e
     # shellcheck disable=SC2086
-    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME destroy -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS) \
+    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME destroy -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS $DEPRECATED_VAR_ARGS $VARIABLE_ARGS) \
         2>"$STEP_TMP_DIR/terraform_destroy.stderr" \
         | tee /dev/fd/3 \
             >"$STEP_TMP_DIR/terraform_destroy.stdout"
