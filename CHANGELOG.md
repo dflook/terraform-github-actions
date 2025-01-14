@@ -11,15 +11,24 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.45.0` to use an exact release
-- `@v1.45` to use the latest patch release for the specific minor version
+- `@v1.46.0` to use an exact release
+- `@v1.46` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.46.0] - 2025-01-14
+
+### Added
+- Support for Terraform 1.10 ephemeral input variables.
+    
+  Terraform 1.10 introduced ephemeral values, which are not stored in the plan or state file.
+  Ephemeral variables now work correctly with [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/main/terraform-apply). 
+  These can be set normally using the `variables` input.
 
 ## [1.45.0] - 2024-12-24
 
 ### Added
 - `dflook/tofu-*` actions can now read the OpenTofu version from a [tofuenv](https://github.com/tofuutils/tofuenv) `.opentofu-version` file in the module path.
-  See the [dflook/tofu-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version) for details.
+  See [dflook/tofu-version](https://github.com/dflook/terraform-github-actions/tree/main/tofu-version) for details.
 
 ## [1.44.0] - 2024-08-04
 
@@ -686,6 +695,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.46.0]: https://github.com/dflook/terraform-github-actions/compare/v1.45.0...v1.46.0
 [1.45.0]: https://github.com/dflook/terraform-github-actions/compare/v1.44.0...v1.45.0
 [1.44.0]: https://github.com/dflook/terraform-github-actions/compare/v1.43.0...v1.44.0
 [1.43.0]: https://github.com/dflook/terraform-github-actions/compare/v1.42.1...v1.43.0
