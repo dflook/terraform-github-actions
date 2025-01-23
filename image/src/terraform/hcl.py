@@ -8,6 +8,7 @@ import subprocess
 from pathlib import Path
 
 from github_actions.debug import debug
+import terraform.fallback_parser
 
 
 def try_load(path: Path) -> dict:
@@ -15,8 +16,9 @@ def try_load(path: Path) -> dict:
         with open(path) as f:
             return hcl2.load(f)
     except Exception as e:
+        debug(f'Failed to load {path}')
         debug(str(e))
-        return {}
+        return terraform.fallback_parser.parse(Path(path))
 
 
 def is_loadable(path: Path) -> bool:
