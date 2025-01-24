@@ -25,6 +25,13 @@ def convert_to_github(report: Dict, base_path: str) -> Iterable[str]:
                 params['endLine'] = diag['range']['end']['line']
                 params['endColumn'] = diag['range']['end']['column']
 
+            if params.get('line') != params.get('endLine'):
+                # GitHub can't cope with 'col' and 'endColumn' if 'line' and 'endLine' are different values.
+                if 'col' in params:
+                    del params['col']
+                if 'endColumn' in params:
+                    del params['endColumn']
+
         summary = diag['summary'].split('\n')[0]
         params = ','.join(f'{k}={v}' for k, v in params.items())
 

@@ -122,7 +122,7 @@ def test_invalid_paths():
 
     expected_output = [
         '::error file=tests/validate/invalid/main.tf,line=2,col=1,endLine=2,endColumn=33::Duplicate resource "null_resource" configuration',
-        '::error file=tests/validate/module/invalid.tf,line=2,col=1,endLine=5,endColumn=66::Duplicate resource "null_resource" configuration'
+        '::error file=tests/validate/module/invalid.tf,line=2,endLine=5::Duplicate resource "null_resource" configuration'
     ]
 
     output = list(convert_to_github(input, 'tests/validate/invalid'))
