@@ -1,6 +1,6 @@
 # Terraform and OpenTofu GitHub Actions ![release](https://img.shields.io/github/v/release/dflook/terraform-github-actions)![job runs](https://img.shields.io/docker/pulls/danielflook/terraform-github-actions?label=job%20runs)
 
-This is a suite of terraform and OpenTofu related GitHub Actions that can be used together to build effective Infrastructure as Code workflows.
+This is a suite of Terraform and OpenTofu related GitHub Actions that can be used together to build effective Infrastructure as Code workflows.
 
 [GitHub Actions](https://github.com/features/actions) are a way to make automated workflows that trigger when events occur on your GitHub repository, using a YAML file that lives in your repo.
 These actions can be used to easily perform [Terraform](https://www.terraform.io/) or [OpenTofu](https://www.opentofu.org/) tasks as part of your workflow.
@@ -26,11 +26,11 @@ See the documentation for the available actions:
 - [dflook/terraform-test](terraform-test)
 
 ## Example Usage
-These terraform actions can be added as steps to your own workflow files.
+These Terraform actions can be added as steps to your own workflow files.
 GitHub reads workflow files from `.github/workflows/` within your repository.
 See the [Workflow documentation](https://docs.github.com/en/actions/configuring-and-managing-workflows/configuring-a-workflow#about-workflows) for details on writing workflows.
 
-Here are some examples of how the terraform actions can be used together in workflows.
+Here are some examples of how the Terraform actions can be used together in workflows.
 
 ### Terraform plan PR approval
 
@@ -48,9 +48,9 @@ You can make GitHub enforce this using branch protection, see the [dflook/terraf
 In this example we use two workflows:
 
 #### plan.yaml
-This workflow runs on changes to a PR branch. It generates a terraform plan and attaches it to the PR as a comment.
+This workflow runs on changes to a PR branch. It generates a Terraform plan and attaches it to the PR as a comment.
 ```yaml
-name: Create terraform plan
+name: Create Terraform plan
 
 on: [pull_request]
 
@@ -61,7 +61,7 @@ permissions:
 jobs:
   plan:
     runs-on: ubuntu-latest
-    name: Create a plan for an example terraform configuration
+    name: Create a plan for an example Terraform configuration
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -77,7 +77,7 @@ jobs:
 #### apply.yaml
 This workflow runs when the PR is merged into the main branch, and applies the planned changes.
 ```yaml
-name: Apply terraform plan
+name: Apply Terraform plan
 
 on:
   push:
@@ -91,7 +91,7 @@ permissions:
 jobs:
   apply:
     runs-on: ubuntu-latest
-    name: Apply terraform plan
+    name: Apply Terraform plan
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -105,7 +105,7 @@ jobs:
 ```
 
 ### Linting
-This workflow runs on every push to non-main branches and checks the terraform configuration is valid.
+This workflow runs on every push to non-main branches and checks the Terraform configuration is valid.
 For extra strictness, we check the files are in the canonical format.
 
 <p align="center">
@@ -126,7 +126,7 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    name: Validate terraform configuration
+    name: Validate Terraform configuration
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -167,7 +167,7 @@ on:
 jobs:
   check_drift:
     runs-on: ubuntu-latest
-    name: Check for drift of example terraform configuration
+    name: Check for drift of example Terraform configuration
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -179,7 +179,7 @@ jobs:
 ```
 
 ### Scheduled infrastructure updates
-There may be times when you expect terraform to plan updates without any changes to your terraform configuration files.
+There may be times when you expect Terraform to plan updates without any changes to your Terraform configuration files.
 Your configuration could be consuming secrets from elsewhere, or renewing certificates every few months.
 
 This example workflow runs every morning and applies any outstanding changes to those specific resources.
@@ -195,7 +195,7 @@ on:
 jobs:
   rotate_certs:
     runs-on: ubuntu-latest
-    name: Rotate TLS certificates in example terraform configuration
+    name: Rotate TLS certificates in example Terraform configuration
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -211,11 +211,11 @@ jobs:
 ```
 
 ### Automatically fixing formatting
-Perhaps you don't want to spend engineer time making formatting changes. This workflow will automatically create or update a PR that fixes any terraform formatting issues.
+Perhaps you don't want to spend engineer time making formatting changes. This workflow will automatically create or update a PR that fixes any Terraform formatting issues.
 
 #### fmt.yaml
 ```yaml
-name: Check terraform file formatting
+name: Check Terraform file formatting
 
 on:
   push:
@@ -225,7 +225,7 @@ on:
 jobs:
   format:
     runs-on: ubuntu-latest
-    name: Check terraform file are formatted correctly
+    name: Check Terraform file are formatted correctly
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -239,8 +239,8 @@ jobs:
         uses: peter-evans/create-pull-request@v2
         with:
           commit-message: terraform fmt
-          title: Reformat terraform files
-          body: Update terraform files to canonical format using `terraform fmt`
+          title: Reformat Terraform files
+          body: Update Terraform files to canonical format using `terraform fmt`
           branch: automated-terraform-fmt
 ```
 
@@ -253,7 +253,7 @@ There are two workflows:
 #### integration-test.yaml
 This workflow runs with every change to a PR.
 
-It deploys the testing infrastructure using a terraform workspace dedicated to this branch, then runs integration tests against the new infrastructure.
+It deploys the testing infrastructure using a Terraform workspace dedicated to this branch, then runs integration tests against the new infrastructure.
 
 ```yaml
 name: Run integration tests
