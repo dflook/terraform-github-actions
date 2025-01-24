@@ -11,9 +11,16 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.46.0` to use an exact release
+- `@v1.46.1` to use an exact release
 - `@v1.46` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.46.1] - 2025-01-24
+
+### Fixed
+- Reading of the `required_version` constraint from `.tf` files has been made more robust.
+
+  Previously this could fail if the file was particularly complex, using newer Terraform/OpenTofu features, or was malformed.
 
 ## [1.46.0] - 2025-01-14
 
@@ -695,6 +702,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.46.1]: https://github.com/dflook/terraform-github-actions/compare/v1.46.0...v1.46.1
 [1.46.0]: https://github.com/dflook/terraform-github-actions/compare/v1.45.0...v1.46.0
 [1.45.0]: https://github.com/dflook/terraform-github-actions/compare/v1.44.0...v1.45.0
 [1.44.0]: https://github.com/dflook/terraform-github-actions/compare/v1.43.0...v1.44.0
