@@ -75,7 +75,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Check tofu actions are up to date
+      - name: Check documentation is up-to-date
         run: |
           PYTHONPATH=docs-gen python3 docs-gen/generate.py
           git diff --exit-code
