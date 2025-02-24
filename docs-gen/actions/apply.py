@@ -88,7 +88,17 @@ This generates and applies a plan in [destroy mode]($DestroyModeUrl).'''),
     outputs=[
         dataclasses.replace(json_plan_path, description=json_plan_path.description + "\nThis won't be set if the backend type is `remote` - $ProductName does not support saving remote plans."),
         dataclasses.replace(text_plan_path, description=text_plan_path.description + "This won't be set if `auto_approve` is true while using a `remote` backend."),
-        failure_reason,
+        dataclasses.replace(failure_reason, description='''
+  When the job outcome is `failure`, this output may be set. The value may be one of:
+
+  - `apply-failed` - The Terraform apply operation failed.
+  - `plan-changed` - The approved plan is no longer accurate, so the apply will not be attempted.
+  - `state-locked` - The Terraform state lock could not be obtained because it was already locked. 
+
+  If the job fails for any other reason this will not be set.
+  This can be used with the Actions expression syntax to conditionally run steps.
+        '''
+        ),
         lock_info,
         run_id,
         terraform_outputs

@@ -219,9 +219,14 @@ These input values must be the same as any [`dflook/terraform-plan`](https://git
 
 * `failure-reason`
 
-  When the job outcome is `failure` because of a known reason, this will be set to that reason.
+  When the job outcome is `failure`, this output may be set. The value may be one of:
+
+  - `apply-failed` - The Terraform apply operation failed.
+  - `plan-changed` - The approved plan is no longer accurate, so the apply will not be attempted.
+  - `state-locked` - The Terraform state lock could not be obtained because it was already locked. 
+
   If the job fails for any other reason this will not be set.
-  This can be used with the Actions expression syntax to conditionally run a steps.
+  This can be used with the Actions expression syntax to conditionally run steps.
 
   - Type: string
 
