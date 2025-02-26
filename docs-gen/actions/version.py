@@ -72,7 +72,7 @@ def description(tool: Tool) -> str:
 version = Action(
     'version',
     description=description,
-    meta_description='Prints Terraform and providers versions',
+    meta_description='Prints $ProductName and providers versions',
     inputs=[
         path,
         dataclasses.replace(workspace, description='The workspace to determine the $ProductName version for.'),

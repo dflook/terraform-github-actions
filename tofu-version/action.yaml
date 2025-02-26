@@ -1,5 +1,5 @@
 name: tofu-version
-description: Prints Terraform and providers versions
+description: Prints OpenTofu and providers versions
 author: Daniel Flook
 
 inputs:
