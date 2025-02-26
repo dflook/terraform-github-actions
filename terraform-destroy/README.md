@@ -2,7 +2,7 @@
 
 This is one of a suite of Terraform related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
-:warning: This action uses the `terraform destroy` command to immediately destroy all resources in a terraform workspace.
+:warning: This action uses the `terraform destroy` command to immediately destroy all resources in a Terraform workspace.
 
 To generate a plan that can be reviewed you can instead use the [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/main/terraform-plan) 
 and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/main/terraform-plan) actions with the `destroy` input set to `true`.
@@ -11,7 +11,7 @@ and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `path`
 
-  Path to the Terraform root module
+  The path to the Terraform root module directory.
 
   - Type: string
   - Optional
@@ -19,7 +19,7 @@ and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `workspace`
 
-  Terraform workspace to destroy
+  The name of the Terraform workspace to destroy.
 
   - Type: string
   - Optional
@@ -27,7 +27,9 @@ and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `variables`
 
-  Variables to set for the terraform destroy. This should be valid Terraform syntax - like a [variable definition file](https://www.terraform.io/docs/language/values/variables.html#variable-definitions-tfvars-files).
+  Variables to set for the terraform destroy. This should be valid Terraform syntax - like a [variable definition file](https://developer.hashicorp.com/terraform/language/values/variables#variable-definitions-tfvars-files).
+
+  Variables set here override any given in `var_file`s.
 
   ```yaml
   with:
@@ -39,8 +41,6 @@ and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
       ]
   ```
 
-  Variables set here override any given in `var_file`s.
-
   - Type: string
   - Optional
 
@@ -48,7 +48,7 @@ and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
   List of tfvars files to use, one per line.
   Paths should be relative to the GitHub Actions workspace
-  
+
   ```yaml
   with:
     var_file: |
@@ -61,7 +61,7 @@ and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `backend_config`
 
-  List of terraform backend config values, one per line.
+  List of Terraform backend config values, one per line.
 
   ```yaml
   with:
@@ -90,7 +90,7 @@ and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
   - Type: number
   - Optional
-  - Default: The terraform default (10)
+  - Default: The Terraform default (10).
 
 ## Outputs
 
@@ -103,6 +103,8 @@ and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
   If the job fails for any other reason this will not be set.
   This can be used with the Actions expression syntax to conditionally run a steps.
+
+  - Type: string
 
 * `lock-info`
 
@@ -120,6 +122,8 @@ and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
     "Info": ""
   }
   ```
+
+  - Type: string
 
 ## Environment Variables
 
@@ -156,7 +160,7 @@ and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `TERRAFORM_SSH_KEY`
 
-  A SSH private key that Terraform will use to fetch git module sources.
+  A SSH private key that Terraform will use to fetch git/mercurial module sources.
 
   This should be in PEM format.
 
@@ -164,28 +168,6 @@ and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   ```yaml
   env:
     TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
-  ```
-
-  - Type: string
-  - Optional
-
-* `TERRAFORM_PRE_RUN`
-
-  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running Terraform. 
-  
-  The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
-
-  The runtime image is currently based on `debian:bullseye`, with the command run using `bash -xeo pipefail`.
-
-  For example:
-  ```yaml
-  env:
-    TERRAFORM_PRE_RUN: |
-      # Install latest Azure CLI
-      curl -skL https://aka.ms/InstallAzureCLIDeb | bash
-      
-      # Install postgres client
-      apt-get install -y --no-install-recommends postgresql-client
   ```
 
   - Type: string
@@ -211,6 +193,28 @@ and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
       github.com/dflook/terraform-github-actions.git=dflook-actions:${{ secrets.ACTIONS_PAT }}
       github.com/dflook=dflook:${{ secrets.DFLOOK_PAT }}
       github.com=graham:${{ secrets.GITHUB_PAT }}  
+  ```
+
+  - Type: string
+  - Optional
+
+* `TERRAFORM_PRE_RUN`
+
+  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running Terraform. 
+
+  The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
+
+  The runtime image is currently based on `debian:bullseye`, with the command run using `bash -xeo pipefail`.
+
+  For example:
+  ```yaml
+  env:
+    TERRAFORM_PRE_RUN: |
+      # Install latest Azure CLI
+      curl -skL https://aka.ms/InstallAzureCLIDeb | bash
+
+      # Install postgres client
+      apt-get install -y --no-install-recommends postgresql-client
   ```
 
   - Type: string

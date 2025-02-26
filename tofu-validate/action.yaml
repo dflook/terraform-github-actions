@@ -4,21 +4,39 @@ author: Daniel Flook
 
 inputs:
   path:
-    description: Path to the OpenTofu configuration
+    description: The path to the OpenTofu module to validate
     required: false
-    default: .
+    default: "."
   workspace:
-    description: Name of the workspace to use for the `terraform.workspace` value while validating.
+    description: |
+      OpenTofu workspace to use for the `terraform.workspace` value while validating. Note that for remote operations in a cloud backend, this is always `default`.
+
+      Also used for discovering the OpenTofu version to use, if not otherwise specified. 
+      See [dflook/tofu-version](https://github.com/dflook/terraform-github-actions/tree/main/tofu-version#tofu-version-action) for details.
     required: false
-    default: default
+    default: "default"
   backend_config:
-    description: List of backend configs to set, one per line
+    description: |
+      List of OpenTofu backend config values, one per line.
+      This is used for discovering the OpenTofu version to use, if not otherwise specified. 
+      See [dflook/tofu-version](https://github.com/dflook/terraform-github-actions/tree/main/tofu-version#tofu-version-action) for details.
     required: false
     default: ""
   backend_config_file:
-    description: Path to a backend config file
+    description: |
+      List of OpenTofu backend config files to use, one per line.
+      Paths should be relative to the GitHub Actions workspace
+      This is used for discovering the OpenTofu version to use, if not otherwise specified. 
+      See [dflook/tofu-version](https://github.com/dflook/terraform-github-actions/tree/main/tofu-version#tofu-version-action) for details.
     required: false
     default: ""
+
+outputs:
+  failure-reason:
+    description: |
+      When the job outcome is `failure` because the validation failed, this will be set to 'validate-failed'.
+      If the job fails for any other reason this will not be set.
+      This can be used with the Actions expression syntax to conditionally run a step when the validate fails.
 
 runs:
   env:

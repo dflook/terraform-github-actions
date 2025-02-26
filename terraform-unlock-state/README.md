@@ -49,7 +49,7 @@ Force unlocks a Terraform remote state.
 
 * `lock_id`
 
-  The ID of the state lock to release
+  The ID of the state lock to release.
 
   - Type: string
   - Required
@@ -130,9 +130,9 @@ Force unlocks a Terraform remote state.
 * `TERRAFORM_PRE_RUN`
 
   A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running Terraform. 
-  
+
   The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
-  
+
   The runtime image is currently based on `debian:bullseye`, with the command run using `bash -xeo pipefail`.
 
   For example:
@@ -141,7 +141,7 @@ Force unlocks a Terraform remote state.
     TERRAFORM_PRE_RUN: |
       # Install latest Azure CLI
       curl -skL https://aka.ms/InstallAzureCLIDeb | bash
-      
+
       # Install postgres client
       apt-get install -y --no-install-recommends postgresql-client
   ```
@@ -180,5 +180,4 @@ jobs:
         with:
           path: ${{ github.event.inputs.path }}
           lock_id: ${{ github.event.inputs.lock_id }}
-
 ```

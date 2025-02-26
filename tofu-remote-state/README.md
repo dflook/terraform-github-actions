@@ -46,6 +46,31 @@ Retrieves the root-level outputs from an OpenTofu remote state.
   - Type: string
   - Optional
 
+## Outputs
+
+* OpenTofu Outputs
+
+  An action output will be created for each output of the OpenTofu configuration.
+
+  For example, with the OpenTofu config:
+  ```hcl
+  output "service_hostname" {
+    value = "example.com"
+  }
+  ```
+
+  Running this action will produce a `service_hostname` output with the value `example.com`.
+
+  ### Primitive types (string, number, bool)
+
+  The values for these types get cast to a string with boolean values being 'true' and 'false'.
+
+  ### Complex types (list/set/tuple & map/object)
+
+  The values for complex types are output as a JSON string. OpenTofu `list`, `set` & `tuple` types are cast to a JSON array, `map` and `object` types are cast to a JSON object.
+
+  These values can be used in a workflow expression by using the [fromJSON](https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#fromjson) function
+
 ## Environment Variables
 
 * `GITHUB_DOT_COM_TOKEN`
@@ -59,8 +84,7 @@ Retrieves the root-level outputs from an OpenTofu remote state.
 
 * `TERRAFORM_CLOUD_TOKENS`
 
-  API tokens for cloud hosts, of the form `<host>=<token>`. Multiple tokens may be specified, one per line.
-  These tokens may be used with the `remote` backend.
+  API token for cloud hosts, of the form `<host>=<token>`. This will be used if the backed type is `remote`.
 
   e.g:
   ```yaml
@@ -78,19 +102,6 @@ Retrieves the root-level outputs from an OpenTofu remote state.
 
   - Type: string
   - Optional
-
-## Outputs
-
-An output will be created for each root-level output in the OpenTofu remote state.
-
-For example, with a remote state that has an output created using:
-```hcl
-output "service_hostname" {
-  value = "example.com"
-}
-```
-Running this action will produce a `service_hostname` output with the same value.
-See [tofu-output](https://github.com/dflook/terraform-github-actions/tree/main/tofu-output) for details.
 
 ## Example usage
 
@@ -119,7 +130,7 @@ jobs:
         with:
           backend_type: s3
           backend_config: |
-            bucket=terraform-github-actions
+            bucket=tofu-github-actions
             key=tofu-remote-state
             region=eu-west-2
 

@@ -2,7 +2,7 @@
 
 This is one of a suite of OpenTofu related actions - find them at [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
-:warning: This action uses the `tofu destroy` command to immediately destroy all resources in a tofu workspace.
+:warning: This action uses the `tofu destroy` command to immediately destroy all resources in an OpenTofu workspace.
 
 To generate a plan that can be reviewed you can instead use the [dflook/tofu-plan](https://github.com/dflook/terraform-github-actions/tree/main/tofu-plan) 
 and [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/main/tofu-plan) actions with the `destroy` input set to `true`.
@@ -11,7 +11,7 @@ and [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
 
 * `path`
 
-  Path to the OpenTofu root module
+  The path to the OpenTofu root module directory.
 
   - Type: string
   - Optional
@@ -19,7 +19,7 @@ and [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
 
 * `workspace`
 
-  OpenTofu workspace to destroy
+  The name of the OpenTofu workspace to destroy.
 
   - Type: string
   - Optional
@@ -27,7 +27,9 @@ and [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
 
 * `variables`
 
-  Variables to set for the tofu destroy. This should be valid OpenTofu syntax - like a [variable definition file](https://www.terraform.io/docs/language/values/variables.html#variable-definitions-tfvars-files).
+  Variables to set for the tofu destroy. This should be valid OpenTofu syntax - like a [variable definition file](https://opentofu.org/docs/language/values/variables/#variable-definitions-tfvars-files).
+
+  Variables set here override any given in `var_file`s.
 
   ```yaml
   with:
@@ -39,8 +41,6 @@ and [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
       ]
   ```
 
-  Variables set here override any given in `var_file`s.
-
   - Type: string
   - Optional
 
@@ -48,7 +48,7 @@ and [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
 
   List of tfvars files to use, one per line.
   Paths should be relative to the GitHub Actions workspace
-  
+
   ```yaml
   with:
     var_file: |
@@ -61,7 +61,7 @@ and [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
 
 * `backend_config`
 
-  List of tofu backend config values, one per line.
+  List of OpenTofu backend config values, one per line.
 
   ```yaml
   with:
@@ -90,7 +90,7 @@ and [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
 
   - Type: number
   - Optional
-  - Default: The tofu default (10)
+  - Default: The OpenTofu default (10).
 
 ## Outputs
 
@@ -103,6 +103,8 @@ and [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
 
   If the job fails for any other reason this will not be set.
   This can be used with the Actions expression syntax to conditionally run a steps.
+
+  - Type: string
 
 * `lock-info`
 
@@ -120,6 +122,8 @@ and [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
     "Info": ""
   }
   ```
+
+  - Type: string
 
 ## Environment Variables
 
@@ -156,7 +160,7 @@ and [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
 
 * `TERRAFORM_SSH_KEY`
 
-  A SSH private key that OpenTofu will use to fetch git module sources.
+  A SSH private key that OpenTofu will use to fetch git/mercurial module sources.
 
   This should be in PEM format.
 
@@ -164,28 +168,6 @@ and [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
   ```yaml
   env:
     TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
-  ```
-
-  - Type: string
-  - Optional
-
-* `TERRAFORM_PRE_RUN`
-
-  A set of commands that will be ran prior to `tofu init`. This can be used to customise the environment before running OpenTofu. 
-  
-  The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
-
-  The runtime image is currently based on `debian:bullseye`, with the command run using `bash -xeo pipefail`.
-
-  For example:
-  ```yaml
-  env:
-    TERRAFORM_PRE_RUN: |
-      # Install latest Azure CLI
-      curl -skL https://aka.ms/InstallAzureCLIDeb | bash
-      
-      # Install postgres client
-      apt-get install -y --no-install-recommends postgresql-client
   ```
 
   - Type: string
@@ -216,6 +198,28 @@ and [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
   - Type: string
   - Optional
 
+* `TERRAFORM_PRE_RUN`
+
+  A set of commands that will be ran prior to `tofu init`. This can be used to customise the environment before running OpenTofu. 
+
+  The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
+
+  The runtime image is currently based on `debian:bullseye`, with the command run using `bash -xeo pipefail`.
+
+  For example:
+  ```yaml
+  env:
+    TERRAFORM_PRE_RUN: |
+      # Install latest Azure CLI
+      curl -skL https://aka.ms/InstallAzureCLIDeb | bash
+
+      # Install postgres client
+      apt-get install -y --no-install-recommends postgresql-client
+  ```
+
+  - Type: string
+  - Optional
+
 ## Example usage
 
 This example destroys the resources in a workspace named after the git branch when the associated PR is closed.
@@ -238,7 +242,7 @@ jobs:
       - name: tofu destroy
         uses: dflook/tofu-destroy@v1
         with:
-          path: my-terraform-config
+          path: my-tofu-config
           workspace: ${{ github.head_ref }}
 ```
 
@@ -264,13 +268,13 @@ jobs:
         id: first_try
         continue-on-error: true
         with:
-          path: my-terraform-config
+          path: my-tofu-config
           workspace: ${{ github.head_ref }}
 
       - name: Retry failed destroy
         uses: dflook/tofu-destroy@v1
         if: ${{ steps.first_try.outputs.failure-reason == 'destroy-failed' }}
         with:
-          path: my-terraform-config
+          path: my-tofu-config
           workspace: ${{ github.head_ref }}
 ```

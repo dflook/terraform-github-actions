@@ -1,22 +1,24 @@
 name: tofu-output
-description: Set the action outputs from OpenTofu configuration outputs
+description: Retrieve the root-level outputs from an OpenTofu configuration.
 author: Daniel Flook
 
 inputs:
   path:
-    description: Path to the OpenTofu configuration
+    description: The path to the OpenTofu root module directory.
     required: false
-    default: .
+    default: "."
   workspace:
-    description: Name of the OpenTofu workspace
+    description: OpenTofu workspace to get outputs from
     required: false
-    default: default
+    default: "default"
   backend_config:
-    description: List of backend config values to set, one per line
+    description: List of OpenTofu backend config values, one per line.
     required: false
     default: ""
   backend_config_file:
-    description: Path to a backend config file
+    description: |
+      List of OpenTofu backend config files to use, one per line.
+      Paths should be relative to the GitHub Actions workspace
     required: false
     default: ""
 

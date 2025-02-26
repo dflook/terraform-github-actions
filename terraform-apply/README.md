@@ -61,7 +61,9 @@ These input values must be the same as any [`dflook/terraform-plan`](https://git
 
 * `variables`
 
-  Variables to set for the Terraform plan. This should be valid Terraform syntax - like a [variable definition file](https://www.terraform.io/docs/language/values/variables.html#variable-definitions-tfvars-files).
+  Variables to set for the terraform plan. This should be valid Terraform syntax - like a [variable definition file](https://developer.hashicorp.com/terraform/language/values/variables#variable-definitions-tfvars-files).
+
+  Variables set here override any given in `var_file`s.
 
   ```yaml
   with:
@@ -73,8 +75,6 @@ These input values must be the same as any [`dflook/terraform-plan`](https://git
       ]
   ```
 
-  Variables set here override any given in `var_file`s.
-
   - Type: string
   - Optional
 
@@ -82,7 +82,7 @@ These input values must be the same as any [`dflook/terraform-plan`](https://git
 
   List of tfvars files to use, one per line.
   Paths should be relative to the GitHub Actions workspace
-  
+
   ```yaml
   with:
     var_file: |
@@ -125,8 +125,7 @@ These input values must be the same as any [`dflook/terraform-plan`](https://git
   ```yaml
   with:
     replace: |
-      kubernetes_secret.tls_cert_public
-      kubernetes_secret.tls_cert_private
+      random_password.database
   ```
 
   - Type: string
@@ -155,7 +154,7 @@ These input values must be the same as any [`dflook/terraform-plan`](https://git
 
   - Type: boolean
   - Optional
-  - Default: false
+  - Default: `false`
 
 * `plan_path`
 
@@ -187,7 +186,7 @@ These input values must be the same as any [`dflook/terraform-plan`](https://git
 
   - Type: bool
   - Optional
-  - Default: false
+  - Default: `false`
 
 * `parallelism`
 
@@ -195,22 +194,28 @@ These input values must be the same as any [`dflook/terraform-plan`](https://git
 
   - Type: number
   - Optional
-  - Default: The terraform default (10)
+  - Default: The Terraform default (10).
 
 ## Outputs
 
 * `json_plan_path`
 
-  This is the path to the generated plan in [JSON Output Format](https://www.terraform.io/docs/internals/json-format.html)
+  This is the path to the generated plan in [JSON Output Format](https://www.terraform.io/docs/internals/json-format.html).
   The path is relative to the Actions workspace.
 
+  Terraform plans often contain sensitive information, so this output should be treated with care.
+
   This won't be set if the backend type is `remote` - Terraform does not support saving remote plans.
+
+  - Type: string
 
 * `text_plan_path`
 
   This is the path to the generated plan in a human-readable format.
   The path is relative to the Actions workspace.
   This won't be set if `auto_approve` is true while using a `remote` backend.
+
+  - Type: string
 
 * `failure-reason`
 
@@ -222,6 +227,8 @@ These input values must be the same as any [`dflook/terraform-plan`](https://git
 
   If the job fails for any other reason this will not be set.
   This can be used with the Actions expression syntax to conditionally run steps.
+
+  - Type: string
 
 * `lock-info`
 
@@ -240,6 +247,8 @@ These input values must be the same as any [`dflook/terraform-plan`](https://git
   }
   ```
 
+  - Type: string
+
 * `run_id`
 
   If the root module uses the `remote` or `cloud` backend in remote execution mode, this output will be set to the remote run id.
@@ -257,8 +266,17 @@ These input values must be the same as any [`dflook/terraform-plan`](https://git
   }
   ```
 
-  Running this action will produce a `service_hostname` output with the same value.
-  See [terraform-output](https://github.com/dflook/terraform-github-actions/tree/main/terraform-output) for details.
+  Running this action will produce a `service_hostname` output with the value `example.com`.
+
+  ### Primitive types (string, number, bool)
+
+  The values for these types get cast to a string with boolean values being 'true' and 'false'.
+
+  ### Complex types (list/set/tuple & map/object)
+
+  The values for complex types are output as a JSON string. Terraform `list`, `set` & `tuple` types are cast to a JSON array, `map` and `object` types are cast to a JSON object.
+
+  These values can be used in a workflow expression by using the [fromJSON](https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#fromjson) function
 
 ## Environment Variables
 
@@ -266,6 +284,7 @@ These input values must be the same as any [`dflook/terraform-plan`](https://git
 
   The GitHub authorization token to use to fetch an approved plan from a PR. 
   This must belong to the same user/app as the token used by the [terraform-plan](https://github.com/dflook/terraform-github-actions/tree/main/terraform-plan) action.
+
   The token provided by GitHub Actions can be used - it can be passed by
   using the `${{ secrets.GITHUB_TOKEN }}` expression, e.g.
 
@@ -293,8 +312,8 @@ These input values must be the same as any [`dflook/terraform-plan`](https://git
 * `TERRAFORM_ACTIONS_GITHUB_TOKEN`
 
   When this is set it is used instead of `GITHUB_TOKEN`, with the same behaviour.
-  The GitHub Terraform provider also uses the `GITHUB_TOKEN` so this can be used to
-  make the github actions and the Terraform provider use different tokens.
+  The GitHub Terraform provider also uses the `GITHUB_TOKEN` environment variable, 
+  so this can be used to make the github actions and the Terraform provider use different tokens.
 
   - Type: string
   - Optional
@@ -332,7 +351,7 @@ These input values must be the same as any [`dflook/terraform-plan`](https://git
 
 * `TERRAFORM_SSH_KEY`
 
-  A SSH private key that Terraform will use to fetch git module sources.
+  A SSH private key that Terraform will use to fetch git/mercurial module sources.
 
   This should be in PEM format.
 
@@ -340,28 +359,6 @@ These input values must be the same as any [`dflook/terraform-plan`](https://git
   ```yaml
   env:
     TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
-  ```
-
-  - Type: string
-  - Optional
-
-* `TERRAFORM_PRE_RUN`
-
-  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running Terraform. 
-  
-  The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
-  
-  The runtime image is currently based on `debian:bullseye`, with the command run using `bash -xeo pipefail`.
-
-  For example:
-  ```yaml
-  env:
-    TERRAFORM_PRE_RUN: |
-      # Install latest Azure CLI
-      curl -skL https://aka.ms/InstallAzureCLIDeb | bash
-      
-      # Install postgres client
-      apt-get install -y --no-install-recommends postgresql-client
   ```
 
   - Type: string
@@ -387,6 +384,28 @@ These input values must be the same as any [`dflook/terraform-plan`](https://git
       github.com/dflook/terraform-github-actions.git=dflook-actions:${{ secrets.ACTIONS_PAT }}
       github.com/dflook=dflook:${{ secrets.DFLOOK_PAT }}
       github.com=graham:${{ secrets.GITHUB_PAT }}  
+  ```
+
+  - Type: string
+  - Optional
+
+* `TERRAFORM_PRE_RUN`
+
+  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running Terraform. 
+
+  The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
+
+  The runtime image is currently based on `debian:bullseye`, with the command run using `bash -xeo pipefail`.
+
+  For example:
+  ```yaml
+  env:
+    TERRAFORM_PRE_RUN: |
+      # Install latest Azure CLI
+      curl -skL https://aka.ms/InstallAzureCLIDeb | bash
+
+      # Install postgres client
+      apt-get install -y --no-install-recommends postgresql-client
   ```
 
   - Type: string

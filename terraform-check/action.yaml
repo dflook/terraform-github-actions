@@ -4,35 +4,56 @@ author: Daniel Flook
 
 inputs:
   path:
-    description: Path to the Terraform configuration
+    description: Path to the Terraform root module to check
     required: false
-    default: .
+    default: "."
   workspace:
-    description: Name of the Terraform workspace
+    description: Terraform workspace to run the plan in
     required: false
-    default: default
+    default: "default"
+  variables:
+    description: |
+      Variables to set for the terraform plan. This should be valid Terraform syntax - like a [variable definition file](https://developer.hashicorp.com/terraform/language/values/variables#variable-definitions-tfvars-files).
+
+      Variables set here override any given in `var_file`s.
+    required: false
+  var_file:
+    description: |
+      List of tfvars files to use, one per line.
+      Paths should be relative to the GitHub Actions workspace
+    required: false
+  var:
+    description: |
+      Comma separated list of Terraform vars to set.
+      This is deprecated due to the following limitations:
+      - Only primitive types can be set with `var` - number, bool and string.
+      - String values may not contain a comma.
+      - Values set with `var` will be overridden by values contained in `var_file`s
+      - Does not work with the `remote` backend
+      You can change from `var` to `variables` by putting each variable on a separate line and ensuring each string value is quoted.
+    required: false
+    deprecationMessage: Use the variables input instead.
   backend_config:
-    description: List of backend config values to set, one per line
+    description: List of Terraform backend config values, one per line.
     required: false
     default: ""
   backend_config_file:
-    description: Path to a backend config file
+    description: |
+      List of Terraform backend config files to use, one per line.
+      Paths should be relative to the GitHub Actions workspace
     required: false
     default: ""
-  variables:
-    description: Variable definitions
-    required: false
-  var:
-    description: Comma separated list of vars to set, e.g. 'foo=bar'
-    required: false
-    deprecationMessage: Use the variables input instead.
-  var_file:
-    description: List of var file paths, one per line
-    required: false
   parallelism:
     description: Limit the number of concurrent operations
     required: false
     default: "0"
+
+outputs:
+  failure-reason:
+    description: |
+      When the job outcome is `failure` because the there are outstanding changes to apply, this will be set to 'changes-to-apply'.
+      If the job fails for any other reason this will not be set.
+      This can be used with the Actions expression syntax to conditionally run a step when there are changes to apply.
 
 runs:
   using: docker

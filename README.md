@@ -1,6 +1,6 @@
 # Terraform and OpenTofu GitHub Actions ![release](https://img.shields.io/github/v/release/dflook/terraform-github-actions)![job runs](https://img.shields.io/docker/pulls/danielflook/terraform-github-actions?label=job%20runs)
 
-This is a suite of terraform and OpenTofu related GitHub Actions that can be used together to build effective Infrastructure as Code workflows.
+This is a suite of Terraform and OpenTofu related GitHub Actions that can be used together to build effective Infrastructure as Code workflows.
 
 [GitHub Actions](https://github.com/features/actions) are a way to make automated workflows that trigger when events occur on your GitHub repository, using a YAML file that lives in your repo.
 These actions can be used to easily perform [Terraform](https://www.terraform.io/) or [OpenTofu](https://www.opentofu.org/) tasks as part of your workflow.
@@ -10,27 +10,29 @@ Currently, there is just experimental support for OpenTofu, see [here](https://g
 ## Actions
 See the documentation for the available actions:
 
-- [dflook/terraform-plan](terraform-plan)
-- [dflook/terraform-apply](terraform-apply)
-- [dflook/terraform-output](terraform-output)
-- [dflook/terraform-remote-state](terraform-remote-state)
-- [dflook/terraform-validate](terraform-validate)
-- [dflook/terraform-fmt-check](terraform-fmt-check)
-- [dflook/terraform-fmt](terraform-fmt)
-- [dflook/terraform-check](terraform-check)
-- [dflook/terraform-new-workspace](terraform-new-workspace)
-- [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
-- [dflook/terraform-destroy](terraform-destroy)
-- [dflook/terraform-version](terraform-version)
-- [dflook/terraform-unlock-state](terraform-unlock-state)
-- [dflook/terraform-test](terraform-test)
+| Terraform                                                          | OpenTofu                                                |
+|--------------------------------------------------------------------|---------------------------------------------------------|
+| [dflook/terraform-plan](terraform-plan)                            | [dflook/tofu-plan](tofu-plan)                           |
+| [dflook/terraform-apply](terraform-apply)                          | [dflook/tofu-apply](tofu-apply)                         |
+| [dflook/terraform-output](terraform-output)                        | [dflook/tofu-output](tofu-output)                       |
+| [dflook/terraform-remote-state](terraform-remote-state)            | [dflook/tofu-remote-state](tofu-remote-state)           |
+| [dflook/terraform-validate](terraform-validate)                    | [dflook/tofu-validate](tofu-validate)                   |
+| [dflook/terraform-fmt-check](terraform-fmt-check)                  | [dflook/tofu-fmt-check](tofu-fmt-check)                 |
+| [dflook/terraform-fmt](terraform-fmt)                              | [dflook/tofu-fmt](tofu-fmt)                             |
+| [dflook/terraform-check](terraform-check)                          | [dflook/tofu-check](tofu-check)                         |
+| [dflook/terraform-new-workspace](terraform-new-workspace)          | [dflook/tofu-new-workspace](tofu-new-workspace)         |
+| [dflook/terraform-destroy-workspace](terraform-destroy-workspace)  | [dflook/tofu-destroy-workspace](tofu-destroy-workspace) |
+| [dflook/terraform-destroy](terraform-destroy)                      | [dflook/tofu-destroy](tofu-destroy)                     |
+| [dflook/terraform-version](terraform-version)                      | [dflook/tofu-version](tofu-version)                     |
+| [dflook/terraform-unlock-state](terraform-unlock-state)            | [dflook/tofu-unlock-state](tofu-unlock-state)           |
+| [dflook/terraform-test](terraform-test)                            | [dflook/tofu-test](tofu-test)                           |
 
 ## Example Usage
-These terraform actions can be added as steps to your own workflow files.
+These actions can be added as steps to your own workflow files.
 GitHub reads workflow files from `.github/workflows/` within your repository.
 See the [Workflow documentation](https://docs.github.com/en/actions/configuring-and-managing-workflows/configuring-a-workflow#about-workflows) for details on writing workflows.
 
-Here are some examples of how the terraform actions can be used together in workflows.
+Here are some examples of how the actions can be used together in workflows.
 
 ### Terraform plan PR approval
 
@@ -48,7 +50,7 @@ You can make GitHub enforce this using branch protection, see the [dflook/terraf
 In this example we use two workflows:
 
 #### plan.yaml
-This workflow runs on changes to a PR branch. It generates a terraform plan and attaches it to the PR as a comment.
+This workflow runs on changes to a PR branch. It generates a Terraform plan and attaches it to the PR as a comment.
 ```yaml
 name: Create terraform plan
 
@@ -179,7 +181,7 @@ jobs:
 ```
 
 ### Scheduled infrastructure updates
-There may be times when you expect terraform to plan updates without any changes to your terraform configuration files.
+There may be times when you expect Terraform to plan updates without any changes to your configuration files.
 Your configuration could be consuming secrets from elsewhere, or renewing certificates every few months.
 
 This example workflow runs every morning and applies any outstanding changes to those specific resources.
@@ -211,7 +213,7 @@ jobs:
 ```
 
 ### Automatically fixing formatting
-Perhaps you don't want to spend engineer time making formatting changes. This workflow will automatically create or update a PR that fixes any terraform formatting issues.
+Perhaps you don't want to spend engineer time making formatting changes. This workflow will automatically create or update a PR that fixes any formatting issues.
 
 #### fmt.yaml
 ```yaml
@@ -253,7 +255,7 @@ There are two workflows:
 #### integration-test.yaml
 This workflow runs with every change to a PR.
 
-It deploys the testing infrastructure using a terraform workspace dedicated to this branch, then runs integration tests against the new infrastructure.
+It deploys the testing infrastructure using a Terraform workspace dedicated to this branch, then runs integration tests against the new infrastructure.
 
 ```yaml
 name: Run integration tests
@@ -310,7 +312,3 @@ jobs:
           path: my-terraform-config
           workspace: ${{ github.head_ref }}
 ```
-
-## What if I don't use GitHub Actions?
-If you use CircleCI, check out OVO Energy's [`ovotech/terraform`](https://github.com/ovotech/circleci-orbs/tree/master/terraform) CircleCI orb.
-If you use Jenkins, you have my sympathy.

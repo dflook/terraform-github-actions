@@ -4,34 +4,75 @@ author: Daniel Flook
 
 inputs:
   path:
-    description: Path to the OpenTofu configuration
+    description: The path to the OpenTofu root module directory.
     required: false
-    default: .
+    default: "."
   workspace:
-    description: Name of the OpenTofu workspace
+    description: The name of the OpenTofu workspace to destroy and delete.
     required: true
+  variables:
+    description: |
+      Variables to set for the tofu destroy. This should be valid OpenTofu syntax - like a [variable definition file](https://opentofu.org/docs/language/values/variables/#variable-definitions-tfvars-files).
+
+      Variables set here override any given in `var_file`s.
+    required: false
+  var_file:
+    description: |
+      List of tfvars files to use, one per line.
+      Paths should be relative to the GitHub Actions workspace
+    required: false
+  var:
+    description: |
+      Comma separated list of OpenTofu vars to set.
+      This is deprecated due to the following limitations:
+      - Only primitive types can be set with `var` - number, bool and string.
+      - String values may not contain a comma.
+      - Values set with `var` will be overridden by values contained in `var_file`s
+      - Does not work with the `remote` backend
+      You can change from `var` to `variables` by putting each variable on a separate line and ensuring each string value is quoted.
+    required: false
+    deprecationMessage: Use the variables input instead.
   backend_config:
-    description: List of backend config values to set, one per line
+    description: List of OpenTofu backend config values, one per line.
     required: false
     default: ""
   backend_config_file:
-    description: Path to a backend config file
+    description: |
+      List of OpenTofu backend config files to use, one per line.
+      Paths should be relative to the GitHub Actions workspace
     required: false
     default: ""
-  variables:
-    description: Variable definitions
-    required: false
-  var:
-    description: Comma separated list of vars to set, e.g. 'foo=bar'
-    required: false
-    deprecationMessage: Use the variables input instead.
-  var_file:
-    description: List of var file paths, one per line
-    required: false
   parallelism:
     description: Limit the number of concurrent operations
     required: false
     default: "0"
+
+outputs:
+  failure-reason:
+    description: |
+      When the job outcome is `failure`, this output may be set. The value may be one of:
+
+      - `destroy-failed` - The OpenTofu destroy operation failed.
+      - `state-locked` - The OpenTofu state lock could not be obtained because it was already locked. 
+
+      If the job fails for any other reason this will not be set.
+      This can be used with the Actions expression syntax to conditionally run a steps.
+  lock-info:
+    description: |
+      When the job outcome is `failure` and the failure-reason is `state-locked`, this output will be set.
+
+      It is a json object containing any available state lock information and typically has the form:
+      ```json
+      {
+        "ID": "838fbfde-c5cd-297f-84a4-d7578b4a4880",
+        "Path": "terraform-github-actions/test-unlock-state",
+        "Operation": "OperationTypeApply",
+        "Who": "root@e9d43b0c6478",
+        "Version": "1.3.7",
+        "Created": "2023-01-28 00:16:41.560904373 +0000 UTC",
+        "Info": ""
+      }
+      ```
 
 runs:
   env:

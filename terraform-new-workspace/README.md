@@ -8,7 +8,7 @@ Creates a new Terraform workspace. If the workspace already exists, succeeds wit
 
 * `path`
 
-  Path to the Terraform root module
+  The path to the Terraform root module directory.
 
   - Type: string
   - Optional
@@ -16,14 +16,14 @@ Creates a new Terraform workspace. If the workspace already exists, succeeds wit
 
 * `workspace`
 
-  Terraform workspace to create
+  The name of the Terraform workspace to create.
 
   - Type: string
   - Required
 
 * `backend_config`
 
-  List of terraform backend config values, one per line.
+  List of Terraform backend config values, one per line.
 
   ```yaml
   with:
@@ -81,7 +81,7 @@ Creates a new Terraform workspace. If the workspace already exists, succeeds wit
 
 * `TERRAFORM_SSH_KEY`
 
-  A SSH private key that Terraform will use to fetch git module sources.
+  A SSH private key that Terraform will use to fetch git/mercurial module sources.
 
   This should be in PEM format.
 
@@ -89,28 +89,6 @@ Creates a new Terraform workspace. If the workspace already exists, succeeds wit
   ```yaml
   env:
     TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
-  ```
-
-  - Type: string
-  - Optional
-
-* `TERRAFORM_PRE_RUN`
-
-  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running Terraform. 
-  
-  The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
-  
-  The runtime image is currently based on `debian:bullseye`, with the command run using `bash -xeo pipefail`.
-
-  For example:
-  ```yaml
-  env:
-    TERRAFORM_PRE_RUN: |
-      # Install latest Azure CLI
-      curl -skL https://aka.ms/InstallAzureCLIDeb | bash
-      
-      # Install postgres client
-      apt-get install -y --no-install-recommends postgresql-client
   ```
 
   - Type: string
@@ -136,6 +114,28 @@ Creates a new Terraform workspace. If the workspace already exists, succeeds wit
       github.com/dflook/terraform-github-actions.git=dflook-actions:${{ secrets.ACTIONS_PAT }}
       github.com/dflook=dflook:${{ secrets.DFLOOK_PAT }}
       github.com=graham:${{ secrets.GITHUB_PAT }}  
+  ```
+
+  - Type: string
+  - Optional
+
+* `TERRAFORM_PRE_RUN`
+
+  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running Terraform. 
+
+  The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
+
+  The runtime image is currently based on `debian:bullseye`, with the command run using `bash -xeo pipefail`.
+
+  For example:
+  ```yaml
+  env:
+    TERRAFORM_PRE_RUN: |
+      # Install latest Azure CLI
+      curl -skL https://aka.ms/InstallAzureCLIDeb | bash
+
+      # Install postgres client
+      apt-get install -y --no-install-recommends postgresql-client
   ```
 
   - Type: string
