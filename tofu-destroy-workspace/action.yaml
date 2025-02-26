@@ -1,5 +1,5 @@
 name: tofu-destroy-workspace
-description: Delete a Terraform workspace, destroying all resources
+description: Delete an OpenTofu workspace, destroying all resources
 author: Daniel Flook
 
 inputs:

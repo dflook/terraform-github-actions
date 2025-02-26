@@ -22,7 +22,7 @@ destroy_workspace = Action(
     description='''
     This action uses the `$ToolName destroy` command to destroy all resources in a $ProductName workspace and then delete the workspace.
     ''',
-    meta_description='Delete a Terraform workspace, destroying all resources',
+    meta_description='Delete a $ProductName workspace, destroying all resources',
     inputs=[
         path,
         dataclasses.replace(workspace, description='The name of the $ProductName workspace to destroy and delete.', required=True, default=None),
