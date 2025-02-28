@@ -26,6 +26,10 @@ function set-test-args() {
             TEST_ARGS="$TEST_ARGS -filter=$file"
         done
     fi
+
+    if [[ "$TOOL_COMMAND_NAME" == "terraform" && $TERRAFORM_VER_MAJOR -ge 1 && $TERRAFORM_VER_MINOR -ge 11 ]]; then
+        TEST_ARGS="$TEST_ARGS -junit-xml=$STEP_TMP_DIR/test-result.xml"
+    fi
 }
 
 function test() {
@@ -44,6 +48,12 @@ function test() {
     set -e
 
     cat "$STEP_TMP_DIR/terraform_test.stderr"
+
+    if [[ -f "$STEP_TMP_DIR/test-result.xml" ]]; then
+      mkdir -p "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR"
+      cp "$STEP_TMP_DIR/test-result.xml" "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/test-result.xml"
+      set_output junit-xml-path "$WORKSPACE_TMP_DIR/test-result.xml"
+    fi
 
     if [[ $TEST_EXIT -eq 0 ]]; then
         # Workaround a bit of stupidity in the terraform test command

@@ -1,7 +1,7 @@
 import textwrap
 from dataclasses import dataclass, field
 from textwrap import indent
-from typing import Callable
+from typing import Callable, Type
 
 
 def heading(text: str, level: int=1) -> str:
@@ -95,6 +95,7 @@ class Output:
     type: str = None
     aliases: list[str] = field(default_factory=list)
     meta_output: bool = False
+    available_in: list[Type[Terraform] | Type[OpenTofu]] = field(default_factory=lambda: [Terraform, OpenTofu])
 
     def markdown(self, tool: Tool) -> str:
         if self.meta_output:
@@ -182,6 +183,7 @@ class Action:
             "plan_path",
             "json_plan_path",
             "text_plan_path",
+            "junit-xml-path",
             "to_add",
             "failure-reason",
             "lock-info",
@@ -231,6 +233,8 @@ class Action:
                 s += text_chunk(self.outputs_intro)
 
             for output in self.outputs:
+                if tool not in output.available_in:
+                    continue
                 s += text_chunk(output.markdown(tool))
 
         if self.environment_variables:
@@ -273,10 +277,10 @@ class Action:
 
         s += '\n'
 
-        if [output for output in self.outputs if not output.meta_output]:
+        if [output for output in self.outputs if not output.meta_output and tool in output.available_in]:
             s += 'outputs:\n'
 
-            for output in self.outputs:
+            for output in (output for output in self.outputs if not output.meta_output and tool in output.available_in):
                 if output.meta_output:
                     continue
 

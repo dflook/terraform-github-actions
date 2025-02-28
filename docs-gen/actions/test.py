@@ -12,6 +12,7 @@ from inputs.test_filter import test_filter
 from inputs.var_file import var_file
 from inputs.variables import variables
 from outputs.failure_reason import failure_reason
+from outputs.junit_xml import junit_xml_path
 
 test = Action(
     'test',
@@ -31,6 +32,7 @@ test = Action(
         var_file
     ],
     outputs=[
+        junit_xml_path,
         dataclasses.replace(failure_reason, description='''
           When the job outcome is `failure`, this output may be set. The value may be one of:
         
