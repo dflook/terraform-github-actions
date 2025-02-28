@@ -19,16 +19,67 @@ jobs:
       - name: Test
         uses: ./terraform-test
         id: test
+        env:
+          TERRAFORM_VERSION: 1.10.0
         with:
           path: tests/workflows/test-test/local
 
       - name: Check Passed
         env:
           FAILURE_REASON: ${{ steps.test.outputs.failure-reason }}
+          JUNIT_XML_PATH: ${{ steps.test.outputs.junit-xml-path }}
         run: |
           if [[ "$FAILURE_REASON" != "" ]]; then
             echo "::error:: failure-reason not set correctly"
             exit 1
+          fi
+          
+          if [[ "$JUNIT_XML_PATH" != "" ]]; then
+            echo "::error:: junit-xml-path should not be set"
+            exit 1
+          fi
+
+  junit:
+    runs-on: ubuntu-24.04
+    name: Junit support
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Test
+        uses: ./terraform-test
+        id: test
+        env:
+          TERRAFORM_VERSION: 1.11.0
+        with:
+          path: tests/workflows/test-test/local
+
+      - name: Check Passed
+        env:
+          FAILURE_REASON: ${{ steps.test.outputs.failure-reason }}
+          JUNIT_XML_PATH: ${{ steps.test.outputs.junit-xml-path }}
+        run: |
+          if [[ "$FAILURE_REASON" != "" ]]; then
+            echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+          
+          if [[ "$JUNIT_XML_PATH" == "" ]]; then
+            echo "::error:: junit-xml-path should be set"
+            exit 1
+          fi
+
+          # Check the output looks right
+          if [[ ! -f "$JUNIT_XML_PATH" ]]; then
+              echo "::error:: junit-xml-path does not point to a file"
+              exit 1
+          fi
+          
+          if [[ "$(grep -c '<testsuites' "$JUNIT_XML_PATH")" -ne 1 ]]; then
+              echo "::error:: junit-xml-path does not contain a testsuites tag"
+              exit 1
           fi
 
   filter:

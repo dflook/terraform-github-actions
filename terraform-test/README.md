@@ -81,6 +81,16 @@ If the tests fail, the job will stop with a failure status.
 
 ## Outputs
 
+* `junit-xml-path`
+
+  A test report in JUnit XML format.
+
+  The path is relative to the Actions workspace.
+
+  This will only be available when using Terraform 1.11.0 or later.
+
+  - Type: string
+
 * `failure-reason`
 
   When the job outcome is `failure`, this output may be set. The value may be one of:
