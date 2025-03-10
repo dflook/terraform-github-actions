@@ -8,7 +8,7 @@ on:
       - image/Dockerfile-base
       - .github/workflows/base-image.yaml
   schedule:
-    - cron: 0 1 * * 1
+    - cron: 0 1 1 * *
 
 permissions:
   contents: read
@@ -17,8 +17,12 @@ jobs:
   push_image:
     runs-on: ubuntu-24.04
     name: Docker Images
-    env:
-      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+    permissions:
+      id-token: write
+      attestations: write
+    environment:
+      name: dockerhub
+      url: https://hub.docker.com/r/danielflook/terraform-github-actions-base/tags?name=${{ github.run_id }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,6 +30,8 @@ jobs:
           persist-credentials: false
 
       - name: Registry login
+        env:
+          DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
         run: |
           echo $DOCKER_TOKEN | docker login --username danielflook --password-stdin
 
@@ -33,15 +39,31 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Base image
+        id: build-and-push
         run: |
           docker buildx build \
             --tag danielflook/terraform-github-actions-base:$GITHUB_RUN_ID \
             --tag danielflook/terraform-github-actions-base:latest  \
             --platform linux/amd64,linux/arm64 \
             --attest type=provenance,mode=max,builder-id=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID \
+            --annotation "index,manifest:org.opencontainers.image.created=$(date '+%Y-%m-%dT%H:%M:%S%z')" \
+            --annotation "index,manifest:org.opencontainers.image.source=https://github.com/${{ github.repository }}" \
+            --annotation "index,manifest:org.opencontainers.image.revision=${{ github.sha }}" \
+            --annotation "index,manifest:org.opencontainers.image.title=terraform-github-actions-base" \
+            --annotation "index,manifest:org.opencontainers.image.description=Base image for terraform-github-actions" \
+            --annotation "index:org.opencontainers.image.ref.name=docker.io/danielflook/terraform-github-actions-base:$GITHUB_RUN_ID" \
+            --annotation "index,manifest:builder-id=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+            --annotation "index,manifest:ref.tag=$GITHUB_RUN_ID" \
+            --annotation "index,manifest:org.opencontainers.image.base.name=docker.io/debian:bullseye-slim" \
             --file image/Dockerfile-base \
             --push \
             --iidfile manifest-list-digest.txt \
             image
 
           echo "digest=$(<manifest-list-digest.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Generate image attestation
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: index.docker.io/danielflook/terraform-github-actions-base
+          subject-digest: ${{ steps.build-and-push.outputs.digest }}

@@ -5,14 +5,6 @@ ARG TARGETARCH
 ARG FETCH_CHECKSUMS
 ARG VERSION=99.0.0
 
-RUN gpg --recv-keys C874011F0AB405110D02105534365D9472D7468F \
- && echo "C874011F0AB405110D02105534365D9472D7468F:6:" | gpg --import-ownertrust
-
-RUN curl https://get.opentofu.org/opentofu.gpg | gpg --import \
- && echo "E3E6E43D84CB852EADB0051D0C0AF313E5FD9F80:6:" | gpg --import-ownertrust
-
-RUN gpg --check-trustdb
-
 COPY src/ /tmp/src/
 COPY setup.py /tmp
 RUN sed -i "s|version='.*'|version=\'${VERSION}\'|" /tmp/setup.py \
@@ -44,10 +36,6 @@ COPY tools/workspace_exists.py /usr/local/bin/workspace_exists
 COPY tools/compact_plan.py /usr/local/bin/compact_plan
 COPY tools/format_tf_credentials.py /usr/local/bin/format_tf_credentials
 COPY tools/github_comment_react.py /usr/local/bin/github_comment_react
-
-RUN echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config \
- && echo "IdentityFile /.ssh/id_rsa" >> /etc/ssh/ssh_config \
- && mkdir -p /.ssh
 
 COPY tools/http_credential_actions_helper.py /usr/bin/git-credential-actions
 RUN git config --system credential.helper /usr/bin/git-credential-actions \

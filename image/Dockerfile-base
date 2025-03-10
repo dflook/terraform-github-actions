@@ -6,7 +6,7 @@ RUN git clone https://github.com/cloudposse/tfmask.git \
  && make \
  && make go/build
 
-FROM debian:bullseye-slim as base
+FROM debian:bullseye-slim AS terraform-github-actions-base
 
 # Terraform environment variables
 ENV CHECKPOINT_DISABLE=true
@@ -14,8 +14,9 @@ ENV TF_IN_AUTOMATION=true
 ENV TF_INPUT=false
 ENV TF_PLUGIN_CACHE_DIR=/usr/local/share/terraform/plugin-cache
 
-RUN apt-get update  \
- && apt-get install --no-install-recommends -y \
+RUN <<EOF
+ apt-get update
+ apt-get install --no-install-recommends -y \
     git \
     ssh \
     tar \
@@ -31,12 +32,23 @@ RUN apt-get update  \
     gpg \
     gpg-agent \
     dirmngr \
-    tree \
- && rm -rf /var/lib/apt/lists/*
+    tree
+ rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p $TF_PLUGIN_CACHE_DIR
+ mkdir -p $TF_PLUGIN_CACHE_DIR
+
+ gpg --recv-keys C874011F0AB405110D02105534365D9472D7468F
+ echo "C874011F0AB405110D02105534365D9472D7468F:6:" | gpg --import-ownertrust
+
+ curl https://get.opentofu.org/opentofu.gpg | gpg --import
+ echo "E3E6E43D84CB852EADB0051D0C0AF313E5FD9F80:6:" | gpg --import-ownertrust
+
+ gpg --check-trustdb
+
+ echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
+ echo "IdentityFile /.ssh/id_rsa" >> /etc/ssh/ssh_config
+ mkdir -p /.ssh
+EOF
 
 COPY --from=tfmask /go/tfmask/release/tfmask /usr/local/bin/tfmask
 ENV TFMASK_RESOURCES_REGEX="(?i)^(random_id|kubernetes_secret|acme_certificate).*$"
-
-ENTRYPOINT ["/usr/local/bin/terraform"]
