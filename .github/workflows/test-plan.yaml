@@ -1059,25 +1059,25 @@ jobs:
           path: tests/workflows/test-plan/plan
           label: test-plan test_plan_1_4
 
-#  arm64:
-#    runs-on: buildjet-2vcpu-ubuntu-2204-arm
-#    name: Test on arm64
-#    permissions:
-#      contents: read
-#      pull-requests: write
-#    env:
-#      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v4
-#        with:
-#          persist-credentials: false
-#
-#      - name: Plan
-#        uses: ./terraform-plan
-#        with:
-#          path: tests/workflows/test-plan/plan
-#          label: arm64
+  arm64:
+    runs-on: ubuntu-24.04-arm
+    name: Test on arm64
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          path: tests/workflows/test-plan/plan
+          label: arm64
 
   always_new:
     runs-on: ubuntu-24.04

@@ -35,6 +35,10 @@ def parse_tfenv(terraform_version_file: str, versions: Iterable[Version]) -> Ver
 
         return latest_version(matched)
 
+    for v in sorted(versions, reverse=True):
+        if str(v) == version:
+            return v
+
     return Version(version)
 
 
