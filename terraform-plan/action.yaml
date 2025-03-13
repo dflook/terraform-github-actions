@@ -82,6 +82,10 @@ inputs:
     description: Limit the number of concurrent operations
     required: false
     default: "0"
+  refresh:
+    description: Skip checking for external changes to remote objects while creating the plan
+    required: false
+    default: "true"
 
 outputs:
   changes:
