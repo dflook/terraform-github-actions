@@ -1,0 +1,43 @@
+self-hosted-runner:
+  # Labels of self-hosted runner in array of strings.
+  labels: []
+
+# Configuration variables in array of strings defined in your repository or
+# organization. `null` means disabling configuration variables check.
+# Empty array means no configuration variable is allowed.
+config-variables: []
+
+# Configuration for file paths. The keys are glob patterns to match to file
+# paths relative to the repository root. The values are the configurations for
+# the file paths. Note that the path separator is always '/'.
+# The following configurations are available.
+#
+# "ignore" is an array of regular expression patterns. Matched error messages
+# are ignored. This is similar to the "-ignore" command line option.
+paths:
+  .github/workflows/*.yaml:
+    ignore:
+      - 'file "/entrypoints/.*\.sh" does not exist'
+      - 'property "output_string" is not defined in object type'
+      - 'property "my.*" is not defined in object type'
+      - 'property "from_.*" is not defined in object type'
+      - 'property "complex_output" is not defined in object type'
+      - 'property "v" is not defined in object type'
+      - 'property "test" is not defined in object type'
+      - 'property "default" is not defined in object type'
+      - 'property "len" is not defined in object type'
+      - 'property "https" is not defined in object type'
+      - 'property "git_https" is not defined in object type'
+      - 'property "awkward_.*" is not defined in object type'
+      - 'property "word" is not defined in object type'
+  .github/workflows/test-target-replace.yaml:
+    ignore:
+      - 'property "count" is not defined in object type'
+      - 'property "foreach" is not defined in object type'
+  .github/workflows/release.yaml:
+    ignore:
+      - 'Useless cat.'
+  .github/workflows/test-version.yaml:
+    ignore:
+      - 'property "random" is not defined in object type'
+      - 'property "acme" is not defined in object type'
