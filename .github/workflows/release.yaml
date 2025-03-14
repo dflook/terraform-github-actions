@@ -38,11 +38,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
         run: |
-          echo $GITHUB_TOKEN | docker login ghcr.io --username dflook --password-stdin
-          echo $DOCKER_TOKEN | docker login --username danielflook --password-stdin
+          echo "$GITHUB_TOKEN" | docker login ghcr.io --username dflook --password-stdin
+          echo "$DOCKER_TOKEN" | docker login --username danielflook --password-stdin
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Build action image
         id: image_build
@@ -51,7 +51,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           BASE_TAG=$(docker buildx imagetools inspect danielflook/terraform-github-actions-base:latest --format '{{json .}}' | jq -r '.manifest.annotations."ref.tag"')
-          BASE_DIGEST=$(docker buildx imagetools inspect danielflook/terraform-github-actions-base:$BASE_TAG --format '{{json .}}' | jq -r '.manifest.digest')
+          BASE_DIGEST=$(docker buildx imagetools inspect "danielflook/terraform-github-actions-base:$BASE_TAG" --format '{{json .}}' | jq -r '.manifest.digest')
           
           gh attestation verify --repo dflook/terraform-github-actions "oci://index.docker.io/danielflook/terraform-github-actions-base@$BASE_DIGEST"
           
@@ -63,7 +63,7 @@ jobs:
             --tag "danielflook/terraform-github-actions:$RELEASE_TAG" \
             --tag "ghcr.io/dflook/terraform-github-actions:$RELEASE_TAG" \
             --platform linux/amd64,linux/arm64 \
-            --attest type=provenance,mode=max,builder-id=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID \
+            --attest "type=provenance,mode=max,builder-id=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
             --annotation "index,manifest:org.opencontainers.image.created=$(date '+%Y-%m-%dT%H:%M:%S%z')" \
             --annotation "index,manifest:org.opencontainers.image.source=https://github.com/${{ github.repository }}" \
             --annotation "index,manifest:org.opencontainers.image.revision=${{ github.sha }}" \
@@ -125,8 +125,10 @@ jobs:
           RELEASE_TAG: "${{ github.event.release.tag_name }}"
           IMAGE_DIGEST: ${{ needs.image.outputs.digest }}
         run: |
-          export major=$(echo "$RELEASE_TAG" | cut -d. -f1)
-          export minor=$(echo "$RELEASE_TAG" | cut -d. -f2)
+          major=$(echo "$RELEASE_TAG" | cut -d. -f1)
+          minor=$(echo "$RELEASE_TAG" | cut -d. -f2)
+          export major
+          export minor
 
           function prepare_release() {
               rsync -r "$GITHUB_WORKSPACE/$action/" "$HOME/$action"
