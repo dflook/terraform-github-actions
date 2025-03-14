@@ -1,6 +1,7 @@
 name: Repository Dispatch
 
-on: [repository_dispatch]
+on:
+  repository_dispatch:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -616,7 +616,7 @@ jobs:
             exit 1
           fi
 
-          if ! grep -q "Terraform will perform the following actions" $SAVED_PLAN_TEXT_PLAN_PATH; then
+          if ! grep -q "Terraform will perform the following actions" "$SAVED_PLAN_TEXT_PLAN_PATH"; then
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi

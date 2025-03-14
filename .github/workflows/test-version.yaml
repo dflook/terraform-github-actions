@@ -624,6 +624,7 @@ jobs:
           TERRAFORM_VERSION: 99.0.0
         with:
           path: tests/workflows/test-version/empty
+          workspace: hello
 
       - name: Check failed to download no such version
         env:

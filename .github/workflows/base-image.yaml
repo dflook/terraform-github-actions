@@ -33,19 +33,19 @@ jobs:
         env:
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
         run: |
-          echo $DOCKER_TOKEN | docker login --username danielflook --password-stdin
+          echo "$DOCKER_TOKEN" | docker login --username danielflook --password-stdin
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Base image
         id: build-and-push
         run: |
           docker buildx build \
-            --tag danielflook/terraform-github-actions-base:$GITHUB_RUN_ID \
+            --tag "danielflook/terraform-github-actions-base:$GITHUB_RUN_ID" \
             --tag danielflook/terraform-github-actions-base:latest  \
             --platform linux/amd64,linux/arm64 \
-            --attest type=provenance,mode=max,builder-id=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID \
+            --attest "type=provenance,mode=max,builder-id=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
             --annotation "index,manifest:org.opencontainers.image.created=$(date '+%Y-%m-%dT%H:%M:%S%z')" \
             --annotation "index,manifest:org.opencontainers.image.source=https://github.com/${{ github.repository }}" \
             --annotation "index,manifest:org.opencontainers.image.revision=${{ github.sha }}" \

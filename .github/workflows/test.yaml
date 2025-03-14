@@ -17,7 +17,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.9
 
@@ -48,7 +48,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.9
 
@@ -71,8 +71,6 @@ jobs:
   docs:
     runs-on: ubuntu-24.04
     name: Check documentation
-    env:
-      GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -84,3 +82,17 @@ jobs:
           PYTHONPATH=docs-gen python3 docs-gen/generate.py
           git diff --exit-code
 
+  lint:
+    runs-on: ubuntu-24.04
+    name: Linting
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Actions workflows (including action metadata)
+        run: |
+          bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+          ./actionlint
+          ./actionlint example_workflows/*.yaml
