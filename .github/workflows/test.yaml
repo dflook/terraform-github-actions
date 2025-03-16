@@ -98,15 +98,28 @@ jobs:
           ./actionlint example_workflows/*.yaml
 
       - name: Lint CHANGELOG
-        uses: DavidAnson/markdownlint-cli2-action@v19
+        uses: DavidAnson/markdownlint-cli2-action@05f32210e84442804257b2a6f20b273450ec8265 # v19
         with:
           config: '.config/changelog.markdownlint.yaml'
           globs: 'CHANGELOG.md'
 
       - name: Lint Other Markdown
-        uses: DavidAnson/markdownlint-cli2-action@v19
+        uses: DavidAnson/markdownlint-cli2-action@05f32210e84442804257b2a6f20b273450ec8265 # v19
         with:
           config: '.config/.markdownlint.yaml'
           globs: |
             docs/*.md
             **/README.md
+
+  ensure-pinned-actions:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Ensure SHA pinned actions
+        uses: zgosalvez/github-actions-ensure-sha-pinned-actions@25ed13d0628a1601b4b44048e63cc4328ed03633 # v3
+        with:
+          allowlist: |
+            actions/
+            dflook/

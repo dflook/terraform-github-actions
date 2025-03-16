@@ -3,6 +3,9 @@ name: Test pull_request_review event
 on:
   - pull_request_review
 
+permissions:
+  contents: read
+
 jobs:
   apply:
     runs-on: ubuntu-24.04
