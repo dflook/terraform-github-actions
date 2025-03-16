@@ -7,15 +7,18 @@ This action determines the OpenTofu and provider versions to use for the root mo
 The best way to specify the version is using a [`required_version`](https://opentofu.org/docs/language/settings/#specifying-a-required-opentofu-version) constraint.
 
 The version to use is discovered from the first of:
+
 1. The version set in the cloud workspace if the module uses a `remote` backend or `cloud` configuration, and the remote workspace exists.
-2. A [`required_version`](https://opentofu.org/docs/language/settings/#specifying-a-required-opentofu-version)
-   constraint in the OpenTofu configuration. If the constraint is range, the latest matching version is used.
+2. A [`required_version`](https://opentofu.org/docs/language/settings/#specifying-a-required-opentofu-version) constraint in the OpenTofu configuration.
+   If the constraint is range, the latest matching version is used.
 3. A [tfswitch](https://warrensbox.github.io/terraform-switcher/) `.tfswitchrc` file in the module path
 4. A [tofuenv](https://github.com/tofuutils/tofuenv) `.opentofu-version` file in the module path
 5. A [tfenv](https://github.com/tfutils/tfenv) `.terraform-version` file in the module path
 6. An [asdf](https://asdf-vm.com/) `.tool-versions` file in the module path or any parent path
-7. An `OPENTOFU_VERSION` environment variable containing a [version constraint](https://opentofu.org/docs/language/expressions/version-constraints/). If the constraint allows multiple versions, the latest matching version is used.
-8. A `TERRAFORM_VERSION` environment variable containing a [version constraint](https://opentofu.org/docs/language/expressions/version-constraints/). If the constraint allows multiple versions, the latest matching version is used.
+7. An `OPENTOFU_VERSION` environment variable containing a [version constraint](https://opentofu.org/docs/language/expressions/version-constraints/).
+   If the constraint allows multiple versions, the latest matching version is used.
+8. A `TERRAFORM_VERSION` environment variable containing a [version constraint](https://opentofu.org/docs/language/expressions/version-constraints/).
+   If the constraint allows multiple versions, the latest matching version is used.
 9. The OpenTofu version that created the current state file (best effort).
 10. The latest OpenTofu version
 
@@ -121,12 +124,14 @@ outputs yourself.
   These tokens may be used with the `remote` backend and for fetching required modules from the registry.
 
   e.g:
+
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
   ```
 
   With other registries:
+
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: |
@@ -144,6 +149,7 @@ outputs yourself.
   This should be in PEM format.
 
   For example:
+
   ```yaml
   env:
     TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
@@ -158,13 +164,14 @@ outputs yourself.
 
   Credentials have the format `<host>=<username>:<password>`. Multiple credentials may be specified, one per line.
 
-  Each credential is evaluated in order, and the first matching credentials are used. 
+  Each credential is evaluated in order, and the first matching credentials are used.
 
   Credentials that are used by git (`git::http://`, `git::https://`) allow a path after the hostname.
   Paths are ignored by `http://` & `https://` schemes.
   For git module sources, a credential matches if each mentioned path segment is an exact match.
 
   For example:
+
   ```yaml
   env:
     TERRAFORM_HTTP_CREDENTIALS: |
@@ -179,13 +186,14 @@ outputs yourself.
 
 * `TERRAFORM_PRE_RUN`
 
-  A set of commands that will be ran prior to `tofu init`. This can be used to customise the environment before running OpenTofu. 
+  A set of commands that will be ran prior to `tofu init`. This can be used to customise the environment before running OpenTofu.
 
   The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
 
   The runtime image is currently based on `debian:bullseye`, with the command run using `bash -xeo pipefail`.
 
   For example:
+
   ```yaml
   env:
     TERRAFORM_PRE_RUN: |

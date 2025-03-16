@@ -13,7 +13,7 @@ from inputs.workspace import workspace
 from outputs.failure_reason import failure_reason
 
 backend_reason = '''
-This is used for discovering the $ProductName version to use, if not otherwise specified. 
+This is used for discovering the $ProductName version to use, if not otherwise specified.
 See [dflook/$ToolName-version](https://github.com/dflook/terraform-github-actions/tree/main/$ToolName-version#$ToolName-version-action) for details.
 '''.strip()
 
@@ -26,7 +26,7 @@ validate = Action(
     Failing GitHub checks will be added for any problems found.
     
     <p align="center">
-        <img src="validate.png" width="1000">
+        <img src="validate.png" width="1000" alt="An example of a failed validation check">
     </p>
     
     If the $ProductName configuration is not valid, the build is failed.
@@ -37,8 +37,8 @@ validate = Action(
         dataclasses.replace(workspace, description='''
           $ProductName workspace to use for the `terraform.workspace` value while validating. Note that for remote operations in a cloud backend, this is always `default`.
 
-          Also used for discovering the $ProductName version to use, if not otherwise specified. 
-          See [dflook/$ToolName-version](https://github.com/dflook/terraform-github-actions/tree/main/$ToolName-version#$ToolName-version-action) for details. 
+          Also used for discovering the $ProductName version to use, if not otherwise specified.
+          See [dflook/$ToolName-version](https://github.com/dflook/terraform-github-actions/tree/main/$ToolName-version#$ToolName-version-action) for details.
         '''),
         dataclasses.replace(backend_config, description=backend_config.description + backend_reason),
         dataclasses.replace(backend_config_file, description=backend_config_file.description + backend_reason),

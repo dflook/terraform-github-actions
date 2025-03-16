@@ -16,7 +16,7 @@ This action uses the `tofu fmt -recursive` command to reformat files in a direct
 
 * `workspace`
 
-  OpenTofu workspace to inspect when discovering the OpenTofu version to use, if the version is not otherwise specified. 
+  OpenTofu workspace to inspect when discovering the OpenTofu version to use, if the version is not otherwise specified.
   See [dflook/tofu-version](https://github.com/dflook/terraform-github-actions/tree/main/tofu-version#tofu-version-action) for details.
 
   - Type: string
@@ -25,7 +25,7 @@ This action uses the `tofu fmt -recursive` command to reformat files in a direct
 
 * `backend_config`
 
-  List of OpenTofu backend config values, one per line. This is used for discovering the OpenTofu version to use, if the version is not otherwise specified. 
+  List of OpenTofu backend config values, one per line. This is used for discovering the OpenTofu version to use, if the version is not otherwise specified.
   See [dflook/tofu-version](https://github.com/dflook/terraform-github-actions/tree/main/tofu-version#tofu-version-action) for details.
 
   ```yaml
@@ -38,7 +38,7 @@ This action uses the `tofu fmt -recursive` command to reformat files in a direct
 
 * `backend_config_file`
 
-  List of OpenTofu backend config files to use, one per line. This is used for discovering the OpenTofu version to use, if the version is not otherwise specified. 
+  List of OpenTofu backend config files to use, one per line. This is used for discovering the OpenTofu version to use, if the version is not otherwise specified.
   See [dflook/tofu-version](https://github.com/dflook/terraform-github-actions/tree/main/tofu-version#tofu-version-action) for details.
   Paths should be relative to the GitHub Actions workspace
 
@@ -68,12 +68,14 @@ This action uses the `tofu fmt -recursive` command to reformat files in a direct
   These tokens may be used with the `remote` backend and for fetching required modules from the registry.
 
   e.g:
+
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
   ```
 
   With other registries:
+
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: |

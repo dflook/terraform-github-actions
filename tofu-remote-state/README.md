@@ -53,6 +53,7 @@ Retrieves the root-level outputs from an OpenTofu remote state.
   An action output will be created for each output of the OpenTofu configuration.
 
   For example, with the OpenTofu config:
+
   ```hcl
   output "service_hostname" {
     value = "example.com"
@@ -87,12 +88,14 @@ Retrieves the root-level outputs from an OpenTofu remote state.
   API token for cloud hosts, of the form `<host>=<token>`. This will be used if the backed type is `remote`.
 
   e.g:
+
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
   ```
 
   With other registries:
+
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: |

@@ -11,10 +11,12 @@ This is to ensure that the action only applies changes that have been reviewed b
 You can instead set `auto_approve: true` which will generate a plan and apply it immediately, without looking for a plan attached to a PR.
 
 ## Demo
-This a demo of the process for apply an OpenTofu change using the [`dflook/tofu-plan`](https://github.com/dflook/terraform-github-actions/tree/main/tofu-plan) and [`dflook/tofu-apply`](https://github.com/dflook/terraform-github-actions/tree/main/tofu-apply) actions.
+
+This a demo of the process for apply an OpenTofu change using the [`dflook/tofu-plan`](https://github.com/dflook/terraform-github-actions/tree/main/tofu-plan)
+and [`dflook/tofu-apply`](https://github.com/dflook/terraform-github-actions/tree/main/tofu-apply) actions.
 
 <p align="center">
-    <img src="planapply.gif" width="1000">
+    <img src="planapply.gif" width="1000" alt="An example of the plan and apply actions">
 </p>
 
 ## GitHub
@@ -167,11 +169,12 @@ These input values must be the same as any [`dflook/tofu-plan`](https://github.c
   This will be faster than generating a new plan.
 
   There are downsides to applying a stored plan:
-    - The plan may contain sensitive information so must be stored securely, possibly outside of GitHub.
-    - It does not account for any changes that have occurred since it was generated, and may no longer be correct.
-    - Plans must be generated and applied in strict order. Multiple open PRs will cause conflicts if they are applied out of order.
-    - Plans are not portable between platforms.
-    - OpenTofu and provider versions must match between the plan generation and apply.
+
+  - The plan may contain sensitive information so must be stored securely, possibly outside of GitHub.
+  - It does not account for any changes that have occurred since it was generated, and may no longer be correct.
+  - Plans must be generated and applied in strict order. Multiple open PRs will cause conflicts if they are applied out of order.
+  - Plans are not portable between platforms.
+  - OpenTofu and provider versions must match between the plan generation and apply.
 
   When `auto_approve` is set to `true`, the plan will be applied without checking if it is the same as the one attached to the PR comment.
 
@@ -223,7 +226,7 @@ These input values must be the same as any [`dflook/tofu-plan`](https://github.c
 
   - `apply-failed` - The Terraform apply operation failed.
   - `plan-changed` - The approved plan is no longer accurate, so the apply will not be attempted.
-  - `state-locked` - The Terraform state lock could not be obtained because it was already locked. 
+  - `state-locked` - The Terraform state lock could not be obtained because it was already locked.
 
   If the job fails for any other reason this will not be set.
   This can be used with the Actions expression syntax to conditionally run steps.
@@ -235,6 +238,7 @@ These input values must be the same as any [`dflook/tofu-plan`](https://github.c
   When the job outcome is `failure` and the failure-reason is `state-locked`, this output will be set.
 
   It is a json object containing any available state lock information and typically has the form:
+
   ```json
   {
     "ID": "838fbfde-c5cd-297f-84a4-d7578b4a4880",
@@ -260,6 +264,7 @@ These input values must be the same as any [`dflook/tofu-plan`](https://github.c
   An action output will be created for each output of the OpenTofu configuration.
 
   For example, with the OpenTofu config:
+
   ```hcl
   output "service_hostname" {
     value = "example.com"
@@ -282,7 +287,7 @@ These input values must be the same as any [`dflook/tofu-plan`](https://github.c
 
 * `GITHUB_TOKEN`
 
-  The GitHub authorization token to use to fetch an approved plan from a PR. 
+  The GitHub authorization token to use to fetch an approved plan from a PR.
   This must belong to the same user/app as the token used by the [tofu-plan](https://github.com/dflook/terraform-github-actions/tree/main/tofu-plan) action.
 
   The token provided by GitHub Actions can be used - it can be passed by
@@ -312,7 +317,7 @@ These input values must be the same as any [`dflook/tofu-plan`](https://github.c
 * `TERRAFORM_ACTIONS_GITHUB_TOKEN`
 
   When this is set it is used instead of `GITHUB_TOKEN`, with the same behaviour.
-  The GitHub OpenTofu provider also uses the `GITHUB_TOKEN` environment variable, 
+  The GitHub OpenTofu provider also uses the `GITHUB_TOKEN` environment variable,
   so this can be used to make the github actions and the OpenTofu provider use different tokens.
 
   - Type: string
@@ -333,12 +338,14 @@ These input values must be the same as any [`dflook/tofu-plan`](https://github.c
   These tokens may be used with the `remote` backend and for fetching required modules from the registry.
 
   e.g:
+
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
   ```
 
   With other registries:
+
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: |
@@ -356,6 +363,7 @@ These input values must be the same as any [`dflook/tofu-plan`](https://github.c
   This should be in PEM format.
 
   For example:
+
   ```yaml
   env:
     TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
@@ -370,13 +378,14 @@ These input values must be the same as any [`dflook/tofu-plan`](https://github.c
 
   Credentials have the format `<host>=<username>:<password>`. Multiple credentials may be specified, one per line.
 
-  Each credential is evaluated in order, and the first matching credentials are used. 
+  Each credential is evaluated in order, and the first matching credentials are used.
 
   Credentials that are used by git (`git::http://`, `git::https://`) allow a path after the hostname.
   Paths are ignored by `http://` & `https://` schemes.
   For git module sources, a credential matches if each mentioned path segment is an exact match.
 
   For example:
+
   ```yaml
   env:
     TERRAFORM_HTTP_CREDENTIALS: |
@@ -391,13 +400,14 @@ These input values must be the same as any [`dflook/tofu-plan`](https://github.c
 
 * `TERRAFORM_PRE_RUN`
 
-  A set of commands that will be ran prior to `tofu init`. This can be used to customise the environment before running OpenTofu. 
+  A set of commands that will be ran prior to `tofu init`. This can be used to customise the environment before running OpenTofu.
 
   The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
 
   The runtime image is currently based on `debian:bullseye`, with the command run using `bash -xeo pipefail`.
 
   For example:
+
   ```yaml
   env:
     TERRAFORM_PRE_RUN: |
@@ -415,13 +425,13 @@ These input values must be the same as any [`dflook/tofu-plan`](https://github.c
 
 When applying a plan from a PR comment (`auto_approve` is the default of `false`), the workflow can be triggered by the following events:
 
-  - pull_request
-  - pull_request_review_comment
-  - pull_request_target
-  - pull_request_review
-  - issue_comment, if the comment is on a PR (see below)
-  - push, if the pushed commit came from a PR (see below)
-  - repository_dispatch, if the client payload includes the pull_request url (see below)
+* pull_request
+* pull_request_review_comment
+* pull_request_target
+* pull_request_review
+* issue_comment, if the comment is on a PR (see below)
+* push, if the pushed commit came from a PR (see below)
+* repository_dispatch, if the client payload includes the pull_request url (see below)
 
 When `auto_approve` is set to `true`, the workflow can be triggered by any event.
 
@@ -460,6 +470,7 @@ The pushed commit must have come from a Pull Request. Typically this is used to 
 This event can be used to trigger a workflow from another workflow. The client payload must include the pull_request api url of where the plan PR comment can be found.
 
 A minimal example payload looks like:
+
 ```json
 {
   "pull_request": {

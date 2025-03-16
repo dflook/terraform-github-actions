@@ -41,10 +41,12 @@ This is to ensure that the action only applies changes that have been reviewed b
 You can instead set `auto_approve: true` which will generate a plan and apply it immediately, without looking for a plan attached to a PR.
 
 ## Demo
-This a demo of the process for apply a $ProductName change using the [`dflook/$ToolName-plan`](https://github.com/dflook/terraform-github-actions/tree/main/$ToolName-plan) and [`dflook/$ToolName-apply`](https://github.com/dflook/terraform-github-actions/tree/main/$ToolName-apply) actions.
+
+This a demo of the process for apply a $ProductName change using the [`dflook/$ToolName-plan`](https://github.com/dflook/terraform-github-actions/tree/main/$ToolName-plan)
+and [`dflook/$ToolName-apply`](https://github.com/dflook/terraform-github-actions/tree/main/$ToolName-apply) actions.
 
 <p align="center">
-    <img src="planapply.gif" width="1000">
+    <img src="planapply.gif" width="1000" alt="An example of the plan and apply actions">
 </p>
 
 ## GitHub
@@ -93,7 +95,7 @@ This generates and applies a plan in [destroy mode]($DestroyModeUrl).'''),
 
   - `apply-failed` - The Terraform apply operation failed.
   - `plan-changed` - The approved plan is no longer accurate, so the apply will not be attempted.
-  - `state-locked` - The Terraform state lock could not be obtained because it was already locked. 
+  - `state-locked` - The Terraform state lock could not be obtained because it was already locked.
 
   If the job fails for any other reason this will not be set.
   This can be used with the Actions expression syntax to conditionally run steps.
@@ -105,7 +107,7 @@ This generates and applies a plan in [destroy mode]($DestroyModeUrl).'''),
     ],
     environment_variables=[
         dataclasses.replace(GITHUB_TOKEN, description='''
-The GitHub authorization token to use to fetch an approved plan from a PR. 
+The GitHub authorization token to use to fetch an approved plan from a PR.
 This must belong to the same user/app as the token used by the [$ToolName-plan](https://github.com/dflook/terraform-github-actions/tree/main/$ToolName-plan) action.
         ''' + GITHUB_TOKEN.description),
         TERRAFORM_ACTIONS_GITHUB_TOKEN,
@@ -120,13 +122,13 @@ This must belong to the same user/app as the token used by the [$ToolName-plan](
 
 When applying a plan from a PR comment (`auto_approve` is the default of `false`), the workflow can be triggered by the following events:
 
-  - pull_request
-  - pull_request_review_comment
-  - pull_request_target
-  - pull_request_review
-  - issue_comment, if the comment is on a PR (see below)
-  - push, if the pushed commit came from a PR (see below)
-  - repository_dispatch, if the client payload includes the pull_request url (see below)
+* pull_request
+* pull_request_review_comment
+* pull_request_target
+* pull_request_review
+* issue_comment, if the comment is on a PR (see below)
+* push, if the pushed commit came from a PR (see below)
+* repository_dispatch, if the client payload includes the pull_request url (see below)
 
 When `auto_approve` is set to `true`, the workflow can be triggered by any event.
 
@@ -165,6 +167,7 @@ The pushed commit must have come from a Pull Request. Typically this is used to 
 This event can be used to trigger a workflow from another workflow. The client payload must include the pull_request api url of where the plan PR comment can be found.
 
 A minimal example payload looks like:
+
 ```json
 {
   "pull_request": {

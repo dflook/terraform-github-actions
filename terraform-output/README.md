@@ -54,6 +54,7 @@ Retrieve the root-level outputs from a Terraform configuration.
   An action output will be created for each output of the Terraform configuration.
 
   For example, with the Terraform config:
+
   ```hcl
   output "service_hostname" {
     value = "example.com"
@@ -89,12 +90,14 @@ Retrieve the root-level outputs from a Terraform configuration.
   These tokens may be used with the `remote` backend and for fetching required modules from the registry.
 
   e.g:
+
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
   ```
 
   With other registries:
+
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: |
@@ -112,6 +115,7 @@ Retrieve the root-level outputs from a Terraform configuration.
   This should be in PEM format.
 
   For example:
+
   ```yaml
   env:
     TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
@@ -126,13 +130,14 @@ Retrieve the root-level outputs from a Terraform configuration.
 
   Credentials have the format `<host>=<username>:<password>`. Multiple credentials may be specified, one per line.
 
-  Each credential is evaluated in order, and the first matching credentials are used. 
+  Each credential is evaluated in order, and the first matching credentials are used.
 
   Credentials that are used by git (`git::http://`, `git::https://`) allow a path after the hostname.
   Paths are ignored by `http://` & `https://` schemes.
   For git module sources, a credential matches if each mentioned path segment is an exact match.
 
   For example:
+
   ```yaml
   env:
     TERRAFORM_HTTP_CREDENTIALS: |
@@ -147,13 +152,14 @@ Retrieve the root-level outputs from a Terraform configuration.
 
 * `TERRAFORM_PRE_RUN`
 
-  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running Terraform. 
+  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running Terraform.
 
   The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
 
   The runtime image is currently based on `debian:bullseye`, with the command run using `bash -xeo pipefail`.
 
   For example:
+
   ```yaml
   env:
     TERRAFORM_PRE_RUN: |
@@ -199,6 +205,7 @@ jobs:
 This example gets information from object and array(object) outputs.
 
 With this Terraform config:
+
 ```hcl
 output "vpc" {
   value = aws_vpc.test
@@ -209,6 +216,7 @@ output "subnets" {
 ```
 
 We can use the workflow:
+
 ```yaml
 jobs:
   output_example:
@@ -231,7 +239,8 @@ jobs:
 ```
 
 Which will print to the workflow log:
-```
+
+```text
 The vpc-id is vpc-01463b6b84e1454ce
 The subnet-ids are subnet-053008016a2c1768c,subnet-07d4ce437c43eba2f,subnet-0a5f8c3a20023b8c0
 ```

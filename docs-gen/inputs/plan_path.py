@@ -13,11 +13,12 @@ When this is set to a plan file, the plan will not be generated again. If it is 
 This will be faster than generating a new plan.
 
 There are downsides to applying a stored plan:
-  - The plan may contain sensitive information so must be stored securely, possibly outside of GitHub.
-  - It does not account for any changes that have occurred since it was generated, and may no longer be correct.
-  - Plans must be generated and applied in strict order. Multiple open PRs will cause conflicts if they are applied out of order.
-  - Plans are not portable between platforms.
-  - $ProductName and provider versions must match between the plan generation and apply.
+
+- The plan may contain sensitive information so must be stored securely, possibly outside of GitHub.
+- It does not account for any changes that have occurred since it was generated, and may no longer be correct.
+- Plans must be generated and applied in strict order. Multiple open PRs will cause conflicts if they are applied out of order.
+- Plans are not portable between platforms.
+- $ProductName and provider versions must match between the plan generation and apply.
 
 When `auto_approve` is set to `true`, the plan will be applied without checking if it is the same as the one attached to the PR comment.
 ''',

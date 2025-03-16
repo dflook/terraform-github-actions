@@ -8,12 +8,14 @@ These tokens may be used with the `remote` backend and for fetching required mod
 ''',
     example='''
 e.g:
+
 ```yaml
 env:
   TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
 ```
 
 With other registries:
+
 ```yaml
 env:
   TERRAFORM_CLOUD_TOKENS: |

@@ -66,6 +66,7 @@ jobs:
 This example gets information from object and array(object) outputs.
 
 With this $ProductName config:
+
 ```hcl
 output "vpc" {
   value = aws_vpc.test
@@ -76,6 +77,7 @@ output "subnets" {
 ```
 
 We can use the workflow:
+
 ```yaml
 jobs:
   output_example:
@@ -98,7 +100,8 @@ jobs:
 ```
 
 Which will print to the workflow log:
-```
+
+```text
 The vpc-id is vpc-01463b6b84e1454ce
 The subnet-ids are subnet-053008016a2c1768c,subnet-07d4ce437c43eba2f,subnet-0a5f8c3a20023b8c0
 ```

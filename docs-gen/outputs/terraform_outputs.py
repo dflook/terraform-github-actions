@@ -9,6 +9,7 @@ terraform_outputs = Output(
 An action output will be created for each output of the $ProductName configuration.
 
 For example, with the $ProductName config:
+
 ```hcl
 output "service_hostname" {
   value = "example.com"

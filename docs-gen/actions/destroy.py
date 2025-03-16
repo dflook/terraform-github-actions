@@ -22,7 +22,7 @@ destroy = Action(
     '''
     :warning: This action uses the `$ToolName destroy` command to immediately destroy all resources in a $ProductName workspace.
     
-    To generate a plan that can be reviewed you can instead use the [dflook/$ToolName-plan](https://github.com/dflook/terraform-github-actions/tree/main/$ToolName-plan) 
+    To generate a plan that can be reviewed you can instead use the [dflook/$ToolName-plan](https://github.com/dflook/terraform-github-actions/tree/main/$ToolName-plan)
     and [dflook/$ToolName-apply](https://github.com/dflook/terraform-github-actions/tree/main/$ToolName-plan) actions with the `destroy` input set to `true`.
     ''',
     meta_description='Destroys all resources in a $ProductName workspace',
@@ -41,7 +41,7 @@ destroy = Action(
           When the job outcome is `failure`, this output may be set. The value may be one of:
 
           - `destroy-failed` - The $ProductName destroy operation failed.
-          - `state-locked` - The $ProductName state lock could not be obtained because it was already locked. 
+          - `state-locked` - The $ProductName state lock could not be obtained because it was already locked.
 
           If the job fails for any other reason this will not be set.
           This can be used with the Actions expression syntax to conditionally run a steps.

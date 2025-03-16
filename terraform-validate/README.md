@@ -8,7 +8,7 @@ This can be used to check that a configuration is valid before creating a plan.
 Failing GitHub checks will be added for any problems found.
 
 <p align="center">
-    <img src="validate.png" width="1000">
+    <img src="validate.png" width="1000" alt="An example of a failed validation check">
 </p>
 
 If the Terraform configuration is not valid, the build is failed.
@@ -27,7 +27,7 @@ If the Terraform configuration is not valid, the build is failed.
 
   Terraform workspace to use for the `terraform.workspace` value while validating. Note that for remote operations in a cloud backend, this is always `default`.
 
-  Also used for discovering the Terraform version to use, if not otherwise specified. 
+  Also used for discovering the Terraform version to use, if not otherwise specified.
   See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
 
   - Type: string
@@ -37,7 +37,7 @@ If the Terraform configuration is not valid, the build is failed.
 * `backend_config`
 
   List of Terraform backend config values, one per line.
-  This is used for discovering the Terraform version to use, if not otherwise specified. 
+  This is used for discovering the Terraform version to use, if not otherwise specified.
   See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
 
   ```yaml
@@ -52,7 +52,7 @@ If the Terraform configuration is not valid, the build is failed.
 
   List of Terraform backend config files to use, one per line.
   Paths should be relative to the GitHub Actions workspace
-  This is used for discovering the Terraform version to use, if not otherwise specified. 
+  This is used for discovering the Terraform version to use, if not otherwise specified.
   See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
 
   ```yaml
@@ -90,12 +90,14 @@ If the Terraform configuration is not valid, the build is failed.
   These tokens may be used with the `remote` backend and for fetching required modules from the registry.
 
   e.g:
+
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
   ```
 
   With other registries:
+
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: |
@@ -113,6 +115,7 @@ If the Terraform configuration is not valid, the build is failed.
   This should be in PEM format.
 
   For example:
+
   ```yaml
   env:
     TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
@@ -127,13 +130,14 @@ If the Terraform configuration is not valid, the build is failed.
 
   Credentials have the format `<host>=<username>:<password>`. Multiple credentials may be specified, one per line.
 
-  Each credential is evaluated in order, and the first matching credentials are used. 
+  Each credential is evaluated in order, and the first matching credentials are used.
 
   Credentials that are used by git (`git::http://`, `git::https://`) allow a path after the hostname.
   Paths are ignored by `http://` & `https://` schemes.
   For git module sources, a credential matches if each mentioned path segment is an exact match.
 
   For example:
+
   ```yaml
   env:
     TERRAFORM_HTTP_CREDENTIALS: |
@@ -148,13 +152,14 @@ If the Terraform configuration is not valid, the build is failed.
 
 * `TERRAFORM_PRE_RUN`
 
-  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running Terraform. 
+  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running Terraform.
 
   The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
 
   The runtime image is currently based on `debian:bullseye`, with the command run using `bash -xeo pipefail`.
 
   For example:
+
   ```yaml
   env:
     TERRAFORM_PRE_RUN: |

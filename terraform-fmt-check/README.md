@@ -19,7 +19,7 @@ If any files are not correctly formatted a failing GitHub check will be added fo
 
 * `workspace`
 
-  Terraform workspace to inspect when discovering the Terraform version to use, if the version is not otherwise specified. 
+  Terraform workspace to inspect when discovering the Terraform version to use, if the version is not otherwise specified.
   See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
 
   - Type: string
@@ -28,7 +28,7 @@ If any files are not correctly formatted a failing GitHub check will be added fo
 
 * `backend_config`
 
-  List of Terraform backend config values, one per line. This is used for discovering the Terraform version to use, if the version is not otherwise specified. 
+  List of Terraform backend config values, one per line. This is used for discovering the Terraform version to use, if the version is not otherwise specified.
   See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
 
   ```yaml
@@ -41,7 +41,7 @@ If any files are not correctly formatted a failing GitHub check will be added fo
 
 * `backend_config_file`
 
-  List of Terraform backend config files to use, one per line. This is used for discovering the Terraform version to use, if the version is not otherwise specified. 
+  List of Terraform backend config files to use, one per line. This is used for discovering the Terraform version to use, if the version is not otherwise specified.
   See [dflook/terraform-version](https://github.com/dflook/terraform-github-actions/tree/main/terraform-version#terraform-version-action) for details.
   Paths should be relative to the GitHub Actions workspace
 
@@ -81,12 +81,14 @@ If any files are not correctly formatted a failing GitHub check will be added fo
   These tokens may be used with the `remote` backend and for fetching required modules from the registry.
 
   e.g:
+
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
   ```
 
   With other registries:
+
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: |

@@ -1,1 +1,1 @@
-This is an empty terraform configuration
+# This is an empty terraform configuration

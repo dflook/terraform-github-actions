@@ -7,13 +7,14 @@ Credentials that will be used for fetching modules sources with `git::http://`, 
 
 Credentials have the format `<host>=<username>:<password>`. Multiple credentials may be specified, one per line.
 
-Each credential is evaluated in order, and the first matching credentials are used. 
+Each credential is evaluated in order, and the first matching credentials are used.
 
 Credentials that are used by git (`git::http://`, `git::https://`) allow a path after the hostname.
 Paths are ignored by `http://` & `https://` schemes.
 For git module sources, a credential matches if each mentioned path segment is an exact match.
 
 For example:
+
 ```yaml
 env:
   TERRAFORM_HTTP_CREDENTIALS: |

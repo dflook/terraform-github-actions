@@ -36,7 +36,7 @@ This action generates a $ProductName plan.
 If the triggering event relates to a PR it will add a comment on the PR containing the generated plan.
 
 <p align="center">
-    <img src="plan.png" width="600">
+    <img src="plan.png" width="600" alt="An example of a PR comment created by the action">
 </p>
 
 The `GITHUB_TOKEN` environment variable must be set for the PR comment to be added.
@@ -87,13 +87,13 @@ The GitHub user or app that owns the token will be the PR comment author.
 
 When adding the plan to a PR comment (`add_github_comment` is not `false`), the workflow can be triggered by the following events:
 
-  - pull_request
-  - pull_request_review_comment
-  - pull_request_target
-  - pull_request_review
-  - issue_comment, if the comment is on a PR (see below)
-  - push, if the pushed commit came from a PR (see below)
-  - repository_dispatch, if the client payload includes the pull_request url (see below)
+* pull_request
+* pull_request_review_comment
+* pull_request_target
+* pull_request_review
+* issue_comment, if the comment is on a PR (see below)
+* push, if the pushed commit came from a PR (see below)
+* repository_dispatch, if the client payload includes the pull_request url (see below)
 
 When `add_github_comment` is set to `false`, the workflow can be triggered by any event.
 
@@ -132,6 +132,7 @@ The pushed commit must have come from a Pull Request. Typically this is used to 
 This event can be used to trigger a workflow from another workflow. The client payload must include the pull_request api url of where the plan PR comment should be added.
 
 A minimal example payload looks like:
+
 ```json
 {
   "pull_request": {
@@ -175,10 +176,11 @@ jobs:
 ### A full example of inputs
 
 This example workflow demonstrates most of the available inputs:
-- The environment variables are set at the workflow level.
-- The PR comment will be labelled `production`, and the plan will use the `prod` workspace.
-- Variables are read from `env/prod.tfvars`, with `turbo_mode` overridden to `true`.
-- The backend config is taken from `env/prod.backend`, and the token is set from a secret.
+
+* The environment variables are set at the workflow level.
+* The PR comment will be labelled `production`, and the plan will use the `prod` workspace.
+* Variables are read from `env/prod.tfvars`, with `turbo_mode` overridden to `true`.
+* The backend config is taken from `env/prod.backend`, and the token is set from a secret.
 
 ```yaml
 name: PR Plan

@@ -21,15 +21,15 @@ fmt_check = Action(
     inputs=[
         dataclasses.replace(path, description='The path containing $ProductName files to check the formatting of.'),
         dataclasses.replace(workspace, description='''
-            $ProductName workspace to inspect when discovering the $ProductName version to use, if the version is not otherwise specified. 
+            $ProductName workspace to inspect when discovering the $ProductName version to use, if the version is not otherwise specified.
             See [dflook/$ToolName-version](https://github.com/dflook/terraform-github-actions/tree/main/$ToolName-version#$ToolName-version-action) for details.
         '''),
         dataclasses.replace(backend_config, description='''
-            List of $ProductName backend config values, one per line. This is used for discovering the $ProductName version to use, if the version is not otherwise specified. 
+            List of $ProductName backend config values, one per line. This is used for discovering the $ProductName version to use, if the version is not otherwise specified.
             See [dflook/$ToolName-version](https://github.com/dflook/terraform-github-actions/tree/main/$ToolName-version#$ToolName-version-action) for details.
         '''),
         dataclasses.replace(backend_config_file, description='''
-            List of $ProductName backend config files to use, one per line. This is used for discovering the $ProductName version to use, if the version is not otherwise specified. 
+            List of $ProductName backend config files to use, one per line. This is used for discovering the $ProductName version to use, if the version is not otherwise specified.
             See [dflook/$ToolName-version](https://github.com/dflook/terraform-github-actions/tree/main/$ToolName-version#$ToolName-version-action) for details.
             Paths should be relative to the GitHub Actions workspace
         ''')

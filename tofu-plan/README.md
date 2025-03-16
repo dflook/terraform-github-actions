@@ -6,7 +6,7 @@ This action generates an OpenTofu plan.
 If the triggering event relates to a PR it will add a comment on the PR containing the generated plan.
 
 <p align="center">
-    <img src="plan.png" width="600">
+    <img src="plan.png" width="600" alt="An example of a PR comment created by the action">
 </p>
 
 The `GITHUB_TOKEN` environment variable must be set for the PR comment to be added.
@@ -246,7 +246,7 @@ The [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
 * `TERRAFORM_ACTIONS_GITHUB_TOKEN`
 
   When this is set it is used instead of `GITHUB_TOKEN`, with the same behaviour.
-  The GitHub OpenTofu provider also uses the `GITHUB_TOKEN` environment variable, 
+  The GitHub OpenTofu provider also uses the `GITHUB_TOKEN` environment variable,
   so this can be used to make the github actions and the OpenTofu provider use different tokens.
 
   - Type: string
@@ -267,12 +267,14 @@ The [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
   These tokens may be used with the `remote` backend and for fetching required modules from the registry.
 
   e.g:
+
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
   ```
 
   With other registries:
+
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: |
@@ -290,6 +292,7 @@ The [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
   This should be in PEM format.
 
   For example:
+
   ```yaml
   env:
     TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
@@ -304,13 +307,14 @@ The [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
 
   Credentials have the format `<host>=<username>:<password>`. Multiple credentials may be specified, one per line.
 
-  Each credential is evaluated in order, and the first matching credentials are used. 
+  Each credential is evaluated in order, and the first matching credentials are used.
 
   Credentials that are used by git (`git::http://`, `git::https://`) allow a path after the hostname.
   Paths are ignored by `http://` & `https://` schemes.
   For git module sources, a credential matches if each mentioned path segment is an exact match.
 
   For example:
+
   ```yaml
   env:
     TERRAFORM_HTTP_CREDENTIALS: |
@@ -331,6 +335,7 @@ The [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
   by default when the comment is displayed.
 
   ```yaml
+
   env:
     TF_PLAN_COLLAPSE_LENGTH: 30
   ```
@@ -341,13 +346,14 @@ The [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
 
 * `TERRAFORM_PRE_RUN`
 
-  A set of commands that will be ran prior to `tofu init`. This can be used to customise the environment before running OpenTofu. 
+  A set of commands that will be ran prior to `tofu init`. This can be used to customise the environment before running OpenTofu.
 
   The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
 
   The runtime image is currently based on `debian:bullseye`, with the command run using `bash -xeo pipefail`.
 
   For example:
+
   ```yaml
   env:
     TERRAFORM_PRE_RUN: |
@@ -365,13 +371,13 @@ The [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
 
 When adding the plan to a PR comment (`add_github_comment` is not `false`), the workflow can be triggered by the following events:
 
-  - pull_request
-  - pull_request_review_comment
-  - pull_request_target
-  - pull_request_review
-  - issue_comment, if the comment is on a PR (see below)
-  - push, if the pushed commit came from a PR (see below)
-  - repository_dispatch, if the client payload includes the pull_request url (see below)
+* pull_request
+* pull_request_review_comment
+* pull_request_target
+* pull_request_review
+* issue_comment, if the comment is on a PR (see below)
+* push, if the pushed commit came from a PR (see below)
+* repository_dispatch, if the client payload includes the pull_request url (see below)
 
 When `add_github_comment` is set to `false`, the workflow can be triggered by any event.
 
@@ -410,6 +416,7 @@ The pushed commit must have come from a Pull Request. Typically this is used to 
 This event can be used to trigger a workflow from another workflow. The client payload must include the pull_request api url of where the plan PR comment should be added.
 
 A minimal example payload looks like:
+
 ```json
 {
   "pull_request": {
@@ -453,10 +460,11 @@ jobs:
 ### A full example of inputs
 
 This example workflow demonstrates most of the available inputs:
-- The environment variables are set at the workflow level.
-- The PR comment will be labelled `production`, and the plan will use the `prod` workspace.
-- Variables are read from `env/prod.tfvars`, with `turbo_mode` overridden to `true`.
-- The backend config is taken from `env/prod.backend`, and the token is set from a secret.
+
+* The environment variables are set at the workflow level.
+* The PR comment will be labelled `production`, and the plan will use the `prod` workspace.
+* Variables are read from `env/prod.tfvars`, with `turbo_mode` overridden to `true`.
+* The backend config is taken from `env/prod.backend`, and the token is set from a secret.
 
 ```yaml
 name: PR Plan

@@ -159,3 +159,6 @@ def main() -> None:
     except DownloadError as download_error:
         sys.stderr.write(str(download_error))
         sys.exit(1)
+
+if __name__ == '__main__':
+    main()
