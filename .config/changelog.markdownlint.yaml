@@ -1,0 +1,11 @@
+line-length:
+  line_length: 300
+no-inline-html:
+  allowed_elements: ['p', 'img']
+ul-style:
+  style: sublist
+no-duplicate-heading:
+  siblings_only: true
+blanks-around-headings:
+  lines_below: 0
+blanks-around-lists: false

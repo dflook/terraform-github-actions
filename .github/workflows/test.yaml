@@ -96,3 +96,17 @@ jobs:
           bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
           ./actionlint
           ./actionlint example_workflows/*.yaml
+
+      - name: Lint CHANGELOG
+        uses: DavidAnson/markdownlint-cli2-action@v19
+        with:
+          config: '.config/changelog.markdownlint.yaml'
+          globs: 'CHANGELOG.md'
+
+      - name: Lint Other Markdown
+        uses: DavidAnson/markdownlint-cli2-action@v19
+        with:
+          config: '.config/.markdownlint.yaml'
+          globs: |
+            docs/*.md
+            **/README.md
