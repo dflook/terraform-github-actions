@@ -8,6 +8,7 @@ A SSH private key that $ProductName will use to fetch git/mercurial module sourc
 This should be in PEM format.
 
 For example:
+
 ```yaml
 env:
   TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}

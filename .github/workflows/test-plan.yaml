@@ -33,7 +33,7 @@ jobs:
           JSON_PLAN_PATH: ${{ steps.plan.outputs.json_plan_path }}
           TEXT_PLAN_PATH: ${{ steps.plan.outputs.text_plan_path }}
           PLAN_PATH: ${{ steps.plan.outputs.plan_path }}
-          RUN_ID: ${{ steps.apply.outputs.run_id }}
+          RUN_ID: ${{ steps.plan.outputs.run_id }}
         run: |
           echo "changes=$CHANGES"
 
@@ -94,7 +94,7 @@ jobs:
         env:
           JSON_PLAN_PATH: ${{ steps.plan.outputs.json_plan_path }}
           TEXT_PLAN_PATH: ${{ steps.plan.outputs.text_plan_path }}
-          RUN_ID: ${{ steps.apply.outputs.run_id }}
+          RUN_ID: ${{ steps.plan.outputs.run_id }}
         run: |
           cat "$JSON_PLAN_PATH"
           if [[ $(jq -r .format_version "$JSON_PLAN_PATH") != "1.2" ]]; then
@@ -656,7 +656,7 @@ jobs:
         env:
           JSON_PLAN_PATH: ${{ steps.plan.outputs.json_plan_path }}
           TEXT_PLAN_PATH: ${{ steps.plan.outputs.text_plan_path }}
-          RUN_ID: ${{ steps.apply.outputs.run_id }}
+          RUN_ID: ${{ steps.plan.outputs.run_id }}
         run: |
           cat "$JSON_PLAN_PATH"
           if [[ $(jq -r .output_changes.s.actions[0] "$JSON_PLAN_PATH") != "create" ]]; then
@@ -699,7 +699,7 @@ jobs:
         env:
           OUTCOME: ${{ steps.plan.outcome }}
           TEXT_PLAN_PATH: ${{ steps.plan.outputs.text_plan_path }}
-          RUN_ID: ${{ steps.apply.outputs.run_id }}
+          RUN_ID: ${{ steps.plan.outputs.run_id }}
         run: |
           if [[ "$OUTCOME" != "failure" ]]; then
             echo "Plan did not fail correctly"
@@ -754,7 +754,7 @@ jobs:
           OUTCOME: ${{ steps.plan.outcome }}
           JSON_PLAN_PATH: ${{ steps.plan.outputs.json_plan_path }}
           TEXT_PLAN_PATH: ${{ steps.plan.outputs.text_plan_path }}
-          RUN_ID: ${{ steps.apply.outputs.run_id }}
+          RUN_ID: ${{ steps.plan.outputs.run_id }}
         run: |
           if [[ "$OUTCOME" != "failure" ]]; then
             echo "Plan did not fail correctly"
@@ -800,7 +800,7 @@ jobs:
           OUTCOME: ${{ steps.plan.outcome }}
           JSON_PLAN_PATH: ${{ steps.plan.outputs.json_plan_path }}
           TEXT_PLAN_PATH: ${{ steps.plan.outputs.text_plan_path }}
-          RUN_ID: ${{ steps.apply.outputs.run_id }}
+          RUN_ID: ${{ steps.plan.outputs.run_id }}
         run: |
           if [[ "$OUTCOME" != "failure" ]]; then
             echo "Plan did not fail correctly"

@@ -12,6 +12,7 @@ It is possible to use the  `TERRAFORM_PRE_RUN` environment variable to customise
 The command is run using `bash -xeo pipefail`.
 
 For example:
+
 ```yaml
 env:
   TERRAFORM_PRE_RUN: |
@@ -39,7 +40,7 @@ jobs:
 ```
 
 This will build the image from the `image/Dockerfile` in the repo. Any changes to the Dockerfile will be reflected in the runtime environment.
-This is another way to customise the environment. 
+This is another way to customise the environment.
 
 The image will be rebuilt for every step, but it does benefit from caching on the actions runner if the image is not changed.
 Typically, it takes 25-30 seconds to build the image on a GitHub hosted runner for the first terraform step in the job.
@@ -53,6 +54,7 @@ Unfortunately, GitHub actions do not support specifying a custom image for an ex
 What you could do instead is fork this repo, and change the `image` in each of the `action.yaml` metadata files to point to your custom image.
 
 This is what the `action.yaml` files would look like when using an image in dockerhub:
+
 ```yaml
 runs:
   using: docker

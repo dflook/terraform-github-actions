@@ -79,11 +79,12 @@ inputs:
       This will be faster than generating a new plan.
 
       There are downsides to applying a stored plan:
-        - The plan may contain sensitive information so must be stored securely, possibly outside of GitHub.
-        - It does not account for any changes that have occurred since it was generated, and may no longer be correct.
-        - Plans must be generated and applied in strict order. Multiple open PRs will cause conflicts if they are applied out of order.
-        - Plans are not portable between platforms.
-        - OpenTofu and provider versions must match between the plan generation and apply.
+
+      - The plan may contain sensitive information so must be stored securely, possibly outside of GitHub.
+      - It does not account for any changes that have occurred since it was generated, and may no longer be correct.
+      - Plans must be generated and applied in strict order. Multiple open PRs will cause conflicts if they are applied out of order.
+      - Plans are not portable between platforms.
+      - OpenTofu and provider versions must match between the plan generation and apply.
 
       When `auto_approve` is set to `true`, the plan will be applied without checking if it is the same as the one attached to the PR comment.
     required: false
@@ -120,7 +121,7 @@ outputs:
 
       - `apply-failed` - The Terraform apply operation failed.
       - `plan-changed` - The approved plan is no longer accurate, so the apply will not be attempted.
-      - `state-locked` - The Terraform state lock could not be obtained because it was already locked. 
+      - `state-locked` - The Terraform state lock could not be obtained because it was already locked.
 
       If the job fails for any other reason this will not be set.
       This can be used with the Actions expression syntax to conditionally run steps.
@@ -129,6 +130,7 @@ outputs:
       When the job outcome is `failure` and the failure-reason is `state-locked`, this output will be set.
 
       It is a json object containing any available state lock information and typically has the form:
+
       ```json
       {
         "ID": "838fbfde-c5cd-297f-84a4-d7578b4a4880",

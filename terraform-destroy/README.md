@@ -4,7 +4,7 @@ This is one of a suite of Terraform related actions - find them at [dflook/terra
 
 :warning: This action uses the `terraform destroy` command to immediately destroy all resources in a Terraform workspace.
 
-To generate a plan that can be reviewed you can instead use the [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/main/terraform-plan) 
+To generate a plan that can be reviewed you can instead use the [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/main/terraform-plan)
 and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/main/terraform-plan) actions with the `destroy` input set to `true`.
 
 ## Inputs
@@ -99,7 +99,7 @@ and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   When the job outcome is `failure`, this output may be set. The value may be one of:
 
   - `destroy-failed` - The Terraform destroy operation failed.
-  - `state-locked` - The Terraform state lock could not be obtained because it was already locked. 
+  - `state-locked` - The Terraform state lock could not be obtained because it was already locked.
 
   If the job fails for any other reason this will not be set.
   This can be used with the Actions expression syntax to conditionally run a steps.
@@ -111,6 +111,7 @@ and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   When the job outcome is `failure` and the failure-reason is `state-locked`, this output will be set.
 
   It is a json object containing any available state lock information and typically has the form:
+
   ```json
   {
     "ID": "838fbfde-c5cd-297f-84a4-d7578b4a4880",
@@ -142,12 +143,14 @@ and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   These tokens may be used with the `remote` backend and for fetching required modules from the registry.
 
   e.g:
+
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_CLOUD_TOKEN }}
   ```
 
   With other registries:
+
   ```yaml
   env:
     TERRAFORM_CLOUD_TOKENS: |
@@ -165,6 +168,7 @@ and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   This should be in PEM format.
 
   For example:
+
   ```yaml
   env:
     TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
@@ -179,13 +183,14 @@ and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
   Credentials have the format `<host>=<username>:<password>`. Multiple credentials may be specified, one per line.
 
-  Each credential is evaluated in order, and the first matching credentials are used. 
+  Each credential is evaluated in order, and the first matching credentials are used.
 
   Credentials that are used by git (`git::http://`, `git::https://`) allow a path after the hostname.
   Paths are ignored by `http://` & `https://` schemes.
   For git module sources, a credential matches if each mentioned path segment is an exact match.
 
   For example:
+
   ```yaml
   env:
     TERRAFORM_HTTP_CREDENTIALS: |
@@ -200,13 +205,14 @@ and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 
 * `TERRAFORM_PRE_RUN`
 
-  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running Terraform. 
+  A set of commands that will be ran prior to `terraform init`. This can be used to customise the environment before running Terraform.
 
   The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
 
   The runtime image is currently based on `debian:bullseye`, with the command run using `bash -xeo pipefail`.
 
   For example:
+
   ```yaml
   env:
     TERRAFORM_PRE_RUN: |

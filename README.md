@@ -8,6 +8,7 @@ These actions can be used to easily perform [Terraform](https://www.terraform.io
 Currently, there is just experimental support for OpenTofu, see [here](https://github.com/dflook/terraform-github-actions/blob/main/CHANGELOG.md#1370---2023-10-29)
 
 ## Actions
+
 See the documentation for the available actions:
 
 | Terraform                                                          | OpenTofu                                                |
@@ -28,6 +29,7 @@ See the documentation for the available actions:
 | [dflook/terraform-test](terraform-test)                            | [dflook/tofu-test](tofu-test)                           |
 
 ## Example Usage
+
 These actions can be added as steps to your own workflow files.
 GitHub reads workflow files from `.github/workflows/` within your repository.
 See the [Workflow documentation](https://docs.github.com/en/actions/configuring-and-managing-workflows/configuring-a-workflow#about-workflows) for details on writing workflows.
@@ -42,7 +44,7 @@ Fortunately, GitHub has a well established method for requiring human reviews of
 We can use PRs to safely plan and apply infrastructure changes.
 
 <p align="center">
-    <img src="terraform-apply/planapply.gif" width="1000">
+    <img src="terraform-apply/planapply.gif" width="960" alt="A video showing a PR being created, a plan being generated, the plan being reviewed, and the plan being applied.">
 </p>
 
 You can make GitHub enforce this using branch protection, see the [dflook/terraform-apply](terraform-apply) action for details.
@@ -50,7 +52,9 @@ You can make GitHub enforce this using branch protection, see the [dflook/terraf
 In this example we use two workflows:
 
 #### plan.yaml
+
 This workflow runs on changes to a PR branch. It generates a Terraform plan and attaches it to the PR as a comment.
+
 ```yaml
 name: Create terraform plan
 
@@ -77,7 +81,9 @@ jobs:
 ```
 
 #### apply.yaml
+
 This workflow runs when the PR is merged into the main branch, and applies the planned changes.
+
 ```yaml
 name: Apply terraform plan
 
@@ -107,16 +113,18 @@ jobs:
 ```
 
 ### Linting
+
 This workflow runs on every push to non-main branches and checks the terraform configuration is valid.
 For extra strictness, we check the files are in the canonical format.
 
 <p align="center">
-    <img src="terraform-validate/validate.png" width="1000">
+    <img src="terraform-validate/validate.png" width="1000" alt="A screenshot showing the output of the terraform validate action.">
 </p>
 
 This can be used to check for correctness before merging.
 
 #### lint.yaml
+
 ```yaml
 name: Lint
 
@@ -159,6 +167,7 @@ This can be used to detect manual or misapplied changes before they become a pro
 If there are any unexpected changes, the workflow will fail.
 
 #### drift.yaml
+
 ```yaml
 name: Check for infrastructure drift
 
@@ -181,12 +190,14 @@ jobs:
 ```
 
 ### Scheduled infrastructure updates
+
 There may be times when you expect Terraform to plan updates without any changes to your configuration files.
 Your configuration could be consuming secrets from elsewhere, or renewing certificates every few months.
 
 This example workflow runs every morning and applies any outstanding changes to those specific resources.
 
 #### rotate-certs.yaml
+
 ```yaml
 name: Rotate TLS certificates
 
@@ -213,9 +224,11 @@ jobs:
 ```
 
 ### Automatically fixing formatting
+
 Perhaps you don't want to spend engineer time making formatting changes. This workflow will automatically create or update a PR that fixes any formatting issues.
 
 #### fmt.yaml
+
 ```yaml
 name: Check terraform file formatting
 
@@ -247,12 +260,14 @@ jobs:
 ```
 
 ### Ephemeral test environments
+
 Testing of software changes often requires some supporting infrastructure, like databases, DNS records, compute environments etc.
 We can use these actions to create dedicated resources for each PR which is used to run tests.
 
 There are two workflows:
 
 #### integration-test.yaml
+
 This workflow runs with every change to a PR.
 
 It deploys the testing infrastructure using a Terraform workspace dedicated to this branch, then runs integration tests against the new infrastructure.
@@ -290,7 +305,9 @@ jobs:
 ```
 
 #### integration-test-cleanup.yaml
+
 This workflow runs when a PR is closed and destroys any testing infrastructure that is no longer needed.
+
 ```yaml
 name: Destroy testing workspace
 

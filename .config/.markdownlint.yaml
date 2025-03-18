@@ -1,0 +1,8 @@
+line-length:
+  line_length: 200
+  tables: false
+no-inline-html:
+  allowed_elements: ['p', 'img']
+ul-style:
+  style: sublist
+

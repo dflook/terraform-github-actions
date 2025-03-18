@@ -24,6 +24,6 @@ jobs:
       - name: docker pull
         run: |
           for tag in $(git tag); do
-            docker pull --quiet danielflook/terraform-github-actions:$tag
+            docker pull --quiet "danielflook/terraform-github-actions:$tag"
             docker system prune --all --force
           done

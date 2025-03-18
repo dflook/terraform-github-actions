@@ -11,6 +11,7 @@ If a $ToolName plan has fewer lines than this value, the pane is expanded
 by default when the comment is displayed.
 
 ```yaml
+
 env:
   TF_PLAN_COLLAPSE_LENGTH: 30
 ```

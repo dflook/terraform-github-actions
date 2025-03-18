@@ -1,1 +1,1 @@
-This module is a module stored in a git repo
+# This module is a module stored in a git repo

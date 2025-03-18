@@ -11,14 +11,14 @@ inputs:
     description: |
       OpenTofu workspace to use for the `terraform.workspace` value while validating. Note that for remote operations in a cloud backend, this is always `default`.
 
-      Also used for discovering the OpenTofu version to use, if not otherwise specified. 
+      Also used for discovering the OpenTofu version to use, if not otherwise specified.
       See [dflook/tofu-version](https://github.com/dflook/terraform-github-actions/tree/main/tofu-version#tofu-version-action) for details.
     required: false
     default: "default"
   backend_config:
     description: |
       List of OpenTofu backend config values, one per line.
-      This is used for discovering the OpenTofu version to use, if not otherwise specified. 
+      This is used for discovering the OpenTofu version to use, if not otherwise specified.
       See [dflook/tofu-version](https://github.com/dflook/terraform-github-actions/tree/main/tofu-version#tofu-version-action) for details.
     required: false
     default: ""
@@ -26,7 +26,7 @@ inputs:
     description: |
       List of OpenTofu backend config files to use, one per line.
       Paths should be relative to the GitHub Actions workspace
-      This is used for discovering the OpenTofu version to use, if not otherwise specified. 
+      This is used for discovering the OpenTofu version to use, if not otherwise specified.
       See [dflook/tofu-version](https://github.com/dflook/terraform-github-actions/tree/main/tofu-version#tofu-version-action) for details.
     required: false
     default: ""

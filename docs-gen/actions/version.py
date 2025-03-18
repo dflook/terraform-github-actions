@@ -27,13 +27,15 @@ def description(tool: Tool) -> str:
             The best way to specify the version is using a [`required_version`]($RequiredVersionUrl) constraint.
         
             The version to use is discovered from the first of:
+            
             1. The version set in the cloud workspace if the module uses a `remote` backend or `cloud` configuration, and the remote workspace exists.
             2. A [`required_version`]($RequiredVersionUrl)
                constraint in the $ProductName configuration. If the constraint is range, the latest matching version is used.
             3. A [tfswitch](https://warrensbox.github.io/terraform-switcher/) `.tfswitchrc` file in the module path
             4. A [tfenv](https://github.com/tfutils/tfenv) `.terraform-version` file in the module path
             5. An [asdf](https://asdf-vm.com/) `.tool-versions` file in the module path or any parent path
-            6. A `TERRAFORM_VERSION` environment variable containing a [version constraint](https://www.terraform.io/language/expressions/version-constraints). If the constraint allows multiple versions, the latest matching version is used.
+            6. A `TERRAFORM_VERSION` environment variable containing a [version constraint](https://www.terraform.io/language/expressions/version-constraints).
+               If the constraint allows multiple versions, the latest matching version is used.
             7. The $ProductName version that created the current state file (best effort).
             8. The latest $ProductName version
         
@@ -50,15 +52,18 @@ def description(tool: Tool) -> str:
             The best way to specify the version is using a [`required_version`]($RequiredVersionUrl) constraint.
             
             The version to use is discovered from the first of:
+            
             1. The version set in the cloud workspace if the module uses a `remote` backend or `cloud` configuration, and the remote workspace exists.
-            2. A [`required_version`]($RequiredVersionUrl)
-               constraint in the $ProductName configuration. If the constraint is range, the latest matching version is used.
+            2. A [`required_version`]($RequiredVersionUrl) constraint in the $ProductName configuration.
+               If the constraint is range, the latest matching version is used.
             3. A [tfswitch](https://warrensbox.github.io/terraform-switcher/) `.tfswitchrc` file in the module path
             4. A [tofuenv](https://github.com/tofuutils/tofuenv) `.opentofu-version` file in the module path
             5. A [tfenv](https://github.com/tfutils/tfenv) `.terraform-version` file in the module path
             6. An [asdf](https://asdf-vm.com/) `.tool-versions` file in the module path or any parent path
-            7. An `OPENTOFU_VERSION` environment variable containing a [version constraint](https://opentofu.org/docs/language/expressions/version-constraints/). If the constraint allows multiple versions, the latest matching version is used.
-            8. A `TERRAFORM_VERSION` environment variable containing a [version constraint](https://opentofu.org/docs/language/expressions/version-constraints/). If the constraint allows multiple versions, the latest matching version is used.
+            7. An `OPENTOFU_VERSION` environment variable containing a [version constraint](https://opentofu.org/docs/language/expressions/version-constraints/).
+               If the constraint allows multiple versions, the latest matching version is used.
+            8. A `TERRAFORM_VERSION` environment variable containing a [version constraint](https://opentofu.org/docs/language/expressions/version-constraints/).
+               If the constraint allows multiple versions, the latest matching version is used.
             9. The $ProductName version that created the current state file (best effort).
             10. The latest $ProductName version
             
