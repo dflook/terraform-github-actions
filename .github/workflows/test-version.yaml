@@ -617,7 +617,7 @@ jobs:
           fi
 
       - name: Version doesn't exist
-        uses: ./terraform-new-workspace
+        uses: ./terraform-version
         continue-on-error: true
         id: no-such-version
         env:
