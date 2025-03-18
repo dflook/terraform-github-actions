@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from typing import Iterable, Optional
 
 from github_actions.debug import debug
@@ -18,6 +19,7 @@ def try_read_env(actions_env: ActionsEnv, versions: Iterable[Version]) -> Option
     try:
         valid_versions = list(apply_constraints(versions, [Constraint(c) for c in constraint.split(',')]))
         if not valid_versions:
+            sys.stdout.write(f'The constraint {constraint} does not match any available versions\n')
             return None
         return latest_version(valid_versions)
 

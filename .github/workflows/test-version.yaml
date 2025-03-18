@@ -626,12 +626,14 @@ jobs:
           path: tests/workflows/test-version/empty
           workspace: hello
 
-      - name: Check failed to download no such version
+      - name: Check the version
         env:
-          OUTCOME: ${{ steps.no-such-version.outcome }}
+          DETECTED_TERRAFORM_VERSION: ${{ steps.no-such-version.outputs.terraform }}
         run: |
-          if [[ "$OUTCOME" != "failure" ]]; then
-            echo "Did not fail correctly"
+          echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
+
+          if [[ "$DETECTED_TERRAFORM_VERSION" != *"1.11"* ]]; then
+            echo "::error:: Latest version was not used"
             exit 1
           fi
 
