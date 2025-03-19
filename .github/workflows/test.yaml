@@ -131,7 +131,12 @@ jobs:
         with:
           dockerfile: ./image/Dockerfile
 
-      - name: Lint Dockerfile
+      - name: Lint Dockerfile-base
         uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
         with:
           dockerfile: ./image/Dockerfile-base
+
+      - name: Run ShellCheck
+        run: |
+          cd image/entrypoints
+          shellcheck ../actions.sh ../workflow_commands.sh *.sh --enable add-default-case,avoid-nullary-conditional,require-double-brackets,deprecate-which
