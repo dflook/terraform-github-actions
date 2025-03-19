@@ -97,6 +97,14 @@ jobs:
           ./actionlint
           ./actionlint example_workflows/*.yaml
 
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@f94ec6bedd8674c4426838e6b50417d36b6ab231 # v5
+      - name: Actions Security Check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          uvx zizmor --format plain .
+
       - name: Lint CHANGELOG
         uses: DavidAnson/markdownlint-cli2-action@05f32210e84442804257b2a6f20b273450ec8265 # v19
         with:
@@ -111,15 +119,19 @@ jobs:
             docs/*.md
             **/README.md
 
-  ensure-pinned-actions:
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Ensure SHA pinned actions
+      - name: ensure-sha-pinned-actions
         uses: zgosalvez/github-actions-ensure-sha-pinned-actions@25ed13d0628a1601b4b44048e63cc4328ed03633 # v3
         with:
           allowlist: |
             actions/
             dflook/
+
+      - name: Lint Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: ./image/Dockerfile
+
+      - name: Lint Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: ./image/Dockerfile-base
