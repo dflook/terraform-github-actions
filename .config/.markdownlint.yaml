@@ -5,4 +5,3 @@ no-inline-html:
   allowed_elements: ['p', 'img']
 ul-style:
   style: sublist
-

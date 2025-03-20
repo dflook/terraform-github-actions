@@ -56,7 +56,7 @@ jobs:
             echo "::error:: output not set correctly"
             exit 1
           fi
-          
+
           # Check that terraformrc is as before
           diff tests/workflows/test-registry/terraformrc "$RUNNER_TEMP_D/_github_home/.terraformrc"
 

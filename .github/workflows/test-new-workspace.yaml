@@ -32,7 +32,7 @@ jobs:
               key    = "terraform-new-workspace-${{ matrix.tf_version }}"
               region = "eu-west-2"
             }
-          
+
             required_version = "${{ matrix.tf_version }}"
           }
           EOF
