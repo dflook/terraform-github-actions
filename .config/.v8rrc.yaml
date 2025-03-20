@@ -1,0 +1,9 @@
+customCatalog:
+  schemas:
+    - name: Example Workflow
+      fileMatch: ["example_workflows/*.yaml"]
+      location: https://json.schemastore.org/github-workflow.json
+
+    - name: Markdown Lint
+      fileMatch: ["changelog.markdownlint.yaml"]
+      location: "https://raw.githubusercontent.com/DavidAnson/markdownlint/main/schema/markdownlint-config-schema.json"
