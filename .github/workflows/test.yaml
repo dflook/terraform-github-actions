@@ -132,6 +132,7 @@ jobs:
           dockerfile: ./image/Dockerfile
 
       - name: Lint Dockerfile-base
+
         uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
         with:
           dockerfile: ./image/Dockerfile-base
@@ -139,9 +140,11 @@ jobs:
       - name: Run ShellCheck
         run: |
           cd image/entrypoints
-          shellcheck ../actions.sh ../workflow_commands.sh *.sh --enable add-default-case,avoid-nullary-conditional,require-double-brackets,deprecate-which
+          shellcheck ../actions.sh ../workflow_commands.sh ./*.sh --enable add-default-case,avoid-nullary-conditional,require-double-brackets,deprecate-which
 
       - name: Lint YAML files
         run: |
           pip install yamllint
-          yamllint -c .config/yamllint.yaml .
+          yamllint -c .config/.yamllint.yaml .
+
+          V8R_CONFIG_FILE=.config/.v8rrc.yaml npx v8r --ignore-errors
