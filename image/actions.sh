@@ -42,7 +42,7 @@ function debug() {
 
 function detect-terraform-version() {
     TERRAFORM_BIN_CACHE_DIR="/var/terraform:$JOB_TMP_DIR/terraform-bin-dir" TERRAFORM_BIN_CHECKSUM_DIR="/var/terraform" terraform-version
-    debug_cmd ls -la "$(which terraform)"
+    debug_cmd ls -la "$(command -v terraform)"
 
     local TF_VERSION
     TF_VERSION=$(terraform version -json | jq -r '.terraform_version' 2>/dev/null || terraform version | grep 'Terraform v' | sed 's/Terraform v//')
