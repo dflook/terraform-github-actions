@@ -139,7 +139,7 @@ jobs:
       - name: Run ShellCheck
         run: |
           cd image/entrypoints
-          shellcheck ../actions.sh ../workflow_commands.sh /*.sh --enable add-default-case,avoid-nullary-conditional,require-double-brackets,deprecate-which
+          shellcheck ../actions.sh ../workflow_commands.sh ./*.sh --enable add-default-case,avoid-nullary-conditional,require-double-brackets,deprecate-which
 
       - name: Lint YAML files
         run: |
