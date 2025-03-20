@@ -52,11 +52,11 @@ jobs:
         run: |
           BASE_TAG=$(docker buildx imagetools inspect danielflook/terraform-github-actions-base:latest --format '{{json .}}' | jq -r '.manifest.annotations."ref.tag"')
           BASE_DIGEST=$(docker buildx imagetools inspect "danielflook/terraform-github-actions-base:$BASE_TAG" --format '{{json .}}' | jq -r '.manifest.digest')
-          
+
           gh attestation verify --repo dflook/terraform-github-actions "oci://index.docker.io/danielflook/terraform-github-actions-base@$BASE_DIGEST"
-          
+
           sed -i "s|FROM danielflook/terraform-github-actions-base:latest|FROM danielflook/terraform-github-actions-base@$BASE_DIGEST|" "image/Dockerfile"
-          
+
           docker buildx build \
             --build-arg FETCH_CHECKSUMS=yes \
             --build-arg VERSION="${RELEASE_TAG:1}" \
@@ -156,12 +156,12 @@ jobs:
               git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$major.$minor-dockerhub"
               git -C "$HOME/$action" push --force
               git -C "$HOME/$action" push --force --tags
-          
+
               # git tags that use GitHub Container Registry for the image
               git -C "$HOME/$action" checkout ghcr || git -C "$HOME/$action" checkout -b ghcr
               prepare_release
               sed -i "s|  image:.*|  image: docker://ghcr.io/dflook/terraform-github-actions@$IMAGE_DIGEST|" "$HOME/$action/action.yaml"
-          
+
               git -C "$HOME/$action" add -A
               git -C "$HOME/$action" commit -m "$RELEASE_TAG-ghcr"
               git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$RELEASE_TAG-ghcr"

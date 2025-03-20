@@ -162,7 +162,7 @@ jobs:
             echo "::error:: output not set correctly"
             exit 1
           fi
-          
+
           # Check the credential file is as before
           diff tests/workflows/test-http/http-module/netrc "$RUNNER_TEMP_D/_github_home/.netrc"
 

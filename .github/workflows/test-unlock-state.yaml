@@ -78,8 +78,8 @@ jobs:
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
-          
-          echo "$LOCK_INFO"          
+
+          echo "$LOCK_INFO"
           echo "Lock id is $LOCK_ID"
 
       - name: Try using locked state using terraform-destroy
@@ -105,8 +105,8 @@ jobs:
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
-          
-          echo "$LOCK_INFO"          
+
+          echo "$LOCK_INFO"
           echo "Lock id is $LOCK_ID"
 
       - name: Unlock the state
@@ -198,8 +198,8 @@ jobs:
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
-          
-          echo "$LOCK_INFO"          
+
+          echo "$LOCK_INFO"
           echo "Lock id is $LOCK_ID"
 
       - name: Try using locked state using terraform-destroy-workspace
@@ -226,8 +226,8 @@ jobs:
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
-          
-          echo "$LOCK_INFO"          
+
+          echo "$LOCK_INFO"
           echo "Lock id is $LOCK_ID"
 
       - name: Unlock the state

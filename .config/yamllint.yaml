@@ -1,0 +1,14 @@
+---
+extends: default
+
+rules:
+  document-start: disable
+  line-length:
+    max: 255
+  truthy:
+    check-keys: false
+  comments:
+    min-spaces-from-content: 1
+  octal-values:
+    forbid-implicit-octal: true
+    forbid-explicit-octal: true

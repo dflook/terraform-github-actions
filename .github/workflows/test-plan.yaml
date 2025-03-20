@@ -52,7 +52,7 @@ jobs:
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
-          
+
           if ! [[ -f "$PLAN_PATH" ]]; then
             echo "::error:: plan_path not set correctly"
             exit 1
@@ -232,7 +232,7 @@ jobs:
             echo "::error:: text_plan_path not set correctly"
             exit 1
           fi
-          
+
           if [[ "$TO_ADD" -ne 1 ]]; then
             echo "::error:: to_add not set correctly"
             exit 1
@@ -864,7 +864,7 @@ jobs:
           path: tests/workflows/test-plan/single_sensitive_variable
           variables: |
             my_sensitive_string = "password123"
-     
+
 
   plan_sensitive_variables:
     runs-on: ubuntu-24.04
@@ -904,7 +904,7 @@ jobs:
                 protocol = "udp"
                 fruits = ["apple", "banana"]
               }
-            ]   
+            ]
 
   plan_sensitive_var:
     runs-on: ubuntu-24.04
@@ -999,7 +999,7 @@ jobs:
         with:
           path: tests/workflows/test-plan/plan
           var_file: |
-              var_file/doesnt/exist.tfvars   
+              var_file/doesnt/exist.tfvars
               var_file/doesnt/exist2.tfvars
           add_github_comment: false
 
@@ -1027,11 +1027,11 @@ jobs:
             echo "Non existant var_file did not fail correctly"
             exit 1
           fi
-          
+
           if [[ "$BACKEND_CONFIG_FILE_OUTCOME" != "failure" ]]; then
             echo "Non existant backend_config_file did not fail correctly"
             exit 1
-          fi          
+          fi
 
   test_plan_1_4:
     runs-on: ubuntu-24.04
