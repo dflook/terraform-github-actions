@@ -152,8 +152,8 @@ def get_remote_backend_config(
         'workspaces': {}
     })
 
-    for terraform in module.get('terraform', []):
-        for backend in terraform.get('backend', []):
+    for terraform_block in module.get('terraform', []):
+        for backend in terraform_block.get('backend', []):
             if 'remote' not in backend:
                 return None
 
@@ -209,8 +209,8 @@ def get_cloud_config(module: TerraformModule, cli_config_path: Path) -> Optional
         'workspaces': {}
     })
 
-    for terraform in module.get('terraform', []):
-        for cloud in terraform.get('cloud', []):
+    for terraform_block in module.get('terraform', []):
+        for cloud in terraform_block.get('cloud', []):
 
             found = True
 
@@ -245,13 +245,13 @@ def get_backend_type(module: TerraformModule) -> Optional[str]:
     :return: The name of the backend used by the module
     """
 
-    for terraform in module.get('terraform', []):
-        for backend in terraform.get('backend', []):
+    for terraform_block in module.get('terraform', []):
+        for backend in terraform_block.get('backend', []):
             for backend_type in backend:
                 return str(backend_type)
 
-    for terraform in module.get('terraform', []):
-        if 'cloud' in terraform:
+    for terraform_block in module.get('terraform', []):
+        if 'cloud' in terraform_block:
             return 'cloud'
 
     return 'local'

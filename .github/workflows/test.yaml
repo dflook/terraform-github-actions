@@ -148,3 +148,7 @@ jobs:
           yamllint -c .config/.yamllint.yaml .
 
           V8R_CONFIG_FILE=.config/.v8rrc.yaml npx v8r --ignore-errors
+
+      - uses: astral-sh/ruff-action@9828f49eb4cadf267b40eaa330295c412c68c1f9 # v3
+        with:
+          args: --config=.config/ruff.toml check

@@ -4,7 +4,6 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-from github_actions.commands import output
 from terraform.cloud import TerraformCloudApi
 from terraform.module import BackendConfig
 from terraform.module import load_module, get_remote_backend_config, get_cloud_config

@@ -1,5 +1,6 @@
 import textwrap
-from dataclasses import dataclass, field
+import dataclasses
+from dataclasses import dataclass
 from textwrap import indent
 from typing import Callable, Type
 
@@ -93,9 +94,9 @@ class Output:
     description: str
     meta_description: str = None
     type: str = None
-    aliases: list[str] = field(default_factory=list)
+    aliases: list[str] = dataclasses.field(default_factory=list)
     meta_output: bool = False
-    available_in: list[Type[Terraform] | Type[OpenTofu]] = field(default_factory=lambda: [Terraform, OpenTofu])
+    available_in: list[Type[Terraform] | Type[OpenTofu]] = dataclasses.field(default_factory=lambda: [Terraform, OpenTofu])
 
     def markdown(self, tool: Tool) -> str:
         if self.meta_output:
@@ -135,11 +136,11 @@ class Action:
     name: str
     description: str | Callable[[Tool], str]
     meta_description: str = None
-    inputs: list[Input] = field(default_factory=list)
+    inputs: list[Input] = dataclasses.field(default_factory=list)
     inputs_intro: str = None
     environment_variables: list[EnvVar] = None
     environment_variables_intro: str = None
-    outputs: list[Output] = field(default_factory=list)
+    outputs: list[Output] = dataclasses.field(default_factory=list)
     outputs_intro: str = None
     extra: str | Callable[[bool], str] = None
 

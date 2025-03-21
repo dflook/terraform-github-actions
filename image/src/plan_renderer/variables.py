@@ -2,7 +2,8 @@ from typing import Any, Union
 from textwrap import indent
 
 
-class Sensitive: pass
+class Sensitive:
+    pass
 
 
 def render_argument_list(argument_list: dict[str, Any]) -> str:
