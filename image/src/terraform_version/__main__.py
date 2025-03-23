@@ -96,7 +96,7 @@ def determine_version(inputs: InitInputs, cli_config_path: Path, actions_env: Ac
             sys.stdout.write(f'Using the same {version.product} version that wrote the existing remote state file\n')
             return version
 
-    sys.stdout.write(f'Version not specified, using the latest release version\n')
+    sys.stdout.write('Version not specified, using the latest release version\n')
     return latest_non_prerelease_version(versions)
 
 
@@ -151,8 +151,8 @@ def main() -> None:
                 sys.exit(1)
 
             if 'OPENTOFU' in os.environ and version.product == 'Terraform':
-                sys.stdout.write(f'OpenTofu is preferred, but only a version of Terraform matched the version constraints.\n')
-                sys.stdout.write(f'Try specifying a version of OpenTofu. Pre-release versions must be explicit, e.g. OPENTOFU_VERSION=1.6.0-alpha3\n')
+                sys.stdout.write('OpenTofu is preferred, but only a version of Terraform matched the version constraints.\n')
+                sys.stdout.write('Try specifying a version of OpenTofu. Pre-release versions must be explicit, e.g. OPENTOFU_VERSION=1.6.0-alpha3\n')
 
             switch(version)
 

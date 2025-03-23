@@ -20,7 +20,7 @@ def get_required_version(module: TerraformModule, versions: Iterable[Version]) -
 def try_get_required_version(module: TerraformModule, versions: Iterable[Version]) -> Optional[Version]:
     try:
         return get_required_version(module, versions)
-    except Exception as e:
+    except Exception:
         debug('Failed to get terraform version from required_version constraint')
 
     return None

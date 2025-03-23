@@ -25,15 +25,15 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r tests/requirements.txt
-          
+
           gpg --recv-keys C874011F0AB405110D02105534365D9472D7468F \
-           && echo "C874011F0AB405110D02105534365D9472D7468F:6:" | gpg --import-ownertrust          
+           && echo "C874011F0AB405110D02105534365D9472D7468F:6:" | gpg --import-ownertrust
 
       - name: Run tests
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          TERRAFORM_ACTIONS_GITHUB_TOKEN: No
+          TERRAFORM_ACTIONS_GITHUB_TOKEN: "No"
         run: |
            GNUPGHOME=$HOME/.gnupg PYTHONPATH=image/tools:image/src pytest tests
 
@@ -64,7 +64,7 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          TERRAFORM_ACTIONS_GITHUB_TOKEN: No
+          TERRAFORM_ACTIONS_GITHUB_TOKEN: "No"
         run: |
            GNUPGHOME=$HOME/.gnupg PYTHONPATH=image/tools:image/src pytest tests
 
@@ -97,6 +97,14 @@ jobs:
           ./actionlint
           ./actionlint example_workflows/*.yaml
 
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@f94ec6bedd8674c4426838e6b50417d36b6ab231 # v5.3.1
+      - name: Actions Security Check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          uvx zizmor --format plain .
+
       - name: Lint CHANGELOG
         uses: DavidAnson/markdownlint-cli2-action@05f32210e84442804257b2a6f20b273450ec8265 # v19
         with:
@@ -111,15 +119,36 @@ jobs:
             docs/*.md
             **/README.md
 
-  ensure-pinned-actions:
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Ensure SHA pinned actions
+      - name: ensure-sha-pinned-actions
         uses: zgosalvez/github-actions-ensure-sha-pinned-actions@25ed13d0628a1601b4b44048e63cc4328ed03633 # v3
         with:
           allowlist: |
             actions/
             dflook/
+
+      - name: Lint Dockerfile
+        uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
+        with:
+          dockerfile: ./image/Dockerfile
+
+      - name: Lint Dockerfile-base
+
+        uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
+        with:
+          dockerfile: ./image/Dockerfile-base
+
+      - name: Run ShellCheck
+        run: |
+          cd image/entrypoints
+          shellcheck ../actions.sh ../workflow_commands.sh ./*.sh --enable add-default-case,avoid-nullary-conditional,require-double-brackets,deprecate-which
+
+      - name: Lint YAML files
+        run: |
+          pip install yamllint
+          yamllint -c .config/.yamllint.yaml .
+
+          V8R_CONFIG_FILE=.config/.v8rrc.yaml npx v8r --ignore-errors
+
+      - uses: astral-sh/ruff-action@9828f49eb4cadf267b40eaa330295c412c68c1f9 # v3
+        with:
+          args: --config=.config/ruff.toml check

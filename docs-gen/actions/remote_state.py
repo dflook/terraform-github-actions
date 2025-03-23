@@ -6,7 +6,6 @@ from environment_variables.TERRAFORM_CLOUD_TOKENS import TERRAFORM_CLOUD_TOKENS
 from inputs.backend_config import backend_config
 from inputs.backend_config_file import backend_config_file
 from inputs.backend_type import backend_type
-from inputs.path import path
 from inputs.workspace import workspace
 from outputs.terraform_outputs import terraform_outputs
 

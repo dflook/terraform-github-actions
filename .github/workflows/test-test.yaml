@@ -33,7 +33,7 @@ jobs:
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
-          
+
           if [[ "$JUNIT_XML_PATH" != "" ]]; then
             echo "::error:: junit-xml-path should not be set"
             exit 1
@@ -65,7 +65,7 @@ jobs:
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
-          
+
           if [[ "$JUNIT_XML_PATH" == "" ]]; then
             echo "::error:: junit-xml-path should be set"
             exit 1
@@ -76,7 +76,7 @@ jobs:
               echo "::error:: junit-xml-path does not point to a file"
               exit 1
           fi
-          
+
           if [[ "$(grep -c '<testsuites' "$JUNIT_XML_PATH")" -ne 1 ]]; then
               echo "::error:: junit-xml-path does not contain a testsuites tag"
               exit 1
@@ -229,7 +229,7 @@ jobs:
             echo "Test did not fail correctly"
             exit 1
           fi
-          
+
           if [[ "$FAILURE_REASON" != "tests-failed" ]]; then
             echo "::error:: failure-reason not set correctly"
             exit 1

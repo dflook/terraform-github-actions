@@ -2,7 +2,6 @@ import dataclasses
 
 from action import Action
 from environment_variables.GITHUB_DOT_COM_TOKEN import GITHUB_DOT_COM_TOKEN
-from environment_variables.TERRAFORM_ACTIONS_GITHUB_TOKEN import TERRAFORM_ACTIONS_GITHUB_TOKEN
 from environment_variables.TERRAFORM_CLOUD_TOKENS import TERRAFORM_CLOUD_TOKENS
 from environment_variables.TERRAFORM_HTTP_CREDENTIALS import TERRAFORM_HTTP_CREDENTIALS
 from environment_variables.TERRAFORM_PRE_RUN import TERRAFORM_PRE_RUN

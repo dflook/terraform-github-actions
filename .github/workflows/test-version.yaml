@@ -105,7 +105,7 @@ jobs:
           DETECTED_TERRAFORM_VERSION: ${{ steps.terraform-version.outputs.terraform }}
         run: |
           echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
-          
+
           if [[ "$DETECTED_TERRAFORM_VERSION" != "1.1.0" ]]; then
             echo "::error:: Terraform version not set from .tfswitchrc"
             exit 1
@@ -131,7 +131,7 @@ jobs:
           DETECTED_TERRAFORM_VERSION: ${{ steps.terraform-version.outputs.terraform }}
         run: |
           echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
-          
+
           if [[ "$DETECTED_TERRAFORM_VERSION" != "0.12.17" ]]; then
             echo "::error:: Terraform version not set from .terraform-version"
             exit 1
@@ -157,7 +157,7 @@ jobs:
           DETECTED_TERRAFORM_VERSION: ${{ steps.tofu-version.outputs.terraform }}
         run: |
           echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
-          
+
           if [[ "$DETECTED_TERRAFORM_VERSION" != "1.8.5" ]]; then
             echo "::error:: Terraform version not set from .opentofu-version"
             exit 1
@@ -188,7 +188,7 @@ jobs:
             echo "::error:: Terraform version not set from .tool-versions"
             exit 1
           fi
-          
+
           mv tests/workflows/test-version/asdf/.tool-versions .tool-versions
 
       - name: Test getting version from root .tools-versions
@@ -680,9 +680,9 @@ jobs:
 
       - name: Check versions
         env:
-            DETECTED_TERRAFORM_VERSION: ${{ steps.terraform-version-13.outputs.terraform }}
-            DETECTED_RANDOM_VERSION: ${{ steps.terraform-version-13.outputs.random }}
-            DETECTED_ACME_VERSION: ${{ steps.terraform-version-13.outputs.acme }}
+          DETECTED_TERRAFORM_VERSION: ${{ steps.terraform-version-13.outputs.terraform }}
+          DETECTED_RANDOM_VERSION: ${{ steps.terraform-version-13.outputs.random }}
+          DETECTED_ACME_VERSION: ${{ steps.terraform-version-13.outputs.acme }}
         run: |
           echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
           echo "The random version was $DETECTED_RANDOM_VERSION"
@@ -895,7 +895,7 @@ jobs:
             echo "::error:: Terraform version not set from OPENTOFU_VERSION"
             exit 1
           fi
-          
+
           if [[ "$DETECTED_TOFU_VERSION" != "1.6.0-alpha3" ]]; then
             echo "::error:: Terraform version not set from OPENTOFU_VERSION"
             exit 1

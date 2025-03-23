@@ -4,3 +4,8 @@
 /venv/
 .terraform.lock.hcl
 .terraform-bin-dir/
+.gpg/
+build/
+__pycache__/
+.DS_Store
+*.egg-info/

@@ -151,9 +151,9 @@ def format_description(action_inputs: PlanPrInputs, sensitive_variables: List[st
         label += f'\nWith backend config files: `{action_inputs["INPUT_BACKEND_CONFIG_FILE"]}`'
 
     if action_inputs["INPUT_VAR"]:
-        label += f'\n:warning: Using deprecated var input. Use the variables input instead.'
+        label += '\n:warning: Using deprecated var input. Use the variables input instead.'
         if any(var_name in action_inputs["INPUT_VAR"] for var_name in sensitive_variables):
-            label += f'\nWith vars: (sensitive values)'
+            label += '\nWith vars: (sensitive values)'
         else:
             label += f'\nWith vars: `{action_inputs["INPUT_VAR"]}`'
 
@@ -226,7 +226,7 @@ def current_user(actions_env: GithubEnv) -> str:
         if response.ok:
             try:
                 return response.json()['data']['viewer']['login']
-            except Exception as e:
+            except Exception:
                 pass
 
         debug('Failed to get current user from graphql')

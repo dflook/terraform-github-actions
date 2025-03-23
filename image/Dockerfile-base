@@ -1,5 +1,6 @@
 FROM golang:1.12.6 AS tfmask
 
+# hadolint ignore=DL3003
 RUN git clone https://github.com/cloudposse/tfmask.git \
  && cd tfmask \
  && git checkout 9a15f421210397f2c321a57b5ed3d108a012a86d \
@@ -14,6 +15,8 @@ ENV TF_IN_AUTOMATION=true
 ENV TF_INPUT=false
 ENV TF_PLUGIN_CACHE_DIR=/usr/local/share/terraform/plugin-cache
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+# hadolint ignore=DL3008
 RUN <<EOF
  apt-get update
  apt-get install --no-install-recommends -y \

@@ -18,7 +18,7 @@ function repair_environment() {
         # HOME doesn't exist... is it near GITHUB_EVENT_PATH?
 
         local ACTUAL_HOME
-        ACTUAL_HOME=$(realpath "$(dirname $GITHUB_EVENT_PATH)/../_github_home")
+        ACTUAL_HOME=$(realpath "$(dirname "$GITHUB_EVENT_PATH")/../_github_home")
 
         if [[ -d "$ACTUAL_HOME" ]]; then
           HOME="$ACTUAL_HOME"
@@ -42,7 +42,7 @@ function debug() {
 
 function detect-terraform-version() {
     TERRAFORM_BIN_CACHE_DIR="/var/terraform:$JOB_TMP_DIR/terraform-bin-dir" TERRAFORM_BIN_CHECKSUM_DIR="/var/terraform" terraform-version
-    debug_cmd ls -la "$(which terraform)"
+    debug_cmd ls -la "$(command -v terraform)"
 
     local TF_VERSION
     TF_VERSION=$(terraform version -json | jq -r '.terraform_version' 2>/dev/null || terraform version | grep 'Terraform v' | sed 's/Terraform v//')
@@ -140,7 +140,8 @@ function setup() {
 
     detect-terraform-version
 
-    readonly TERRAFORM_BACKEND_TYPE=$(terraform-backend)
+    TERRAFORM_BACKEND_TYPE=$(terraform-backend)
+    readonly TERRAFORM_BACKEND_TYPE
     if [[ "$TERRAFORM_BACKEND_TYPE" != "" ]]; then
         echo "Detected $TERRAFORM_BACKEND_TYPE backend"
     fi
@@ -170,7 +171,7 @@ function init() {
     start_group "Initializing $TOOL_PRODUCT_NAME"
 
     rm -rf "$TF_DATA_DIR"
-    debug_log $TOOL_COMMAND_NAME init -input=false -backend=false
+    debug_log "$TOOL_COMMAND_NAME" init -input=false -backend=false
     (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME init -input=false -backend=false)
 
     end_group
@@ -186,10 +187,10 @@ function init-test() {
     rm -rf "$TF_DATA_DIR"
 
     if [[ -n "$INPUT_TEST_DIRECTORY" ]]; then
-        debug_log $TOOL_COMMAND_NAME init -input=false -backend=false -test-directory "$INPUT_TEST_DIRECTORY"
-        (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME init -input=false -backend=false -test-directory $INPUT_TEST_DIRECTORY)
+        debug_log "$TOOL_COMMAND_NAME" init -input=false -backend=false -test-directory "$INPUT_TEST_DIRECTORY"
+        (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME init -input=false -backend=false -test-directory "$INPUT_TEST_DIRECTORY")
     else
-        debug_log $TOOL_COMMAND_NAME init -input=false -backend=false
+        debug_log "$TOOL_COMMAND_NAME" init -input=false -backend=false
         (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME init -input=false -backend=false)
     fi
 
@@ -231,7 +232,8 @@ function init-backend-workspace() {
 
     rm -rf "$TF_DATA_DIR"
 
-    debug_log TF_WORKSPACE=$INPUT_WORKSPACE $TOOL_COMMAND_NAME init -input=false '$INIT_ARGS'  # don't expand INIT_ARGS
+    # shellcheck disable=SC2016
+    debug_log TF_WORKSPACE="$INPUT_WORKSPACE" "$TOOL_COMMAND_NAME" init -input=false '$INIT_ARGS'  # don't expand INIT_ARGS
 
     set +e
     # shellcheck disable=SC2086
@@ -271,7 +273,8 @@ function init-backend-default-workspace() {
 
     rm -rf "$TF_DATA_DIR"
 
-    debug_log $TOOL_COMMAND_NAME init -input=false '$INIT_ARGS'  # don't expand INIT_ARGS
+    # shellcheck disable=SC2016
+    debug_log "$TOOL_COMMAND_NAME" init -input=false '$INIT_ARGS'  # don't expand INIT_ARGS
     set +e
     # shellcheck disable=SC2086
     (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME init -input=false $INIT_ARGS \
@@ -299,7 +302,7 @@ function init-backend-default-workspace() {
 function select-workspace() {
     local WORKSPACE_EXIT
 
-    debug_log $TOOL_COMMAND_NAME workspace select "$INPUT_WORKSPACE"
+    debug_log "$TOOL_COMMAND_NAME" workspace select "$INPUT_WORKSPACE"
     set +e
     (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME workspace select "$INPUT_WORKSPACE") >"$STEP_TMP_DIR/workspace_select" 2>&1
     WORKSPACE_EXIT=$?
@@ -429,7 +432,7 @@ function set-remote-plan-args() {
 }
 
 function output() {
-    debug_log $TOOL_COMMAND_NAME output -json
+    debug_log "$TOOL_COMMAND_NAME" output -json
     (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME output -json | tee "$STEP_TMP_DIR/terraform_output.json" | convert_output)
 }
 
@@ -526,8 +529,8 @@ function destroy() {
 
 function force_unlock() {
     echo "Unlocking state with ID: $INPUT_LOCK_ID"
-    debug_log $TOOL_COMMAND_NAME force-unlock -force $INPUT_LOCK_ID
-    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME force-unlock -force $INPUT_LOCK_ID)
+    debug_log "$TOOL_COMMAND_NAME" force-unlock -force "$INPUT_LOCK_ID"
+    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME force-unlock -force "$INPUT_LOCK_ID")
 }
 
 # Every file written to disk should use one of these directories

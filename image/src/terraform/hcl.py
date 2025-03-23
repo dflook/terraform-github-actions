@@ -31,7 +31,7 @@ def is_loadable(path: Path) -> bool:
         debug('TimeoutExpired')
         # We found a file that won't parse :(
         return False
-    except:
+    except Exception:
         # If we get an exception, we can still try and load it.
         return True
 
@@ -55,8 +55,8 @@ def loads(hcl: str) -> dict:
     if is_loadable(tmp_path):
         return hcl2.loads(hcl)
 
-    debug(f'Unable to load hcl')
-    raise ValueError(f'Unable to load hcl')
+    debug('Unable to load hcl')
+    raise ValueError('Unable to load hcl')
 
 
 if __name__ == '__main__':
