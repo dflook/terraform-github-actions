@@ -172,6 +172,7 @@ class Action:
             "replace",
             "target",
             "destroy",
+            "refresh",
             "plan_path",
             "auto_approve",
             "add_github_comment",

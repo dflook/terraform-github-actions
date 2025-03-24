@@ -57,7 +57,7 @@ inputs:
     default: ""
   target:
     description: |
-      List of resources to apply, one per line.
+      List of resources to target, one per line.
       The plan will be limited to these resources and their dependencies.
     required: false
     default: ""
@@ -68,6 +68,13 @@ inputs:
       This generates a plan in [destroy mode](https://developer.hashicorp.com/terraform/cli/commands/plan#planning-modes).
     required: false
     default: "false"
+  refresh:
+    description: |
+      Set to `false` to skip synchronisation of the Terraform state with actual resources.
+
+      This will make the plan faster but may be out of date with the actual resources, which can lead to incorrect plans.
+    required: false
+    default: "true"
   add_github_comment:
     description: |
       Controls whether a comment is added to the PR with the generated plan.

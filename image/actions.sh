@@ -360,6 +360,12 @@ function set-common-plan-args() {
             PLAN_ARGS="$PLAN_ARGS -destroy"
         fi
     fi
+
+    if [[ -v INPUT_REFRESH ]]; then
+        if [[ "$INPUT_REFRESH" == "false" ]]; then
+            PLAN_ARGS="$PLAN_ARGS -refresh=false"
+        fi
+    fi
 }
 
 function set-variable-args() {

@@ -16,6 +16,7 @@ from inputs.destroy import destroy
 from inputs.label import label
 from inputs.parallelism import parallelism
 from inputs.path import path
+from inputs.refresh import refresh
 from inputs.replace import replace
 from inputs.target import target
 from inputs.var import var
@@ -57,6 +58,7 @@ The [dflook/$ToolName-apply](https://github.com/dflook/terraform-github-actions/
         replace,
         target,
         destroy,
+        refresh,
         add_github_comment,
         parallelism
     ],

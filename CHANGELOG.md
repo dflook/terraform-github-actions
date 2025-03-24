@@ -11,9 +11,21 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v1.47.0` to use an exact release
-- `@v1.47` to use the latest patch release for the specific minor version
+- `@v1.48.0` to use an exact release
+- `@v1.48` to use the latest patch release for the specific minor version
 - `@v1` to use the latest patch release for the specific major version
+
+## [1.48.0] - 2025-03-24
+
+### Added
+- A `refresh` input for [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/main/terraform-plan)/[tofu-plan](https://github.com/dflook/terraform-github-actions/tree/main/tofu-plan)
+  and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/main/terraform-apply)/[tofu-apply](https://github.com/dflook/terraform-github-actions/tree/main/tofu-apply)
+
+  This defaults to `true` with the current behaviour of refreshing the state before planning or applying.
+  When set to `false` the state will not be refreshed, which can be a lot faster but may result in an outdated plan.
+
+- New [dflook/terraform-refresh](https://github.com/dflook/terraform-github-actions/tree/main/terraform-refresh)/[tofu-refresh](https://github.com/dflook/terraform-github-actions/tree/main/tofu-refresh)
+  actions to update the state file to match the current state of the infrastructure, but doesn't make any changes to the infrastructure.
 
 ## [1.47.0] - 2025-02-28
 
@@ -724,6 +736,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[1.48.0]: https://github.com/dflook/terraform-github-actions/compare/v1.47.0...v1.48.0
 [1.47.0]: https://github.com/dflook/terraform-github-actions/compare/v1.46.1...v1.47.0
 [1.46.1]: https://github.com/dflook/terraform-github-actions/compare/v1.46.0...v1.46.1
 [1.46.0]: https://github.com/dflook/terraform-github-actions/compare/v1.45.0...v1.46.0

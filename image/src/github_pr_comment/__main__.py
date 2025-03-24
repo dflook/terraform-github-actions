@@ -126,6 +126,9 @@ def format_description(action_inputs: PlanPrInputs, sensitive_variables: List[st
     if action_inputs["INPUT_DESTROY"] == 'true':
         mode = '\n:bomb: Planning to destroy all resources'
 
+    if action_inputs["INPUT_REFRESH"] == 'false':
+        mode = '\n:recycle: Skipping refresh of resource state'
+
     if action_inputs['INPUT_LABEL']:
         return f'{ToolProductName} plan for __{action_inputs["INPUT_LABEL"]}__' + mode
 

@@ -1,0 +1,187 @@
+name: Test terraform-refresh
+
+on:
+  - pull_request
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    runs-on: ubuntu-24.04
+    name: Refresh
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Apply
+        uses: ./terraform-apply
+        with:
+          path: tests/workflows/test-refresh
+          auto_approve: true
+
+      - name: Check no changes
+        uses: ./terraform-check
+        with:
+          path: tests/workflows/test-refresh
+
+      - name: Make untracked changes
+        run: |
+          echo "qewasdasd" > tests/workflows/test-refresh/test
+          echo "cxvbbxcbb" > tests/workflows/test-refresh/test2
+          echo "tyuityuiy" > tests/workflows/test-refresh/test3
+
+      - name: Create a normal plan
+        uses: ./terraform-plan
+        id: plan-with-refresh
+        with:
+          add_github_comment: false
+          path: tests/workflows/test-refresh
+
+      - name: Check normal plan picks up changes
+        env:
+          CHANGES: ${{ steps.plan-with-refresh.outputs.changes }}
+          TO_ADD: ${{ steps.plan-with-refresh.outputs.to_add }}
+        run: |
+          if [[ "$CHANGES" != "true" ]]; then
+            echo "::error:: Plan did not have changes"
+            exit 1
+          fi
+
+          if [[ "$TO_ADD" != "3" ]]; then
+            echo "::error:: Wrong number of resources to add"
+            exit 1
+          fi
+
+      - name: Create a non-refresh plan
+        uses: ./terraform-plan
+        id: plan-without-refresh
+        with:
+          add_github_comment: false
+          label: test-refresh refresh non-refresh
+          path: tests/workflows/test-refresh
+          refresh: false
+
+      - name: Check non-refresh plan doesn't pick up changes
+        env:
+          CHANGES: ${{ steps.plan-without-refresh.outputs.changes }}
+          TO_ADD: ${{ steps.plan-without-refresh.outputs.to_add }}
+        run: |
+          if [[ "$CHANGES" != "false" ]]; then
+            echo "::error:: Plan has changes"
+            exit 1
+          fi
+
+      - name: Targeted refresh
+        uses: ./terraform-refresh
+        with:
+          path: tests/workflows/test-refresh
+          target: |
+            local_file.one
+
+      - name: Plan after targeted refresh
+        uses: ./terraform-plan
+        id: plan-after-targeted-refresh
+        with:
+          path: tests/workflows/test-refresh
+          refresh: false
+
+      - name: Check plan after targeted refresh
+        env:
+          CHANGES: ${{ steps.plan-after-targeted-refresh.outputs.changes }}
+          TO_ADD: ${{ steps.plan-after-targeted-refresh.outputs.to_add }}
+        run: |
+          if [[ "$CHANGES" != "true" ]]; then
+            echo "::error:: Plan did not have changes"
+            exit 1
+          fi
+
+          if [[ "$TO_ADD" != "1" ]]; then
+            echo "::error:: Wrong number of resources to add"
+            exit 1
+          fi
+
+      - name: Apply plan after targeted refresh
+        uses: ./terraform-apply
+        id: apply
+        continue-on-error: true
+        with:
+          path: tests/workflows/test-refresh
+
+      - name: Check failed to apply
+        env:
+          OUTCOME: ${{ steps.apply.outcome }}
+          FAILURE_REASON: ${{ steps.apply.outputs.failure-reason }}
+        run: |
+          if [[ "$OUTCOME" != "failure" ]]; then
+            echo "Apply did not fail correctly"
+            exit 1
+          fi
+
+          if [[ "$FAILURE_REASON" != "plan-changed" ]]; then
+            echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+      - name: Apply without refresh
+        uses: ./terraform-apply
+        with:
+          path: tests/workflows/test-refresh
+          refresh: false
+
+      - name: Create another normal plan
+        uses: ./terraform-plan
+        id: plan-with-refresh-after-apply
+        with:
+          add_github_comment: false
+          path: tests/workflows/test-refresh
+
+      - name: Check normal plan picks up changes
+        env:
+          CHANGES: ${{ steps.plan-with-refresh-after-apply.outputs.changes }}
+          TO_ADD: ${{ steps.plan-with-refresh-after-apply.outputs.to_add }}
+        run: |
+          if [[ "$CHANGES" != "true" ]]; then
+            echo "::error:: Plan did not have changes"
+            exit 1
+          fi
+
+          if [[ "$TO_ADD" != "2" ]]; then
+            echo "::error:: Wrong number of resources to add"
+            exit 1
+          fi
+
+      - name: Full refresh
+        uses: ./terraform-refresh
+        with:
+          path: tests/workflows/test-refresh
+
+      - name: Plan after full refresh
+        uses: ./terraform-plan
+        id: plan-after-full-refresh
+        with:
+          add_github_comment: false
+          path: tests/workflows/test-refresh
+          refresh: false
+
+      - name: Check plan after full refresh
+        env:
+          CHANGES: ${{ steps.plan-after-full-refresh.outputs.changes }}
+          TO_ADD: ${{ steps.plan-after-full-refresh.outputs.to_add }}
+        run: |
+          if [[ "$CHANGES" != "true" ]]; then
+            echo "::error:: Plan did not have changes"
+            exit 1
+          fi
+
+          if [[ "$TO_ADD" != "2" ]]; then
+            echo "::error:: Wrong number of resources to add"
+            exit 1
+          fi

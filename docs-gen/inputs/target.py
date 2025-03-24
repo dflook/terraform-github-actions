@@ -4,7 +4,7 @@ target = Input(
     name='target',
     type='string',
     description='''
-List of resources to apply, one per line.
+List of resources to target, one per line.
 The plan will be limited to these resources and their dependencies.
 ''',
     example = '''
