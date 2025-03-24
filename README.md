@@ -11,22 +11,23 @@ Currently, there is just experimental support for OpenTofu, see [here](https://g
 
 See the documentation for the available actions:
 
-| Terraform                                                          | OpenTofu                                                |
-|--------------------------------------------------------------------|---------------------------------------------------------|
-| [dflook/terraform-plan](terraform-plan)                            | [dflook/tofu-plan](tofu-plan)                           |
-| [dflook/terraform-apply](terraform-apply)                          | [dflook/tofu-apply](tofu-apply)                         |
-| [dflook/terraform-output](terraform-output)                        | [dflook/tofu-output](tofu-output)                       |
-| [dflook/terraform-remote-state](terraform-remote-state)            | [dflook/tofu-remote-state](tofu-remote-state)           |
-| [dflook/terraform-validate](terraform-validate)                    | [dflook/tofu-validate](tofu-validate)                   |
-| [dflook/terraform-fmt-check](terraform-fmt-check)                  | [dflook/tofu-fmt-check](tofu-fmt-check)                 |
-| [dflook/terraform-fmt](terraform-fmt)                              | [dflook/tofu-fmt](tofu-fmt)                             |
-| [dflook/terraform-check](terraform-check)                          | [dflook/tofu-check](tofu-check)                         |
-| [dflook/terraform-new-workspace](terraform-new-workspace)          | [dflook/tofu-new-workspace](tofu-new-workspace)         |
-| [dflook/terraform-destroy-workspace](terraform-destroy-workspace)  | [dflook/tofu-destroy-workspace](tofu-destroy-workspace) |
-| [dflook/terraform-destroy](terraform-destroy)                      | [dflook/tofu-destroy](tofu-destroy)                     |
-| [dflook/terraform-version](terraform-version)                      | [dflook/tofu-version](tofu-version)                     |
-| [dflook/terraform-unlock-state](terraform-unlock-state)            | [dflook/tofu-unlock-state](tofu-unlock-state)           |
-| [dflook/terraform-test](terraform-test)                            | [dflook/tofu-test](tofu-test)                           |
+| Terraform                                                         | OpenTofu                                                |
+|-------------------------------------------------------------------|---------------------------------------------------------|
+| [dflook/terraform-plan](terraform-plan)                           | [dflook/tofu-plan](tofu-plan)                           |
+| [dflook/terraform-apply](terraform-apply)                         | [dflook/tofu-apply](tofu-apply)                         |
+| [dflook/terraform-output](terraform-output)                       | [dflook/tofu-output](tofu-output)                       |
+| [dflook/terraform-remote-state](terraform-remote-state)           | [dflook/tofu-remote-state](tofu-remote-state)           |
+| [dflook/terraform-validate](terraform-validate)                   | [dflook/tofu-validate](tofu-validate)                   |
+| [dflook/terraform-fmt-check](terraform-fmt-check)                 | [dflook/tofu-fmt-check](tofu-fmt-check)                 |
+| [dflook/terraform-fmt](terraform-fmt)                             | [dflook/tofu-fmt](tofu-fmt)                             |
+| [dflook/terraform-check](terraform-check)                         | [dflook/tofu-check](tofu-check)                         |
+| [dflook/terraform-new-workspace](terraform-new-workspace)         | [dflook/tofu-new-workspace](tofu-new-workspace)         |
+| [dflook/terraform-destroy-workspace](terraform-destroy-workspace) | [dflook/tofu-destroy-workspace](tofu-destroy-workspace) |
+| [dflook/terraform-destroy](terraform-destroy)                     | [dflook/tofu-destroy](tofu-destroy)                     |
+| [dflook/terraform-version](terraform-version)                     | [dflook/tofu-version](tofu-version)                     |
+| [dflook/terraform-unlock-state](terraform-unlock-state)           | [dflook/tofu-unlock-state](tofu-unlock-state)           |
+| [dflook/terraform-test](terraform-test)                           | [dflook/tofu-test](tofu-test)                           |
+| [dflook/terraform-refresh](terraform-refresh)                     | [dflook/tofu-refresh](tofu-refresh)                     |
 
 ## Example Usage
 

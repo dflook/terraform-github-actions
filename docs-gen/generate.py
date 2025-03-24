@@ -8,6 +8,7 @@ from actions.fmt_check import fmt_check
 from actions.new_workspace import new_workspace
 from actions.output import output
 from actions.plan import plan
+from actions.refresh import refresh
 from actions.remote_state import remote_state
 from actions.test import test
 from actions.unlock_state import unlock_state
@@ -18,7 +19,6 @@ def tofuize(str) -> str:
     return str.replace('a OpenTofu', 'an OpenTofu')
 
 for action in [
-    plan,
     apply,
     check,
     destroy,
@@ -27,12 +27,13 @@ for action in [
     fmt_check,
     new_workspace,
     output,
+    plan,
+    refresh,
     remote_state,
     test,
     unlock_state,
     validate,
-    version
-
+    version,
 ]:
     action.assert_ordering()
 

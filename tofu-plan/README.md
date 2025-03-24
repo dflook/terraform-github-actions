@@ -116,7 +116,7 @@ The [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
 
 * `target`
 
-  List of resources to apply, one per line.
+  List of resources to target, one per line.
   The plan will be limited to these resources and their dependencies.
 
   ```yaml
@@ -138,6 +138,16 @@ The [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
   - Type: boolean
   - Optional
   - Default: `false`
+
+* `refresh`
+
+  Set to `false` to skip synchronisation of the OpenTofu state with actual resources.
+
+  This will make the plan faster but may be out of date with the actual resources, which can lead to incorrect plans.
+
+  - Type: boolean
+  - Optional
+  - Default: `true`
 
 * `add_github_comment`
 

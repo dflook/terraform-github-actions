@@ -16,6 +16,7 @@ from inputs.label import label
 from inputs.parallelism import parallelism
 from inputs.path import path
 from inputs.plan_path import plan_path as plan_path_input
+from inputs.refresh import refresh
 from inputs.replace import replace
 from inputs.target import target
 from inputs.var_file import var_file
@@ -83,6 +84,7 @@ These input values must be the same as any [`dflook/$ToolName-plan`](https://git
 Set to `true` to destroy all resources.
 
 This generates and applies a plan in [destroy mode]($DestroyModeUrl).'''),
+        refresh,
         plan_path_input,
         auto_approve,
         parallelism
