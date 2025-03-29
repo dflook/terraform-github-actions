@@ -28,7 +28,7 @@ jobs:
             passphrase = "tofuqwertyuiopasdfgh"
 
       - name: Create workspace
-        uses: ./terraform-new-workspace
+        uses: ./tofu-new-workspace
         with:
           path: tests/workflows/test-new-workspace
           workspace: test-workspace
@@ -36,7 +36,7 @@ jobs:
             passphrase = "tofuqwertyuiopasdfgh"
 
       - name: Create workspace again
-        uses: ./terraform-new-workspace
+        uses: ./tofu-new-workspace
         with:
           path: tests/workflows/test-new-workspace
           workspace: test-workspace
@@ -44,7 +44,7 @@ jobs:
             passphrase = "tofuqwertyuiopasdfgh"
 
       - name: Destroy workspace
-        uses: ./terraform-destroy-workspace
+        uses: ./tofu-destroy-workspace
         with:
           path: tests/workflows/test-new-workspace
           workspace: test-workspace
