@@ -34,7 +34,8 @@ function set-test-args() {
 
 function test() {
 
-    debug_log $TOOL_COMMAND_NAME test -no-color "$TEST_ARGS" "$VARIABLE_ARGS"
+    # shellcheck disable=SC2086
+    debug_log $TOOL_COMMAND_NAME test -no-color $TEST_ARGS $VARIABLE_ARGS
 
     set +e
     # shellcheck disable=SC2086

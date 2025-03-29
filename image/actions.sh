@@ -218,6 +218,14 @@ function set-init-args() {
         done
     fi
 
+    if [[ -v OPENTOFU && $TERRAFORM_VER_MINOR -ge 8 ]]; then
+        debug_log "Preparing variables for early evaluation"
+        set-variable-args
+        INIT_ARGS="$INIT_ARGS $VARIABLE_ARGS"
+    else
+        VARIABLE_ARGS=""
+    fi
+
     export INIT_ARGS
 }
 
@@ -302,9 +310,12 @@ function init-backend-default-workspace() {
 function select-workspace() {
     local WORKSPACE_EXIT
 
-    debug_log "$TOOL_COMMAND_NAME" workspace select "$INPUT_WORKSPACE"
+    # shellcheck disable=SC2086
+    debug_log "$TOOL_COMMAND_NAME" workspace select $VARIABLE_ARGS "$INPUT_WORKSPACE"
+
     set +e
-    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME workspace select "$INPUT_WORKSPACE") >"$STEP_TMP_DIR/workspace_select" 2>&1
+    # shellcheck disable=SC2086
+    (cd "$INPUT_PATH" && "$TOOL_COMMAND_NAME" workspace select $VARIABLE_ARGS "$INPUT_WORKSPACE") >"$STEP_TMP_DIR/workspace_select" 2>&1
     WORKSPACE_EXIT=$?
     set -e
 
