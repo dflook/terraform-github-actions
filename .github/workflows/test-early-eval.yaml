@@ -30,7 +30,7 @@ jobs:
       - name: Create workspace
         uses: ./tofu-new-workspace
         with:
-          path: tests/workflows/test-new-workspace
+          path: tests/workflows/test-plan/early-eval/tofu
           workspace: test-workspace
           variables: |
             passphrase = "tofuqwertyuiopasdfgh"
@@ -38,7 +38,7 @@ jobs:
       - name: Create workspace again
         uses: ./tofu-new-workspace
         with:
-          path: tests/workflows/test-new-workspace
+          path: tests/workflows/test-plan/early-eval/tofu
           workspace: test-workspace
           variables: |
             passphrase = "tofuqwertyuiopasdfgh"
@@ -46,7 +46,7 @@ jobs:
       - name: Destroy workspace
         uses: ./tofu-destroy-workspace
         with:
-          path: tests/workflows/test-new-workspace
+          path: tests/workflows/test-plan/early-eval/tofu
           workspace: test-workspace
           variables: |
             passphrase = "tofuqwertyuiopasdfgh"
