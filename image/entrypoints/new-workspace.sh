@@ -14,7 +14,8 @@ fi
 init-backend-default-workspace
 
 set +e
-(cd "$INPUT_PATH" && $TOOL_COMMAND_NAME workspace list -no-color) \
+# shellcheck disable=SC2086
+(cd "$INPUT_PATH" && $TOOL_COMMAND_NAME workspace list $VARIABLE_ARGS -no-color) \
     2>"$STEP_TMP_DIR/terraform_workspace_list.stderr" \
     >"$STEP_TMP_DIR/terraform_workspace_list.stdout"
 
@@ -32,12 +33,14 @@ fi
 
 if workspace_exists "$INPUT_WORKSPACE" <"$STEP_TMP_DIR/terraform_workspace_list.stdout"; then
     echo "Workspace appears to exist, selecting it"
-    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME workspace select -no-color "$INPUT_WORKSPACE")
+    # shellcheck disable=SC2086
+    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME workspace select $VARIABLE_ARGS -no-color "$INPUT_WORKSPACE")
 else
     echo "Workspace does not appear to exist, attempting to create it"
 
     set +e
-    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME workspace new -no-color -lock-timeout=300s "$INPUT_WORKSPACE") \
+    # shellcheck disable=SC2086
+    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME workspace new $VARIABLE_ARGS -no-color -lock-timeout=300s "$INPUT_WORKSPACE") \
         2>"$STEP_TMP_DIR/terraform_workspace_new.stderr" \
         >"$STEP_TMP_DIR/terraform_workspace_new.stdout"
 
@@ -52,7 +55,8 @@ else
 
         if grep -Fq "already exists" "$STEP_TMP_DIR/terraform_workspace_new.stderr"; then
             echo "Workspace does exist, selecting it"
-            (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME workspace select -no-color "$INPUT_WORKSPACE")
+            # shellcheck disable=SC2086
+            (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME workspace select $VARIABLE_ARGS -no-color "$INPUT_WORKSPACE")
         else
             cat "$STEP_TMP_DIR/terraform_workspace_new.stderr"
             cat "$STEP_TMP_DIR/terraform_workspace_new.stdout"

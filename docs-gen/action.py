@@ -45,6 +45,7 @@ class Input:
     deprecation_message: str = None
     show_in_docs: bool = True
     example: str = None
+    available_in: list[Type[Terraform] | Type[OpenTofu]] = dataclasses.field(default_factory=lambda: [Terraform, OpenTofu])
 
     def markdown(self, tool: Tool) -> str:
         if self.deprecation_message is None:
@@ -226,6 +227,8 @@ class Action:
             for input in self.inputs:
                 if not input.show_in_docs:
                     continue
+                if tool not in input.available_in:
+                    continue
                 s += text_chunk(input.markdown(tool))
 
         if self.outputs:
@@ -264,7 +267,7 @@ class Action:
         if self.inputs:
             s += 'inputs:\n'
 
-        for input in self.inputs:
+        for input in (input for input in self.inputs if tool in input.available_in):
             s += f'  {input.name}:\n'
 
             description = input.meta_description or input.description
