@@ -7,7 +7,7 @@ permissions:
   contents: read
 
 jobs:
-  plan:
+  s3-backend:
     runs-on: ubuntu-24.04
     name: Plan with early eval
     env:
@@ -19,10 +19,10 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: terraform plan
+      - name: tofu plan
         uses: ./tofu-plan
         with:
-          path: tests/workflows/test-plan/early-eval/tofu
+          path: tests/workflows/test-early-eval/s3
           add_github_comment: false
           variables: |
             passphrase = "tofuqwertyuiopasdfgh"
@@ -30,7 +30,7 @@ jobs:
       - name: Create workspace
         uses: ./tofu-new-workspace
         with:
-          path: tests/workflows/test-plan/early-eval/tofu
+          path: tests/workflows/test-early-eval/s3
           workspace: test-workspace
           variables: |
             passphrase = "tofuqwertyuiopasdfgh"
@@ -38,7 +38,7 @@ jobs:
       - name: Create workspace again
         uses: ./tofu-new-workspace
         with:
-          path: tests/workflows/test-plan/early-eval/tofu
+          path: tests/workflows/test-early-eval/s3
           workspace: test-workspace
           variables: |
             passphrase = "tofuqwertyuiopasdfgh"
@@ -46,7 +46,42 @@ jobs:
       - name: Destroy workspace
         uses: ./tofu-destroy-workspace
         with:
-          path: tests/workflows/test-plan/early-eval/tofu
+          path: tests/workflows/test-early-eval/s3
           workspace: test-workspace
+          variables: |
+            passphrase = "tofuqwertyuiopasdfgh"
+
+  remote-backend:
+    runs-on: ubuntu-24.04
+    name: Remote plan with early eval
+    env:
+      TERRAFORM_CLOUD_TOKENS: dflook.scalr.io=${{ secrets.SCALR_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Create workspace
+        uses: ./tofu-new-workspace
+        with:
+          path: tests/workflows/test-early-eval/scalr
+          workspace: ${{ github.head_ref }}-early-eval
+          variables: |
+            passphrase = "tofuqwertyuiopasdfgh"
+
+      - name: Create workspace again
+        uses: ./tofu-new-workspace
+        with:
+          path: tests/workflows/test-early-eval/scalr
+          workspace: ${{ github.head_ref }}-early-eval
+          variables: |
+            passphrase = "tofuqwertyuiopasdfgh"
+
+      - name: Destroy workspace
+        uses: ./tofu-destroy-workspace
+        with:
+          path: tests/workflows/test-early-eval/scalr
+          workspace: ${{ github.head_ref }}-early-eval
           variables: |
             passphrase = "tofuqwertyuiopasdfgh"
