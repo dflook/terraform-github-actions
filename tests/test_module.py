@@ -1,5 +1,7 @@
+from pathlib import Path
+
 from terraform.hcl import loads
-from terraform.module import get_sensitive_variables
+from terraform.module import get_sensitive_variables, files_in_module
 
 
 def test_get_sensitive_variables():
@@ -26,3 +28,17 @@ variable super_secret {
 ''')
 
     assert get_sensitive_variables(module) == ['secret', 'super_secret']
+
+def test_load_terraform_module():
+    assert set(s.name for s in files_in_module(Path('tests/tofu-module'))) == {
+        'blah.tf',
+        'hello.tf',
+    }
+
+def test_load_tofu_module(monkeypatch):
+    monkeypatch.setenv('OPENTOFU', 'true')
+    assert set(s.name for s in files_in_module(Path('tests/tofu-module'))) == {
+        'blah.tf',
+        'hello.tofu',
+        'tofu-only.tofu'
+    }
