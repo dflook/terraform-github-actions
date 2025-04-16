@@ -36,7 +36,7 @@ else
     init-backend-default-workspace
 
     # shellcheck disable=SC2086
-    debug_log $TOOL_COMMAND_NAME workspace delete $VARIABLE_ARGS -no-color -lock-timeout=300s "$INPUT_WORKSPACE"
+    debug_log $TOOL_COMMAND_NAME workspace delete $EARLY_VARIABLE_ARGS -no-color -lock-timeout=300s "$INPUT_WORKSPACE"
     # shellcheck disable=SC2086
-    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME workspace delete $VARIABLE_ARGS -no-color -lock-timeout=300s "$INPUT_WORKSPACE")
+    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME workspace delete $EARLY_VARIABLE_ARGS -no-color -lock-timeout=300s "$INPUT_WORKSPACE")
 fi

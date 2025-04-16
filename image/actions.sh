@@ -170,9 +170,13 @@ function relative_to() {
 function init() {
     start_group "Initializing $TOOL_PRODUCT_NAME"
 
+    set-init-args
+
     rm -rf "$TF_DATA_DIR"
-    debug_log "$TOOL_COMMAND_NAME" init -input=false -backend=false
-    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME init -input=false -backend=false)
+    # shellcheck disable=SC2086
+    debug_log "$TOOL_COMMAND_NAME" init -input=false -backend=false $EARLY_VARIABLE_ARGS
+    # shellcheck disable=SC2086
+    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME init -input=false -backend=false $EARLY_VARIABLE_ARGS)
 
     end_group
 }
@@ -184,14 +188,20 @@ function init() {
 function init-test() {
     start_group "Initializing $TOOL_PRODUCT_NAME"
 
+    set-init-args
+
     rm -rf "$TF_DATA_DIR"
 
     if [[ -n "$INPUT_TEST_DIRECTORY" ]]; then
-        debug_log "$TOOL_COMMAND_NAME" init -input=false -backend=false -test-directory "$INPUT_TEST_DIRECTORY"
-        (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME init -input=false -backend=false -test-directory "$INPUT_TEST_DIRECTORY")
+        # shellcheck disable=SC2086
+        debug_log "$TOOL_COMMAND_NAME" init -input=false -backend=false $EARLY_VARIABLE_ARGS -test-directory "$INPUT_TEST_DIRECTORY"
+        # shellcheck disable=SC2086
+        (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME init -input=false -backend=false $EARLY_VARIABLE_ARGS -test-directory "$INPUT_TEST_DIRECTORY")
     else
-        debug_log "$TOOL_COMMAND_NAME" init -input=false -backend=false
-        (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME init -input=false -backend=false)
+        # shellcheck disable=SC2086
+        debug_log "$TOOL_COMMAND_NAME" init -input=false -backend=false $EARLY_VARIABLE_ARGS
+        # shellcheck disable=SC2086
+        (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME init -input=false -backend=false $EARLY_VARIABLE_ARGS)
     fi
 
     end_group
@@ -200,7 +210,7 @@ function init-test() {
 function set-init-args() {
     INIT_ARGS=""
 
-    if [[ -n "$INPUT_BACKEND_CONFIG_FILE" ]]; then
+    if [[ -n "${INPUT_BACKEND_CONFIG_FILE:-}" ]]; then
         for file in $(echo "$INPUT_BACKEND_CONFIG_FILE" | tr ',' '\n'); do
 
             if [[ ! -f "$file" ]]; then
@@ -212,7 +222,7 @@ function set-init-args() {
         done
     fi
 
-    if [[ -n "$INPUT_BACKEND_CONFIG" ]]; then
+    if [[ -n "${INPUT_BACKEND_CONFIG:-}" ]]; then
         for config in $(echo "$INPUT_BACKEND_CONFIG" | tr ',' '\n'); do
             INIT_ARGS="$INIT_ARGS -backend-config=$config"
         done
@@ -221,9 +231,9 @@ function set-init-args() {
     if [[ -v OPENTOFU && $TERRAFORM_VER_MINOR -ge 8 ]]; then
         debug_log "Preparing variables for early evaluation"
         set-variable-args
-        INIT_ARGS="$INIT_ARGS $VARIABLE_ARGS"
+        EARLY_VARIABLE_ARGS=$VARIABLE_ARGS
     else
-        VARIABLE_ARGS=""
+        EARLY_VARIABLE_ARGS=""
     fi
 
     export INIT_ARGS
@@ -240,12 +250,12 @@ function init-backend-workspace() {
 
     rm -rf "$TF_DATA_DIR"
 
-    # shellcheck disable=SC2016
-    debug_log TF_WORKSPACE="$INPUT_WORKSPACE" "$TOOL_COMMAND_NAME" init -input=false '$INIT_ARGS'  # don't expand INIT_ARGS
+    # shellcheck disable=SC2016,SC2086
+    debug_log TF_WORKSPACE="$INPUT_WORKSPACE" "$TOOL_COMMAND_NAME" init -input=false '$INIT_ARGS' $EARLY_VARIABLE_ARGS # don't expand INIT_ARGS
 
     set +e
     # shellcheck disable=SC2086
-    (cd "$INPUT_PATH" && TF_WORKSPACE=$INPUT_WORKSPACE $TOOL_COMMAND_NAME init -input=false $INIT_ARGS \
+    (cd "$INPUT_PATH" && TF_WORKSPACE=$INPUT_WORKSPACE $TOOL_COMMAND_NAME init -input=false $INIT_ARGS $EARLY_VARIABLE_ARGS \
         2>"$STEP_TMP_DIR/terraform_init.stderr")
 
     local INIT_EXIT=$?
@@ -281,11 +291,11 @@ function init-backend-default-workspace() {
 
     rm -rf "$TF_DATA_DIR"
 
-    # shellcheck disable=SC2016
-    debug_log "$TOOL_COMMAND_NAME" init -input=false '$INIT_ARGS'  # don't expand INIT_ARGS
+    # shellcheck disable=SC2016,SC2086
+    debug_log "$TOOL_COMMAND_NAME" init -input=false '$INIT_ARGS' $EARLY_VARIABLE_ARGS # don't expand INIT_ARGS
     set +e
     # shellcheck disable=SC2086
-    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME init -input=false $INIT_ARGS \
+    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME init -input=false $INIT_ARGS $EARLY_VARIABLE_ARGS \
         2>"$STEP_TMP_DIR/terraform_init.stderr")
 
     local INIT_EXIT=$?
@@ -311,11 +321,11 @@ function select-workspace() {
     local WORKSPACE_EXIT
 
     # shellcheck disable=SC2086
-    debug_log "$TOOL_COMMAND_NAME" workspace select $VARIABLE_ARGS "$INPUT_WORKSPACE"
+    debug_log "$TOOL_COMMAND_NAME" workspace select $EARLY_VARIABLE_ARGS "$INPUT_WORKSPACE"
 
     set +e
     # shellcheck disable=SC2086
-    (cd "$INPUT_PATH" && "$TOOL_COMMAND_NAME" workspace select $VARIABLE_ARGS "$INPUT_WORKSPACE") >"$STEP_TMP_DIR/workspace_select" 2>&1
+    (cd "$INPUT_PATH" && "$TOOL_COMMAND_NAME" workspace select $EARLY_VARIABLE_ARGS "$INPUT_WORKSPACE") >"$STEP_TMP_DIR/workspace_select" 2>&1
     WORKSPACE_EXIT=$?
     set -e
 
@@ -382,7 +392,7 @@ function set-common-plan-args() {
 function set-variable-args() {
     VARIABLE_ARGS=""
 
-    if [[ -n "$INPUT_VAR_FILE" ]]; then
+    if [[ -n "${INPUT_VAR_FILE:-}" ]]; then
         for file in $(echo "$INPUT_VAR_FILE" | tr ',' '\n'); do
 
             if [[ ! -f "$file" ]]; then
@@ -394,7 +404,7 @@ function set-variable-args() {
         done
     fi
 
-    if [[ -n "$INPUT_VARIABLES" ]]; then
+    if [[ -n "${INPUT_VARIABLES:-}" ]]; then
         echo "$INPUT_VARIABLES" >"$STEP_TMP_DIR/variables.tfvars"
         VARIABLE_ARGS="$VARIABLE_ARGS -var-file=$STEP_TMP_DIR/variables.tfvars"
     fi
@@ -426,11 +436,7 @@ function set-plan-args() {
     export PLAN_ARGS
 }
 
-function set-remote-plan-args() {
-    set-common-plan-args
-    VARIABLE_ARGS=""
-    DEPRECATED_VAR_ARGS=""
-
+function create-auto-tfvars() {
     local AUTO_TFVARS_COUNTER=0
 
     if [[ -n "$INPUT_VAR_FILE" ]]; then
@@ -441,16 +447,29 @@ function set-remote-plan-args() {
     fi
 
     if [[ -n "$INPUT_VARIABLES" ]]; then
-        echo "$INPUT_VARIABLES" >"$STEP_TMP_DIR/variables.tfvars"
         cp "$STEP_TMP_DIR/variables.tfvars" "$INPUT_PATH/zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.auto.tfvars"
     fi
+}
+
+function delete-auto-tfvars() {
+    debug_cmd find "$INPUT_PATH" -regex '.*/zzzz-dflook-terraform-github-actions-[0-9]+\.auto\.tfvars' -print -delete || true
+}
+
+function set-remote-plan-args() {
+    set-common-plan-args
+    VARIABLE_ARGS=""
+    DEPRECATED_VAR_ARGS=""
+
+    create-auto-tfvars
 
     export PLAN_ARGS
 }
 
 function output() {
-    debug_log "$TOOL_COMMAND_NAME" output -json
-    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME output -json | tee "$STEP_TMP_DIR/terraform_output.json" | convert_output)
+    # shellcheck disable=SC2086
+    debug_log "$TOOL_COMMAND_NAME" output -json $EARLY_VARIABLE_ARGS
+    # shellcheck disable=SC2086
+    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME output -json $EARLY_VARIABLE_ARGS | tee "$STEP_TMP_DIR/terraform_output.json" | convert_output)
 }
 
 function random_string() {
@@ -546,8 +565,10 @@ function destroy() {
 
 function force_unlock() {
     echo "Unlocking state with ID: $INPUT_LOCK_ID"
-    debug_log "$TOOL_COMMAND_NAME" force-unlock -force "$INPUT_LOCK_ID"
-    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME force-unlock -force "$INPUT_LOCK_ID")
+    # shellcheck disable=SC2086
+    debug_log "$TOOL_COMMAND_NAME" force-unlock -force $EARLY_VARIABLE_ARGS "$INPUT_LOCK_ID"
+    # shellcheck disable=SC2086
+    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME force-unlock -force $EARLY_VARIABLE_ARGS "$INPUT_LOCK_ID")
 }
 
 # Every file written to disk should use one of these directories
@@ -571,7 +592,7 @@ function fix_owners() {
     fi
 
     if [[ -d "$INPUT_PATH" ]]; then
-        debug_cmd find "$INPUT_PATH" -regex '.*/zzzz-dflook-terraform-github-actions-[0-9]+\.auto\.tfvars' -print -delete || true
+        delete-auto-tfvars
     fi
 
     if [[ -f "$HOME/.terraformrc" ]]; then

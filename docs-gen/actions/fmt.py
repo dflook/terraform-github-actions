@@ -1,11 +1,13 @@
 import dataclasses
 
-from action import Action
+from action import Action, OpenTofu
 from environment_variables.GITHUB_DOT_COM_TOKEN import GITHUB_DOT_COM_TOKEN
 from environment_variables.TERRAFORM_CLOUD_TOKENS import TERRAFORM_CLOUD_TOKENS
 from inputs.backend_config import backend_config
 from inputs.backend_config_file import backend_config_file
 from inputs.path import path
+from inputs.var_file import var_file
+from inputs.variables import variables
 from inputs.workspace import workspace
 
 fmt = Action(
@@ -20,6 +22,11 @@ fmt = Action(
             $ProductName workspace to inspect when discovering the $ProductName version to use, if the version is not otherwise specified.
             See [dflook/$ToolName-version](https://github.com/dflook/terraform-github-actions/tree/main/$ToolName-version#$ToolName-version-action) for details.
         '''),
+        dataclasses.replace(variables, available_in=[OpenTofu], description='''
+            Variables to set when initializing $ProductName. This should be valid $ProductName syntax - like a [variable definition file]($VariableDefinitionUrl).
+            Variables set here override any given in `var_file`s.
+        '''),
+        dataclasses.replace(var_file, available_in=[OpenTofu]),
         dataclasses.replace(backend_config, description='''
             List of $ProductName backend config values, one per line. This is used for discovering the $ProductName version to use, if the version is not otherwise specified.
             See [dflook/$ToolName-version](https://github.com/dflook/terraform-github-actions/tree/main/$ToolName-version#$ToolName-version-action) for details.

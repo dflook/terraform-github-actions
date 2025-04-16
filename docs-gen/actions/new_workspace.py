@@ -21,11 +21,11 @@ new_workspace = Action(
     inputs=[
         path,
         dataclasses.replace(workspace, description='The name of the $ProductName workspace to create.', required=True, default=None),
-        dataclasses.replace(variables, description='''
+        dataclasses.replace(variables, available_in=[OpenTofu], description='''
         Variables to set when initializing $ProductName. This should be valid $ProductName syntax - like a [variable definition file]($VariableDefinitionUrl).
 
         Variables set here override any given in `var_file`s.
-        ''', available_in=[OpenTofu]),
+        '''),
         dataclasses.replace(var_file, available_in=[OpenTofu]),
         backend_config,
         backend_config_file,

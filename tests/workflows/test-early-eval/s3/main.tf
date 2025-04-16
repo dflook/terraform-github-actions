@@ -14,9 +14,9 @@ variable "state_bucket" {
   type = string
 }
 
-variable "acm_certificate_version" {
+variable "module_version" {
   type = string
-  default = "4.3.0"
+  default = "0.25.0"
 }
 
 variable "passphrase" {
@@ -24,9 +24,15 @@ variable "passphrase" {
   sensitive = true
 }
 
-module "s3-bucket" {
-  source  = "terraform-aws-modules/s3-bucket/aws"
-  version = var.acm_certificate_version
+module "label" {
+  source  = "cloudposse/label/null"
+  version = var.module_version
+
+  name = "hello"
+}
+
+resource "random_string" "my_String" {
+  length = 10
 }
 
 terraform {
@@ -44,5 +50,5 @@ terraform {
     }
   }
 
-  required_version = "1.8.8"
+  required_version = "1.9.0"
 }
