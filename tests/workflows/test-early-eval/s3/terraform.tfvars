@@ -1,0 +1,1 @@
+state_bucket = "terraform-github-actions"

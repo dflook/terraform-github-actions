@@ -11,6 +11,17 @@ inputs:
     description: OpenTofu workspace to get outputs from
     required: false
     default: "default"
+  variables:
+    description: |
+      Variables to set when initializing OpenTofu. This should be valid OpenTofu syntax - like a [variable definition file](https://opentofu.org/docs/language/values/variables/#variable-definitions-tfvars-files).
+
+      Variables set here override any given in `var_file`s.
+    required: false
+  var_file:
+    description: |
+      List of tfvars files to use, one per line.
+      Paths should be relative to the GitHub Actions workspace
+    required: false
   backend_config:
     description: List of OpenTofu backend config values, one per line.
     required: false

@@ -84,7 +84,8 @@ if [[ -n "$PLAN_OUT" ]]; then
     cp "$PLAN_OUT" "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/plan.tfplan"
     set_output plan_path "$WORKSPACE_TMP_DIR/plan.tfplan"
 
-    if (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME show -json "$PLAN_OUT") >"$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/plan.json" 2>"$STEP_TMP_DIR/terraform_show.stderr"; then
+    # shellcheck disable=SC2086
+    if (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME show -json $EARLY_VARIABLE_ARGS "$PLAN_OUT") >"$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/plan.json" 2>"$STEP_TMP_DIR/terraform_show.stderr"; then
         set_output json_plan_path "$WORKSPACE_TMP_DIR/plan.json"
     else
         debug_file "$STEP_TMP_DIR/terraform_show.stderr"

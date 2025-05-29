@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-from typing import Any, cast, NewType, Optional, TYPE_CHECKING, TypedDict, List
+from typing import Any, cast, NewType, Optional, TYPE_CHECKING, TypedDict, List, Iterable
 
 import terraform.hcl
 
@@ -51,6 +51,26 @@ def merge(a: TerraformModule, b: TerraformModule) -> TerraformModule:
 
     return merged
 
+def files_in_module(path: Path) -> Iterable[Path]:
+
+    if os.environ.get('OPENTOFU') == 'true':
+        files = {}
+
+        for filename in path.iterdir():
+            stem = filename.stem
+
+            if filename.suffix == '.tf' and stem not in files:
+                files[stem] = filename
+            elif filename.suffix == '.tofu':
+                files[stem] = filename
+
+        yield from files.values()
+
+    else:
+        for filename in path.iterdir():
+            if filename.suffix == '.tf':
+                yield filename
+
 
 def load_module(path: Path) -> TerraformModule:
     """
@@ -62,12 +82,10 @@ def load_module(path: Path) -> TerraformModule:
 
     module = cast(TerraformModule, {})
 
-    for file in os.listdir(path):
-        if not file.endswith('.tf'):
-            continue
+    for file in files_in_module(path):
 
         try:
-            tf_file = cast(TerraformModule, terraform.hcl.load(os.path.join(path, file)))
+            tf_file = cast(TerraformModule, terraform.hcl.load(file))
             module = merge(module, tf_file)
         except Exception as e:
             # ignore tf files that don't parse
