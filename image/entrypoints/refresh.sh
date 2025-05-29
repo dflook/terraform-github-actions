@@ -6,7 +6,6 @@ source /usr/local/actions.sh
 debug
 setup
 init-backend-workspace
-set-variable-args
 
 exec 3>&1
 
@@ -30,9 +29,9 @@ function refresh() {
     set +e
 
     # shellcheck disable=SC2086,SC2016
-    debug_log $TOOL_COMMAND_NAME refresh -input=false -no-color -lock-timeout=300s $PARALLEL_ARG $REFRESH_ARGS $VARIABLE_ARGS
+    debug_log $TOOL_COMMAND_NAME refresh -input=false -no-color -lock-timeout=300s $PARALLEL_ARG $REFRESH_ARGS
     # shellcheck disable=SC2086
-    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME refresh -input=false -no-color -lock-timeout=300s $PARALLEL_ARG $REFRESH_ARGS $VARIABLE_ARGS) \
+    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME refresh -input=false -no-color -lock-timeout=300s $PARALLEL_ARG $REFRESH_ARGS) \
         2>"$STEP_TMP_DIR/terraform_refresh.stderr" \
         | tee "$STEP_TMP_DIR/terraform_refresh.stdout"
     REFRESH_EXIT=${PIPESTATUS[0]}

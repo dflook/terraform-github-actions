@@ -922,9 +922,20 @@ jobs:
 
       - name: Plan
         uses: ./terraform-plan
+        id: plan
+        continue-on-error: true
         with:
           path: tests/workflows/test-plan/sensitive_var
           var: my_sensitive_var=hello
+
+      - name: Check invalid
+        env:
+          PLAN_OUTCOME: ${{ steps.plan.outcome }}
+        run: |
+          if [[ "$PLAN_OUTCOME" != "failure" ]]; then
+            echo "Using removed var input did not fail correctly."
+            exit 1
+          fi
 
   plan_change_run_commands:
     runs-on: ubuntu-24.04

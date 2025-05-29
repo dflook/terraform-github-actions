@@ -41,3 +41,9 @@ paths:
     ignore:
       - 'property "random" is not defined in object type'
       - 'property "acme" is not defined in object type'
+  .github/workflows/test-apply.yaml:
+    ignore:
+      - 'input "var" is not defined in action "terraform-apply"'
+  .github/workflows/test-plan.yaml:
+    ignore:
+      - 'input "var" is not defined in action "terraform-plan"'
