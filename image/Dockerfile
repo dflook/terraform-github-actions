@@ -9,7 +9,7 @@ ARG VERSION=99.0.0
 COPY src/ /tmp/src/
 COPY setup.py /tmp
 RUN sed -i "s|version='.*'|version=\'${VERSION}\'|" /tmp/setup.py \
- && pip install --no-cache-dir /tmp \
+ && pip install --break-system-packages --no-cache-dir /tmp \
  && rm -rf /tmp/src /tmp/setup.py
 
 RUN if [ "$FETCH_CHECKSUMS" = "yes" ]; then \
