@@ -29,44 +29,38 @@ exec 3>&1
 function apply() {
     local APPLY_EXIT
 
-    set +e
+
     if [[ -n "$PLAN_OUT" ]]; then
 
-        # With Terrraform >= 1.10 Ephemeral variables must be specified again in the apply command.
-        # Non-ephemeral variables may be specified again, but may not be different from the plan.
-        # Terraform < 1.1.0 must not specify any variables when applying a saved plan.
-
-        SAVED_PLAN_VARIABLES=""
-        if [[ "$TOOL_PRODUCT_NAME" == "Terraform" ]] && test-terraform-version ">=" "1.10.0"; then
-          SAVED_PLAN_VARIABLES="$VARIABLE_ARGS"
-        fi
-
+        set +e
         # shellcheck disable=SC2086
-        debug_log $TOOL_COMMAND_NAME apply -input=false -no-color -lock-timeout=300s $PARALLEL_ARG $SAVED_PLAN_VARIABLES $PLAN_OUT
+        debug_log $TOOL_COMMAND_NAME apply -input=false -no-color -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT
         # shellcheck disable=SC2086
-        (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME apply -input=false -no-color -lock-timeout=300s $PARALLEL_ARG $SAVED_PLAN_VARIABLES $PLAN_OUT) \
+        (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME apply -input=false -no-color -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT) \
             2>"$STEP_TMP_DIR/terraform_apply.stderr" \
             | $TFMASK \
             | tee "$STEP_TMP_DIR/terraform_apply.stdout"
         APPLY_EXIT=${PIPESTATUS[0]}
         >&2 cat "$STEP_TMP_DIR/terraform_apply.stderr"
+        set -e
 
     else
         # There is no plan file to apply, since the remote backend can't produce them.
         # Instead we need to do an auto approved apply using the arguments we would normally use for the plan
 
+        set +e
         # shellcheck disable=SC2086,SC2016
-        debug_log $TOOL_COMMAND_NAME apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS "$(masked-deprecated-vars)" $VARIABLE_ARGS
+        debug_log $TOOL_COMMAND_NAME apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS
         # shellcheck disable=SC2086
-        (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS $DEPRECATED_VAR_ARGS $VARIABLE_ARGS) \
+        (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS) \
             2>"$STEP_TMP_DIR/terraform_apply.stderr" \
             | $TFMASK \
             | tee "$STEP_TMP_DIR/terraform_apply.stdout"
         APPLY_EXIT=${PIPESTATUS[0]}
         >&2 cat "$STEP_TMP_DIR/terraform_apply.stderr"
+        set -e
 
     fi
-    set -e
 
     if [[ "$TERRAFORM_BACKEND_TYPE" == "cloud" || "$TERRAFORM_BACKEND_TYPE" == "remote" ]]; then
         if remote-run-id "$STEP_TMP_DIR/terraform_apply.stdout" "$STEP_TMP_DIR/terraform_apply.stderr" >"$STEP_TMP_DIR/remote-run-id.stdout" 2>"$STEP_TMP_DIR/remote-run-id.stderr"; then
@@ -112,7 +106,6 @@ else
 
   if [[ $PLAN_EXIT -eq 1 ]]; then
       if grep -q "Saving a generated plan is currently not supported" "$STEP_TMP_DIR/terraform_plan.stderr"; then
-          set-remote-plan-args
           PLAN_OUT=""
 
           if [[ "$INPUT_AUTO_APPROVE" == "true" ]]; then
@@ -146,7 +139,8 @@ else
   fi
 
   if [[ -n "$PLAN_OUT" ]]; then
-      if (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME show -json "$PLAN_OUT") >"$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/plan.json" 2>"$STEP_TMP_DIR/terraform_show.stderr"; then
+      # shellcheck disable=SC2086
+      if (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME show -json "$PLAN_OUT" ) >"$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/plan.json" 2>"$STEP_TMP_DIR/terraform_show.stderr"; then
           set_output json_plan_path "$WORKSPACE_TMP_DIR/plan.json"
       else
           debug_file "$STEP_TMP_DIR/terraform_show.stderr"

@@ -22,6 +22,40 @@ Retrieve the root-level outputs from an OpenTofu configuration.
   - Optional
   - Default: `default`
 
+* `variables`
+
+  Variables to set when initializing OpenTofu. This should be valid OpenTofu syntax - like a [variable definition file](https://opentofu.org/docs/language/values/variables/#variable-definitions-tfvars-files).
+
+  Variables set here override any given in `var_file`s.
+
+  ```yaml
+  with:
+    variables: |
+      image_id = "${{ secrets.AMI_ID }}"
+      availability_zone_names = [
+        "us-east-1a",
+        "us-west-1c",
+      ]
+  ```
+
+  - Type: string
+  - Optional
+
+* `var_file`
+
+  List of tfvars files to use, one per line.
+  Paths should be relative to the GitHub Actions workspace
+
+  ```yaml
+  with:
+    var_file: |
+      common.tfvars
+      prod.tfvars
+  ```
+
+  - Type: string
+  - Optional
+
 * `backend_config`
 
   List of OpenTofu backend config values, one per line.

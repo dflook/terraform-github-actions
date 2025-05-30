@@ -1,6 +1,6 @@
 import dataclasses
 
-from action import Action
+from action import Action, OpenTofu
 from environment_variables.GITHUB_DOT_COM_TOKEN import GITHUB_DOT_COM_TOKEN
 from environment_variables.TERRAFORM_CLOUD_TOKENS import TERRAFORM_CLOUD_TOKENS
 from environment_variables.TERRAFORM_HTTP_CREDENTIALS import TERRAFORM_HTTP_CREDENTIALS
@@ -9,6 +9,8 @@ from environment_variables.TERRAFORM_SSH_KEY import TERRAFORM_SSH_KEY
 from inputs.backend_config import backend_config
 from inputs.backend_config_file import backend_config_file
 from inputs.path import path
+from inputs.var_file import var_file
+from inputs.variables import variables
 from inputs.workspace import workspace
 
 new_workspace = Action(
@@ -19,6 +21,12 @@ new_workspace = Action(
     inputs=[
         path,
         dataclasses.replace(workspace, description='The name of the $ProductName workspace to create.', required=True, default=None),
+        dataclasses.replace(variables, available_in=[OpenTofu], description='''
+        Variables to set when initializing $ProductName. This should be valid $ProductName syntax - like a [variable definition file]($VariableDefinitionUrl).
+
+        Variables set here override any given in `var_file`s.
+        '''),
+        dataclasses.replace(var_file, available_in=[OpenTofu]),
         backend_config,
         backend_config_file,
     ],

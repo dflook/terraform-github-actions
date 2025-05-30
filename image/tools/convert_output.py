@@ -40,11 +40,27 @@ def convert_to_github(outputs: Dict) -> Iterable[Union[Mask, Output]]:
 
             yield Output(name, str(value))
 
+def read_input(s: str) -> dict:
+    """
+    If there is a problem connecting to terraform, the output contains junk lines we need to skip over
+    """
+
+    # Remove any lines that don't start with a {
+    # This is because terraform sometimes outputs junk lines
+    # before the JSON output
+    lines = s.splitlines()
+    while lines and not lines[0].startswith('{'):
+        lines.pop(0)
+
+    jstr = '\n'.join(lines)
+    return json.loads(jstr)
+
+
 if __name__ == '__main__':
 
     input_string = sys.stdin.read()
     try:
-        outputs = json.loads(input_string)
+        outputs = read_input(input_string)
         if not isinstance(outputs, dict):
             raise Exception('Unable to parse outputs')
     except:

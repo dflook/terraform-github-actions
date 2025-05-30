@@ -21,6 +21,7 @@ fi
 
 init || true
 
+# shellcheck disable=SC2086
 if ! (cd "$INPUT_PATH" && TF_WORKSPACE="$TF_WORKSPACE" $TOOL_COMMAND_NAME validate -json | convert_validate_report "$INPUT_PATH"); then
     (cd "$INPUT_PATH" && TF_WORKSPACE="$TF_WORKSPACE" $TOOL_COMMAND_NAME validate)
 else

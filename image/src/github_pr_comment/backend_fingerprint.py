@@ -7,6 +7,10 @@ This disregards any config related to *how* that backend is used.
 Combined with the backend type and workspace name, this should uniquely identify a remote state file.
 
 """
+import json
+import os
+from pathlib import Path
+
 import canonicaljson
 
 from github_actions.debug import debug
@@ -194,7 +198,40 @@ def fingerprint(backend_type: BackendType, backend_config: BackendConfig, env) -
     }
 
     fingerprint_inputs = backends.get(backend_type, lambda c, e: c)(backend_config, env)
+    fingerprint_inputs = initialised_backend_config(backend_type, fingerprint_inputs)
 
     debug(f'Backend fingerprint includes {fingerprint_inputs.keys()}')
 
     return canonicaljson.encode_canonical_json(fingerprint_inputs)
+
+def initialised_backend_config(backend_type: BackendType, config: dict[str, str]) -> dict[str, str]:
+    """
+    Get backend config from an initialized data directory
+    """
+
+    statefile_path = Path(os.environ.get('TF_DATA_DIR')) / 'terraform.tfstate'
+    if not statefile_path.exists():
+        debug(f'No state file found at {statefile_path}')
+        return config
+
+    with open(statefile_path) as f:
+        statefile = json.load(f)
+
+    backend = statefile.get('backend', {})
+    if backend.get('type') != backend_type:
+        debug(f'Backend type {backend.get("type")} from statefile does not match {backend_type}')
+        return config
+
+    if 'config' not in backend:
+        debug('No backend config found in statefile')
+        return config
+
+    for k in config:
+        v = backend['config'].get(k)
+        if v is not None and v != config[k]:
+            # The backend config in the statefile is different from the one in the .tf file
+            # We should use the one in the statefile
+            debug(f'Backend config {k} is {v} (tfstate) instead of {config[k]} (tf file)')
+            config[k] = v
+
+    return config

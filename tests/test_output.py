@@ -1,5 +1,5 @@
 import json
-from convert_output import convert_to_github, Mask, Output
+from convert_output import convert_to_github, Mask, Output, read_input
 
 
 def test_string():
@@ -40,9 +40,11 @@ def test_number():
         }
     }
 
-    expected_output = [Output(name='int', value='123'),
- Mask(value='123'),
- Output(name='sensitive_int', value='123')]
+    expected_output = [
+        Output(name='int', value='123'),
+        Mask(value='123'),
+        Output(name='sensitive_int', value='123')
+    ]
 
     output = list(convert_to_github(input))
     assert output == expected_output
@@ -305,3 +307,44 @@ def test_compound():
 
     output = list(convert_to_github(input))
     assert output == expected_output
+
+
+def test_read_input_with_junk_lines():
+    input_string = ''' There was an error connecting to Terraform Cloud. Please do not exit
+Terraform to prevent data loss! Trying to restore the connection...
+
+Still trying to restore the connection... (3s elapsed)
+Still trying to restore the connection... (5s elapsed)
+{
+    "output1": {"type": "string", "value": "value1", "sensitive": false}
+}'''
+    result = read_input(input_string)
+    assert result == {
+        "output1": {"type": "string", "value": "value1", "sensitive": False}
+    }
+
+def test_read_input_without_junk_lines():
+    input_string = '''{
+    "output1": {"type": "string", "value": "value1", "sensitive": false}
+}'''
+    result = read_input(input_string)
+    assert result == {
+        "output1": {"type": "string", "value": "value1", "sensitive": False}
+    }
+
+def test_read_input_empty_string():
+    input_string = ''
+    try:
+        read_input(input_string)
+        assert False, "Expected an exception"
+    except json.JSONDecodeError:
+        pass
+
+def test_read_input_invalid_json():
+    input_string = '''{
+    "output1": {"type": "string", "value": "value1", "sensitive": false'''
+    try:
+        read_input(input_string)
+        assert False, "Expected an exception"
+    except json.JSONDecodeError:
+        pass

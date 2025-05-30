@@ -99,9 +99,6 @@ def format_classic_description(action_inputs: PlanPrInputs) -> str:
     if action_inputs["INPUT_BACKEND_CONFIG_FILE"]:
         label += f'\nWith backend config files: `{action_inputs["INPUT_BACKEND_CONFIG_FILE"]}`'
 
-    if action_inputs["INPUT_VAR"]:
-        label += f'\nWith vars: `{action_inputs["INPUT_VAR"]}`'
-
     if action_inputs["INPUT_VAR_FILE"]:
         label += f'\nWith var files: `{action_inputs["INPUT_VAR_FILE"]}`'
 
@@ -152,13 +149,6 @@ def format_description(action_inputs: PlanPrInputs, sensitive_variables: List[st
 
     if action_inputs["INPUT_BACKEND_CONFIG_FILE"]:
         label += f'\nWith backend config files: `{action_inputs["INPUT_BACKEND_CONFIG_FILE"]}`'
-
-    if action_inputs["INPUT_VAR"]:
-        label += '\n:warning: Using deprecated var input. Use the variables input instead.'
-        if any(var_name in action_inputs["INPUT_VAR"] for var_name in sensitive_variables):
-            label += '\nWith vars: (sensitive values)'
-        else:
-            label += f'\nWith vars: `{action_inputs["INPUT_VAR"]}`'
 
     if action_inputs["INPUT_VAR_FILE"]:
         label += f'\nWith var files: `{action_inputs["INPUT_VAR_FILE"]}`'

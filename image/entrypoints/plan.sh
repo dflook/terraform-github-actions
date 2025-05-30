@@ -18,7 +18,6 @@ plan
 if [[ $PLAN_EXIT -eq 1 ]]; then
     if grep -q "Saving a generated plan is currently not supported" "$STEP_TMP_DIR/terraform_plan.stderr"; then
         # This terraform module is using the remote backend, which is deficient.
-        set-remote-plan-args
         PLAN_OUT=""
         PLAN_ARGS="$PLAN_ARGS -lock=false"
         plan
@@ -84,6 +83,7 @@ if [[ -n "$PLAN_OUT" ]]; then
     cp "$PLAN_OUT" "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/plan.tfplan"
     set_output plan_path "$WORKSPACE_TMP_DIR/plan.tfplan"
 
+    # shellcheck disable=SC2086
     if (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME show -json "$PLAN_OUT") >"$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/plan.json" 2>"$STEP_TMP_DIR/terraform_show.stderr"; then
         set_output json_plan_path "$WORKSPACE_TMP_DIR/plan.json"
     else
