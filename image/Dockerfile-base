@@ -7,7 +7,7 @@ RUN git clone https://github.com/cloudposse/tfmask.git \
  && make \
  && make go/build
 
-FROM debian:bullseye-slim AS terraform-github-actions-base
+FROM debian:bookworm-slim AS terraform-github-actions-base
 
 # Terraform environment variables
 ENV CHECKPOINT_DISABLE=true
