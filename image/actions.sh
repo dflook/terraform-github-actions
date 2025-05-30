@@ -389,7 +389,7 @@ function set-plan-args() {
 }
 
 function create-auto-tfvars() {
-    local AUTO_TFVARS_COUNTER=0
+    local AUTO_TFVARS_COUNTER="00"
 
     if [[ -n "${INPUT_VAR_FILE:-}" ]]; then
         for file_path in $(echo "$INPUT_VAR_FILE" | tr ',' '\n'); do
@@ -403,7 +403,7 @@ function create-auto-tfvars() {
 
             debug_log "Creating autoloading tfvars file for $file_path: zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.$name.auto.tfvars"
             cp "$file_path" "$INPUT_PATH/zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.$name.auto.tfvars"
-            AUTO_TFVARS_COUNTER=$((AUTO_TFVARS_COUNTER + 1))
+            AUTO_TFVARS_COUNTER=$(printf "%02d\n" "$((AUTO_TFVARS_COUNTER + 1))")
         done
     fi
 
