@@ -54,7 +54,7 @@ jobs:
             --annotation "index:org.opencontainers.image.ref.name=docker.io/danielflook/terraform-github-actions-base:$GITHUB_RUN_ID" \
             --annotation "index,manifest:builder-id=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
             --annotation "index,manifest:ref.tag=$GITHUB_RUN_ID" \
-            --annotation "index,manifest:org.opencontainers.image.base.name=docker.io/debian:bullseye-slim" \
+            --annotation "index,manifest:org.opencontainers.image.base.name=docker.io/debian:bookworm-slim" \
             --file image/Dockerfile-base \
             --push \
             --iidfile manifest-list-digest.txt \
