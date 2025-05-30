@@ -18,7 +18,6 @@ class InitInputs(TypedDict):
 class PlanInputs(InitInputs):
     """Common input variables for actions that generate a plan"""
     INPUT_VARIABLES: str
-    INPUT_VAR: str
     INPUT_VAR_FILE: str
     INPUT_PARALLELISM: str
 

@@ -5,7 +5,7 @@ var = Input(
     type='string',
     description='''
 Comma separated list of $ProductName vars to set.
-This is deprecated due to the following limitations:
+This has been removed due to the following limitations:
 - Only primitive types can be set with `var` - number, bool and string.
 - String values may not contain a comma.
 - Values set with `var` will be overridden by values contained in `var_file`s
@@ -27,6 +27,7 @@ with:
 ''',
     required=False,
     deprecation_message='Use the variables input instead.',
+    available_in=[],
     #default='',
     show_in_docs=False
 )

@@ -928,7 +928,7 @@ jobs:
 
   apply_vars:
     runs-on: ubuntu-24.04
-    name: Apply approved changes with deprecated vars
+    name: Apply changes with deprecated var
     permissions:
       contents: read
       pull-requests: write
@@ -940,43 +940,22 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Plan
-        uses: ./terraform-plan
-        with:
-          path: tests/workflows/test-apply/deprecated_var
-          var: my_var=hello
-          var_file: tests/workflows/test-apply/test.tfvars
-
       - name: Apply
         uses: ./terraform-apply
-        id: output
+        id: apply
+        continue-on-error: true
         with:
           path: tests/workflows/test-apply/deprecated_var
           var: my_var=hello
           var_file: tests/workflows/test-apply/test.tfvars
+          auto_approve: true
 
-      - name: Verify outputs
+      - name: Check invalid
         env:
-          OUTPUT_STRING: ${{ steps.output.outputs.output_string }}
-          FROM_VAR: ${{ steps.output.outputs.from_var }}
-          FROM_VARFILE: ${{ steps.output.outputs.from_varfile }}
-          RUN_ID: ${{ steps.output.outputs.run_id }}
+          APPLY_OUTCOME: ${{ steps.apply.outcome }}
         run: |
-          if [[ "$OUTPUT_STRING" != "the_string" ]]; then
-            echo "::error:: output s not set correctly"
-            exit 1
-          fi
-          if [[ "$FROM_VAR" != "this should be overridden" ]]; then
-            echo "::error:: output from_var not set correctly"
-            exit 1
-          fi
-          if [[ "$FROM_VARFILE" != "monkey" ]]; then
-            echo "::error:: output from_varfile not set correctly"
-            exit 1
-          fi
-
-          if [[ -n "$RUN_ID" ]]; then
-            echo "::error:: run_id should not be set"
+          if [[ "$APPLY_OUTCOME" != "failure" ]]; then
+            echo "Using removed var input did not fail correctly."
             exit 1
           fi
 
