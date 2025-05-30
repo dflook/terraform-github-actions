@@ -6,7 +6,7 @@ These are the options available to you.
 ## Using the released actions
 
 The published actions run Terraform/OpenTofu in a container using a pre-prepared image.
-The image is based on `debian:bullseye-slim` and is designed to be as small as possible.
+The image is based on `debian:bookworm-slim` and is designed to be as small as possible.
 
 It is possible to use the  `TERRAFORM_PRE_RUN` environment variable to customise the environment before running Terraform.
 The command is run using `bash -xeo pipefail`.
