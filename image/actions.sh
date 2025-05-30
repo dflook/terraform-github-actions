@@ -402,14 +402,15 @@ function create-auto-tfvars() {
             local name="${file_name%.tfvars}"
 
             debug_log "Creating autoloading tfvars file for $file_path: zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.$name.auto.tfvars"
-            cp "$file_path" "$INPUT_PATH/zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.$name.auto.tfvars"
+            ln -s "$file_path" "$INPUT_PATH/zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.$name.auto.tfvars"
             AUTO_TFVARS_COUNTER=$(printf "%02d\n" "$((AUTO_TFVARS_COUNTER + 1))")
         done
     fi
 
     if [[ -n "${INPUT_VARIABLES:-}" ]]; then
         debug_log "Creating autoloading tfvars file for the variables input: zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.auto.tfvars"
-        echo "$INPUT_VARIABLES" >"$INPUT_PATH/zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.auto.tfvars"
+        echo "$INPUT_VARIABLES" >"$STEP_TMP_DIR/zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.auto.tfvars"
+        ln -s "$STEP_TMP_DIR/zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.auto.tfvars" "$INPUT_PATH/zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.auto.tfvars"
     fi
 }
 
