@@ -150,6 +150,8 @@ function setup() {
     detect-tfmask
 
     execute_run_commands
+
+    create-auto-tfvars
 }
 
 function relative_to() {
@@ -181,8 +183,6 @@ function set-init-args() {
             INIT_ARGS="$INIT_ARGS -backend-config=$config"
         done
     fi
-
-    create-auto-tfvars
 }
 
 ##
@@ -409,7 +409,8 @@ function create-auto-tfvars() {
 
     if [[ -n "${INPUT_VARIABLES:-}" ]]; then
         debug_log "Creating autoloading tfvars file for the variables input: zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.auto.tfvars"
-        echo "$INPUT_VARIABLES" >"$INPUT_PATH/zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.auto.tfvars"
+        echo "$INPUT_VARIABLES" >"$STEP_TMP_DIR/zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.auto.tfvars"
+        ln -s "$STEP_TMP_DIR/zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.auto.tfvars" "$INPUT_PATH/zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.auto.tfvars"
     fi
 }
 
