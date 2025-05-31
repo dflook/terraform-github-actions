@@ -108,7 +108,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: terraform fmt
-        uses: dflook/terraform-fmt@v1
+        uses: dflook/terraform-fmt@v2
         with:
           path: my-terraform-config
 

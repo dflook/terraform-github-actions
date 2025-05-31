@@ -74,7 +74,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: terraform plan
-        uses: dflook/terraform-plan@v1
+        uses: dflook/terraform-plan@v2
         with:
           path: my-terraform-config
 ```
@@ -106,7 +106,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: terraform apply
-        uses: dflook/terraform-apply@v1
+        uses: dflook/terraform-apply@v2
         with:
           path: my-terraform-config
 ```
@@ -141,7 +141,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: terraform validate
-        uses: dflook/terraform-validate@v1
+        uses: dflook/terraform-validate@v2
         with:
           path: my-terraform-config
 
@@ -153,7 +153,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: terraform fmt
-        uses: dflook/terraform-fmt-check@v1
+        uses: dflook/terraform-fmt-check@v2
         with:
           path: my-terraform-config
 ```
@@ -183,7 +183,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Check for drift
-        uses: dflook/terraform-check@v1
+        uses: dflook/terraform-check@v2
         with:
           path: my-terraform-config
 ```
@@ -213,7 +213,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Rotate certs
-        uses: dflook/terraform-apply@v1
+        uses: dflook/terraform-apply@v2
         with:
           path: my-terraform-config
           auto_approve: true
@@ -245,7 +245,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: terraform fmt
-        uses: dflook/terraform-fmt@v1
+        uses: dflook/terraform-fmt@v2
         with:
           path: my-terraform-config
           
@@ -285,13 +285,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Use branch workspace
-        uses: dflook/terraform-new-workspace@v1
+        uses: dflook/terraform-new-workspace@v2
         with:
           path: my-terraform-config
           workspace: ${{ github.head_ref }}
           
       - name: Deploy test infrastrucutre
-        uses: dflook/terraform-apply@v1
+        uses: dflook/terraform-apply@v2
         id: test-infra
         with:
           path: my-terraform-config
@@ -323,7 +323,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: terraform destroy
-        uses: dflook/terraform-destroy-workspace@v1
+        uses: dflook/terraform-destroy-workspace@v2
         with:
           path: my-terraform-config
           workspace: ${{ github.head_ref }}

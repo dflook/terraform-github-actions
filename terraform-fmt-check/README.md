@@ -118,7 +118,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: terraform fmt
-        uses: dflook/terraform-fmt-check@v1
+        uses: dflook/terraform-fmt-check@v2
         with:
           path: my-terraform-config
 ```
@@ -139,7 +139,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: terraform fmt
-        uses: dflook/terraform-fmt-check@v1
+        uses: dflook/terraform-fmt-check@v2
         id: fmt-check
         with:
           path: my-terraform-config

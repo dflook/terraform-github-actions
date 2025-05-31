@@ -75,7 +75,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: $ToolName validate
-        uses: dflook/$ToolName-validate@v1
+        uses: dflook/$ToolName-validate@v2
         with:
           path: my-$ToolName-config
 ```
@@ -94,7 +94,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: $ToolName validate
-        uses: dflook/$ToolName-validate@v1
+        uses: dflook/$ToolName-validate@v2
         id: validate
         with:
           path: my-$ToolName-config

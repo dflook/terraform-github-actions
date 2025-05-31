@@ -57,13 +57,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Use branch workspace
-        uses: dflook/$ToolName-new-workspace@v1
+        uses: dflook/$ToolName-new-workspace@v2
         with:
           path: $ToolName
           workspace: ${{ github.head_ref }}
 
       - name: Deploy test infrastrucutre
-        uses: dflook/$ToolName-apply@v1
+        uses: dflook/$ToolName-apply@v2
         with:
           path: $ToolName
           workspace: ${{ github.head_ref }}

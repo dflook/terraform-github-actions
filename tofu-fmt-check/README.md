@@ -151,7 +151,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: tofu fmt
-        uses: dflook/tofu-fmt-check@v1
+        uses: dflook/tofu-fmt-check@v2
         with:
           path: my-tofu-config
 ```
@@ -172,7 +172,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: tofu fmt
-        uses: dflook/tofu-fmt-check@v1
+        uses: dflook/tofu-fmt-check@v2
         id: fmt-check
         with:
           path: my-tofu-config

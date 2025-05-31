@@ -141,7 +141,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: tofu fmt
-        uses: dflook/tofu-fmt@v1
+        uses: dflook/tofu-fmt@v2
         with:
           path: my-tofu-config
 

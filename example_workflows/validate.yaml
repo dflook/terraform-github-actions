@@ -14,7 +14,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: terraform fmt
-        uses: dflook/terraform-fmt-check@v1
+        uses: dflook/terraform-fmt-check@v2
         with:
           path: terraform
 
@@ -26,6 +26,6 @@ jobs:
         uses: actions/checkout@v4
 
       - name: terraform validate
-        uses: dflook/terraform-validate@v1
+        uses: dflook/terraform-validate@v2
         with:
           path: terraform

@@ -128,7 +128,7 @@ jobs:
     name: Run Test
     steps:
       - name: Get remote state
-        uses: dflook/terraform-remote-state@v1
+        uses: dflook/terraform-remote-state@v2
         id: remote-state
         with:
           backend_type: s3

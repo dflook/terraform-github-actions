@@ -111,7 +111,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Test $ToolName-version
-        uses: dflook/$ToolName-version@v1
+        uses: dflook/$ToolName-version@v2
         id: $ToolName-version
         with:
           path: my-configuration

@@ -67,7 +67,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: $ProductName Tests
-        uses: dflook/$ToolName-test@v1
+        uses: dflook/$ToolName-test@v2
         with:
           path: modules/vpc
 ```

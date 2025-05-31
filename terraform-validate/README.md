@@ -190,7 +190,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: terraform validate
-        uses: dflook/terraform-validate@v1
+        uses: dflook/terraform-validate@v2
         with:
           path: my-terraform-config
 ```
@@ -209,7 +209,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: terraform validate
-        uses: dflook/terraform-validate@v1
+        uses: dflook/terraform-validate@v2
         id: validate
         with:
           path: my-terraform-config

@@ -120,7 +120,7 @@ jobs:
           ref: refs/pull/${{ github.event.issue.number }}/merge
 
       - name: $ToolName apply
-        uses: dflook/$ToolName-plan@v1
+        uses: dflook/$ToolName-plan@v2
         with:
           path: my-$ToolName-config
 ```
@@ -170,7 +170,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: $ToolName plan
-        uses: dflook/$ToolName-plan@v1
+        uses: dflook/$ToolName-plan@v2
         with:
           path: my-$ToolName-config
 ```
@@ -207,7 +207,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: $ToolName plan
-        uses: dflook/$ToolName-plan@v1
+        uses: dflook/$ToolName-plan@v2
         with:
           path: my-$ToolName-config
           label: production
@@ -248,7 +248,7 @@ jobs:
           ref: refs/pull/${{ github.event.issue.number }}/merge
 
       - name: $ToolName plan
-        uses: dflook/$ToolName-plan@v1
+        uses: dflook/$ToolName-plan@v2
         with:
           path: my-$ToolName-config
 ```

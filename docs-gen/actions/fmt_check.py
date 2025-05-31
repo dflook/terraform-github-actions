@@ -72,7 +72,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: $ToolName fmt
-        uses: dflook/$ToolName-fmt-check@v1
+        uses: dflook/$ToolName-fmt-check@v2
         with:
           path: my-$ToolName-config
 ```
@@ -93,7 +93,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: $ToolName fmt
-        uses: dflook/$ToolName-fmt-check@v1
+        uses: dflook/$ToolName-fmt-check@v2
         id: fmt-check
         with:
           path: my-$ToolName-config

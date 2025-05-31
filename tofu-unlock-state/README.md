@@ -181,7 +181,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: OpenTofu Unlock
-        uses: dflook/tofu-unlock-state@v1
+        uses: dflook/tofu-unlock-state@v2
         with:
           path: ${{ github.event.inputs.path }}
           lock_id: ${{ github.event.inputs.lock_id }}

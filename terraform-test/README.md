@@ -219,7 +219,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Terraform Tests
-        uses: dflook/terraform-test@v1
+        uses: dflook/terraform-test@v2
         with:
           path: modules/vpc
 ```

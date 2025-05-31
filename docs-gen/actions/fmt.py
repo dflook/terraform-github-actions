@@ -64,7 +64,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: $ToolName fmt
-        uses: dflook/$ToolName-fmt@v1
+        uses: dflook/$ToolName-fmt@v2
         with:
           path: my-$ToolName-config
 

@@ -246,7 +246,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: terraform destroy
-        uses: dflook/terraform-destroy@v1
+        uses: dflook/terraform-destroy@v2
         with:
           path: my-terraform-config
           workspace: ${{ github.head_ref }}
@@ -270,7 +270,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: terraform destroy
-        uses: dflook/terraform-destroy@v1
+        uses: dflook/terraform-destroy@v2
         id: first_try
         continue-on-error: true
         with:
@@ -278,7 +278,7 @@ jobs:
           workspace: ${{ github.head_ref }}
 
       - name: Retry failed destroy
-        uses: dflook/terraform-destroy@v1
+        uses: dflook/terraform-destroy@v2
         if: ${{ steps.first_try.outputs.failure-reason == 'destroy-failed' }}
         with:
           path: my-terraform-config

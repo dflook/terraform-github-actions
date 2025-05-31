@@ -466,7 +466,7 @@ jobs:
           ref: refs/pull/${{ github.event.issue.number }}/merge
 
       - name: tofu apply
-        uses: dflook/tofu-apply@v1
+        uses: dflook/tofu-apply@v2
         with:
           path: my-tofu-config
 ```
@@ -519,7 +519,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: tofu apply
-        uses: dflook/tofu-apply@v1
+        uses: dflook/tofu-apply@v2
         with:
           path: my-tofu-config
 ```
@@ -546,7 +546,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: tofu apply
-        uses: dflook/tofu-apply@v1
+        uses: dflook/tofu-apply@v2
         with:
           path: my-tofu-config
           auto_approve: true
@@ -573,7 +573,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: tofu apply
-        uses: dflook/tofu-apply@v1
+        uses: dflook/tofu-apply@v2
         with:
           path: my-tofu-config
           auto_approve: true
@@ -608,7 +608,7 @@ jobs:
           ref: refs/pull/${{ github.event.issue.number }}/merge
 
       - name: OpenTofu apply
-        uses: dflook/tofu-apply@v1
+        uses: dflook/tofu-apply@v2
         with:
           path: my-tofu-config
 ```
@@ -638,14 +638,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: tofu apply
-        uses: dflook/tofu-apply@v1
+        uses: dflook/tofu-apply@v2
         continue-on-error: true
         id: first_try
         with:
           path: tofu
 
       - name: Retry failed apply
-        uses: dflook/tofu-apply@v1
+        uses: dflook/tofu-apply@v2
         if: ${{ steps.first_try.outputs.failure-reason == 'apply-failed' }}
         with:
           path: tofu

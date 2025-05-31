@@ -52,7 +52,7 @@ jobs:
     name: Run Test
     steps:
       - name: Get remote state
-        uses: dflook/$ToolName-remote-state@v1
+        uses: dflook/$ToolName-remote-state@v2
         id: remote-state
         with:
           backend_type: s3

@@ -70,7 +70,7 @@ check = Action(
             uses: actions/checkout@v4
     
           - name: Check
-            uses: dflook/$ToolName-check@v1
+            uses: dflook/$ToolName-check@v2
             with:
               path: my-$ToolName-configuration
     ```
@@ -93,7 +93,7 @@ check = Action(
             uses: actions/checkout@v4
     
           - name: Check
-            uses: dflook/$ToolName-check@v1
+            uses: dflook/$ToolName-check@v2
             id: check
             with:
               path: my-$ToolName-configuration

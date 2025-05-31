@@ -412,7 +412,7 @@ jobs:
           ref: refs/pull/${{ github.event.issue.number }}/merge
 
       - name: terraform apply
-        uses: dflook/terraform-plan@v1
+        uses: dflook/terraform-plan@v2
         with:
           path: my-terraform-config
 ```
@@ -462,7 +462,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: terraform plan
-        uses: dflook/terraform-plan@v1
+        uses: dflook/terraform-plan@v2
         with:
           path: my-terraform-config
 ```
@@ -499,7 +499,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: terraform plan
-        uses: dflook/terraform-plan@v1
+        uses: dflook/terraform-plan@v2
         with:
           path: my-terraform-config
           label: production
@@ -540,7 +540,7 @@ jobs:
           ref: refs/pull/${{ github.event.issue.number }}/merge
 
       - name: terraform plan
-        uses: dflook/terraform-plan@v1
+        uses: dflook/terraform-plan@v2
         with:
           path: my-terraform-config
 ```

@@ -412,7 +412,7 @@ jobs:
           ref: refs/pull/${{ github.event.issue.number }}/merge
 
       - name: tofu apply
-        uses: dflook/tofu-plan@v1
+        uses: dflook/tofu-plan@v2
         with:
           path: my-tofu-config
 ```
@@ -462,7 +462,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: tofu plan
-        uses: dflook/tofu-plan@v1
+        uses: dflook/tofu-plan@v2
         with:
           path: my-tofu-config
 ```
@@ -499,7 +499,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: tofu plan
-        uses: dflook/tofu-plan@v1
+        uses: dflook/tofu-plan@v2
         with:
           path: my-tofu-config
           label: production
@@ -540,7 +540,7 @@ jobs:
           ref: refs/pull/${{ github.event.issue.number }}/merge
 
       - name: tofu plan
-        uses: dflook/tofu-plan@v1
+        uses: dflook/tofu-plan@v2
         with:
           path: my-tofu-config
 ```

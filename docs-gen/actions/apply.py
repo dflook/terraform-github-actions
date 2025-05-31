@@ -155,7 +155,7 @@ jobs:
           ref: refs/pull/${{ github.event.issue.number }}/merge
 
       - name: $ToolName apply
-        uses: dflook/$ToolName-apply@v1
+        uses: dflook/$ToolName-apply@v2
         with:
           path: my-$ToolName-config
 ```
@@ -208,7 +208,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: $ToolName apply
-        uses: dflook/$ToolName-apply@v1
+        uses: dflook/$ToolName-apply@v2
         with:
           path: my-$ToolName-config
 ```
@@ -235,7 +235,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: $ToolName apply
-        uses: dflook/$ToolName-apply@v1
+        uses: dflook/$ToolName-apply@v2
         with:
           path: my-$ToolName-config
           auto_approve: true
@@ -262,7 +262,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: $ToolName apply
-        uses: dflook/$ToolName-apply@v1
+        uses: dflook/$ToolName-apply@v2
         with:
           path: my-$ToolName-config
           auto_approve: true
@@ -297,7 +297,7 @@ jobs:
           ref: refs/pull/${{ github.event.issue.number }}/merge
 
       - name: $ProductName apply
-        uses: dflook/$ToolName-apply@v1
+        uses: dflook/$ToolName-apply@v2
         with:
           path: my-$ToolName-config
 ```
@@ -327,14 +327,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: $ToolName apply
-        uses: dflook/$ToolName-apply@v1
+        uses: dflook/$ToolName-apply@v2
         continue-on-error: true
         id: first_try
         with:
           path: $ToolName
 
       - name: Retry failed apply
-        uses: dflook/$ToolName-apply@v1
+        uses: dflook/$ToolName-apply@v2
         if: ${{ steps.first_try.outputs.failure-reason == 'apply-failed' }}
         with:
           path: $ToolName
