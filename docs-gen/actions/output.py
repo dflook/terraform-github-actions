@@ -60,7 +60,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Get outputs
-        uses: dflook/$ToolName-output@v1
+        uses: dflook/$ToolName-output@v2
         id: tf-outputs
         with:
           path: my-$ToolName-config
@@ -96,7 +96,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Get outputs
-        uses: dflook/$ToolName-output@v1
+        uses: dflook/$ToolName-output@v2
         id: tf-outputs
         with:
           path: my-$ToolName-config

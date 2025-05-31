@@ -76,7 +76,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: $ToolName destroy
-        uses: dflook/$ToolName-destroy@v1
+        uses: dflook/$ToolName-destroy@v2
         with:
           path: my-$ToolName-config
           workspace: ${{ github.head_ref }}
@@ -100,7 +100,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: $ToolName destroy
-        uses: dflook/$ToolName-destroy@v1
+        uses: dflook/$ToolName-destroy@v2
         id: first_try
         continue-on-error: true
         with:
@@ -108,7 +108,7 @@ jobs:
           workspace: ${{ github.head_ref }}
 
       - name: Retry failed destroy
-        uses: dflook/$ToolName-destroy@v1
+        uses: dflook/$ToolName-destroy@v2
         if: ${{ steps.first_try.outputs.failure-reason == 'destroy-failed' }}
         with:
           path: my-$ToolName-config

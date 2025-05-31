@@ -218,7 +218,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Test terraform-version
-        uses: dflook/terraform-version@v1
+        uses: dflook/terraform-version@v2
         id: terraform-version
         with:
           path: my-configuration

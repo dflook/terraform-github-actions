@@ -191,7 +191,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Get outputs
-        uses: dflook/terraform-output@v1
+        uses: dflook/terraform-output@v2
         id: tf-outputs
         with:
           path: my-terraform-config
@@ -227,7 +227,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Get outputs
-        uses: dflook/terraform-output@v1
+        uses: dflook/terraform-output@v2
         id: tf-outputs
         with:
           path: my-terraform-config

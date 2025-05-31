@@ -20,6 +20,6 @@ jobs:
         uses: actions/checkout@v4
 
       - name: terraform apply
-        uses: dflook/terraform-apply@v1
+        uses: dflook/terraform-apply@v2
         with:
           path: terraform

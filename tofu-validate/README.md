@@ -190,7 +190,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: tofu validate
-        uses: dflook/tofu-validate@v1
+        uses: dflook/tofu-validate@v2
         with:
           path: my-tofu-config
 ```
@@ -209,7 +209,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: tofu validate
-        uses: dflook/tofu-validate@v1
+        uses: dflook/tofu-validate@v2
         id: validate
         with:
           path: my-tofu-config

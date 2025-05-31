@@ -165,13 +165,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Use branch workspace
-        uses: dflook/terraform-new-workspace@v1
+        uses: dflook/terraform-new-workspace@v2
         with:
           path: terraform
           workspace: ${{ github.head_ref }}
 
       - name: Deploy test infrastrucutre
-        uses: dflook/terraform-apply@v1
+        uses: dflook/terraform-apply@v2
         with:
           path: terraform
           workspace: ${{ github.head_ref }}

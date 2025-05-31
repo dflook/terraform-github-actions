@@ -222,7 +222,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Check
-        uses: dflook/tofu-check@v1
+        uses: dflook/tofu-check@v2
         with:
           path: my-tofu-configuration
 ```
@@ -245,7 +245,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Check
-        uses: dflook/tofu-check@v1
+        uses: dflook/tofu-check@v2
         id: check
         with:
           path: my-tofu-configuration

@@ -209,7 +209,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: OpenTofu Tests
-        uses: dflook/tofu-test@v1
+        uses: dflook/tofu-test@v2
         with:
           path: modules/vpc
 ```

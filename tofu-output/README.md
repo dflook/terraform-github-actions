@@ -225,7 +225,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Get outputs
-        uses: dflook/tofu-output@v1
+        uses: dflook/tofu-output@v2
         id: tf-outputs
         with:
           path: my-tofu-config
@@ -261,7 +261,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Get outputs
-        uses: dflook/tofu-output@v1
+        uses: dflook/tofu-output@v2
         id: tf-outputs
         with:
           path: my-tofu-config

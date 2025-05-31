@@ -59,7 +59,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: $ProductName Unlock
-        uses: dflook/$ToolName-unlock-state@v1
+        uses: dflook/$ToolName-unlock-state@v2
         with:
           path: ${{ github.event.inputs.path }}
           lock_id: ${{ github.event.inputs.lock_id }}

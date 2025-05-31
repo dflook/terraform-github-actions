@@ -221,7 +221,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Test tofu-version
-        uses: dflook/tofu-version@v1
+        uses: dflook/tofu-version@v2
         id: tofu-version
         with:
           path: my-configuration
