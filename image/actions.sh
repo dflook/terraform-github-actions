@@ -399,10 +399,16 @@ function create-auto-tfvars() {
             fi
 
             local file_name="${file_path##*/}"
-            local name="${file_name%.tfvars}"
+            local extension="${file_name##*.}"
 
-            debug_log "Creating autoloading tfvars file for $file_path: zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.$name.auto.tfvars"
-            cp "$file_path" "$INPUT_PATH/zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.$name.auto.tfvars"
+            if [[ "$extension" == "json" ]]; then
+                link_name="zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.${file_name%.json}.auto.tfvars.json"
+            else
+                link_name="zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.${file_name%.tfvars}.auto.tfvars"
+            fi
+
+            debug_log "Creating autoloading tfvars file for $file_path: $link_name"
+            cp "$file_path" "$INPUT_PATH/$link_name"
             AUTO_TFVARS_COUNTER=$(printf "%02d\n" "$((AUTO_TFVARS_COUNTER + 1))")
         done
     fi
