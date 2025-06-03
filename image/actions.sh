@@ -422,6 +422,7 @@ function create-auto-tfvars() {
 
 function delete-auto-tfvars() {
     debug_cmd find "$INPUT_PATH" -regex '.*/zzzz-dflook-terraform-github-actions-[0-9]+.*\.auto\.tfvars' -print -delete || true
+    debug_cmd find "$INPUT_PATH" -regex '.*/zzzz-dflook-terraform-github-actions-[0-9]+.*\.auto\.tfvars\.json' -print -delete || true
 }
 
 function output() {
