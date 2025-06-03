@@ -416,12 +416,13 @@ function create-auto-tfvars() {
     if [[ -n "${INPUT_VARIABLES:-}" ]]; then
         debug_log "Creating autoloading tfvars file for the variables input: zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.auto.tfvars"
         echo "$INPUT_VARIABLES" >"$STEP_TMP_DIR/zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.auto.tfvars"
-        ln -s "$STEP_TMP_DIR/zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.auto.tfvars" "$INPUT_PATH/zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.auto.tfvars"
+        cp "$STEP_TMP_DIR/zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.auto.tfvars" "$INPUT_PATH/zzzz-dflook-terraform-github-actions-$AUTO_TFVARS_COUNTER.auto.tfvars"
     fi
 }
 
 function delete-auto-tfvars() {
     debug_cmd find "$INPUT_PATH" -regex '.*/zzzz-dflook-terraform-github-actions-[0-9]+.*\.auto\.tfvars' -print -delete || true
+    debug_cmd find "$INPUT_PATH" -regex '.*/zzzz-dflook-terraform-github-actions-[0-9]+.*\.auto\.tfvars\.json' -print -delete || true
 }
 
 function output() {
