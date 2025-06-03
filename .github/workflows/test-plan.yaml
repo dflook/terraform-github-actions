@@ -844,6 +844,28 @@ jobs:
             my_var="single"
           var_file: tests/workflows/test-plan/test.tfvars
 
+  plan_json_tfvars:
+    runs-on: ubuntu-24.04
+    name: Plan JSON tfvars
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Plan
+        uses: ./terraform-plan
+        with:
+          path: tests/workflows/test-plan/vars
+          variables: |
+            my_var="single"
+          var_file: tests/workflows/test-plan/test.tfvars.json
+
   plan_single_sensitive_variable:
     runs-on: ubuntu-24.04
     name: Plan single sensitive variable
