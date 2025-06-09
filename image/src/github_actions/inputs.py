@@ -26,6 +26,7 @@ class PlanPrInputs(PlanInputs):
     """Common input variables for actions that use a PR comment"""
     INPUT_LABEL: str
     INPUT_TARGET: str
+    INPUT_EXCLUDE: str
     INPUT_REPLACE: str
     INPUT_DESTROY: str
     INPUT_REFRESH: str

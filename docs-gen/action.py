@@ -172,6 +172,7 @@ class Action:
             "backend_config_file",
             "replace",
             "target",
+            "exclude",
             "destroy",
             "refresh",
             "plan_path",

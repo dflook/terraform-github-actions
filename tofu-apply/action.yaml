@@ -50,6 +50,12 @@ inputs:
       The apply operation will be limited to these resources and their dependencies.
     required: false
     default: ""
+  exclude:
+    description: |
+      List of resources to exclude from the apply operation, one per line.
+      The apply operation will include all resources except the specified ones and their dependencies.
+    required: false
+    default: ""
   destroy:
     description: |
       Set to `true` to destroy all resources.
