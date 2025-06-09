@@ -626,3 +626,48 @@ jobs:
             exit 1
           fi
 
+      - name: Plan excluding resources without label
+        uses: ./tofu-plan
+        id: plan-exclude-no-label
+        with:
+          path: tests/workflows/test-target-replace-exclude
+          exclude: |
+            random_string.exclude_me
+          variables: |
+            length = 8
+
+      - name: Verify exclude plan without label
+        env:
+          CHANGES: ${{ steps.plan-exclude-no-label.outputs.changes }}
+        run: |
+          if [[ "$CHANGES" != "true" ]]; then
+            echo "::error:: Exclude plan without label should have changes for non-excluded resources"
+            exit 1
+          fi
+
+      - name: Apply excluding resources without label
+        uses: ./tofu-apply
+        id: apply-exclude-no-label
+        with:
+          path: tests/workflows/test-target-replace-exclude
+          exclude: |
+            random_string.exclude_me
+          variables: |
+            length = 8
+
+      - name: Verify exclude apply without label
+        env:
+          EXCLUDE_ME: ${{ steps.apply-exclude-no-label.outputs.exclude_me }}
+          KEEP_ME: ${{ steps.apply-exclude-no-label.outputs.keep_me }}
+        run: |
+          # Should NOT have created excluded resource
+          if [[ "$EXCLUDE_ME" != "" ]]; then
+            echo "::error:: exclude_me output should be empty (resource excluded without label)"
+            exit 1
+          fi
+
+          # Should have updated non-excluded resource
+          if [[ "$KEEP_ME" == "" ]]; then
+            echo "::error:: keep_me output should be set (resource not excluded without label)"
+            exit 1
+          fi
