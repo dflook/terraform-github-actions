@@ -14,6 +14,7 @@ from inputs.var_file import var_file
 from inputs.variables import variables
 from inputs.workspace import workspace
 from inputs.target import target
+from inputs.exclude import exclude
 from outputs.failure_reason import failure_reason
 from outputs.lock_info import lock_info
 from outputs.run_id import run_id
@@ -35,6 +36,10 @@ This will synchronise the $ProductName state with the actual resources, but will
         dataclasses.replace(target, description='''
 List of resources to target, one per line.
 The refresh will be limited to these resources and their dependencies.
+'''),
+        dataclasses.replace(exclude, description='''
+List of resources to exclude from the refresh operation, one per line.
+The refresh will include all resources except the specified ones and their dependencies.
 '''),
         parallelism
     ],

@@ -148,6 +148,21 @@ These input values must be the same as any [`dflook/tofu-plan`](https://github.c
   - Type: string
   - Optional
 
+* `exclude`
+
+  List of resources to exclude from the apply operation, one per line.
+  The apply operation will include all resources except the specified ones and their dependencies.
+
+  ```yaml
+  with:
+    exclude: |
+      local_file.sensitive_config
+      aws_instance.temp_resource
+  ```
+
+  - Type: string
+  - Optional
+
 * `destroy`
 
   Set to `true` to destroy all resources.

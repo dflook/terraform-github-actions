@@ -19,6 +19,7 @@ from inputs.path import path
 from inputs.refresh import refresh
 from inputs.replace import replace
 from inputs.target import target
+from inputs.exclude import exclude
 from inputs.var import var
 from inputs.var_file import var_file
 from inputs.variables import variables
@@ -57,6 +58,7 @@ The [dflook/$ToolName-apply](https://github.com/dflook/terraform-github-actions/
         backend_config_file,
         replace,
         target,
+        exclude,
         destroy,
         refresh,
         add_github_comment,

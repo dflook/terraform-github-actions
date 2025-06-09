@@ -97,6 +97,21 @@ This will synchronise the OpenTofu state with the actual resources, but will not
   - Type: string
   - Optional
 
+* `exclude`
+
+  List of resources to exclude from the refresh operation, one per line.
+  The refresh will include all resources except the specified ones and their dependencies.
+
+  ```yaml
+  with:
+    exclude: |
+      local_file.sensitive_config
+      aws_instance.temp_resource
+  ```
+
+  - Type: string
+  - Optional
+
 * `parallelism`
 
   Limit the number of concurrent operations

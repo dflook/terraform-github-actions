@@ -140,6 +140,10 @@ def format_description(action_inputs: PlanPrInputs, sensitive_variables: List[st
         label += '\nTargeting resources: '
         label += ', '.join(f'`{res.strip()}`' for res in action_inputs['INPUT_TARGET'].splitlines())
 
+    if action_inputs.get("INPUT_EXCLUDE"):
+        label += '\nExcluding resources: '
+        label += ', '.join(f'`{res.strip()}`' for res in action_inputs['INPUT_EXCLUDE'].splitlines())
+
     if action_inputs["INPUT_REPLACE"]:
         label += '\nReplacing resources: '
         label += ', '.join(f'`{res.strip()}`' for res in action_inputs['INPUT_REPLACE'].splitlines())
@@ -301,6 +305,9 @@ def new_pr_comment(backend_fingerprint: bytes) -> TerraformComment:
     if target := os.environ.get('INPUT_TARGET'):
         plan_modifier['target'] = sorted(t.strip() for t in target.replace(',', '\n', ).split('\n') if t.strip())
 
+    if exclude := os.environ.get('INPUT_EXCLUDE'):
+        plan_modifier['exclude'] = sorted(t.strip() for t in exclude.replace(',', '\n', ).split('\n') if t.strip())
+
     if replace := os.environ.get('INPUT_REPLACE'):
         plan_modifier['replace'] = sorted(t.strip() for t in replace.replace(',', '\n', ).split('\n') if t.strip())
 
@@ -349,6 +356,9 @@ def get_comment(action_inputs: PlanPrInputs, backend_fingerprint: bytes, backup_
     plan_modifier = {}
     if target := os.environ.get('INPUT_TARGET'):
         plan_modifier['target'] = sorted(t.strip() for t in target.replace(',', '\n', ).split('\n') if t.strip())
+
+    if exclude := os.environ.get('INPUT_EXCLUDE'):
+        plan_modifier['exclude'] = sorted(t.strip() for t in exclude.replace(',', '\n', ).split('\n') if t.strip())
 
     if replace := os.environ.get('INPUT_REPLACE'):
         plan_modifier['replace'] = sorted(t.strip() for t in replace.replace(',', '\n', ).split('\n') if t.strip())

@@ -129,6 +129,23 @@ The [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
   - Type: string
   - Optional
 
+* `exclude`
+
+  List of resources to exclude from operations, one per line.
+  The plan will include all resources except the specified ones and their dependencies.
+
+  Requires OpenTofu 1.9+.
+
+  ```yaml
+  with:
+    exclude: |
+      local_file.sensitive_config
+      aws_instance.temp_resource
+  ```
+
+  - Type: string
+  - Optional
+
 * `destroy`
 
   Set to `true` to generate a plan to destroy all resources.

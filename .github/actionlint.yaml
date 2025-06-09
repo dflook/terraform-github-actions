@@ -30,10 +30,13 @@ paths:
       - 'property "git_https" is not defined in object type'
       - 'property "awkward_.*" is not defined in object type'
       - 'property "word" is not defined in object type'
-  .github/workflows/test-target-replace.yaml:
+  .github/workflows/test-target-replace-exclude.yaml:
     ignore:
       - 'property "count" is not defined in object type'
       - 'property "foreach" is not defined in object type'
+      - 'property "keep_me" is not defined in object type'
+      - 'property "exclude_me" is not defined in object type'
+      - 'property "also_exclude" is not defined in object type'
   .github/workflows/release.yaml:
     ignore:
       - 'Useless cat.'

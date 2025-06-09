@@ -38,6 +38,12 @@ inputs:
       The refresh will be limited to these resources and their dependencies.
     required: false
     default: ""
+  exclude:
+    description: |
+      List of resources to exclude from the refresh operation, one per line.
+      The refresh will include all resources except the specified ones and their dependencies.
+    required: false
+    default: ""
   parallelism:
     description: Limit the number of concurrent operations
     required: false
