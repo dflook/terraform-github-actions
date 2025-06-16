@@ -194,9 +194,7 @@ jobs:
     needs:
       - image
       - actions
-    permissions:
-      contents: read
-      packages: write
+    permissions: {}
     environment:
       name: dockerhub
       url: https://hub.docker.com/r/danielflook/terraform-github-actions-base/tags?name=${{ github.event.release.tag_name }}
