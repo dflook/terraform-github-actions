@@ -102,6 +102,8 @@ This will synchronise the OpenTofu state with the actual resources, but will not
   List of resources to exclude from the refresh operation, one per line.
   The refresh will include all resources except the specified ones and their dependencies.
 
+  Requires OpenTofu 1.9+.
+
   ```yaml
   with:
     exclude: |

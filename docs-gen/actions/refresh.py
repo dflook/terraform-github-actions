@@ -40,6 +40,8 @@ The refresh will be limited to these resources and their dependencies.
         dataclasses.replace(exclude, description='''
 List of resources to exclude from the refresh operation, one per line.
 The refresh will include all resources except the specified ones and their dependencies.
+
+Requires OpenTofu 1.9+.
 '''),
         parallelism
     ],
