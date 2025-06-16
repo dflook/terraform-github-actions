@@ -19,7 +19,10 @@ def read_local_state(module_dir: Path) -> Optional[Version]:
         with open(state_path) as f:
             state = json.load(f)
             if state.get('serial') > 0:
-                return Version(state.get('terraform_version'))
+                # Respect OPENTOFU environment variable when determining product type
+                # since OpenTofu maintains compatibility with Terraform state files
+                product = 'OpenTofu' if 'OPENTOFU' in os.environ else 'Terraform'
+                return Version(state.get('terraform_version'), product)
     except Exception as e:
         debug(str(e))
 

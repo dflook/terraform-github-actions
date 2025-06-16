@@ -9,3 +9,6 @@ build/
 __pycache__/
 .DS_Store
 *.egg-info/
+
+# API cache files
+github_api_cache.sqlite

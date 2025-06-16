@@ -350,10 +350,24 @@ function set-common-plan-args() {
         PARALLEL_ARG="-parallelism=$INPUT_PARALLELISM"
     fi
 
+    # Validate that target and exclude are not used together
+    if [[ -v INPUT_TARGET && -n "$INPUT_TARGET" && -v INPUT_EXCLUDE && -n "$INPUT_EXCLUDE" ]]; then
+        error_log "target and exclude cannot be used together. These flags are mutually exclusive in $TOOL_PRODUCT_NAME."
+        exit 1
+    fi
+
     if [[ -v INPUT_TARGET ]]; then
         if [[ -n "$INPUT_TARGET" ]]; then
             for target in $(echo "$INPUT_TARGET" | tr ',' '\n'); do
                 PLAN_ARGS="$PLAN_ARGS -target $target"
+            done
+        fi
+    fi
+
+    if [[ -v INPUT_EXCLUDE ]]; then
+        if [[ -n "$INPUT_EXCLUDE" ]]; then
+            for exclude in $(echo "$INPUT_EXCLUDE" | tr ',' '\n'); do
+                PLAN_ARGS="$PLAN_ARGS -exclude $exclude"
             done
         fi
     fi

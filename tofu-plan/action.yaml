@@ -50,6 +50,14 @@ inputs:
       The plan will be limited to these resources and their dependencies.
     required: false
     default: ""
+  exclude:
+    description: |
+      List of resources to exclude from operations, one per line.
+      The plan will include all resources except the specified ones and their dependencies.
+
+      Requires OpenTofu 1.9+.
+    required: false
+    default: ""
   destroy:
     description: |
       Set to `true` to generate a plan to destroy all resources.

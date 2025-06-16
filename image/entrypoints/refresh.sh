@@ -26,6 +26,14 @@ function refresh() {
         fi
     fi
 
+    if [[ -v INPUT_EXCLUDE ]]; then
+        if [[ -n "$INPUT_EXCLUDE" ]]; then
+            for exclude in $(echo "$INPUT_EXCLUDE" | tr ',' '\n'); do
+                REFRESH_ARGS="$REFRESH_ARGS -exclude $exclude"
+            done
+        fi
+    fi
+
     set +e
 
     # shellcheck disable=SC2086,SC2016

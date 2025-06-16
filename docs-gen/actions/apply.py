@@ -19,6 +19,7 @@ from inputs.plan_path import plan_path as plan_path_input
 from inputs.refresh import refresh
 from inputs.replace import replace
 from inputs.target import target
+from inputs.exclude import exclude
 from inputs.var_file import var_file
 from inputs.variables import variables
 from inputs.var import var
@@ -79,6 +80,10 @@ These input values must be the same as any [`dflook/$ToolName-plan`](https://git
         dataclasses.replace(target, description='''
   List of resources to apply, one per line.
   The apply operation will be limited to these resources and their dependencies.
+        '''),
+        dataclasses.replace(exclude, description='''
+  List of resources to exclude from the apply operation, one per line.
+  The apply operation will include all resources except the specified ones and their dependencies.
         '''),
         dataclasses.replace(destroy, description='''
 Set to `true` to destroy all resources.
