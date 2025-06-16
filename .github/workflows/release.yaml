@@ -22,6 +22,7 @@ jobs:
       url: https://hub.docker.com/r/danielflook/terraform-github-actions/tags?name=${{ github.event.release.tag_name }}
     outputs:
       digest: ${{ steps.image_build.outputs.digest }}
+      base-digest: ${{ steps.image_build.outputs.base-digest }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -74,12 +75,14 @@ jobs:
             --annotation "index,manifest:builder-id=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
             --annotation "index,manifest:ref.tag=$RELEASE_TAG" \
             --annotation "index,manifest:org.opencontainers.image.base.name=docker.io/danielflook/terraform-github-actions-base" \
+            --annotation "index,manifest:base.manifest.digest=$BASE_DIGEST" \
             --annotation "index:org.opencontainers.image.base.ref=$BASE_TAG" \
             --push \
             --iidfile manifest-list-digest.txt \
             image
 
           echo "digest=$(<manifest-list-digest.txt)" >> "$GITHUB_OUTPUT"
+          echo "base-digest=$BASE_DIGEST" >> "$GITHUB_OUTPUT"
 
       - name: Dockerhub ref attestation
         uses: actions/attest-build-provenance@v2
@@ -184,3 +187,35 @@ jobs:
               echo "Skipping dflook/$action"
             fi
           done
+
+  tag-base-image:
+    runs-on: ubuntu-24.04
+    name: Tag base image with release version
+    needs:
+      - image
+      - actions
+    permissions:
+      contents: read
+      packages: write
+    environment:
+      name: dockerhub
+      url: https://hub.docker.com/r/danielflook/terraform-github-actions-base/tags?name=${{ github.event.release.tag_name }}
+    steps:
+      - name: Registry login
+        env:
+          DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+        run: |
+          echo "$DOCKER_TOKEN" | docker login --username danielflook --password-stdin
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2 # v3
+
+      - name: Tag and push base image with release version
+        env:
+          RELEASE_TAG: "${{ github.event.release.tag_name }}"
+          BASE_DIGEST: ${{ needs.image.outputs.base-digest }}
+        run: |
+          # Tag the base image manifest list with the release version
+          docker buildx imagetools create \
+            --tag "danielflook/terraform-github-actions-base:$RELEASE_TAG" \
+            "danielflook/terraform-github-actions-base@$BASE_DIGEST"

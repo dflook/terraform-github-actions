@@ -41,6 +41,10 @@ jobs:
       - name: Base image
         id: build-and-push
         run: |
+          BASE_DIGEST=$(docker buildx imagetools inspect "debian:bookworm-slim" --format '{{json .}}' | jq -r '.manifest.digest')
+
+          sed -i "s|FROM debian:bookworm-slim|FROM debian:bookworm-slim@$BASE_DIGEST|" "image/Dockerfile-base"
+
           docker buildx build \
             --tag "danielflook/terraform-github-actions-base:$GITHUB_RUN_ID" \
             --tag danielflook/terraform-github-actions-base:latest  \
@@ -55,6 +59,7 @@ jobs:
             --annotation "index,manifest:builder-id=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
             --annotation "index,manifest:ref.tag=$GITHUB_RUN_ID" \
             --annotation "index,manifest:org.opencontainers.image.base.name=docker.io/debian:bookworm-slim" \
+            --annotation "index,manifest:base.manifest.digest=$BASE_DIGEST" \
             --file image/Dockerfile-base \
             --push \
             --iidfile manifest-list-digest.txt \
