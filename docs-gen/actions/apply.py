@@ -84,6 +84,8 @@ These input values must be the same as any [`dflook/$ToolName-plan`](https://git
         dataclasses.replace(exclude, description='''
   List of resources to exclude from the apply operation, one per line.
   The apply operation will include all resources except the specified ones and their dependencies.
+  
+  Requires OpenTofu 1.9+.
         '''),
         dataclasses.replace(destroy, description='''
 Set to `true` to destroy all resources.

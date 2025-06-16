@@ -42,6 +42,8 @@ inputs:
     description: |
       List of resources to exclude from the refresh operation, one per line.
       The refresh will include all resources except the specified ones and their dependencies.
+
+      Requires OpenTofu 1.9+.
     required: false
     default: ""
   parallelism:

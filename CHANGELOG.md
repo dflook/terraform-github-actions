@@ -11,9 +11,27 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v2.0.1` to use an exact release
-- `@v2.0` to use the latest patch release for the specific minor version
+- `@v2.1.0` to use an exact release
+- `@v2.1` to use the latest patch release for the specific minor version
 - `@v2` to use the latest patch release for the specific major version
+
+## [2.1.0] - 2025-06-16
+
+### Added
+- New `exclude` input for [dflook/tofu-plan](https://github.com/dflook/terraform-github-actions/tree/main/tofu-plan),
+  [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/main/tofu-apply), and
+  [dflook/tofu-refresh](https://github.com/dflook/terraform-github-actions/tree/main/tofu-refresh) actions.
+
+  The `exclude` input allows specifying resources to exclude from operations, one per line. The operation will include all resources except the specified ones and their dependencies.
+
+  ```yaml
+  with:
+    exclude: |
+      local_file.sensitive_config
+      aws_instance.temp_resource
+  ```
+
+  Requires OpenTofu 1.9+.
 
 ## [2.0.1] - 2025-06-03
 
@@ -754,6 +772,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[2.1.0]: https://github.com/dflook/terraform-github-actions/compare/v2.0.1...v2.1.0
 [2.0.1]: https://github.com/dflook/terraform-github-actions/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/dflook/terraform-github-actions/compare/v1.49.0...v2.0.0
 [1.49.0]: https://github.com/dflook/terraform-github-actions/compare/v1.48.0...v1.49.0
