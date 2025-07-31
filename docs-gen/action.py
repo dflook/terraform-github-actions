@@ -195,6 +195,7 @@ class Action:
             "terraform",
             "tofu",
             "Provider Versions",
+            "json_output_path",
             "$ProductName Outputs",
         ], self.outputs)
 

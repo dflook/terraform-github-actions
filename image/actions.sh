@@ -443,7 +443,11 @@ function output() {
     # shellcheck disable=SC2086
     debug_log "$TOOL_COMMAND_NAME" output -json
     # shellcheck disable=SC2086
-    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME output -json | tee "$STEP_TMP_DIR/terraform_output.json" | convert_output)
+    (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME output -json | tee "$STEP_TMP_DIR/terraform_output.json" | convert_output "$STEP_TMP_DIR/outputs.json")
+
+    mkdir -p "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR"
+    cp "$STEP_TMP_DIR/outputs.json" "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/outputs.json"
+    set_output json_output_path "$WORKSPACE_TMP_DIR/outputs.json"
 }
 
 function random_string() {
