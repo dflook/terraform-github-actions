@@ -25,6 +25,7 @@ from inputs.variables import variables
 from inputs.var import var
 from inputs.workspace import workspace
 from outputs.failure_reason import failure_reason
+from outputs.json_output_path import json_output_path
 from outputs.json_plan_path import json_plan_path
 from outputs.lock_info import lock_info
 from outputs.run_id import run_id
@@ -112,6 +113,7 @@ This generates and applies a plan in [destroy mode]($DestroyModeUrl).'''),
         ),
         lock_info,
         run_id,
+        json_output_path,
         terraform_outputs
     ],
     environment_variables=[

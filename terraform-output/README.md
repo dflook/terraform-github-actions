@@ -49,6 +49,31 @@ Retrieve the root-level outputs from a Terraform configuration.
 
 ## Outputs
 
+* `json_output_path`
+
+  This is the path to all the root module outputs in a JSON file.
+  The path is relative to the Actions workspace.
+
+  For example, with the Terraform config:
+
+  ```hcl
+  output "service_hostname" {
+    value = "example.com"
+  }
+  ```
+
+  The file pointed to by this output will contain:
+
+  ```json
+  {
+    "service_hostname": "example.com"
+  }
+  ```
+
+  Terraform list, set and tuple types are cast to a JSON array, map and object types are cast to a JSON object.
+
+  - Type: string
+
 * Terraform Outputs
 
   An action output will be created for each output of the Terraform configuration.

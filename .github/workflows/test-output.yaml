@@ -41,6 +41,7 @@ jobs:
           MY_OBJECT_FIRST: ${{ fromJson(steps.terraform-output.outputs.my_object).first }}
           MY_TUPLE: ${{ join(fromJson(steps.terraform-output.outputs.my_tuple)) }}
           MY_SET: ${{ contains(fromJson(steps.terraform-output.outputs.my_set), 'one') }}
+          JSON_OUTPUT_PATH: ${{ steps.terraform-output.outputs.json_output_path }}
         run: |
           if [[ "$MY_NUMBER" != "5" ]]; then
             echo "::error:: output my_number not set correctly"
@@ -113,4 +114,57 @@ jobs:
           if [[ "$expected_multiline" != "$MY_MULTILINE_STRING" ]]; then
             echo "::error:: steps.terraform-output.outputs.my_multiline_string not set correctly"
             exit 1
+          fi
+
+          ## Check if the JSON output file exists and validate its contents
+
+          cat "$JSON_OUTPUT_PATH"
+
+          if [[ ! -f "$JSON_OUTPUT_PATH" ]]; then
+              echo "::error:: JSON output file not found at $JSON_OUTPUT_PATH"
+              exit 1
+          fi
+
+          # Parse JSON and validate primitive types
+          JSON_MY_NUMBER=$(jq -r '.my_number' "$JSON_OUTPUT_PATH")
+          if [[ "$JSON_MY_NUMBER" != "5" ]]; then
+              echo "::error:: JSON my_number should be 5, got: $JSON_MY_NUMBER"
+              exit 1
+          fi
+
+          JSON_MY_STRING=$(jq -r '.my_string' "$JSON_OUTPUT_PATH")
+          if [[ "$JSON_MY_STRING" != "hello" ]]; then
+              echo "::error:: JSON my_string should be 'hello', got: $JSON_MY_STRING"
+              exit 1
+          fi
+
+          JSON_MY_BOOL=$(jq -r '.my_bool' "$JSON_OUTPUT_PATH")
+          if [[ "$JSON_MY_BOOL" != "true" ]]; then
+              echo "::error:: JSON my_bool should be true, got: $JSON_MY_BOOL"
+              exit 1
+          fi
+
+          # Validate sensitive values are included in JSON
+          JSON_MY_SENSITIVE_NUMBER=$(jq -r '.my_sensitive_number' "$JSON_OUTPUT_PATH")
+          if [[ "$JSON_MY_SENSITIVE_NUMBER" != "6" ]]; then
+              echo "::error:: JSON my_sensitive_number should be 6, got: $JSON_MY_SENSITIVE_NUMBER"
+              exit 1
+          fi
+
+          # List from tolist(toset()) may have different order, so check elements exist
+          JSON_MY_LIST_HAS_ONE=$(jq -r '.my_list | contains(["one"])' "$JSON_OUTPUT_PATH")
+          JSON_MY_LIST_HAS_TWO=$(jq -r '.my_list | contains(["two"])' "$JSON_OUTPUT_PATH")
+          JSON_MY_LIST_LENGTH=$(jq -r '.my_list | length' "$JSON_OUTPUT_PATH")
+          if [[ "$JSON_MY_LIST_HAS_ONE" != "true" || "$JSON_MY_LIST_HAS_TWO" != "true" || "$JSON_MY_LIST_LENGTH" != "2" ]]; then
+              echo "::error:: JSON my_list should contain 'one' and 'two' with length 2"
+              exit 1
+          fi
+
+          # Validate map/object becomes JSON object
+          JSON_MY_MAP_FIRST=$(jq -r '.my_map.first' "$JSON_OUTPUT_PATH")
+          JSON_MY_MAP_SECOND=$(jq -r '.my_map.second' "$JSON_OUTPUT_PATH")
+          JSON_MY_MAP_THIRD=$(jq -r '.my_map.third' "$JSON_OUTPUT_PATH")
+          if [[ "$JSON_MY_MAP_FIRST" != "one" || "$JSON_MY_MAP_SECOND" != "two" || "$JSON_MY_MAP_THIRD" != "3" ]]; then
+              echo "::error:: JSON my_map should have correct key-value pairs"
+              exit 1
           fi

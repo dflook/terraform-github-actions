@@ -11,9 +11,22 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v2.1.0` to use an exact release
-- `@v2.1` to use the latest patch release for the specific minor version
+- `@v2.2.0` to use an exact release
+- `@v2.2` to use the latest patch release for the specific minor version
 - `@v2` to use the latest patch release for the specific major version
+
+## [2.2.0] - 2025-08-01
+
+### Added
+- New `json_output_path` output for [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/main/terraform-apply),
+  [dflook/terraform-output](https://github.com/dflook/terraform-github-actions/tree/main/terraform-output),
+  [dflook/terraform-remote-state](https://github.com/dflook/terraform-github-actions/tree/main/terraform-remote-state),
+  [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/main/tofu-apply),
+  [dflook/tofu-output](https://github.com/dflook/terraform-github-actions/tree/main/tofu-output), and
+  [dflook/tofu-remote-state](https://github.com/dflook/terraform-github-actions/tree/main/tofu-remote-state) actions.
+
+  The `json_output_path` output points to a JSON file containing all root module outputs in a simple key-value format.
+  This addresses GitHub Actions' output size limitations and enables easier access to all outputs as a single object.
 
 ## [2.1.0] - 2025-06-16
 
@@ -772,6 +785,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[2.2.0]: https://github.com/dflook/terraform-github-actions/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/dflook/terraform-github-actions/compare/v2.0.1...v2.1.0
 [2.0.1]: https://github.com/dflook/terraform-github-actions/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/dflook/terraform-github-actions/compare/v1.49.0...v2.0.0

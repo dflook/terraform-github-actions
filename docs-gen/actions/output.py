@@ -12,6 +12,7 @@ from inputs.path import path
 from inputs.var_file import var_file
 from inputs.variables import variables
 from inputs.workspace import workspace
+from outputs.json_output_path import json_output_path
 from outputs.terraform_outputs import terraform_outputs
 
 output = Action(
@@ -39,6 +40,7 @@ output = Action(
         TERRAFORM_PRE_RUN
     ],
     outputs=[
+        json_output_path,
         terraform_outputs
     ],
     extra='''

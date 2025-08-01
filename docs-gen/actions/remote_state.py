@@ -7,6 +7,7 @@ from inputs.backend_config import backend_config
 from inputs.backend_config_file import backend_config_file
 from inputs.backend_type import backend_type
 from inputs.workspace import workspace
+from outputs.json_output_path import json_output_path
 from outputs.terraform_outputs import terraform_outputs
 
 remote_state = Action(
@@ -21,6 +22,7 @@ remote_state = Action(
         backend_config_file,
     ],
     outputs=[
+        json_output_path,
         terraform_outputs
     ],
     environment_variables=[
