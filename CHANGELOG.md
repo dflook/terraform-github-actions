@@ -15,7 +15,7 @@ When using an action you can specify the version as:
 - `@v2.2` to use the latest patch release for the specific minor version
 - `@v2` to use the latest patch release for the specific major version
 
-## [2.2.0] - 2025-07-31
+## [2.2.0] - 2025-08-01
 
 ### Added
 - New `json_output_path` output for [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/main/terraform-apply),
