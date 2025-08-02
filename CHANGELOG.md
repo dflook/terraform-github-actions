@@ -11,9 +11,15 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v2.2.0` to use an exact release
+- `@v2.2.1` to use an exact release
 - `@v2.2` to use the latest patch release for the specific minor version
 - `@v2` to use the latest patch release for the specific major version
+
+## [2.2.1] - 2025-08-02
+
+### Fixed
+- Fixed incorrect plan difference reporting when an apply is aborted because the plan changed, with plans that are too large for PR comments.
+  Previously, when a plan was truncated due to size limits, the diff output would show misleading whitespace-only differences, causing confusion about what had actually changed.
 
 ## [2.2.0] - 2025-08-01
 
@@ -785,6 +791,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[2.2.1]: https://github.com/dflook/terraform-github-actions/compare/v2.2.0...v2.2.1
 [2.2.0]: https://github.com/dflook/terraform-github-actions/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/dflook/terraform-github-actions/compare/v2.0.1...v2.1.0
 [2.0.1]: https://github.com/dflook/terraform-github-actions/compare/v2.0.0...v2.0.1

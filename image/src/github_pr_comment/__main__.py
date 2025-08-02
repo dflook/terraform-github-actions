@@ -639,7 +639,7 @@ def main() -> int:
 
             proposed_plan_path = os.path.join(os.environ['STEP_TMP_DIR'], 'proposed-plan.txt')
             with open(proposed_plan_path, 'w') as f:
-                format_type = 'diff' if comment.headers.get('plan_text_format', 'text') == 'diff' else 'text'
+                format_type = 'diff' if comment.headers.get('plan_text_format', 'text').startswith('diff') else 'text'
                 _, formatted_proposed_plan = format_plan_text(proposed_plan.strip(), format_type)
                 f.write(formatted_proposed_plan.strip())
 
