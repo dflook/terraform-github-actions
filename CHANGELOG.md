@@ -11,9 +11,15 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v2.2.1` to use an exact release
+- `@v2.2.2` to use an exact release
 - `@v2.2` to use the latest patch release for the specific minor version
 - `@v2` to use the latest patch release for the specific major version
+
+## [2.2.2] - 2025-08-08
+
+### Fixed
+- [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/main/terraform-apply)/[dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/main/tofu-apply)
+  could mistakenly think the plan had changed and abort the apply operation, if the plan imported resources and also contained warnings.
 
 ## [2.2.1] - 2025-08-02
 
@@ -791,6 +797,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[2.2.2]: https://github.com/dflook/terraform-github-actions/compare/v2.2.1...v2.2.2
 [2.2.1]: https://github.com/dflook/terraform-github-actions/compare/v2.2.0...v2.2.1
 [2.2.0]: https://github.com/dflook/terraform-github-actions/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/dflook/terraform-github-actions/compare/v2.0.1...v2.1.0

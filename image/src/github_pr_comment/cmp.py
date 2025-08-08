@@ -23,7 +23,7 @@ def remove_warnings(plan: str) -> str:
 
         plan_lines.append(line)
 
-        if re.match(r'Plan: \d+ to add, \d+ to change, \d+ to destroy', line):
+        if re.match(r'Plan: \d+ to \S+', line):
             plan_summary_reached = True
 
     return '\n'.join(plan_lines).strip()
