@@ -423,7 +423,7 @@ function create-auto-tfvars() {
 
             debug_log "Creating autoloading tfvars file for $file_path: $link_name"
             cp "$file_path" "$INPUT_PATH/$link_name"
-            AUTO_TFVARS_COUNTER=$(printf "%02d\n" "$((AUTO_TFVARS_COUNTER + 1))")
+            AUTO_TFVARS_COUNTER=$(printf "%02d\n" "$((10#${AUTO_TFVARS_COUNTER} + 1))")
         done
     fi
 
