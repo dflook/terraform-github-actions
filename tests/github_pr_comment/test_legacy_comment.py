@@ -568,3 +568,113 @@ Testing'''
         'node_id': node_id,
         'issue_url': issue_url
     }) == expected
+
+def test_backend_config_multiline():
+    """Test that backend_config with newlines is formatted correctly"""
+    payload = '''Terraform plan in __/test/terraform__
+With backend config: `bucket=my-terraform-state,key=terraform.tfstate,region=us-west-2`
+<details open>
+<summary>Plan: 1 to add, 0 to change, 0 to destroy.</summary>
+
+```hcl
+An execution plan has been generated and is shown below.
+...
+Plan: 1 to add, 0 to change, 0 to destroy.
+```
+</details>
+
+Testing'''
+
+    expected = TerraformComment(
+        issue_url=issue_url,
+        comment_url=comment_url,
+        node_id=node_id,
+        status='Testing',
+        headers={},
+        description='''Terraform plan in __/test/terraform__
+With backend config: `bucket=my-terraform-state,key=terraform.tfstate,region=us-west-2`''',
+        summary='Plan: 1 to add, 0 to change, 0 to destroy.',
+        body=plan,
+        body_highlighting='hcl'
+    )
+
+    assert _from_api_payload({
+        'body': payload,
+        'url': comment_url,
+        'node_id': node_id,
+        'issue_url': issue_url
+    }) == expected
+
+
+def test_backend_config_file_multiline():
+    """Test that backend_config_file with newlines is formatted correctly"""
+    payload = '''Terraform plan in __/test/terraform__
+With backend config files: `backend1.hcl, backend2.hcl`
+<details open>
+<summary>Plan: 1 to add, 0 to change, 0 to destroy.</summary>
+
+```hcl
+An execution plan has been generated and is shown below.
+...
+Plan: 1 to add, 0 to change, 0 to destroy.
+```
+</details>
+
+Testing'''
+
+    expected = TerraformComment(
+        issue_url=issue_url,
+        comment_url=comment_url,
+        node_id=node_id,
+        status='Testing',
+        headers={},
+        description='''Terraform plan in __/test/terraform__
+With backend config files: `backend1.hcl, backend2.hcl`''',
+        summary='Plan: 1 to add, 0 to change, 0 to destroy.',
+        body=plan,
+        body_highlighting='hcl'
+    )
+
+    assert _from_api_payload({
+        'body': payload,
+        'url': comment_url,
+        'node_id': node_id,
+        'issue_url': issue_url
+    }) == expected
+
+
+def test_var_file_multiline():
+    """Test that var_file with newlines is formatted correctly"""
+    payload = '''Terraform plan in __/test/terraform__
+With var files: `dev.tfvars, common.tfvars`
+<details open>
+<summary>Plan: 1 to add, 0 to change, 0 to destroy.</summary>
+
+```hcl
+An execution plan has been generated and is shown below.
+...
+Plan: 1 to add, 0 to change, 0 to destroy.
+```
+</details>
+
+Testing'''
+
+    expected = TerraformComment(
+        issue_url=issue_url,
+        comment_url=comment_url,
+        node_id=node_id,
+        status='Testing',
+        headers={},
+        description='''Terraform plan in __/test/terraform__
+With var files: `dev.tfvars, common.tfvars`''',
+        summary='Plan: 1 to add, 0 to change, 0 to destroy.',
+        body=plan,
+        body_highlighting='hcl'
+    )
+
+    assert _from_api_payload({
+        'body': payload,
+        'url': comment_url,
+        'node_id': node_id,
+        'issue_url': issue_url
+    }) == expected

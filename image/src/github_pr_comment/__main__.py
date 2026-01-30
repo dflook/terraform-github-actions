@@ -66,7 +66,8 @@ def _mask_backend_config(action_inputs: PlanPrInputs) -> Optional[str]:
 
     clean = []
 
-    for field in action_inputs.get('INPUT_BACKEND_CONFIG', '').split(','):
+    for field in action_inputs.get('INPUT_BACKEND_CONFIG', '').replace(',', '\n').splitlines():
+        field = field.strip()
         if not field:
             continue
 
@@ -96,11 +97,12 @@ def format_classic_description(action_inputs: PlanPrInputs) -> str:
     if backend_config := _mask_backend_config(action_inputs):
         label += f'\nWith backend config: `{backend_config}`'
 
-    if action_inputs["INPUT_BACKEND_CONFIG_FILE"]:
-        label += f'\nWith backend config files: `{action_inputs["INPUT_BACKEND_CONFIG_FILE"]}`'
-
-    if action_inputs["INPUT_VAR_FILE"]:
-        label += f'\nWith var files: `{action_inputs["INPUT_VAR_FILE"]}`'
+    if backend_config_files := action_inputs["INPUT_BACKEND_CONFIG_FILE"]:
+        files = ', '.join(f.strip() for f in backend_config_files.replace(',', '\n').splitlines() if f.strip())
+        label += f'\nWith backend config files: `{files}`'
+    if var_files := action_inputs["INPUT_VAR_FILE"]:
+        files = ', '.join(f.strip() for f in var_files.replace(',', '\n').splitlines() if f.strip())
+        label += f'\nWith var files: `{files}`'
 
     if action_inputs["INPUT_VARIABLES"]:
         stripped_vars = action_inputs["INPUT_VARIABLES"].strip()
@@ -151,12 +153,12 @@ def format_description(action_inputs: PlanPrInputs, sensitive_variables: List[st
     if backend_config := _mask_backend_config(action_inputs):
         label += f'\nWith backend config: `{backend_config}`'
 
-    if action_inputs["INPUT_BACKEND_CONFIG_FILE"]:
-        label += f'\nWith backend config files: `{action_inputs["INPUT_BACKEND_CONFIG_FILE"]}`'
-
-    if action_inputs["INPUT_VAR_FILE"]:
-        label += f'\nWith var files: `{action_inputs["INPUT_VAR_FILE"]}`'
-
+    if backend_config_files := action_inputs["INPUT_BACKEND_CONFIG_FILE"]:
+        files = ', '.join(f.strip() for f in backend_config_files.replace(',', '\n').splitlines() if f.strip())
+        label += f'\nWith backend config files: `{files}`'
+    if var_files := action_inputs["INPUT_VAR_FILE"]:
+        files = ', '.join(f.strip() for f in var_files.replace(',', '\n').splitlines() if f.strip())
+        label += f'\nWith var files: `{files}`'
     if action_inputs["INPUT_VARIABLES"]:
         variables = hcl.loads(action_inputs["INPUT_VARIABLES"])
 
