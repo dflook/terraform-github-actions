@@ -3,36 +3,43 @@ name: Test pull_request_target event
 on:
   - pull_request_target  # zizmor: ignore[dangerous-triggers]
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   apply:
     runs-on: ubuntu-24.04
     name: Apply approved changes on pull_request_target
+    if: github.repository == 'dflook/terraform-github-actions' && github.event.pull_request.head.repo.full_name == github.repository
     permissions:
-      contents: read
       pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: false
+      - name: Create test module
+        run: |
+          mkdir -p test-module
+          cat > test-module/main.tf << 'EOF'
+          resource "random_string" "my_string" {
+            length = 11
+          }
+
+          output "output_string" {
+            value = "the_string"
+          }
+          EOF
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: dflook/terraform-plan@v1
         with:
           label: pull_request_target
-          path: tests/workflows/pull_request_target
+          path: test-module
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: dflook/terraform-apply@v1
         id: output
         with:
           label: pull_request_target
-          path: tests/workflows/pull_request_target
+          path: test-module
 
       - name: Verify outputs
         env:

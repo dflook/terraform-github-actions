@@ -1506,3 +1506,40 @@ jobs:
             echo "Apply did not fail correctly"
             exit 1
           fi
+
+  apply_multiple_var_files:
+    runs-on: ubuntu-24.04
+    name: Apply with multiple var files
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Apply
+        uses: ./terraform-apply
+        id: apply
+        with:
+          auto_approve: true
+          path: tests/workflows/test-apply/multiple_var_files
+          var_file: |
+            tests/workflows/test-apply/multiple_var_files/var1.tfvars
+            tests/workflows/test-apply/multiple_var_files/var2.tfvars
+            tests/workflows/test-apply/multiple_var_files/var3.tfvars
+            tests/workflows/test-apply/multiple_var_files/var4.tfvars
+            tests/workflows/test-apply/multiple_var_files/var5.tfvars
+            tests/workflows/test-apply/multiple_var_files/var6.tfvars
+            tests/workflows/test-apply/multiple_var_files/var7.tfvars
+            tests/workflows/test-apply/multiple_var_files/var8.tfvars
+            tests/workflows/test-apply/multiple_var_files/var9.tfvars
+          variables: |
+            var_from_input = "ten"
+
+      - name: Verify outputs
+        env:
+          ALL_VARS: ${{ steps.apply.outputs.all_vars }}
+        run: |
+          if [[ "$ALL_VARS" != "one-two-three-four-five-six-seven-eight-nine-ten" ]]; then
+            echo "Expected all_vars output to be 'one-two-three-four-five-six-seven-eight-nine-ten', got '$ALL_VARS'"
+            exit 1
+          fi

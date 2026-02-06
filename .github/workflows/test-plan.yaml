@@ -887,7 +887,6 @@ jobs:
           variables: |
             my_sensitive_string = "password123"
 
-
   plan_sensitive_variables:
     runs-on: ubuntu-24.04
     name: Plan variables some which are sensitive

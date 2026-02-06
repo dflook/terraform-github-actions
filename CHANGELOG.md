@@ -11,9 +11,15 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v2.2.2` to use an exact release
+- `@v2.2.3` to use an exact release
 - `@v2.2` to use the latest patch release for the specific minor version
 - `@v2` to use the latest patch release for the specific major version
+
+## [2.2.3] - 2026-01-13
+
+### Fixed
+- Fixed an issue where specifying more than 8 var files would cause the action to fail an error.
+  Thanks to [cdsre](https://github.com/cdsre) for reporting and fixing this issue.
 
 ## [2.2.2] - 2025-08-08
 
@@ -797,6 +803,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[2.2.3]: https://github.com/dflook/terraform-github-actions/compare/v2.2.2...v2.2.3
 [2.2.2]: https://github.com/dflook/terraform-github-actions/compare/v2.2.1...v2.2.2
 [2.2.1]: https://github.com/dflook/terraform-github-actions/compare/v2.2.0...v2.2.1
 [2.2.0]: https://github.com/dflook/terraform-github-actions/compare/v2.1.0...v2.2.0
