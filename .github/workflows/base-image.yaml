@@ -3,7 +3,7 @@ name: Update base image
 on:
   push:
     branches:
-      - main
+      - trixie
     paths:
       - image/Dockerfile-base
       - .github/workflows/base-image.yaml
@@ -41,13 +41,13 @@ jobs:
       - name: Base image
         id: build-and-push
         run: |
-          BASE_DIGEST=$(docker buildx imagetools inspect "debian:bookworm-slim" --format '{{json .}}' | jq -r '.manifest.digest')
+          BASE_DIGEST=$(docker buildx imagetools inspect "debian:trixie-slim" --format '{{json .}}' | jq -r '.manifest.digest')
 
-          sed -i "s|FROM debian:bookworm-slim|FROM debian:bookworm-slim@$BASE_DIGEST|" "image/Dockerfile-base"
+          sed -i "s|FROM debian:trixie-slim|FROM debian:trixie-slim@$BASE_DIGEST|" "image/Dockerfile-base"
 
           docker buildx build \
             --tag "danielflook/terraform-github-actions-base:$GITHUB_RUN_ID" \
-            --tag danielflook/terraform-github-actions-base:latest  \
+            --tag danielflook/terraform-github-actions-base:trixie  \
             --platform linux/amd64,linux/arm64 \
             --attest "type=provenance,mode=max,builder-id=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
             --annotation "index,manifest:org.opencontainers.image.created=$(date '+%Y-%m-%dT%H:%M:%S%z')" \
@@ -58,7 +58,7 @@ jobs:
             --annotation "index:org.opencontainers.image.ref.name=docker.io/danielflook/terraform-github-actions-base:$GITHUB_RUN_ID" \
             --annotation "index,manifest:builder-id=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
             --annotation "index,manifest:ref.tag=$GITHUB_RUN_ID" \
-            --annotation "index,manifest:org.opencontainers.image.base.name=docker.io/debian:bookworm-slim" \
+            --annotation "index,manifest:org.opencontainers.image.base.name=docker.io/debian:trixie-slim" \
             --annotation "index,manifest:base.manifest.digest=$BASE_DIGEST" \
             --file image/Dockerfile-base \
             --push \

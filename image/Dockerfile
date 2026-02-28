@@ -1,5 +1,5 @@
 # hadolint ignore=DL3007
-FROM danielflook/terraform-github-actions-base:latest
+FROM danielflook/terraform-github-actions-base:trixie
 
 ARG TARGETARCH
 

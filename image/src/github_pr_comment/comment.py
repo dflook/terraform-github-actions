@@ -12,11 +12,11 @@ try:
 except (ValueError, KeyError):
     collapse_threshold = 10
 
-from pkg_resources import get_distribution, DistributionNotFound
+from importlib.metadata import version as get_version, PackageNotFoundError
 
 try:
-    version = get_distribution('terraform-github-actions').version
-except DistributionNotFound:
+    version = get_version('terraform-github-actions')
+except PackageNotFoundError:
     version = '0.0.0'
 
 class TerraformComment:
