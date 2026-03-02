@@ -124,6 +124,7 @@ This will synchronise the OpenTofu state with the actual resources, but will not
 
 ## Outputs
 
+* `failure_reason`
 * `failure-reason`
 
   When the job outcome is `failure`, this output may be set. The value may be one of:
@@ -136,9 +137,10 @@ This will synchronise the OpenTofu state with the actual resources, but will not
 
   - Type: string
 
+* `lock_info`
 * `lock-info`
 
-  When the job outcome is `failure` and the failure-reason is `state-locked`, this output will be set.
+  When the job outcome is `failure` and the failure_reason is `state-locked`, this output will be set.
 
   It is a json object containing any available state lock information and typically has the form:
 

@@ -25,9 +25,15 @@ jobs:
       - name: Check valid
         env:
           FAILURE_REASON: ${{ steps.fmt-check.outputs.failure-reason }}
+          FAILURE_REASON_UNDERSCORE: ${{ steps.fmt-check.outputs.failure_reason }}
         run: |
           if [[ "$FAILURE_REASON" != "" ]]; then
             echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+          if [[ "$FAILURE_REASON_UNDERSCORE" != "$FAILURE_REASON" ]]; then
+            echo "::error:: failure_reason not set correctly"
             exit 1
           fi
 
@@ -52,6 +58,7 @@ jobs:
         env:
           OUTCOME: ${{ steps.fmt-check.outcome }}
           FAILURE_REASON: ${{ steps.fmt-check.outputs.failure-reason }}
+          FAILURE_REASON_UNDERSCORE: ${{ steps.fmt-check.outputs.failure_reason }}
         run: |
           if [[ "$OUTCOME" != "failure" ]]; then
             echo "fmt-check did not fail correctly"
@@ -60,5 +67,10 @@ jobs:
 
           if [[ "$FAILURE_REASON" != "check-failed" ]]; then
             echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+          if [[ "$FAILURE_REASON_UNDERSCORE" != "$FAILURE_REASON" ]]; then
+            echo "::error:: failure_reason not set correctly"
             exit 1
           fi

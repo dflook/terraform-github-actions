@@ -1,7 +1,8 @@
 from action import Output
 
 failure_reason = Output(
-    name='failure-reason',
+    name='failure_reason',
+    aliases=['failure-reason'],
     type='string',
     description='''
       When the job outcome is `failure` because of a known reason, this will be set to that reason.

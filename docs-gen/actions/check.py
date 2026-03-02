@@ -99,7 +99,7 @@ check = Action(
               path: my-$ToolName-configuration
     
           - name: Changes detected
-            if: ${{ failure() && steps.check.outputs.failure-reason == 'changes-to-apply' }}
+            if: ${{ failure() && steps.check.outputs.failure_reason == 'changes-to-apply' }}
             run: echo "There are outstanding changes to apply"
     ```
 '''

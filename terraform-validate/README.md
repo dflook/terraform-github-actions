@@ -65,6 +65,7 @@ If the Terraform configuration is not valid, the build is failed.
 
 ## Outputs
 
+* `failure_reason`
 * `failure-reason`
 
   When the job outcome is `failure` because the validation failed, this will be set to 'validate-failed'.
@@ -215,6 +216,6 @@ jobs:
           path: my-terraform-config
 
       - name: Validate failed
-        if: ${{ failure() && steps.validate.outputs.failure-reason == 'validate-failed' }}
+        if: ${{ failure() && steps.validate.outputs.failure_reason == 'validate-failed' }}
         run: echo "terraform validate failed"
 ```

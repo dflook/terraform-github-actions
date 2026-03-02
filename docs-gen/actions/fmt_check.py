@@ -99,7 +99,7 @@ jobs:
           path: my-$ToolName-config
 
       - name: Wrong formatting found
-        if: ${{ failure() && steps.fmt-check.outputs.failure-reason == 'check-failed' }}
+        if: ${{ failure() && steps.fmt-check.outputs.failure_reason == 'check-failed' }}
         run: echo "formatting check failed"
 ```
 '''

@@ -38,6 +38,11 @@ inputs:
     default: "0"
 
 outputs:
+  failure_reason:
+    description: |
+      When the job outcome is `failure` because the there are outstanding changes to apply, this will be set to 'changes-to-apply'.
+      If the job fails for any other reason this will not be set.
+      This can be used with the Actions expression syntax to conditionally run a step when there are changes to apply.
   failure-reason:
     description: |
       When the job outcome is `failure` because the there are outstanding changes to apply, this will be set to 'changes-to-apply'.

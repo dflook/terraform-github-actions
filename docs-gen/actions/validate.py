@@ -100,7 +100,7 @@ jobs:
           path: my-$ToolName-config
 
       - name: Validate failed
-        if: ${{ failure() && steps.validate.outputs.failure-reason == 'validate-failed' }}
+        if: ${{ failure() && steps.validate.outputs.failure_reason == 'validate-failed' }}
         run: echo "$ToolName validate failed"
 ```
 '''

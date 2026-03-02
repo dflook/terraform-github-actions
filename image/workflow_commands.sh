@@ -73,6 +73,15 @@ function set_output() {
     else
       echo "::set-output name=${name}::${value}"
     fi
+
+    local underscore_name="${name//-/_}"
+    if [[ "$underscore_name" != "$name" ]]; then
+        if [[ -v GITHUB_OUTPUT && -f "$GITHUB_OUTPUT" ]]; then
+          echo "${underscore_name}=${value}" >> "$GITHUB_OUTPUT"
+        else
+          echo "::set-output name=${underscore_name}::${value}"
+        fi
+    fi
 }
 
 ##

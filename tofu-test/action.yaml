@@ -31,6 +31,15 @@ inputs:
     required: false
 
 outputs:
+  failure_reason:
+    description: |
+      When the job outcome is `failure`, this output may be set. The value may be one of:
+
+      - `no-tests` - No tests were found to run.
+      - `tests-failed` - One or more tests failed.
+
+      If the job fails for any other reason this will not be set.
+      This can be used with the Actions expression syntax to conditionally run steps.
   failure-reason:
     description: |
       When the job outcome is `failure`, this output may be set. The value may be one of:

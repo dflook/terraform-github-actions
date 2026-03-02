@@ -81,6 +81,7 @@ If the tests fail, the job will stop with a failure status.
 
 ## Outputs
 
+* `failure_reason`
 * `failure-reason`
 
   When the job outcome is `failure`, this output may be set. The value may be one of:

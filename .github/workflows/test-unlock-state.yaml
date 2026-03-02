@@ -42,6 +42,7 @@ jobs:
         env:
           OUTCOME: ${{ steps.failed-apply.outcome }}
           FAILURE_REASON: ${{ steps.failed-apply.outputs.failure-reason }}
+          FAILURE_REASON_UNDERSCORE: ${{ steps.failed-apply.outputs.failure_reason }}
         run: |
           if [[ "$OUTCOME" != "failure" ]]; then
             echo "Apply did not fail correctly"
@@ -50,6 +51,11 @@ jobs:
 
           if [[ "$FAILURE_REASON" != "apply-failed" ]]; then
             echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+          if [[ "$FAILURE_REASON_UNDERSCORE" != "$FAILURE_REASON" ]]; then
+            echo "::error:: failure_reason not set correctly"
             exit 1
           fi
 
@@ -66,7 +72,9 @@ jobs:
         env:
           OUTCOME: ${{ steps.locked-state-apply.outcome }}
           FAILURE_REASON: ${{ steps.locked-state-apply.outputs.failure-reason }}
+          FAILURE_REASON_UNDERSCORE: ${{ steps.locked-state-apply.outputs.failure_reason }}
           LOCK_INFO: ${{ steps.locked-state-apply.outputs.lock-info }}
+          LOCK_INFO_UNDERSCORE: ${{ steps.locked-state-apply.outputs.lock_info }}
           LOCK_ID: ${{ fromJson(steps.locked-state-apply.outputs.lock-info).ID }}
         run: |
           if [[ "$OUTCOME" != "failure" ]]; then
@@ -76,6 +84,16 @@ jobs:
 
           if [[ "$FAILURE_REASON" != "state-locked" ]]; then
             echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+          if [[ "$FAILURE_REASON_UNDERSCORE" != "$FAILURE_REASON" ]]; then
+            echo "::error:: failure_reason not set correctly"
+            exit 1
+          fi
+
+          if [[ "$LOCK_INFO_UNDERSCORE" != "$LOCK_INFO" ]]; then
+            echo "::error:: lock_info not set correctly"
             exit 1
           fi
 
@@ -93,7 +111,9 @@ jobs:
         env:
           OUTCOME: ${{ steps.locked-state-destroy.outcome }}
           FAILURE_REASON: ${{ steps.locked-state-destroy.outputs.failure-reason }}
+          FAILURE_REASON_UNDERSCORE: ${{ steps.locked-state-destroy.outputs.failure_reason }}
           LOCK_INFO: ${{ steps.locked-state-destroy.outputs.lock-info }}
+          LOCK_INFO_UNDERSCORE: ${{ steps.locked-state-destroy.outputs.lock_info }}
           LOCK_ID: ${{ fromJson(steps.locked-state-destroy.outputs.lock-info).ID }}
         run: |
           if [[ "$OUTCOME" != "failure" ]]; then
@@ -103,6 +123,16 @@ jobs:
 
           if [[ "$FAILURE_REASON" != "state-locked" ]]; then
             echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+          if [[ "$FAILURE_REASON_UNDERSCORE" != "$FAILURE_REASON" ]]; then
+            echo "::error:: failure_reason not set correctly"
+            exit 1
+          fi
+
+          if [[ "$LOCK_INFO_UNDERSCORE" != "$LOCK_INFO" ]]; then
+            echo "::error:: lock_info not set correctly"
             exit 1
           fi
 
@@ -161,6 +191,7 @@ jobs:
         env:
           OUTCOME: ${{ steps.failed-apply-workspace.outcome }}
           FAILURE_REASON: ${{ steps.failed-apply-workspace.outputs.failure-reason }}
+          FAILURE_REASON_UNDERSCORE: ${{ steps.failed-apply-workspace.outputs.failure_reason }}
         run: |
           if [[ "$OUTCOME" != "failure" ]]; then
             echo "Apply did not fail correctly"
@@ -169,6 +200,11 @@ jobs:
 
           if [[ "$FAILURE_REASON" != "apply-failed" ]]; then
             echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+          if [[ "$FAILURE_REASON_UNDERSCORE" != "$FAILURE_REASON" ]]; then
+            echo "::error:: failure_reason not set correctly"
             exit 1
           fi
 
@@ -186,7 +222,9 @@ jobs:
         env:
           OUTCOME: ${{ steps.locked-state-workspace.outcome }}
           FAILURE_REASON: ${{ steps.locked-state-workspace.outputs.failure-reason }}
+          FAILURE_REASON_UNDERSCORE: ${{ steps.locked-state-workspace.outputs.failure_reason }}
           LOCK_INFO: ${{ steps.locked-state-workspace.outputs.lock-info }}
+          LOCK_INFO_UNDERSCORE: ${{ steps.locked-state-workspace.outputs.lock_info }}
           LOCK_ID: ${{ fromJson(steps.locked-state-workspace.outputs.lock-info).ID }}
         run: |
           if [[ "$OUTCOME" != "failure" ]]; then
@@ -196,6 +234,16 @@ jobs:
 
           if [[ "$FAILURE_REASON" != "state-locked" ]]; then
             echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+          if [[ "$FAILURE_REASON_UNDERSCORE" != "$FAILURE_REASON" ]]; then
+            echo "::error:: failure_reason not set correctly"
+            exit 1
+          fi
+
+          if [[ "$LOCK_INFO_UNDERSCORE" != "$LOCK_INFO" ]]; then
+            echo "::error:: lock_info not set correctly"
             exit 1
           fi
 
@@ -214,7 +262,9 @@ jobs:
         env:
           OUTCOME: ${{ steps.locked-state-destroy-workspace.outcome }}
           FAILURE_REASON: ${{ steps.locked-state-destroy-workspace.outputs.failure-reason }}
+          FAILURE_REASON_UNDERSCORE: ${{ steps.locked-state-destroy-workspace.outputs.failure_reason }}
           LOCK_INFO: ${{ steps.locked-state-destroy-workspace.outputs.lock-info }}
+          LOCK_INFO_UNDERSCORE: ${{ steps.locked-state-destroy-workspace.outputs.lock_info }}
           LOCK_ID: ${{ fromJson(steps.locked-state-destroy-workspace.outputs.lock-info).ID }}
         run: |
           if [[ "$OUTCOME" != "failure" ]]; then
@@ -224,6 +274,16 @@ jobs:
 
           if [[ "$FAILURE_REASON" != "state-locked" ]]; then
             echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+          if [[ "$FAILURE_REASON_UNDERSCORE" != "$FAILURE_REASON" ]]; then
+            echo "::error:: failure_reason not set correctly"
+            exit 1
+          fi
+
+          if [[ "$LOCK_INFO_UNDERSCORE" != "$LOCK_INFO" ]]; then
+            echo "::error:: lock_info not set correctly"
             exit 1
           fi
 

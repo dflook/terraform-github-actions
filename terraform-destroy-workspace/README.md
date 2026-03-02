@@ -90,6 +90,7 @@ This action uses the `terraform destroy` command to destroy all resources in a T
 
 ## Outputs
 
+* `failure_reason`
 * `failure-reason`
 
   When the job outcome is `failure`, this output may be set. The value may be one of:
@@ -102,9 +103,10 @@ This action uses the `terraform destroy` command to destroy all resources in a T
 
   - Type: string
 
+* `lock_info`
 * `lock-info`
 
-  When the job outcome is `failure` and the failure-reason is `state-locked`, this output will be set.
+  When the job outcome is `failure` and the failure_reason is `state-locked`, this output will be set.
 
   It is a json object containing any available state lock information and typically has the form:
 
@@ -275,7 +277,7 @@ jobs:
 
       - name: Retry failed destroy
         uses: dflook/terraform-destroy-workspace@v2
-        if: ${{ steps.first_try.outputs.failure-reason == 'destroy-failed' }}
+        if: ${{ steps.first_try.outputs.failure_reason == 'destroy-failed' }}
         with:
           path: my-terraform-config
           workspace: ${{ github.head_ref }}

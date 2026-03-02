@@ -93,6 +93,7 @@ This is intended to run on a schedule to notify if manual changes to your infras
 
 ## Outputs
 
+* `failure_reason`
 * `failure-reason`
 
   When the job outcome is `failure` because the there are outstanding changes to apply, this will be set to 'changes-to-apply'.
@@ -251,6 +252,6 @@ jobs:
           path: my-terraform-configuration
 
       - name: Changes detected
-        if: ${{ failure() && steps.check.outputs.failure-reason == 'changes-to-apply' }}
+        if: ${{ failure() && steps.check.outputs.failure_reason == 'changes-to-apply' }}
         run: echo "There are outstanding changes to apply"
 ```

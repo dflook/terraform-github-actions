@@ -1,7 +1,8 @@
 from action import Output, Terraform
 
 junit_xml_path = Output(
-    name='junit-xml-path',
+    name='junit_xml_path',
+    aliases=['junit-xml-path'],
     type='string',
     description='''
 A test report in JUnit XML format.

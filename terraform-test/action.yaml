@@ -31,6 +31,13 @@ inputs:
     required: false
 
 outputs:
+  junit_xml_path:
+    description: |
+      A test report in JUnit XML format.
+
+      The path is relative to the Actions workspace.
+
+      This will only be available when using Terraform 1.11.0 or later.
   junit-xml-path:
     description: |
       A test report in JUnit XML format.
@@ -38,6 +45,15 @@ outputs:
       The path is relative to the Actions workspace.
 
       This will only be available when using Terraform 1.11.0 or later.
+  failure_reason:
+    description: |
+      When the job outcome is `failure`, this output may be set. The value may be one of:
+
+      - `no-tests` - No tests were found to run.
+      - `tests-failed` - One or more tests failed.
+
+      If the job fails for any other reason this will not be set.
+      This can be used with the Actions expression syntax to conditionally run steps.
   failure-reason:
     description: |
       When the job outcome is `failure`, this output may be set. The value may be one of:

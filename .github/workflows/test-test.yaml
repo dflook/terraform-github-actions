@@ -27,15 +27,27 @@ jobs:
       - name: Check Passed
         env:
           FAILURE_REASON: ${{ steps.test.outputs.failure-reason }}
+          FAILURE_REASON_UNDERSCORE: ${{ steps.test.outputs.failure_reason }}
           JUNIT_XML_PATH: ${{ steps.test.outputs.junit-xml-path }}
+          JUNIT_XML_PATH_UNDERSCORE: ${{ steps.test.outputs.junit_xml_path }}
         run: |
           if [[ "$FAILURE_REASON" != "" ]]; then
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
 
+          if [[ "$FAILURE_REASON_UNDERSCORE" != "$FAILURE_REASON" ]]; then
+            echo "::error:: failure_reason not set correctly"
+            exit 1
+          fi
+
           if [[ "$JUNIT_XML_PATH" != "" ]]; then
             echo "::error:: junit-xml-path should not be set"
+            exit 1
+          fi
+
+          if [[ "$JUNIT_XML_PATH_UNDERSCORE" != "$JUNIT_XML_PATH" ]]; then
+            echo "::error:: junit_xml_path not set correctly"
             exit 1
           fi
 
@@ -59,15 +71,27 @@ jobs:
       - name: Check Passed
         env:
           FAILURE_REASON: ${{ steps.test.outputs.failure-reason }}
+          FAILURE_REASON_UNDERSCORE: ${{ steps.test.outputs.failure_reason }}
           JUNIT_XML_PATH: ${{ steps.test.outputs.junit-xml-path }}
+          JUNIT_XML_PATH_UNDERSCORE: ${{ steps.test.outputs.junit_xml_path }}
         run: |
           if [[ "$FAILURE_REASON" != "" ]]; then
             echo "::error:: failure-reason not set correctly"
             exit 1
           fi
 
+          if [[ "$FAILURE_REASON_UNDERSCORE" != "$FAILURE_REASON" ]]; then
+            echo "::error:: failure_reason not set correctly"
+            exit 1
+          fi
+
           if [[ "$JUNIT_XML_PATH" == "" ]]; then
             echo "::error:: junit-xml-path should be set"
+            exit 1
+          fi
+
+          if [[ "$JUNIT_XML_PATH_UNDERSCORE" != "$JUNIT_XML_PATH" ]]; then
+            echo "::error:: junit_xml_path not set correctly"
             exit 1
           fi
 
@@ -101,9 +125,15 @@ jobs:
       - name: Check Passed
         env:
           FAILURE_REASON: ${{ steps.test.outputs.failure-reason }}
+          FAILURE_REASON_UNDERSCORE: ${{ steps.test.outputs.failure_reason }}
         run: |
           if [[ "$FAILURE_REASON" != "" ]]; then
             echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+          if [[ "$FAILURE_REASON_UNDERSCORE" != "$FAILURE_REASON" ]]; then
+            echo "::error:: failure_reason not set correctly"
             exit 1
           fi
 
@@ -129,9 +159,15 @@ jobs:
       - name: Check Passed
         env:
           FAILURE_REASON: ${{ steps.test.outputs.failure-reason }}
+          FAILURE_REASON_UNDERSCORE: ${{ steps.test.outputs.failure_reason }}
         run: |
           if [[ "$FAILURE_REASON" != "" ]]; then
             echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+          if [[ "$FAILURE_REASON_UNDERSCORE" != "$FAILURE_REASON" ]]; then
+            echo "::error:: failure_reason not set correctly"
             exit 1
           fi
 
@@ -156,6 +192,7 @@ jobs:
         env:
           OUTCOME: ${{ steps.nonexistent_test_dir.outcome }}
           FAILURE_REASON: ${{ steps.nonexistent_test_dir.outputs.failure-reason }}
+          FAILURE_REASON_UNDERSCORE: ${{ steps.nonexistent_test_dir.outputs.failure_reason }}
         run: |
           if [[ "$OUTCOME" != "failure" ]]; then
             echo "Test did not fail correctly"
@@ -164,6 +201,11 @@ jobs:
 
           if [[ "$FAILURE_REASON" != "no-tests" ]]; then
             echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+          if [[ "$FAILURE_REASON_UNDERSCORE" != "$FAILURE_REASON" ]]; then
+            echo "::error:: failure_reason not set correctly"
             exit 1
           fi
 
@@ -190,6 +232,7 @@ jobs:
         env:
           OUTCOME: ${{ steps.faulty_filter.outcome }}
           FAILURE_REASON: ${{ steps.faulty_filter.outputs.failure-reason }}
+          FAILURE_REASON_UNDERSCORE: ${{ steps.faulty_filter.outputs.failure_reason }}
         run: |
           if [[ "$OUTCOME" != "failure" ]]; then
             echo "Test did not fail correctly"
@@ -198,6 +241,11 @@ jobs:
 
           if [[ "$FAILURE_REASON" != "no-tests" ]]; then
             echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+          if [[ "$FAILURE_REASON_UNDERSCORE" != "$FAILURE_REASON" ]]; then
+            echo "::error:: failure_reason not set correctly"
             exit 1
           fi
 
@@ -224,6 +272,7 @@ jobs:
         env:
           OUTCOME: ${{ steps.failing.outcome }}
           FAILURE_REASON: ${{ steps.failing.outputs.failure-reason }}
+          FAILURE_REASON_UNDERSCORE: ${{ steps.failing.outputs.failure_reason }}
         run: |
           if [[ "$OUTCOME" != "failure" ]]; then
             echo "Test did not fail correctly"
@@ -232,5 +281,10 @@ jobs:
 
           if [[ "$FAILURE_REASON" != "tests-failed" ]]; then
             echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+          if [[ "$FAILURE_REASON_UNDERSCORE" != "$FAILURE_REASON" ]]; then
+            echo "::error:: failure_reason not set correctly"
             exit 1
           fi

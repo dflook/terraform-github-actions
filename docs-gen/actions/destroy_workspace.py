@@ -108,7 +108,7 @@ jobs:
 
       - name: Retry failed destroy
         uses: dflook/$ToolName-destroy-workspace@v2
-        if: ${{ steps.first_try.outputs.failure-reason == 'destroy-failed' }}
+        if: ${{ steps.first_try.outputs.failure_reason == 'destroy-failed' }}
         with:
           path: my-$ToolName-config
           workspace: ${{ github.head_ref }}
