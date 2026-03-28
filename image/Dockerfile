@@ -28,11 +28,11 @@ RUN if [ "$TARGETARCH" = "amd64" ]; then \
       TERRAFORM_BIN_CACHE_DIR="/var/terraform" TERRAFORM_BIN_CHECKSUM_DIR="/var/terraform" terraform-version 0.9.0 \
    && TERRAFORM_BIN_CACHE_DIR="/var/terraform" TERRAFORM_BIN_CHECKSUM_DIR="/var/terraform" terraform-version 0.12.0; \
 fi \
- && rm -rf /tmp/terraform_*
+ && rm -rf /tmp/terraform_* /usr/local/bin/terraform /usr/local/bin/tofu
 RUN if [ "$TARGETARCH" = "arm64" ]; then \
       TERRAFORM_BIN_CACHE_DIR="/var/terraform" TERRAFORM_BIN_CHECKSUM_DIR="/var/terraform" terraform-version 0.13.5; \
 fi \
- && rm -rf /tmp/terraform_*
+ && rm -rf /tmp/terraform_* /usr/local/bin/terraform /usr/local/bin/tofu
 
 COPY entrypoints/ /entrypoints/
 COPY actions.sh /usr/local/actions.sh
