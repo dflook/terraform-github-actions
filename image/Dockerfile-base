@@ -29,8 +29,8 @@ RUN <<EOF
     unzip \
     jq \
     python3 \
-    python3-requests \
     python3-pip \
+    python3-venv \
     wget \
     gpg \
     gpg-agent \
