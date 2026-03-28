@@ -44,6 +44,7 @@ RUN <<EOF
  echo "C874011F0AB405110D02105534365D9472D7468F:6:" | gpg --import-ownertrust
 
  curl https://get.opentofu.org/opentofu.gpg | gpg --import
+ gpg --fingerprint E3E6E43D84CB852EADB0051D0C0AF313E5FD9F80
  echo "E3E6E43D84CB852EADB0051D0C0AF313E5FD9F80:6:" | gpg --import-ownertrust
 
  gpg --check-trustdb

@@ -98,7 +98,7 @@ def get_checksums(version: Version, checksum_dir: Path) -> Path:
 
     try:
         subprocess.run(
-            ['gpg', '--verify', signature_path, checksums_path],
+            ['gpg', '--assert-signer', 'C874011F0AB405110D02105534365D9472D7468F', '--verify', signature_path, checksums_path],
             check=True,
             env={'GNUPGHOME': '/root/.gnupg'} | os.environ
         )
