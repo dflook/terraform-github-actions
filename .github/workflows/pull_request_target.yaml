@@ -29,13 +29,13 @@ jobs:
           EOF
 
       - name: Plan
-        uses: dflook/terraform-plan@v1
+        uses: dflook/terraform-plan@7878bff63e2099cdc9be9a6f33cbbbf687f8f0fe # v2.2.3
         with:
           label: pull_request_target
           path: test-module
 
       - name: Apply
-        uses: dflook/terraform-apply@v1
+        uses: dflook/terraform-apply@5489b988934a50bf1489d5b7c5253b46520a7dca # v2.2.3
         id: output
         with:
           label: pull_request_target

@@ -1,7 +1,1 @@
-rules:
-  unpinned-uses:
-    config:
-      policies:
-        dflook/terraform-apply: ref-pin
-        dflook/terraform-plan: ref-pin
-        actions/*: ref-pin
+rules: {}
