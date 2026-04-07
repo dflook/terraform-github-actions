@@ -13,8 +13,10 @@ def format_credentials(input):
         match = re.search(r'(?P<host>.+?)\s*=\s*(?P<token>.+)', line.strip())
 
         if match:
+            BACKSLASH = '\\'
+            token = match.group('token').replace(BACKSLASH, BACKSLASH + BACKSLASH).replace('"', BACKSLASH + '"')
             yield f'''credentials "{match.group('host')}" {{
-  token = "{match.group('token')}"
+  token = "{token}"
 }}
 '''
         else:

@@ -34,11 +34,11 @@ credentials "terraform.example.com" {
 
 def test_unrecognised_lines():
     input = """
-    
-    app.terraform.io=xxxxxx.atlasv1.zzzzzzzzzzzzz    
-    
+
+    app.terraform.io=xxxxxx.atlasv1.zzzzzzzzzzzzz
+
     This doesn't look anything like a credential
-    
+
     """
 
     try:
@@ -47,3 +47,36 @@ def test_unrecognised_lines():
         pass
     else:
         assert False, 'Should have raised an exception'
+
+def test_token_with_quotes():
+    input = 'app.terraform.io=token"with"quotes'
+
+    expected_output = r'''credentials "app.terraform.io" {
+  token = "token\"with\"quotes"
+}
+'''
+
+    output = ''.join(format_credentials(input))
+    assert output == expected_output
+
+def test_token_with_backslashes():
+    input = r'app.terraform.io=token\with\backslashes'
+
+    expected_output = r'''credentials "app.terraform.io" {
+  token = "token\\with\\backslashes"
+}
+'''
+
+    output = ''.join(format_credentials(input))
+    assert output == expected_output
+
+def test_token_with_backslash_and_quote():
+    input = r'app.terraform.io=token\"mixed'
+
+    expected_output = r'''credentials "app.terraform.io" {
+  token = "token\\\"mixed"
+}
+'''
+
+    output = ''.join(format_credentials(input))
+    assert output == expected_output
