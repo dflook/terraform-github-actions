@@ -181,6 +181,6 @@ def get_executable(version: Version) -> Path:
 
     executable_path = Path(executable_dir, 'tofu')
 
-    os.chmod(executable_path, 755)
+    os.chmod(executable_path, 0o755)
 
     return executable_path
