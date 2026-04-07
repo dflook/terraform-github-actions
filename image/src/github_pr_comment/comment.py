@@ -398,13 +398,13 @@ def hide_comment(
 
     response = github.post(
         graphql_url, json={
-            'query': '''
-                mutation {
-                    minimizeComment(input: {subjectId: "''' + comment.node_id + '''", classifier: ''' + classifier + '''}) {
-                        clientMutationId
-                    }
+            'query': 'mutation($input: MinimizeCommentInput!) { minimizeComment(input: $input) { clientMutationId } }',
+            'variables': {
+                'input': {
+                    'subjectId': comment.node_id,
+                    'classifier': classifier
                 }
-            '''
+            }
         }
     )
     debug(f'graphql response: {response.content}')
