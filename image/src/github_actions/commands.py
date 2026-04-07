@@ -1,4 +1,4 @@
-import random
+import secrets
 import string
 import sys
 import os
@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 
 def generate_delimiter():
-    return ''.join(random.choice(string.ascii_lowercase) for _ in range(20))
+    return ''.join(secrets.choice(string.ascii_lowercase) for _ in range(20))
 
 def _write_output(name: str, value: str) -> None:
     if 'GITHUB_OUTPUT' in os.environ and Path(os.environ['GITHUB_OUTPUT']).is_file():

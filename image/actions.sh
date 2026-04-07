@@ -451,7 +451,7 @@ function output() {
 }
 
 function random_string() {
-    python3 -c "import random; import string; print(''.join(random.choice(string.ascii_lowercase) for i in range(8)))"
+    python3 -c "import secrets; import string; print(''.join(secrets.choice(string.ascii_lowercase) for i in range(8)))"
 }
 
 function write_credentials() {
