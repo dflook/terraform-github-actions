@@ -35,7 +35,8 @@ class TerraformComment:
         'backend_type',   # The backend type name
         'plan_modifier',  # Hash of plan modifiers (target/replace options)
         'plan_job_ref',   # A text reference to the actions job that generated the plan
-        'plan_hash',      # A deterministic hash of the plan (without warnings or unchanged attributes, eventually with unmasked variables)
+        'plan_hash',      # A deterministic hash of the plan text (legacy, retained for backward compatibility)
+        'plan_json_hash', # A deterministic hash of the JSON plan output (preferred over plan_hash)
         'variables_hash', # A hash of input variables and values
         'truncated'       # If the plan text has been truncated (should not be used to approve plans, and will not show a complete diff)
         'closed'          # If the comment has been closed for modifications
