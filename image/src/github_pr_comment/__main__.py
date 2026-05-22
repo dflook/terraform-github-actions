@@ -20,7 +20,7 @@ from github_pr_comment.backend_config import complete_config, partial_config
 from github_pr_comment.backend_fingerprint import fingerprint
 from github_pr_comment.cmp import plan_cmp, remove_warnings, remove_unchanged_attributes
 from github_pr_comment.comment import find_comment, TerraformComment, update_comment, serialize, deserialize, hide_comment
-from github_pr_comment.hash import comment_hash, plan_hash, plan_out_hash
+from github_pr_comment.hash import comment_hash, plan_hash, plan_json_hash, plan_out_hash
 from github_pr_comment.plan_formatting import format_diff
 from plan_renderer.outputs import render_outputs
 from plan_renderer.variables import render_argument_list, Sensitive
@@ -377,14 +377,28 @@ def get_comment(action_inputs: PlanPrInputs, backend_fingerprint: bytes, backup_
 
     return find_comment(github, issue_url, username, headers, backup_headers, legacy_description)
 
+def _json_plan_path() -> Optional[Path]:
+    workspace = os.environ.get('GITHUB_WORKSPACE')
+    workspace_tmp = os.environ.get('WORKSPACE_TMP_DIR')
+    if workspace and workspace_tmp:
+        p = Path(workspace) / workspace_tmp / 'plan.json'
+        return p if p.exists() else None
+    return None
+
 def is_approved(proposed_plan: str, comment: TerraformComment) -> bool:
 
+    if approved_json_hash := comment.headers.get('plan_json_hash'):
+        debug('Approving plan based on JSON plan hash')
+        if (json_path := _json_plan_path()) is not None:
+            return plan_json_hash(json_path, comment.issue_url) == approved_json_hash
+        debug('JSON plan not available, falling back to text hash')
+
     if approved_plan_hash := comment.headers.get('plan_hash'):
-        debug('Approving plan based on plan hash')
+        debug('Approving plan based on text plan hash')
         return plan_hash(proposed_plan, comment.issue_url) == approved_plan_hash
-    else:
-        debug('Approving plan based on plan text')
-        return plan_cmp(proposed_plan, comment.body)
+
+    debug('Approving plan based on plan text')
+    return plan_cmp(proposed_plan, comment.body)
 
 def is_approved_binary_plan(plan_path: str, comment: TerraformComment) -> bool:
     return plan_out_hash(plan_path, comment.issue_url) == comment.headers['plan_out_hash']
@@ -522,6 +536,8 @@ def main() -> int:
         elif 'plan_out_hash' in headers:
             del headers['plan_out_hash']
 
+        if (json_path := _json_plan_path()) is not None:
+            headers['plan_json_hash'] = plan_json_hash(json_path, comment.issue_url)
         headers['plan_hash'] = plan_hash(body, comment.issue_url)
         format_type = os.environ.get('TF_ACTIONS_PLAN_FORMAT', 'diff')
         headers['plan_text_format'], plan_text = format_plan_text(body, format_type)
