@@ -64,15 +64,19 @@ def find_pr(github: GithubApi, actions_env: GithubEnv) -> PrUrl:
         if 'url' not in event['client_payload']['pull_request']:
             raise WorkflowException('The pull_request object in the client_payload must have a url')
 
-        return cast(PrUrl, event['client_payload']['pull_request']['url'])
+        pr_url = event['client_payload']['pull_request']['url']
+        github_api_url = actions_env.get('GITHUB_API_URL', 'https://api.github.com').rstrip('/')
+        if not pr_url.startswith(github_api_url + '/'):
+            raise WorkflowException(f'The pull_request url in the client_payload does not match the expected GitHub API URL ({github_api_url})')
+
+        return cast(PrUrl, pr_url)
 
     elif event_type == 'push':
         repo = actions_env['GITHUB_REPOSITORY']
         commit = actions_env['GITHUB_SHA']
 
         def prs() -> Iterable[dict[str, Any]]:
-            url = cast(PrUrl, f'{actions_env["GITHUB_API_URL"]}/repos/{repo}/pulls')
-            yield from github.paged_get(url, params={'state': 'all'})
+            yield from github.paged_get(f'/repos/{repo}/pulls', params={'state': 'all'})
 
         for pr in prs():
             if pr['merge_commit_sha'] == commit:

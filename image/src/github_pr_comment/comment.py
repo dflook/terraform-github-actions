@@ -394,10 +394,7 @@ def hide_comment(
         debug('Comment has unknown node_id - not hiding')
         return
 
-    graphql_url = os.environ.get('GITHUB_GRAPHQL_URL', f'{os.environ["GITHUB_API_URL"]}/graphql')
-
-    response = github.post(
-        graphql_url, json={
+    response = github.graphql(json={
             'query': 'mutation($input: MinimizeCommentInput!) { minimizeComment(input: $input) { clientMutationId } }',
             'variables': {
                 'input': {
