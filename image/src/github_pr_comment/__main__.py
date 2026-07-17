@@ -162,15 +162,25 @@ def format_description(action_inputs: PlanPrInputs, sensitive_variables: List[st
     if action_inputs["INPUT_VAR_FILE"]:
         label += f'\nWith var files: `{action_inputs["INPUT_VAR_FILE"]}`'
 
-    if action_inputs["INPUT_VARIABLES"]:
-        variables = hcl.loads(action_inputs["INPUT_VARIABLES"])
+    def format_variables() -> str:
+        try:
+            variables = hcl.loads(action_inputs["INPUT_VARIABLES"])
+        except ValueError:
+            # Without parsing we can't tell which values are sensitive, so only show them when none can be.
+            if sensitive_variables:
+                return '\nWith variables: `(variables are hidden because they could not be parsed to mask sensitive values)`'
 
-        # mark sensitive variables
-        variables = {name: Sensitive() if name in sensitive_variables else value for name, value in variables.items()}
+            stripped_vars = action_inputs["INPUT_VARIABLES"].strip()
 
-        stripped_vars = render_argument_list(variables).strip()
+        else:
+            # mask sensitive variables
+            variables = {name: Sensitive() if name in sensitive_variables else value for name, value in
+                         variables.items()}
+
+            stripped_vars = render_argument_list(variables).strip()
+
         if '\n' in stripped_vars:
-            label += f'''<details open><summary>With variables</summary>
+            return f'''<details open><summary>With variables</summary>
 
 ```hcl
 {stripped_vars}
@@ -178,7 +188,10 @@ def format_description(action_inputs: PlanPrInputs, sensitive_variables: List[st
 </details>
 '''
         else:
-            label += f'\nWith variables: `{stripped_vars}`'
+            return f'\nWith variables: `{stripped_vars}`'
+
+    if action_inputs["INPUT_VARIABLES"]:
+        label += format_variables()
 
     return label
 

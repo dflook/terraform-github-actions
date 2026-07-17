@@ -5,6 +5,7 @@ Wraps python-hcl
 import hcl2  # type: ignore
 import sys
 import subprocess
+import tempfile
 from pathlib import Path
 
 from github_actions.debug import debug
@@ -47,13 +48,21 @@ def load(path: Path) -> dict:
 
 
 def loads(hcl: str) -> dict:
-    tmp_path = Path('/tmp/load_test.hcl')
-
-    with open(tmp_path, 'w') as f:
+    with tempfile.NamedTemporaryFile('w', suffix='.hcl', delete=False) as f:
         f.write(hcl)
+        tmp_path = Path(f.name)
 
-    if is_loadable(tmp_path):
-        return hcl2.loads(hcl)
+    try:
+        loadable = is_loadable(tmp_path)
+    finally:
+        tmp_path.unlink(missing_ok=True)
+
+    if loadable:
+        try:
+            return hcl2.loads(hcl)
+        except Exception as e:
+            debug('Failed to parse hcl')
+            debug(str(e))
 
     debug('Unable to load hcl')
     raise ValueError('Unable to load hcl')
