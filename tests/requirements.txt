@@ -1,7 +1,7 @@
 requests
 requests-cache
 pytest
-python-hcl2
+python-hcl2==7.3.1
 canonicaljson
 types-requests
 mypy
