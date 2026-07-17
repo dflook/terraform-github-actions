@@ -606,6 +606,18 @@ def main() -> int:
             output('failure-reason', 'plan-changed')
             sys.exit(1)
 
+        if 'plan_out_hash' not in comment.headers:
+            sys.stdout.write("Not applying the plan - the plan on the PR cannot be verified against the plan file\n")
+            sys.stdout.write("The PR comment was created without a saved plan, or by an old version of the dflook/terraform-plan action\n")
+            sys.stdout.write("Regenerate the plan on the PR using the dflook/terraform-plan action. Alternatively, set the auto_approve input to 'true' to apply without verification\n")
+
+            comment = update_comment(github, comment, status=f':x: Plan not applied in {job_markdown_ref()} (Unable to verify the plan)')
+
+            output('failure-reason', 'plan-changed')
+
+            step_cache['comment'] = serialize(comment)
+            return 1
+
         if not is_approved_binary_plan(sys.argv[2], comment):
 
             sys.stdout.write("Not applying the plan - it has changed from the plan on the PR\n")
