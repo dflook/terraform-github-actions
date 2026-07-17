@@ -27,7 +27,7 @@ function set-test-args() {
         done
     fi
 
-    if [[ "$TOOL_COMMAND_NAME" == "terraform" && $TERRAFORM_VER_MAJOR -ge 1 && $TERRAFORM_VER_MINOR -ge 11 ]]; then
+    if [[ "$TOOL_COMMAND_NAME" == "terraform" ]] && test-terraform-version ">=" "1.11.0"; then
         TEST_ARGS="$TEST_ARGS -junit-xml=$STEP_TMP_DIR/test-result.xml"
     fi
 }
