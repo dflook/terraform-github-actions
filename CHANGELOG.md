@@ -11,11 +11,11 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v2.2.3` to use an exact release
-- `@v2.2` to use the latest patch release for the specific minor version
-- `@v2` to use the latest patch release for the specific major version
+- `@v3.0.0` to use an exact release
+- `@v3.0` to use the latest patch release for the specific minor version
+- `@v3` to use the latest patch release for the specific major version
 
-## [Unreleased]
+## [3.0.0] - 2026-07-18
 
 ### Added
 - Outputs with a `-` in their name are now also available with `_` instead, e.g. `failure_reason` as well as `failure-reason`.
@@ -822,6 +822,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[3.0.0]: https://github.com/dflook/terraform-github-actions/compare/v2.2.3...v3.0.0
 [2.2.3]: https://github.com/dflook/terraform-github-actions/compare/v2.2.2...v2.2.3
 [2.2.2]: https://github.com/dflook/terraform-github-actions/compare/v2.2.1...v2.2.2
 [2.2.1]: https://github.com/dflook/terraform-github-actions/compare/v2.2.0...v2.2.1
