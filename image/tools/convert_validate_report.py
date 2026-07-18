@@ -50,7 +50,7 @@ if __name__ == '__main__':
         report = json.load(sys.stdin)
         if not isinstance(report, dict):
             raise Exception('Unable to parse report')
-    except:
+    except Exception:
         exit(1)
 
     for line in convert_to_github(report, sys.argv[1]):

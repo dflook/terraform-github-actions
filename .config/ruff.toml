@@ -7,8 +7,8 @@ src = ["docs-gen", "image/src"]
 include = [
     "docs-gen/*.py",
     "image/src/*.py",
-    "image/src/setup.py",
-    "tools/*.py",
+    "image/setup.py",
+    "image/tools/*.py",
 ]
 
 [lint]
