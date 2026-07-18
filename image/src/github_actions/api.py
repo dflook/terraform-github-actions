@@ -63,10 +63,16 @@ class GithubApi:
             try:
                 message = response.json()['message']
 
-                if response.headers['X-RateLimit-Remaining'] == '0' and response.headers['X-RateLimit-Limit'] != '0':
-                    limit_reset = datetime.datetime.fromtimestamp(int(response.headers['X-RateLimit-Reset']))
-                    sys.stdout.write(message)
-                    sys.stdout.write(f' Try again when the rate limit resets at {limit_reset} UTC.\n')
+                if response.headers.get('X-RateLimit-Remaining') == '0' and response.headers.get('X-RateLimit-Limit') != '0':
+                    limit_reset = datetime.datetime.fromtimestamp(int(response.headers['X-RateLimit-Reset']), tz=datetime.timezone.utc)
+                    sys.stdout.write(f'{message}\n')
+                    sys.stdout.write(f'While requesting {response.request.url}\n')
+                    sys.stdout.write(f'Try again when the rate limit resets at {limit_reset:%Y-%m-%d %H:%M:%S} UTC.\n')
+
+                    if self._token is None:
+                        sys.stdout.write('This request was not authenticated, and the rate limit for unauthenticated requests is low.\n')
+                        sys.stdout.write('Set the GITHUB_DOT_COM_TOKEN environment variable to a GitHub.com token to authenticate these requests. The token does not need any scopes.\n')
+
                     sys.exit(1)
 
                 if message not in ['Resource not accessible by integration', 'Personal access tokens with fine grained access do not support the GraphQL API']:
