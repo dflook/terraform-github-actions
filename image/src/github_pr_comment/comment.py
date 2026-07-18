@@ -425,7 +425,9 @@ def update_comment(
         response = github.patch(comment.comment_url, json={'body': _to_api_payload(new_comment)})
         response.raise_for_status()
         if comment.node_id is None:
-            comment.node_id = response.json().get('node_id')
+            node_id = response.json().get('node_id')
+            comment.node_id = node_id
+            new_comment.node_id = node_id
     else:
         response = github.post(comment.issue_url + '/comments', json={'body': _to_api_payload(new_comment)})
         response.raise_for_status()
