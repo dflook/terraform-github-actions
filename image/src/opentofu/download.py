@@ -173,7 +173,7 @@ def get_executable(version: Version) -> Path:
     cache_dir, archive_name = get_archive(version, cache_dirs)
     verify_archive(version, cache_dir, archive_name, checksum_dir)
 
-    executable_dir = os.environ.get('STEP_TEMP_DIR', f'/tmp/tofu_{version}')
+    executable_dir = Path(os.environ.get('STEP_TMP_DIR', '/tmp'), f'tofu_{version}')
 
     Path(executable_dir, 'tofu').unlink(missing_ok=True)
     with ZipFile(Path(cache_dir, archive_name)) as f:
