@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - trixie
     paths:
       - image/Dockerfile-base
       - .github/workflows/base-image.yaml
@@ -49,7 +48,7 @@ jobs:
 
           docker buildx build \
             --tag "danielflook/terraform-github-actions-base:$GITHUB_RUN_ID" \
-            --tag danielflook/terraform-github-actions-base:trixie  \
+            --tag danielflook/terraform-github-actions-base:latest  \
             --platform linux/amd64,linux/arm64 \
             --attest "type=provenance,mode=max,builder-id=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
             --annotation "index,manifest:org.opencontainers.image.created=$(date '+%Y-%m-%dT%H:%M:%S%z')" \
