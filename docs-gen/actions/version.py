@@ -60,12 +60,11 @@ def description(tool: Tool) -> str:
             4. A [tofuenv](https://github.com/tofuutils/tofuenv) `.opentofu-version` file in the module path
             5. A [tfenv](https://github.com/tfutils/tfenv) `.terraform-version` file in the module path
             6. An [asdf](https://asdf-vm.com/) `.tool-versions` file in the module path or any parent path
-            7. An `OPENTOFU_VERSION` environment variable containing a [version constraint](https://opentofu.org/docs/language/expressions/version-constraints/).
+            7. A `TERRAFORM_VERSION` environment variable containing a [version constraint](https://opentofu.org/docs/language/expressions/version-constraints/),
+               or if not set, an `OPENTOFU_VERSION` environment variable containing a version constraint.
                If the constraint allows multiple versions, the latest matching version is used.
-            8. A `TERRAFORM_VERSION` environment variable containing a [version constraint](https://opentofu.org/docs/language/expressions/version-constraints/).
-               If the constraint allows multiple versions, the latest matching version is used.
-            9. The $ProductName version that created the current state file (best effort).
-            10. The latest $ProductName version
+            8. The $ProductName version that created the current state file (best effort).
+            9. The latest $ProductName version
             
             The version of $ProductName and all required providers will be output to the workflow log.
             

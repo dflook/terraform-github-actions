@@ -15,12 +15,11 @@ The version to use is discovered from the first of:
 4. A [tofuenv](https://github.com/tofuutils/tofuenv) `.opentofu-version` file in the module path
 5. A [tfenv](https://github.com/tfutils/tfenv) `.terraform-version` file in the module path
 6. An [asdf](https://asdf-vm.com/) `.tool-versions` file in the module path or any parent path
-7. An `OPENTOFU_VERSION` environment variable containing a [version constraint](https://opentofu.org/docs/language/expressions/version-constraints/).
+7. A `TERRAFORM_VERSION` environment variable containing a [version constraint](https://opentofu.org/docs/language/expressions/version-constraints/),
+   or if not set, an `OPENTOFU_VERSION` environment variable containing a version constraint.
    If the constraint allows multiple versions, the latest matching version is used.
-8. A `TERRAFORM_VERSION` environment variable containing a [version constraint](https://opentofu.org/docs/language/expressions/version-constraints/).
-   If the constraint allows multiple versions, the latest matching version is used.
-9. The OpenTofu version that created the current state file (best effort).
-10. The latest OpenTofu version
+8. The OpenTofu version that created the current state file (best effort).
+9. The latest OpenTofu version
 
 The version of OpenTofu and all required providers will be output to the workflow log.
 
