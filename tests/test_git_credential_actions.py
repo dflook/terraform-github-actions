@@ -87,6 +87,24 @@ def test_split_path():
     assert ['hello'] == split_path('/hello')
     assert ['dflook', 'terraform-github-actions.git'] == split_path('/dflook/terraform-github-actions.git')
 
+def test_only_matching_attributes_logged(capsys):
+    credentials = [
+        Credential('example.com', [], 'dflook', 'mypassword'),
+    ]
+
+    # git sends the password back with the store operation after a successful authentication
+    attributes = dict(protocol='https', host='example.com', username='dflook', password='mypassword')
+    assert git_credential('store', attributes, credentials) == attributes
+
+    err = capsys.readouterr().err
+    assert 'mypassword' not in err
+    assert 'example.com' in err
+
+    attributes = dict(protocol='https', host='example.com')
+    git_credential('get', attributes, credentials)
+    assert 'mypassword' not in capsys.readouterr().err
+
+
 def test_get():
 
     credentials = [
