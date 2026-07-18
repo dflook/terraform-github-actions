@@ -1,4 +1,4 @@
-from github_pr_comment.backend_config import read_backend_config_files, read_module_backend_config, complete_config, partial_config, read_backend_config_input
+from github_pr_comment.backend_config import read_backend_config_files, read_module_backend_config, complete_config, legacy_complete_config, partial_config, read_backend_config_input, read_legacy_backend_config_input
 from terraform.hcl import loads
 
 def test_read_backend_config_files():
@@ -53,6 +53,45 @@ another=ok'''
         {
         'INPUT_BACKEND_CONFIG': ''
         }) == {}
+
+    # Values may contain '=' and whitespace is allowed around the first '='
+    assert read_backend_config_input(
+        {
+            'INPUT_BACKEND_CONFIG': 'secret_key=abc==,conn_str=postgres://host/db?sslmode=disable,bucket = my-bucket'
+        }) == {
+            'secret_key': 'abc==',
+            'conn_str': 'postgres://host/db?sslmode=disable',
+            'bucket': 'my-bucket'
+        }
+
+def test_read_legacy_backend_config_input():
+    # As parsed by old versions, which split on the last '='. Used to match comments created by them.
+    assert read_legacy_backend_config_input(
+        {
+            'INPUT_BACKEND_CONFIG': 'hello=world,secret_key=abc==,bucket = my-bucket'
+        }) == {
+            'hello': 'world',
+            'secret_key=abc=': '',
+            'bucket ': 'my-bucket'
+        }
+
+def test_module_config_is_not_shared():
+    module = loads('''
+terraform {
+  backend pg {}
+}
+    ''')
+
+    inputs = {
+        'INPUT_BACKEND_CONFIG_FILE': '',
+        'INPUT_BACKEND_CONFIG': 'conn_str=postgres://host/db?sslmode=disable'
+    }
+
+    assert complete_config(inputs, module) == ('pg', {'conn_str': 'postgres://host/db?sslmode=disable'})
+    assert legacy_complete_config(inputs, module) == ('pg', {'conn_str=postgres://host/db?sslmode': 'disable'})
+
+    # the parsed module must not accumulate config keys from previous calls
+    assert complete_config(inputs, module) == ('pg', {'conn_str': 'postgres://host/db?sslmode=disable'})
 
 def test_complete_config():
     assert complete_config(
