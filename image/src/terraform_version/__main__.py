@@ -114,14 +114,14 @@ def switch(version: Version) -> None:
         target_path = get_executable(version)
 
     link_path = '/usr/local/bin/terraform'
-    if os.path.exists(link_path):
+    if os.path.lexists(link_path):
         os.remove(link_path)
 
     os.symlink(target_path, link_path)
 
     if version.product == 'OpenTofu':
         link_path = '/usr/local/bin/tofu'
-        if os.path.exists(link_path):
+        if os.path.lexists(link_path):
             os.remove(link_path)
 
         os.symlink(target_path, link_path)

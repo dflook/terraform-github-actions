@@ -17,17 +17,18 @@ def format_diff(plan_text: str) -> str:
             heredoc = True
 
         replaced = (re.sub(
-            r'^(?P<leading_space>\s+)(?P<operation>[+-/~]+)(?P<trailing>.*)',
-            '\g<operation>\g<leading_space>\g<trailing>',
+            r'^(?P<leading_space>\s+)(?P<operation>[-+/~]+)(?P<trailing>.*)',
+            r'\g<operation>\g<leading_space>\g<trailing>',
             line,
             count=1
         ))
 
-        replaced = replaced.replace('~ ', '!~')
+        if replaced.startswith('~ '):
+            replaced = '!~' + replaced[2:]
 
         replaced = re.sub(
             r'(?P<leading_space>\s+)\# (?P<trailing>\(.*hidden)',
-            '#\g<leading_space>\g<trailing>',
+            r'#\g<leading_space>\g<trailing>',
             replaced,
             count=1
         )

@@ -98,7 +98,7 @@ def get_checksums(version: Version, checksum_dir: Path) -> Path:
 
     try:
         subprocess.run(
-            ['gpg', '--verify', signature_path, checksums_path],
+            ['gpg', '--assert-signer', 'C874011F0AB405110D02105534365D9472D7468F', '--verify', signature_path, checksums_path],
             check=True,
             env={'GNUPGHOME': '/root/.gnupg'} | os.environ
         )
@@ -206,7 +206,7 @@ def get_executable(version: Version) -> Path:
     cache_dir, archive_name = get_archive(version, cache_dirs)
     verify_archive(version, cache_dir, archive_name, checksum_dir)
 
-    executable_dir = os.environ.get('STEP_TEMP_DIR', f'/tmp/terraform_{version}')
+    executable_dir = Path(os.environ.get('STEP_TMP_DIR', '/tmp'), f'terraform_{version}')
 
     Path(executable_dir, 'terraform').unlink(missing_ok=True)
     with ZipFile(Path(cache_dir, archive_name)) as f:
@@ -214,6 +214,6 @@ def get_executable(version: Version) -> Path:
 
     executable_path = Path(executable_dir, 'terraform')
 
-    os.chmod(executable_path, 755)
+    os.chmod(executable_path, 0o755)
 
     return executable_path

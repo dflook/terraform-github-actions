@@ -55,6 +55,7 @@ If any files are not correctly formatted a failing GitHub check will be added fo
 
 ## Outputs
 
+* `failure_reason`
 * `failure-reason`
 
   When the job outcome is `failure` because the format check failed, this will be set to 'check-failed'.
@@ -145,6 +146,6 @@ jobs:
           path: my-terraform-config
 
       - name: Wrong formatting found
-        if: ${{ failure() && steps.fmt-check.outputs.failure-reason == 'check-failed' }}
+        if: ${{ failure() && steps.fmt-check.outputs.failure_reason == 'check-failed' }}
         run: echo "formatting check failed"
 ```

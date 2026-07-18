@@ -1,16 +1,22 @@
 # hadolint ignore=DL3007
-FROM danielflook/terraform-github-actions-base:latest
+FROM danielflook/terraform-github-actions-base:trixie
 
 ARG TARGETARCH
 
 ARG FETCH_CHECKSUMS
 ARG VERSION=99.0.0
 
+RUN python3 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+RUN --mount=type=bind,source=requirements.txt,target=/tmp/requirements.txt \
+    pip install --no-cache-dir --require-hashes -r /tmp/requirements.txt
+
 COPY src/ /tmp/src/
 COPY setup.py /tmp
 RUN sed -i "s|version='.*'|version=\'${VERSION}\'|" /tmp/setup.py \
- && pip install --break-system-packages --no-cache-dir /tmp \
- && rm -rf /tmp/src /tmp/setup.py
+ && pip install --no-cache-dir --no-deps /tmp \
+ && rm -rf /tmp/src /tmp/setup.py /tmp/build /tmp/pip-*
 
 RUN if [ "$FETCH_CHECKSUMS" = "yes" ]; then \
   TERRAFORM_BIN_CHECKSUM_DIR="/var/terraform" get-terraform-checksums; \
@@ -21,10 +27,12 @@ fi
 RUN if [ "$TARGETARCH" = "amd64" ]; then \
       TERRAFORM_BIN_CACHE_DIR="/var/terraform" TERRAFORM_BIN_CHECKSUM_DIR="/var/terraform" terraform-version 0.9.0 \
    && TERRAFORM_BIN_CACHE_DIR="/var/terraform" TERRAFORM_BIN_CHECKSUM_DIR="/var/terraform" terraform-version 0.12.0; \
-fi
+fi \
+ && rm -rf /tmp/terraform_* /usr/local/bin/terraform /usr/local/bin/tofu
 RUN if [ "$TARGETARCH" = "arm64" ]; then \
       TERRAFORM_BIN_CACHE_DIR="/var/terraform" TERRAFORM_BIN_CHECKSUM_DIR="/var/terraform" terraform-version 0.13.5; \
-fi
+fi \
+ && rm -rf /tmp/terraform_* /usr/local/bin/terraform /usr/local/bin/tofu
 
 COPY entrypoints/ /entrypoints/
 COPY actions.sh /usr/local/actions.sh

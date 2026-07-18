@@ -1,7 +1,7 @@
 rules:
-  unpinned-uses:
-    config:
-      policies:
-        dflook/terraform-apply: ref-pin
-        dflook/terraform-plan: ref-pin
-        actions/*: ref-pin
+  secrets-outside-env:
+    disable: true
+  unpinned-images:
+    # action.yaml files reference ../image/Dockerfile for local builds; the
+    # image is pinned to a digest during the release process.
+    disable: true

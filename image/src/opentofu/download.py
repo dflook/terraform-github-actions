@@ -65,7 +65,7 @@ def get_checksums(version: Version, checksum_dir: Path) -> Path:
     if signature_path.exists():
         try:
             subprocess.run(
-                ['gpg', '--verify', signature_path, checksums_path],
+                ['gpg', '--assert-signer', 'E3E6E43D84CB852EADB0051D0C0AF313E5FD9F80', '--verify', signature_path, checksums_path],
                 check=True,
                 env={'GNUPGHOME': '/root/.gnupg'} | os.environ
             )
@@ -173,7 +173,7 @@ def get_executable(version: Version) -> Path:
     cache_dir, archive_name = get_archive(version, cache_dirs)
     verify_archive(version, cache_dir, archive_name, checksum_dir)
 
-    executable_dir = os.environ.get('STEP_TEMP_DIR', f'/tmp/tofu_{version}')
+    executable_dir = Path(os.environ.get('STEP_TMP_DIR', '/tmp'), f'tofu_{version}')
 
     Path(executable_dir, 'tofu').unlink(missing_ok=True)
     with ZipFile(Path(cache_dir, archive_name)) as f:
@@ -181,6 +181,6 @@ def get_executable(version: Version) -> Path:
 
     executable_path = Path(executable_dir, 'tofu')
 
-    os.chmod(executable_path, 755)
+    os.chmod(executable_path, 0o755)
 
     return executable_path

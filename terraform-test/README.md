@@ -81,6 +81,7 @@ If the tests fail, the job will stop with a failure status.
 
 ## Outputs
 
+* `junit_xml_path`
 * `junit-xml-path`
 
   A test report in JUnit XML format.
@@ -91,6 +92,7 @@ If the tests fail, the job will stop with a failure status.
 
   - Type: string
 
+* `failure_reason`
 * `failure-reason`
 
   When the job outcome is `failure`, this output may be set. The value may be one of:
@@ -186,7 +188,7 @@ If the tests fail, the job will stop with a failure status.
 
   The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
 
-  The runtime image is currently based on `debian:bookworm`, with the command run using `bash -xeo pipefail`.
+  The runtime image is currently based on `debian:trixie`, with the command run using `bash -xeo pipefail`.
 
   For example:
 

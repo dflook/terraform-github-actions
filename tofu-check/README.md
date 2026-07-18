@@ -93,6 +93,7 @@ This is intended to run on a schedule to notify if manual changes to your infras
 
 ## Outputs
 
+* `failure_reason`
 * `failure-reason`
 
   When the job outcome is `failure` because the there are outstanding changes to apply, this will be set to 'changes-to-apply'.
@@ -184,7 +185,7 @@ This is intended to run on a schedule to notify if manual changes to your infras
 
   The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
 
-  The runtime image is currently based on `debian:bookworm`, with the command run using `bash -xeo pipefail`.
+  The runtime image is currently based on `debian:trixie`, with the command run using `bash -xeo pipefail`.
 
   For example:
 
@@ -251,6 +252,6 @@ jobs:
           path: my-tofu-configuration
 
       - name: Changes detected
-        if: ${{ failure() && steps.check.outputs.failure-reason == 'changes-to-apply' }}
+        if: ${{ failure() && steps.check.outputs.failure_reason == 'changes-to-apply' }}
         run: echo "There are outstanding changes to apply"
 ```

@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import json
 import os
@@ -68,7 +68,7 @@ def convert_version_from_json(tf_output: Dict) -> Iterable[Union[str, Output]]:
     """
 
     yield f'{TOOL_PRODUCT_NAME} v{tf_output["terraform_version"]}'
-    yield Output(f'terraform', tf_output["terraform_version"])
+    yield Output('terraform', tf_output["terraform_version"])
 
     if TOOL_COMMAND_NAME != 'terraform':
         yield Output(TOOL_COMMAND_NAME, tf_output["terraform_version"])
@@ -90,7 +90,7 @@ if __name__ == '__main__':
                 output(line.name, line.value)
             else:
                 print(line)
-    except:
+    except Exception:
         print(tf_output)
 
         for line in convert_version(tf_output):

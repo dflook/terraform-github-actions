@@ -17,9 +17,10 @@ NodeId = NewType('NodeId', str)
 
 
 class GithubApi:
-    def __init__(self, host: str, token: Optional[str], cache_path: Optional[str] = None):
-        self._host = host
+    def __init__(self, host: str, token: Optional[str], graphql_url: Optional[str] = None, cache_path: Optional[str] = None):
+        self._host = host.rstrip('/')
         self._token = token
+        self._graphql_url = graphql_url or f'{self._host}/graphql'
 
         if cache_path is not None:
             urls_expire_after = {
@@ -39,18 +40,39 @@ class GithubApi:
         self._session.headers['user-agent'] = 'terraform-github-actions'
         self._session.headers['accept'] = 'application/vnd.github.v3+json'
 
-    def api_request(self, method: str, *args, **kwargs) -> requests.Response:
-        response = self._session.request(method, *args, **kwargs)
+    def _url(self, path_or_url: str) -> str:
+        """Normalize a path or full GitHub API URL to a full URL on this host.
+
+        Accepts:
+        - A path starting with / (prepended with host)
+        - A full URL belonging to this GitHub instance (returned as-is)
+
+        Raises RuntimeError for URLs belonging to a different host.
+        """
+        if path_or_url.startswith('/'):
+            return f'{self._host}{path_or_url}'
+        if path_or_url.startswith(self._host + '/') or path_or_url == self._host:
+            return path_or_url
+        raise RuntimeError(f'URL does not belong to the expected GitHub API ({self._host}): {path_or_url}')
+
+    def _api_request(self, method: str, url: str, **kwargs) -> requests.Response:
+        response = self._session.request(method, url, **kwargs)
         debug(f'{response.request.method} {response.request.url} -> {response.status_code}')
 
         if 400 <= response.status_code < 500:
             try:
                 message = response.json()['message']
 
-                if response.headers['X-RateLimit-Remaining'] == '0' and response.headers['X-RateLimit-Limit'] != '0':
-                    limit_reset = datetime.datetime.fromtimestamp(int(response.headers['X-RateLimit-Reset']))
-                    sys.stdout.write(message)
-                    sys.stdout.write(f' Try again when the rate limit resets at {limit_reset} UTC.\n')
+                if response.headers.get('X-RateLimit-Remaining') == '0' and response.headers.get('X-RateLimit-Limit') != '0':
+                    limit_reset = datetime.datetime.fromtimestamp(int(response.headers['X-RateLimit-Reset']), tz=datetime.timezone.utc)
+                    sys.stdout.write(f'{message}\n')
+                    sys.stdout.write(f'While requesting {response.request.url}\n')
+                    sys.stdout.write(f'Try again when the rate limit resets at {limit_reset:%Y-%m-%d %H:%M:%S} UTC.\n')
+
+                    if self._token is None:
+                        sys.stdout.write('This request was not authenticated, and the rate limit for unauthenticated requests is low.\n')
+                        sys.stdout.write('Set the GITHUB_DOT_COM_TOKEN environment variable to a GitHub.com token to authenticate these requests. The token does not need any scopes.\n')
+
                     sys.exit(1)
 
                 if message not in ['Resource not accessible by integration', 'Personal access tokens with fine grained access do not support the GraphQL API']:
@@ -65,19 +87,23 @@ class GithubApi:
 
         return response
 
-    def get(self, path: str, **kwargs: Any) -> Response:
-        return self.api_request('GET', path, **kwargs)
+    def get(self, path_or_url: str, **kwargs: Any) -> Response:
+        return self._api_request('GET', self._url(path_or_url), **kwargs)
 
-    def post(self, path: str, **kwargs: Any) -> Response:
-        return self.api_request('POST', path, **kwargs)
+    def post(self, path_or_url: str, **kwargs: Any) -> Response:
+        return self._api_request('POST', self._url(path_or_url), **kwargs)
 
-    def patch(self, path: str, **kwargs: Any) -> Response:
-        return self.api_request('PATCH', path, **kwargs)
+    def patch(self, path_or_url: str, **kwargs: Any) -> Response:
+        return self._api_request('PATCH', self._url(path_or_url), **kwargs)
 
-    def paged_get(self, url: GitHubUrl, *args, **kwargs) -> Iterable[dict[str, Any]]:
+    def graphql(self, **kwargs: Any) -> Response:
+        return self._api_request('POST', self._graphql_url, **kwargs)
+
+    def paged_get(self, path_or_url: str, **kwargs) -> Iterable[dict[str, Any]]:
+        url = self._url(path_or_url)
+
         while True:
-
-            response = self.api_request('GET', url, *args, **kwargs)
+            response = self._api_request('GET', url, **kwargs)
             response.raise_for_status()
 
             if hasattr(response, 'from_cache'):
@@ -90,5 +116,6 @@ class GithubApi:
                     # Relevant params are already in the link URL
                     del kwargs['params']
                 url = response.links['next']['url']
+                self._url(url)  # validate it belongs to this host
             else:
                 return

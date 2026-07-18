@@ -247,6 +247,7 @@ These input values must be the same as any [`dflook/tofu-plan`](https://github.c
 
   - Type: string
 
+* `failure_reason`
 * `failure-reason`
 
   When the job outcome is `failure`, this output may be set. The value may be one of:
@@ -260,9 +261,10 @@ These input values must be the same as any [`dflook/tofu-plan`](https://github.c
 
   - Type: string
 
+* `lock_info`
 * `lock-info`
 
-  When the job outcome is `failure` and the failure-reason is `state-locked`, this output will be set.
+  When the job outcome is `failure` and the failure_reason is `state-locked`, this output will be set.
 
   It is a json object containing any available state lock information and typically has the form:
 
@@ -456,7 +458,7 @@ These input values must be the same as any [`dflook/tofu-plan`](https://github.c
 
   The runtime environment for these actions is subject to change in minor version releases. If using this environment variable, specify the minor version of the action to use.
 
-  The runtime image is currently based on `debian:bookworm`, with the command run using `bash -xeo pipefail`.
+  The runtime image is currently based on `debian:trixie`, with the command run using `bash -xeo pipefail`.
 
   For example:
 
@@ -688,7 +690,7 @@ jobs:
 
       - name: Retry failed apply
         uses: dflook/tofu-apply@v2
-        if: ${{ steps.first_try.outputs.failure-reason == 'apply-failed' }}
+        if: ${{ steps.first_try.outputs.failure_reason == 'apply-failed' }}
         with:
           path: tofu
           auto_approve: true

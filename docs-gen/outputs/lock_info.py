@@ -1,10 +1,11 @@
 from action import Output
 
 lock_info = Output(
-    name='lock-info',
+    name='lock_info',
+    aliases=['lock-info'],
     type='string',
     description='''
-When the job outcome is `failure` and the failure-reason is `state-locked`, this output will be set.
+When the job outcome is `failure` and the failure_reason is `state-locked`, this output will be set.
 
 It is a json object containing any available state lock information and typically has the form:
 

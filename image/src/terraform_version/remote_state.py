@@ -32,7 +32,7 @@ def read_backend_config_vars(init_inputs: InitInputs) -> dict[str, str]:
             debug(str(e))
 
     for backend_var in init_inputs.get('INPUT_BACKEND_CONFIG', '').replace(',', '\n').splitlines():
-        if match := re.match(r'(.*)\s*=\s*(.*)', backend_var):
+        if match := re.match(r'(.*?)\s*=\s*(.*)', backend_var):
             config[match.group(1)] = match.group(2)
 
     return config

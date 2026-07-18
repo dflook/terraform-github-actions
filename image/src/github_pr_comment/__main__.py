@@ -16,15 +16,16 @@ from github_actions.debug import debug
 from github_actions.env import GithubEnv
 from github_actions.find_pr import find_pr, WorkflowException
 from github_actions.inputs import PlanPrInputs
-from github_pr_comment.backend_config import complete_config, partial_config
+from github_pr_comment.backend_config import complete_config, legacy_complete_config, legacy_partial_config, COMPLETE_FINGERPRINT_SINCE_VERSION, FIXED_FINGERPRINT_SINCE_VERSION
 from github_pr_comment.backend_fingerprint import fingerprint
 from github_pr_comment.cmp import plan_cmp, remove_warnings, remove_unchanged_attributes
-from github_pr_comment.comment import find_comment, TerraformComment, update_comment, serialize, deserialize, hide_comment
+from github_pr_comment.comment import find_comment, BackupHeaders, TerraformComment, update_comment, serialize, deserialize, hide_comment
 from github_pr_comment.hash import comment_hash, plan_hash, plan_out_hash
 from github_pr_comment.plan_formatting import format_diff
 from plan_renderer.outputs import render_outputs
 from plan_renderer.variables import render_argument_list, Sensitive
-from terraform.module import load_module, get_sensitive_variables
+from terraform.module import load_module, get_sensitive_variables, TerraformModule
+from terraform.versions import Version
 from terraform import hcl
 
 Plan = NewType('Plan', str)
@@ -35,7 +36,12 @@ step_cache = ActionsCache(Path(os.environ.get('STEP_TMP_DIR', '.')), 'step_cache
 
 env = cast(GithubEnv, os.environ)
 github_token = env['TERRAFORM_ACTIONS_GITHUB_TOKEN']
-github = GithubApi(env.get('GITHUB_API_URL', 'https://api.github.com'), github_token, os.environ.get('JOB_TMP_DIR', '.'))
+github = GithubApi(
+    env.get('GITHUB_API_URL', 'https://api.github.com'),
+    github_token,
+    graphql_url=env.get('GITHUB_GRAPHQL_URL', f'{env.get("GITHUB_API_URL", "https://api.github.com")}/graphql'),
+    cache_path=os.environ.get('JOB_TMP_DIR', '.')
+)
 
 ToolProductName = os.environ.get('TOOL_PRODUCT_NAME', 'Terraform')
 
@@ -157,15 +163,25 @@ def format_description(action_inputs: PlanPrInputs, sensitive_variables: List[st
     if action_inputs["INPUT_VAR_FILE"]:
         label += f'\nWith var files: `{action_inputs["INPUT_VAR_FILE"]}`'
 
-    if action_inputs["INPUT_VARIABLES"]:
-        variables = hcl.loads(action_inputs["INPUT_VARIABLES"])
+    def format_variables() -> str:
+        try:
+            variables = hcl.loads(action_inputs["INPUT_VARIABLES"])
+        except ValueError:
+            # Without parsing we can't tell which values are sensitive, so only show them when none can be.
+            if sensitive_variables:
+                return '\nWith variables: `(variables are hidden because they could not be parsed to mask sensitive values)`'
 
-        # mark sensitive variables
-        variables = {name: Sensitive() if name in sensitive_variables else value for name, value in variables.items()}
+            stripped_vars = action_inputs["INPUT_VARIABLES"].strip()
 
-        stripped_vars = render_argument_list(variables).strip()
+        else:
+            # mask sensitive variables
+            variables = {name: Sensitive() if name in sensitive_variables else value for name, value in
+                         variables.items()}
+
+            stripped_vars = render_argument_list(variables).strip()
+
         if '\n' in stripped_vars:
-            label += f'''<details open><summary>With variables</summary>
+            return f'''<details open><summary>With variables</summary>
 
 ```hcl
 {stripped_vars}
@@ -173,7 +189,10 @@ def format_description(action_inputs: PlanPrInputs, sensitive_variables: List[st
 </details>
 '''
         else:
-            label += f'\nWith variables: `{stripped_vars}`'
+            return f'\nWith variables: `{stripped_vars}`'
+
+    if action_inputs["INPUT_VARIABLES"]:
+        label += format_variables()
 
     return label
 
@@ -213,9 +232,7 @@ def current_user(actions_env: GithubEnv) -> str:
     cache_key = f'token-cache/{token_hash}'
 
     def graphql() -> Optional[str]:
-        graphql_url = actions_env.get('GITHUB_GRAPHQL_URL', f'{actions_env["GITHUB_API_URL"]}/graphql')
-
-        response = github.post(graphql_url, json={
+        response = github.graphql(json={
             'query': "query { viewer { login } }"
         })
         debug(f'graphql response: {response.content}')
@@ -229,7 +246,7 @@ def current_user(actions_env: GithubEnv) -> str:
         debug('Failed to get current user from graphql')
 
     def rest() -> Optional[str]:
-        response = github.get(f'{actions_env["GITHUB_API_URL"]}/user')
+        response = github.get('/user')
         debug(f'rest response: {response.content}')
 
         if response.ok:
@@ -331,7 +348,57 @@ def new_pr_comment(backend_fingerprint: bytes) -> TerraformComment:
         status=''
     )
 
-def get_comment(action_inputs: PlanPrInputs, backend_fingerprint: bytes, backup_fingerprint: bytes) -> TerraformComment:
+def _widest_min(a: Optional[str], b: Optional[str]) -> Optional[str]:
+    if a is None or b is None:
+        return None
+    return a if Version(a) < Version(b) else b
+
+
+def _widest_max(a: Optional[str], b: Optional[str]) -> Optional[str]:
+    if a is None or b is None:
+        return None
+    return a if Version(b) < Version(a) else b
+
+
+def get_backend_fingerprints(action_inputs: PlanPrInputs, module: TerraformModule) -> Tuple[bytes, List[Tuple[bytes, Optional[str], Optional[str]]]]:
+    """
+    The current backend fingerprint, and the fingerprints that may have been used for comments
+    created by earlier versions, with the range of versions that used each.
+
+    Earlier fingerprints:
+    legacy_complete_config, before the backend_config input parsing was fixed.
+    legacy_partial_config, used by versions before that, which also didn't read backend config files.
+
+    Where the fingerprints for different eras are identical their version ranges are combined.
+    The eras are contiguous, so the combined range is simply the widest bounds.
+    """
+
+    backend_type, backend_config = complete_config(action_inputs, module)
+    backend_fingerprint = fingerprint(backend_type, backend_config, os.environ)
+
+    backup_fingerprints: List[Tuple[bytes, Optional[str], Optional[str]]] = []
+    for fallback_config, min_version, max_version in (
+        (legacy_complete_config, COMPLETE_FINGERPRINT_SINCE_VERSION, FIXED_FINGERPRINT_SINCE_VERSION),
+        (legacy_partial_config, None, COMPLETE_FINGERPRINT_SINCE_VERSION),
+    ):
+        fallback_backend_type, fallback_backend_config = fallback_config(action_inputs, module)
+        backup_fingerprint = fingerprint(fallback_backend_type, fallback_backend_config, os.environ)
+
+        if backup_fingerprint == backend_fingerprint:
+            # Comments with this fingerprint are matched by the primary headers
+            continue
+
+        for index, (existing, existing_min, existing_max) in enumerate(backup_fingerprints):
+            if existing == backup_fingerprint:
+                backup_fingerprints[index] = (existing, _widest_min(existing_min, min_version), _widest_max(existing_max, max_version))
+                break
+        else:
+            backup_fingerprints.append((backup_fingerprint, min_version, max_version))
+
+    return backend_fingerprint, backup_fingerprints
+
+
+def get_comment(action_inputs: PlanPrInputs, backend_fingerprint: bytes, backup_fingerprints: List[Tuple[bytes, Optional[str], Optional[str]]]) -> TerraformComment:
     if 'comment' in step_cache:
         return deserialize(step_cache['comment'])
 
@@ -370,10 +437,13 @@ def get_comment(action_inputs: PlanPrInputs, backend_fingerprint: bytes, backup_
         debug(f'Plan modifier: {plan_modifier}')
         headers['plan_modifier'] = hashlib.sha256(canonicaljson.encode_canonical_json(plan_modifier)).hexdigest()
 
-    backup_headers = headers.copy()
+    backup_headers = []
+    for backup_fingerprint, min_version, max_version in backup_fingerprints:
+        backup = headers.copy()
+        backup['backend'] = comment_hash(backup_fingerprint, pr_url)
+        backup_headers.append(BackupHeaders(backup, min_version, max_version))
 
     headers['backend'] = comment_hash(backend_fingerprint, pr_url)
-    backup_headers['backend'] = comment_hash(backup_fingerprint, pr_url)
 
     return find_comment(github, issue_url, username, headers, backup_headers, legacy_description)
 
@@ -473,13 +543,9 @@ def main() -> int:
 
     module = load_module(Path(action_inputs.get('INPUT_PATH', '.')))
 
-    backend_type, backend_config = partial_config(action_inputs, module)
-    partial_backend_fingerprint = fingerprint(backend_type, backend_config, os.environ)
+    backend_fingerprint, backup_fingerprints = get_backend_fingerprints(action_inputs, module)
 
-    backend_type, backend_config = complete_config(action_inputs, module)
-    backend_fingerprint = fingerprint(backend_type, backend_config, os.environ)
-
-    comment = get_comment(action_inputs, backend_fingerprint, partial_backend_fingerprint)
+    comment = get_comment(action_inputs, backend_fingerprint, backup_fingerprints)
 
     status = cast(Status, os.environ.get('STATUS', ''))
 
@@ -602,6 +668,18 @@ def main() -> int:
             sys.stdout.write("If dflook/terraform-plan was used with add_github_comment set to changes-only, this may mean the plan has since changed to include changes\n")
             output('failure-reason', 'plan-changed')
             sys.exit(1)
+
+        if 'plan_out_hash' not in comment.headers:
+            sys.stdout.write("Not applying the plan - the plan on the PR cannot be verified against the plan file\n")
+            sys.stdout.write("The PR comment was created without a saved plan, or by an old version of the dflook/terraform-plan action\n")
+            sys.stdout.write("Regenerate the plan on the PR using the dflook/terraform-plan action. Alternatively, set the auto_approve input to 'true' to apply without verification\n")
+
+            comment = update_comment(github, comment, status=f':x: Plan not applied in {job_markdown_ref()} (Unable to verify the plan)')
+
+            output('failure-reason', 'plan-changed')
+
+            step_cache['comment'] = serialize(comment)
+            return 1
 
         if not is_approved_binary_plan(sys.argv[2], comment):
 

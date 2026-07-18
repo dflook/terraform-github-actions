@@ -2,21 +2,22 @@ import json
 import os
 import re
 from json import JSONDecodeError
-from typing import Optional, Any
+from typing import Mapping, NamedTuple, Optional, Any
 
 from github_actions.api import IssueUrl, GithubApi, CommentUrl, NodeId
 from github_actions.debug import debug
+from terraform.versions import Version
 
 try:
     collapse_threshold = int(os.environ['TF_PLAN_COLLAPSE_LENGTH'])
 except (ValueError, KeyError):
     collapse_threshold = 10
 
-from pkg_resources import get_distribution, DistributionNotFound
+from importlib.metadata import version as get_version, PackageNotFoundError
 
 try:
-    version = get_distribution('terraform-github-actions').version
-except DistributionNotFound:
+    version = get_version('terraform-github-actions')
+except PackageNotFoundError:
     version = '0.0.0'
 
 class TerraformComment:
@@ -161,7 +162,9 @@ def _parse_comment_header(comment_header: Optional[str]) -> dict[str, str]:
 
     if header := re.match(r'^<!--\sdflook/terraform-github-actions\s(?P<args>.*)\s-->', comment_header):
         try:
-            return json.loads(header['args'])
+            # Some versions could write literal null header values, which made the comment
+            # unmatchable. A null value is never meaningful, so scrub them.
+            return {k: v for k, v in json.loads(header['args']).items() if v is not None}
         except JSONDecodeError:
             return {}
 
@@ -231,7 +234,7 @@ def _to_api_payload(comment: TerraformComment) -> str:
 
     return body
 
-def matching_headers(comment: TerraformComment, headers: dict[str, str]) -> bool:
+def matching_headers(comment: TerraformComment, headers: Mapping[str, Optional[str]]) -> bool:
     """
     Does a comment have all the specified headers
 
@@ -248,11 +251,27 @@ def matching_headers(comment: TerraformComment, headers: dict[str, str]) -> bool
 
     return True
 
-def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers: dict[str, str], backup_headers: dict[str, str], legacy_description: str) -> TerraformComment:
+class BackupHeaders(NamedTuple):
+    """
+    A set of headers a comment may have been created with by an earlier version of the action.
+
+    Only comments created by a version within [min_version, max_version) are matched.
+    A comment without a version header predates version stamping, and only matches if min_version is None.
+    """
+    headers: dict[str, Optional[str]]
+    min_version: Optional[str] = None
+    max_version: Optional[str] = None
+
+
+def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers: dict[str, str], backup_headers: list[BackupHeaders], legacy_description: str) -> TerraformComment:
     """
     Find a github comment that matches the given headers
 
-    If no comment is found with the specified headers, tries to find a comment that matches the specified description instead.
+    If no comment is found with the specified headers, tries to find a comment that matches one of the backup
+    header sets instead. These are the headers that may have been used by the version range of the action
+    given in each set.
+
+    If still no comment is found, tries to find a comment that matches the specified description instead.
     This is in case the comment was made with an earlier version, where comments were matched by description only.
 
     If no existing comment is found a new TerraformComment object is returned which represents a PR comment yet to be created.
@@ -261,13 +280,40 @@ def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers:
     :param issue_url: The issue to find the comment in
     :param username: The user who made the comment
     :param headers: The headers that must be present on the comment
+    :param backup_headers: Backup sets of headers to match, in order of preference
     :param legacy_description: The description that must be present on the comment, if not headers are found.
     """
 
     debug(f"Searching for comment with {headers=}")
     debug(f"Or backup headers {backup_headers=}")
 
-    backup_comment = None
+    def comment_version_within(comment: TerraformComment, min_version: Optional[str], max_version: Optional[str]) -> bool:
+        """Could the comment have been created by a version within [min_version, max_version)"""
+
+        if 'version' not in comment.headers:
+            # Comments without a version header predate version stamping
+            return min_version is None
+
+        if str(comment.headers['version']) in ('0.0.0', '99.0.0'):
+            # Placeholder versions stamped by images built without a release version
+            # (the Dockerfile VERSION default, or the fallback when the package version is unknown).
+            # They tell us nothing about the version that created the comment.
+            return True
+
+        try:
+            comment_version = Version(str(comment.headers['version']))
+        except ValueError:
+            return True
+
+        if min_version is not None and comment_version < Version(min_version):
+            return False
+
+        if max_version is not None and not comment_version < Version(max_version):
+            return False
+
+        return True
+
+    backup_comments: dict[int, TerraformComment] = {}
     legacy_comment = None
 
     for comment_payload in github.paged_get(issue_url + '/comments', params={'per_page': 100}):
@@ -283,9 +329,11 @@ def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers:
                     debug(f'Found comment that matches headers {comment.headers=} ')
                     return comment
 
-                if matching_headers(comment, backup_headers):
-                    debug(f'Found comment that matches backup headers {comment.headers=} ')
-                    backup_comment = comment
+                for backup_index, backup in enumerate(backup_headers):
+                    if comment_version_within(comment, backup.min_version, backup.max_version) and matching_headers(comment, backup.headers):
+                        debug(f'Found comment that matches backup headers {backup_index} {comment.headers=} ')
+                        backup_comments[backup_index] = comment
+                        break
                 else:
                     debug(f"Didn't match comment with {comment.headers=}")
 
@@ -298,7 +346,9 @@ def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers:
                 else:
                     debug(f"Didn't match comment with {comment.description=}")
 
-    if backup_comment is not None:
+    if backup_comments:
+        # Use the comment matching the most preferred backup header set
+        backup_comment = backup_comments[min(backup_comments)]
         debug('Using comment matching backup headers')
 
         # Use the backup comment but update the headers
@@ -306,7 +356,7 @@ def find_comment(github: GithubApi, issue_url: IssueUrl, username: str, headers:
             issue_url=backup_comment.issue_url,
             comment_url=backup_comment.comment_url,
             node_id=backup_comment.node_id,
-            headers=backup_comment.headers | headers,
+            headers={k: v for k, v in (backup_comment.headers | headers).items() if v is not None},
             description=backup_comment.description,
             summary=backup_comment.summary,
             body=backup_comment.body,
@@ -375,7 +425,9 @@ def update_comment(
         response = github.patch(comment.comment_url, json={'body': _to_api_payload(new_comment)})
         response.raise_for_status()
         if comment.node_id is None:
-            comment.node_id = response.json().get('node_id')
+            node_id = response.json().get('node_id')
+            comment.node_id = node_id
+            new_comment.node_id = node_id
     else:
         response = github.post(comment.issue_url + '/comments', json={'body': _to_api_payload(new_comment)})
         response.raise_for_status()
@@ -394,17 +446,14 @@ def hide_comment(
         debug('Comment has unknown node_id - not hiding')
         return
 
-    graphql_url = os.environ.get('GITHUB_GRAPHQL_URL', f'{os.environ["GITHUB_API_URL"]}/graphql')
-
-    response = github.post(
-        graphql_url, json={
-            'query': '''
-                mutation {
-                    minimizeComment(input: {subjectId: "''' + comment.node_id + '''", classifier: ''' + classifier + '''}) {
-                        clientMutationId
-                    }
+    response = github.graphql(json={
+            'query': 'mutation($input: MinimizeCommentInput!) { minimizeComment(input: $input) { clientMutationId } }',
+            'variables': {
+                'input': {
+                    'subjectId': comment.node_id,
+                    'classifier': classifier
                 }
-            '''
+            }
         }
     )
     debug(f'graphql response: {response.content}')

@@ -89,7 +89,7 @@ if [[ -n "$PLAN_OUT" ]]; then
     else
         debug_file "$STEP_TMP_DIR/terraform_show.stderr"
     fi
-elif [[ -n "$RUN_ID" ]]; then
+elif [[ -n "${RUN_ID:-}" ]]; then
     if terraform-cloud-state "$RUN_ID" >"$STEP_TMP_DIR/terraform_cloud_state.stdout" 2>"$STEP_TMP_DIR/terraform_cloud_state.stderr"; then
         debug_log "Fetched JSON plan from TFC"
         cp "$STEP_TMP_DIR/terraform_cloud_state.stdout" "$GITHUB_WORKSPACE/$WORKSPACE_TMP_DIR/plan.json"

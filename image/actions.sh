@@ -69,7 +69,7 @@ function test-terraform-version() {
     local OP="$1"
     local VER="$2"
 
-    python3 -c "exit(0 if ($TERRAFORM_VER_MAJOR, $TERRAFORM_VER_MINOR, $TERRAFORM_VER_PATCH) $OP tuple(int(v) for v in '$VER'.split('.')) else 1)"
+    python3 -c "exit(0 if (int('$TERRAFORM_VER_MAJOR'), int('$TERRAFORM_VER_MINOR'), int('$TERRAFORM_VER_PATCH'.split('-')[0])) $OP tuple(int(v) for v in '$VER'.split('.')) else 1)"
 }
 
 function job_markdown_ref() {
@@ -451,7 +451,7 @@ function output() {
 }
 
 function random_string() {
-    python3 -c "import random; import string; print(''.join(random.choice(string.ascii_lowercase) for i in range(8)))"
+    python3 -c "import secrets; import string; print(''.join(secrets.choice(string.ascii_lowercase) for i in range(8)))"
 }
 
 function write_credentials() {

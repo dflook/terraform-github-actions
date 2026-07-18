@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import json
 import sys
@@ -17,26 +17,26 @@ class Output:
     value: str
 
 def convert_to_github(outputs: Dict) -> Iterable[Union[Mask, Output]]:
-    for name, output in outputs.items():
+    for name, tf_output in outputs.items():
 
-        if isinstance(output['type'], str):
+        if isinstance(tf_output['type'], str):
             # primitive type
 
-            if output['sensitive'] is True:
-                yield Mask(str(output["value"]))
+            if tf_output['sensitive'] is True:
+                yield Mask(str(tf_output["value"]))
 
-            if output['type'] in ['string', 'number']:
-                yield Output(name, str(output["value"]))
+            if tf_output['type'] in ['string', 'number']:
+                yield Output(name, str(tf_output["value"]))
 
-            if output['type'] == 'bool':
-                yield Output(name, json.dumps(output["value"]))
+            if tf_output['type'] == 'bool':
+                yield Output(name, json.dumps(tf_output["value"]))
 
         else:
             # complex type
 
-            value = json.dumps(output["value"], separators=(",", ":"))
+            value = json.dumps(tf_output["value"], separators=(",", ":"))
 
-            if output['sensitive'] is True:
+            if tf_output['sensitive'] is True:
                 yield Mask(value)
 
             yield Output(name, str(value))

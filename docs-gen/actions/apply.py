@@ -344,7 +344,7 @@ jobs:
 
       - name: Retry failed apply
         uses: dflook/$ToolName-apply@v2
-        if: ${{ steps.first_try.outputs.failure-reason == 'apply-failed' }}
+        if: ${{ steps.first_try.outputs.failure_reason == 'apply-failed' }}
         with:
           path: $ToolName
           auto_approve: true

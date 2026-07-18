@@ -7,7 +7,7 @@ RUN git clone https://github.com/cloudposse/tfmask.git \
  && make \
  && make go/build
 
-FROM debian:bookworm-slim AS terraform-github-actions-base
+FROM debian:trixie-slim AS terraform-github-actions-base
 
 # Terraform environment variables
 ENV CHECKPOINT_DISABLE=true
@@ -29,8 +29,8 @@ RUN <<EOF
     unzip \
     jq \
     python3 \
-    python3-requests \
     python3-pip \
+    python3-venv \
     wget \
     gpg \
     gpg-agent \
@@ -44,6 +44,7 @@ RUN <<EOF
  echo "C874011F0AB405110D02105534365D9472D7468F:6:" | gpg --import-ownertrust
 
  curl https://get.opentofu.org/opentofu.gpg | gpg --import
+ gpg --fingerprint E3E6E43D84CB852EADB0051D0C0AF313E5FD9F80
  echo "E3E6E43D84CB852EADB0051D0C0AF313E5FD9F80:6:" | gpg --import-ownertrust
 
  gpg --check-trustdb

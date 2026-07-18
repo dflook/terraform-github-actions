@@ -17,7 +17,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
 
@@ -48,9 +48,15 @@ jobs:
       - name: Check failure-reason
         env:
           FAILURE_REASON: ${{ steps.apply.outputs.failure-reason }}
+          FAILURE_REASON_UNDERSCORE: ${{ steps.apply.outputs.failure_reason }}
         run: |
           if [[ "$FAILURE_REASON" != "" ]]; then
             echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+          if [[ "$FAILURE_REASON_UNDERSCORE" != "$FAILURE_REASON" ]]; then
+            echo "::error:: failure_reason not set correctly"
             exit 1
           fi
 
@@ -64,7 +70,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
 
@@ -118,9 +124,15 @@ jobs:
       - name: Check failure-reason
         env:
           FAILURE_REASON: ${{ steps.apply.outputs.failure-reason }}
+          FAILURE_REASON_UNDERSCORE: ${{ steps.apply.outputs.failure_reason }}
         run: |
           if [[ "$FAILURE_REASON" != "" ]]; then
             echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+          if [[ "$FAILURE_REASON_UNDERSCORE" != "$FAILURE_REASON" ]]; then
+            echo "::error:: failure_reason not set correctly"
             exit 1
           fi
 
@@ -134,7 +146,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
 
@@ -171,6 +183,7 @@ jobs:
         env:
           OUTCOME: ${{ steps.apply.outcome }}
           FAILURE_REASON: ${{ steps.apply.outputs.failure-reason }}
+          FAILURE_REASON_UNDERSCORE: ${{ steps.apply.outputs.failure_reason }}
         run: |
           if [[ "$OUTCOME" != "failure" ]]; then
             echo "Apply did not fail correctly"
@@ -179,6 +192,11 @@ jobs:
 
           if [[ "$FAILURE_REASON" != "plan-changed" ]]; then
             echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+          if [[ "$FAILURE_REASON_UNDERSCORE" != "$FAILURE_REASON" ]]; then
+            echo "::error:: failure_reason not set correctly"
             exit 1
           fi
 
@@ -192,7 +210,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
 
@@ -219,6 +237,7 @@ jobs:
         env:
           OUTCOME: ${{ steps.apply.outcome }}
           FAILURE_REASON: ${{ steps.apply.outputs.failure-reason }}
+          FAILURE_REASON_UNDERSCORE: ${{ steps.apply.outputs.failure_reason }}
         run: |
           if [[ "$OUTCOME" != "failure" ]]; then
             echo "Apply did not fail correctly"
@@ -227,5 +246,10 @@ jobs:
 
           if [[ "$FAILURE_REASON" != "plan-changed" ]]; then
             echo "::error:: failure-reason not set correctly"
+            exit 1
+          fi
+
+          if [[ "$FAILURE_REASON_UNDERSCORE" != "$FAILURE_REASON" ]]; then
+            echo "::error:: failure_reason not set correctly"
             exit 1
           fi

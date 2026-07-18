@@ -15,9 +15,12 @@ class Credential:
     password: str
 
 
+LOGGED_ATTRIBUTES = ('protocol', 'host', 'path', 'username')
+
+
 def git_credential(operation: str, attributes: Dict[str, str], credentials: List[Credential]):
     att = attributes.copy()
-    sys.stderr.write(repr(att) + '\n')
+    sys.stderr.write(f'git credential {operation}: ' + repr({k: v for k, v in att.items() if k in LOGGED_ATTRIBUTES}) + '\n')
 
     if operation != 'get':
         return att

@@ -159,6 +159,24 @@ Changes to Outputs:
     assert format_diff(plan) == expected
 
 
+def test_leading_punctuation_not_moved():
+    # ',' and '.' are not diff operations, and must not be moved to the start of the line
+    plan = '      , not an operation'
+    assert format_diff(plan) == plan
+
+    plan = '      ... not an operation'
+    assert format_diff(plan) == plan
+
+
+def test_tilde_inside_value():
+    # only a leading '~' operation is rewritten, not '~ ' inside a value
+    plan = '      + description = "approximately ~ five"'
+    assert format_diff(plan) == '+       description = "approximately ~ five"'
+
+    plan = '      ~ description = "approximately ~ five"'
+    assert format_diff(plan) == '!~      description = "approximately ~ five"'
+
+
 def test_heredoc():
     plan = '''
 Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:

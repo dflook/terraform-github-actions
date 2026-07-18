@@ -15,6 +15,25 @@ When using an action you can specify the version as:
 - `@v2.2` to use the latest patch release for the specific minor version
 - `@v2` to use the latest patch release for the specific major version
 
+## [Unreleased]
+
+### Added
+- Outputs with a `-` in their name are now also available with `_` instead, e.g. `failure_reason` as well as `failure-reason`.
+  Output names previously used a mix of `-` and `_`, this allows using a consistent style.
+  The existing output names are not deprecated and will not be removed.
+
+### Changed
+- The container image has been updated from debian 12 to debian 13. This may affect you if you rely on the runtime environment of Terraform/OpenTofu.
+- When an unauthenticated request to GitHub.com is rate limited, the error message now explains how to authenticate requests by setting the `GITHUB_DOT_COM_TOKEN` environment variable.
+
+### Fixed
+- [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/main/terraform-plan)/[dflook/tofu-plan](https://github.com/dflook/terraform-github-actions/tree/main/tofu-plan)
+  and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/main/terraform-apply)/[dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/main/tofu-apply)
+  could match the wrong PR comment when a `backend_config` value contained an `=` character, such as a pg backend `conn_str`.
+- A malformed `repository_dispatch` payload now results in a helpful error message instead of a Python error.
+- Some lines of the plan could be formatted incorrectly in PR comments, e.g. values containing a `~` character.
+- `TERRAFORM_CLOUD_TOKENS` values containing `"` or `\` characters now work correctly.
+
 ## [2.2.3] - 2026-01-13
 
 ### Fixed

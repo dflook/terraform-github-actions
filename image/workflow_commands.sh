@@ -73,6 +73,15 @@ function set_output() {
     else
       echo "::set-output name=${name}::${value}"
     fi
+
+    local underscore_name="${name//-/_}"
+    if [[ "$underscore_name" != "$name" ]]; then
+        if [[ -v GITHUB_OUTPUT && -f "$GITHUB_OUTPUT" ]]; then
+          echo "${underscore_name}=${value}" >> "$GITHUB_OUTPUT"
+        else
+          echo "::set-output name=${underscore_name}::${value}"
+        fi
+    fi
 }
 
 ##
@@ -117,5 +126,5 @@ function disable_workflow_commands() {
 }
 
 function generate_command_token() {
-    python3 -c "import random; import string; print(''.join(random.choice(string.ascii_lowercase) for i in range(64)))"
+    python3 -c "import secrets; import string; print(''.join(secrets.choice(string.ascii_lowercase) for i in range(64)))"
 }
