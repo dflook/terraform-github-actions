@@ -57,6 +57,10 @@ def read_backend_config_input(init_inputs: InitInputs) -> BackendConfig:
 # versions. Versions 1.32.0-1.32.1 stamped comments with '1.31.1', which is fine for this purpose.
 COMPLETE_FINGERPRINT_SINCE_VERSION = '1.31.1'
 
+# The first version that overlays the fingerprint with values from the initialised backend,
+# read from the terraform data dir. Versions before this fingerprinted only the configured values.
+INITIALISED_FINGERPRINT_SINCE_VERSION = '1.49.0'
+
 # The first version that parses the backend_config input by splitting key=value pairs on the
 # first '=' instead of the last. Comments created by this version or later never carry legacy
 # fingerprints, so are never matched against them.

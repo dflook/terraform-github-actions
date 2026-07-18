@@ -175,7 +175,14 @@ def fingerprint_local(backend_config: BackendConfig, env) -> dict[str, str]:
     return fingerprint_inputs
 
 
-def fingerprint(backend_type: BackendType, backend_config: BackendConfig, env) -> bytes:
+def fingerprint(backend_type: BackendType, backend_config: BackendConfig, env, include_initialised_config: bool = True) -> bytes:
+    """
+    The fingerprint for a backend config.
+
+    With include_initialised_config=False, values from the initialised backend are not included,
+    as computed by versions before INITIALISED_FINGERPRINT_SINCE_VERSION.
+    """
+
     backends = {
         'remote': fingerprint_remote,
         'artifactory': fingerprint_artifactory,
@@ -198,7 +205,9 @@ def fingerprint(backend_type: BackendType, backend_config: BackendConfig, env) -
     }
 
     fingerprint_inputs = backends.get(backend_type, lambda c, e: c)(backend_config, env)
-    fingerprint_inputs = initialised_backend_config(backend_type, fingerprint_inputs)
+
+    if include_initialised_config:
+        fingerprint_inputs = initialised_backend_config(backend_type, fingerprint_inputs)
 
     debug(f'Backend fingerprint includes {fingerprint_inputs.keys()}')
 

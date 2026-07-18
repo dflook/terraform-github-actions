@@ -1262,6 +1262,25 @@ jobs:
           backend_config_file: tests/workflows/test-apply/partial_backend/backend_config
           backend_config: key=${{ github.run_id }}${{ github.run_attempt }}
 
+      - name: Check the comment was updated
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BACKEND_KEY: key=${{ github.run_id }}${{ github.run_attempt }}
+        run: |
+          BODY=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" --paginate --jq '.[]' \
+            | jq -r -s --arg key "$BACKEND_KEY" '[.[] | select(.body | (contains("partial_backend") and contains($key)))] | last | .body // empty')
+
+          if [[ -z "$BODY" ]]; then
+            echo "::error:: The PR comment created by the old action version was not found"
+            exit 1
+          fi
+
+          if [[ "$BODY" != *"Plan applied in"* ]]; then
+            echo "::error:: The PR comment created by the old action version was not updated by terraform-apply"
+            exit 1
+          fi
+
   destroy_mode:
     runs-on: ubuntu-24.04
     name: Generate and apply a destroy mode plan

@@ -1,5 +1,7 @@
+import json
+
 from github_pr_comment.__main__ import get_backend_fingerprints
-from github_pr_comment.backend_config import complete_config, legacy_complete_config, legacy_partial_config, COMPLETE_FINGERPRINT_SINCE_VERSION, FIXED_FINGERPRINT_SINCE_VERSION
+from github_pr_comment.backend_config import complete_config, legacy_complete_config, legacy_partial_config, COMPLETE_FINGERPRINT_SINCE_VERSION, FIXED_FINGERPRINT_SINCE_VERSION, INITIALISED_FINGERPRINT_SINCE_VERSION
 from github_pr_comment.backend_fingerprint import fingerprint
 from github_pr_comment.comment import find_comment, matching_headers, BackupHeaders, TerraformComment, _to_api_payload, _format_comment_header, _parse_comment_header
 from github_pr_comment.hash import comment_hash
@@ -277,6 +279,62 @@ def test_find_comment_null_header_values_are_scrubbed(monkeypatch, tmp_path):
     assert found.comment_url == COMMENT_URL
     assert 'closed' not in found.headers
     assert 'label' not in found.headers
+
+
+def test_find_comment_created_before_initialised_fingerprints(monkeypatch, tmp_path):
+    """A comment from a version that didn't include the initialised config in the fingerprint
+    must still be matched once the backend has been initialised.
+
+    e.g. a partial s3 backend where the bucket is only known once initialised:
+    old versions fingerprinted an empty bucket.
+    """
+
+    monkeypatch.setenv('TF_DATA_DIR', str(tmp_path))
+    monkeypatch.delenv('AWS_S3_ENDPOINT', raising=False)
+
+    module = loads('''
+terraform {
+  backend s3 {}
+}
+    ''')
+
+    inputs = {
+        'INPUT_BACKEND_CONFIG_FILE': '',
+        'INPUT_BACKEND_CONFIG': 'key=test-state-key'
+    }
+
+    # The fingerprint of the comment, as created by a version before the
+    # initialised config was included
+    backend_type, backend_config = legacy_partial_config(inputs, module)
+    old_fingerprint = fingerprint(backend_type, backend_config, {}, include_initialised_config=False)
+
+    # The backend is now initialised, with the complete config
+    (tmp_path / 'terraform.tfstate').write_text(json.dumps({
+        'backend': {
+            'type': 's3',
+            'config': {'bucket': 'test-bucket', 'key': 'test-state-key'}
+        }
+    }))
+
+    primary, backups = get_backend_fingerprints(inputs, module)
+    assert primary != old_fingerprint
+
+    # The eras without the initialised config are identical here, and merge
+    assert backups == [(old_fingerprint, None, INITIALISED_FINGERPRINT_SINCE_VERSION)]
+
+    old_comment = make_comment(comment_hash(old_fingerprint, PR_URL))
+
+    headers = {'workspace': 'default', 'closed': None, 'label': None, 'backend': comment_hash(primary, PR_URL)}
+    backup_headers = [
+        BackupHeaders({'workspace': 'default', 'closed': None, 'label': None, 'backend': comment_hash(fp, PR_URL)}, min_version, max_version)
+        for fp, min_version, max_version in backups
+    ]
+
+    github = StubGithub([comment_payload(old_comment)])
+    found = find_comment(github, ISSUE_URL, 'test-user', headers, backup_headers, 'legacy description')
+
+    assert found.comment_url == COMMENT_URL
+    assert found.headers['backend'] == comment_hash(primary, PR_URL)
 
 
 def test_find_comment_ignores_other_backends(monkeypatch, tmp_path):
