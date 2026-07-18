@@ -16,7 +16,7 @@ from github_actions.debug import debug
 from github_actions.env import GithubEnv
 from github_actions.find_pr import find_pr, WorkflowException
 from github_actions.inputs import PlanPrInputs
-from github_pr_comment.backend_config import complete_config, legacy_complete_config, legacy_partial_config, COMPLETE_FINGERPRINT_SINCE_VERSION, FIXED_FINGERPRINT_SINCE_VERSION
+from github_pr_comment.backend_config import complete_config, legacy_complete_config, legacy_partial_config, COMPLETE_FINGERPRINT_SINCE_VERSION, FIXED_FINGERPRINT_SINCE_VERSION, INITIALISED_FINGERPRINT_SINCE_VERSION
 from github_pr_comment.backend_fingerprint import fingerprint
 from github_pr_comment.cmp import plan_cmp, remove_warnings, remove_unchanged_attributes
 from github_pr_comment.comment import find_comment, BackupHeaders, TerraformComment, update_comment, serialize, deserialize, hide_comment
@@ -367,7 +367,10 @@ def get_backend_fingerprints(action_inputs: PlanPrInputs, module: TerraformModul
 
     Earlier fingerprints:
     legacy_complete_config, before the backend_config input parsing was fixed.
-    legacy_partial_config, used by versions before that, which also didn't read backend config files.
+    legacy_complete_config without the initialised config, used by versions before the
+    fingerprint included values from the initialised backend.
+    legacy_partial_config without the initialised config, used by versions before that,
+    which also didn't read backend config files.
 
     Where the fingerprints for different eras are identical their version ranges are combined.
     The eras are contiguous, so the combined range is simply the widest bounds.
@@ -377,12 +380,13 @@ def get_backend_fingerprints(action_inputs: PlanPrInputs, module: TerraformModul
     backend_fingerprint = fingerprint(backend_type, backend_config, os.environ)
 
     backup_fingerprints: List[Tuple[bytes, Optional[str], Optional[str]]] = []
-    for fallback_config, min_version, max_version in (
-        (legacy_complete_config, COMPLETE_FINGERPRINT_SINCE_VERSION, FIXED_FINGERPRINT_SINCE_VERSION),
-        (legacy_partial_config, None, COMPLETE_FINGERPRINT_SINCE_VERSION),
+    for fallback_config, include_initialised, min_version, max_version in (
+        (legacy_complete_config, True, INITIALISED_FINGERPRINT_SINCE_VERSION, FIXED_FINGERPRINT_SINCE_VERSION),
+        (legacy_complete_config, False, COMPLETE_FINGERPRINT_SINCE_VERSION, INITIALISED_FINGERPRINT_SINCE_VERSION),
+        (legacy_partial_config, False, None, COMPLETE_FINGERPRINT_SINCE_VERSION),
     ):
         fallback_backend_type, fallback_backend_config = fallback_config(action_inputs, module)
-        backup_fingerprint = fingerprint(fallback_backend_type, fallback_backend_config, os.environ)
+        backup_fingerprint = fingerprint(fallback_backend_type, fallback_backend_config, os.environ, include_initialised_config=include_initialised)
 
         if backup_fingerprint == backend_fingerprint:
             # Comments with this fingerprint are matched by the primary headers
