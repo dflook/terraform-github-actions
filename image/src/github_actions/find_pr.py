@@ -59,12 +59,18 @@ def find_pr(github: GithubApi, actions_env: GithubEnv) -> PrUrl:
                                     'This can happen when the runner is running in a container')
 
     elif event_type == 'repository_dispatch':
-        if 'pull_request' not in event['client_payload'] or not isinstance(event['client_payload']['pull_request'], dict):
+        if event is None:
+            raise WorkflowException(f'Event payload is not available at the GITHUB_EVENT_PATH {actions_env["GITHUB_EVENT_PATH"]!r}. ' +
+                                    f'This is required when run by {event_type} events. The environment has not been setup properly by the actions runner. ' +
+                                    'This can happen when the runner is running in a container')
+
+        client_payload = event.get('client_payload')
+        if not isinstance(client_payload, dict) or not isinstance(client_payload.get('pull_request'), dict):
             raise WorkflowException('The repository_dispatch event must have a pull_request object in the client_payload')
-        if 'url' not in event['client_payload']['pull_request']:
+        if not isinstance(client_payload['pull_request'].get('url'), str):
             raise WorkflowException('The pull_request object in the client_payload must have a url')
 
-        pr_url = event['client_payload']['pull_request']['url']
+        pr_url = client_payload['pull_request']['url']
         github_api_url = actions_env.get('GITHUB_API_URL', 'https://api.github.com').rstrip('/')
         if not pr_url.startswith(github_api_url + '/'):
             raise WorkflowException(f'The pull_request url in the client_payload does not match the expected GitHub API URL ({github_api_url})')
