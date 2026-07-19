@@ -1467,18 +1467,22 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Plan using default ephemeral value
+      - name: Plan with required ephemeral variable
         uses: ./terraform-plan
         with:
           label: test-apply ephemeral
           path: tests/workflows/test-apply/ephemeral
+          variables: |
+            secret = "super-secret"
 
-      - name: Apply using default ephemeral value
+      - name: Apply with required ephemeral variable
         uses: ./terraform-apply
         id: apply
         with:
           label: test-apply ephemeral
           path: tests/workflows/test-apply/ephemeral
+          variables: |
+            secret = "super-secret"
 
       - name: Verify outputs
         env:
@@ -1499,6 +1503,7 @@ jobs:
           variables: |
             region = "eu-west-1"
             mv = "hello"
+            secret = "super-secret"
 
       - name: Apply using explicit ephemeral value
         uses: ./terraform-apply
@@ -1509,6 +1514,7 @@ jobs:
           variables: |
             region = "eu-west-1"
             mv = "hello"
+            secret = "super-secret"
 
       - name: Verify outputs
         env:
@@ -1529,6 +1535,7 @@ jobs:
           variables: |
             region = "eu-west-2"
             mv = "goodbye"
+            secret = "super-secret"
 
       - name: Apply using mismatched explicit non-ephemeral value
         uses: ./terraform-apply
@@ -1540,6 +1547,113 @@ jobs:
           variables: |
             region = "eu-west-2"
             mv = "mismatch"
+            secret = "super-secret"
+
+      - name: Check failed to apply
+        env:
+          OUTCOME: ${{ steps.apply3.outcome }}
+        run: |
+          if [[ "$OUTCOME" != "failure" ]]; then
+            echo "Apply did not fail correctly"
+            exit 1
+          fi
+
+  ephemeral_opentofu:
+    runs-on: ubuntu-24.04
+    name: Apply a plan with ephemeral variables using OpenTofu
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      OPENTOFU_VERSION: "1.11.12"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Plan with required ephemeral variable
+        uses: ./tofu-plan
+        with:
+          label: test-apply ephemeral tofu
+          path: tests/workflows/test-apply/ephemeral
+          variables: |
+            secret = "super-secret"
+
+      - name: Apply with required ephemeral variable
+        uses: ./tofu-apply
+        id: apply
+        with:
+          label: test-apply ephemeral tofu
+          path: tests/workflows/test-apply/ephemeral
+          variables: |
+            secret = "super-secret"
+
+      - name: Verify outputs
+        env:
+          OUTPUT_STRING: ${{ steps.apply.outputs.v }}
+        run: |
+          if [[ "$OUTPUT_STRING" != "non-ephemeral" ]]; then
+            echo "::error:: output v not set correctly"
+            exit 1
+          fi
+
+      ##
+
+      - name: Plan using explicit ephemeral value
+        uses: ./tofu-plan
+        with:
+          label: test-apply ephemeral tofu 2
+          path: tests/workflows/test-apply/ephemeral
+          variables: |
+            region = "eu-west-1"
+            mv = "hello"
+            secret = "super-secret"
+
+      - name: Apply using explicit ephemeral value
+        uses: ./tofu-apply
+        id: apply2
+        with:
+          label: test-apply ephemeral tofu 2
+          path: tests/workflows/test-apply/ephemeral
+          variables: |
+            region = "eu-west-1"
+            mv = "hello"
+            secret = "super-secret"
+
+      - name: Verify outputs
+        env:
+          OUTPUT_STRING: ${{ steps.apply2.outputs.v }}
+        run: |
+          if [[ "$OUTPUT_STRING" != "hello" ]]; then
+            echo "::error:: output v not set correctly"
+            exit 1
+          fi
+
+      ##
+
+      - name: Plan using explicit non-ephemeral value
+        uses: ./tofu-plan
+        with:
+          label: test-apply ephemeral tofu 3
+          path: tests/workflows/test-apply/ephemeral
+          variables: |
+            region = "eu-west-2"
+            mv = "goodbye"
+            secret = "super-secret"
+
+      - name: Apply using mismatched explicit non-ephemeral value
+        uses: ./tofu-apply
+        continue-on-error: true
+        id: apply3
+        with:
+          label: test-apply ephemeral tofu 3
+          path: tests/workflows/test-apply/ephemeral
+          variables: |
+            region = "eu-west-2"
+            mv = "mismatch"
+            secret = "super-secret"
 
       - name: Check failed to apply
         env:

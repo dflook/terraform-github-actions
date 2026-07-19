@@ -8,8 +8,20 @@ variable "mv" {
   default = "non-ephemeral"
 }
 
+variable "secret" {
+  type = string
+  ephemeral = true
+}
+
+variable "session_tag" {
+  type = string
+  ephemeral = true
+  default = "ephemeral-default"
+}
+
 provider "aws" {
   region = var.region
+  token = var.secret
 }
 
 output "v" {
