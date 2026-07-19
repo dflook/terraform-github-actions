@@ -30,6 +30,7 @@ from outputs.plan_path import plan_path
 from outputs.run_id import run_id
 from outputs.text_plan_path import text_plan_path
 from outputs.to_add import to_add
+from outputs.to_invoke import to_invoke
 
 plan = Action(
     'plan',
@@ -70,6 +71,7 @@ The [dflook/$ToolName-apply](https://github.com/dflook/terraform-github-actions/
         json_plan_path,
         text_plan_path,
         to_add,
+        to_invoke,
         run_id
     ],
     environment_variables=[

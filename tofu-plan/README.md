@@ -227,6 +227,7 @@ The [dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/
 * `to_destroy`
 * `to_move`
 * `to_import`
+* `to_forget`
 
   The number of resources that would be affected by each type of operation.
 

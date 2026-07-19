@@ -189,6 +189,7 @@ class Action:
             "text_plan_path",
             "junit_xml_path",
             "to_add",
+            "to_invoke",
             "failure_reason",
             "lock_info",
             "run_id",

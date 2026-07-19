@@ -5,6 +5,10 @@ Creates the outputs:
 - to_add
 - to_change
 - to_destroy
+- to_move
+- to_import
+- to_forget
+- to_invoke
 
 Usage:
     plan_summary
@@ -22,14 +26,24 @@ def summary(plan: str) -> dict[str, int]:
         'change': 0,
         'destroy': 0,
         'move': None,
-        'import': 0
+        'import': 0,
+        'forget': None,
+        'invoke': 0
     }
 
     to_move = 0
+    to_forget = 0
 
     for line in plan.splitlines():
         if re.match(r'  # \S+ has moved to \S+$', line):
             to_move += 1
+
+        # Terraform doesn't include forgotten resources in the summary line, so count them
+        if re.match(r' # \S+ will no longer be managed by Terraform, but will not be destroyed$', line):
+            to_forget += 1
+
+        if re.match(r'  # \S+ will be removed from the OpenTofu state but will not be destroyed$', line):
+            to_forget += 1
 
         if not line.startswith('Plan:'):
             continue
@@ -39,6 +53,9 @@ def summary(plan: str) -> dict[str, int]:
 
     if operations['move'] is None:
         operations['move'] = to_move
+
+    if operations['forget'] is None:
+        operations['forget'] = to_forget
 
     return operations
 

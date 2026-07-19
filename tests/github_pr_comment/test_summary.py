@@ -169,17 +169,54 @@ def test_summary_move_only():
         length      = 8
         # (8 unchanged attributes hidden)
     }
-    
+
   # random_string.blah_string has moved to random_string.my_string2
     resource "random_string" "my_string2" {
         id          = "Iyh3jLKc"
         length      = 8
         # (8 unchanged attributes hidden)
-    }    
+    }
 
 Plan: 0 to add, 0 to change, 0 to destroy.
 """
 
     expected = "Plan: 0 to add, 0 to change, 0 to destroy, 2 to move."
+
+    assert create_summary(plan) == expected
+
+def test_summary_forget_only():
+    # Terraform does not include forgotten resources in the summary line,
+    # so they are counted from the plan text
+    plan = """Terraform will perform the following actions:
+
+ # terraform_data.x will no longer be managed by Terraform, but will not be destroyed
+ # (destroy = false is set in the configuration)
+ . resource "terraform_data" "x" {
+        id     = "c5464233-23a4-f524-e5c8-d28838eb0687"
+        # (2 unchanged attributes hidden)
+    }
+
+Plan: 0 to add, 0 to change, 0 to destroy.
+"""
+
+    expected = "Plan: 0 to add, 0 to change, 0 to destroy, 1 to forget."
+
+    assert create_summary(plan) == expected
+
+def test_summary_forget_opentofu():
+    # OpenTofu includes forgotten resources in the summary line, which is used as-is
+    plan = """OpenTofu will perform the following actions:
+
+  # terraform_data.x will be removed from the OpenTofu state but will not be destroyed
+  . resource "terraform_data" "x" {
+    id     = "c5464233-23a4-f524-e5c8-d28838eb0687"
+    input  = "hello"
+    output = "hello"
+}
+
+Plan: 0 to add, 0 to change, 0 to destroy, 1 to forget.
+"""
+
+    expected = "Plan: 0 to add, 0 to change, 0 to destroy, 1 to forget."
 
     assert create_summary(plan) == expected

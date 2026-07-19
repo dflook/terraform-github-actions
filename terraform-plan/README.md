@@ -210,8 +210,17 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
 * `to_destroy`
 * `to_move`
 * `to_import`
+* `to_forget`
 
   The number of resources that would be affected by each type of operation.
+
+  - Type: number
+
+* `to_invoke`
+
+  The number of actions that would be invoked by the plan, using `action_trigger` lifecycle events.
+
+  Requires Terraform 1.14+.
 
   - Type: number
 
