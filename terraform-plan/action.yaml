@@ -110,6 +110,10 @@ outputs:
     description: The number of resources that would be affected by this operation.
   to_import:
     description: The number of resources that would be affected by this operation.
+  to_forget:
+    description: The number of resources that would be affected by this operation.
+  to_invoke:
+    description: The number of actions that would be invoked by this operation.
   run_id:
     description: If the root module uses the `remote` or `cloud` backend in remote execution mode, this output will be set to the remote run id.
 

@@ -200,6 +200,7 @@ def create_summary(plan: Plan, changes: bool=True) -> Optional[str]:
     summary = None
 
     to_move = 0
+    to_forget = 0
 
     for line in plan.splitlines():
         if line.startswith('No changes') or line.startswith('Error'):
@@ -208,11 +209,21 @@ def create_summary(plan: Plan, changes: bool=True) -> Optional[str]:
         if re.match(r'  # \S+ has moved to \S+$', line):
             to_move += 1
 
+        # Terraform doesn't include forgotten resources in the summary line, so count them
+        if re.match(r' # \S+ will no longer be managed by Terraform, but will not be destroyed$', line):
+            to_forget += 1
+
+        if re.match(r'  # \S+ will be removed from the OpenTofu state but will not be destroyed$', line):
+            to_forget += 1
+
         if line.startswith('Plan:'):
             summary = line
 
             if to_move and 'move' not in summary:
                 summary = summary.rstrip('.') + f', {to_move} to move.'
+
+            if to_forget and 'forget' not in summary:
+                summary = summary.rstrip('.') + f', {to_forget} to forget.'
 
         if line.startswith('Changes to Outputs'):
             if summary:
