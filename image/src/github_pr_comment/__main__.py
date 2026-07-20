@@ -613,6 +613,9 @@ def main() -> int:
             status=status
         )
 
+        if comment.comment_url:
+            output('comment_url', comment.comment_url)
+
     elif sys.argv[1] == 'status':
         if comment.comment_url is None:
             debug("Can't set status of comment that doesn't exist")

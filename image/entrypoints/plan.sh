@@ -11,15 +11,22 @@ set-plan-args
 exec 3>&1
 
 ### Generate a plan
-PLAN_OUT="$STEP_TMP_DIR/plan.out"
+if [[ "$INPUT_SPECULATIVE" == "true" ]]; then
+    # Force speculative plan - no -out flag
+    PLAN_OUT=""
+else
+    # Normal behavior - try to save plan file
+    PLAN_OUT="$STEP_TMP_DIR/plan.out"
+fi
 PLAN_ARGS="$PLAN_ARGS -lock=false"
 plan
 
-if [[ $PLAN_EXIT -eq 1 ]]; then
+# If plan failed because remote backend doesn't support -out flag, retry without it
+# Skip this retry if we're already running speculative (PLAN_OUT is already empty)
+if [[ $PLAN_EXIT -eq 1 && -n "$PLAN_OUT" ]]; then
     if grep -q "Saving a generated plan is currently not supported" "$STEP_TMP_DIR/terraform_plan.stderr"; then
         # This terraform module is using the remote backend, which is deficient.
         PLAN_OUT=""
-        PLAN_ARGS="$PLAN_ARGS -lock=false"
         plan
     fi
 fi
