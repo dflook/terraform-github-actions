@@ -8,6 +8,10 @@ customCatalog:
       fileMatch: ["changelog.markdownlint.yaml"]
       location: "https://raw.githubusercontent.com/DavidAnson/markdownlint/main/schema/markdownlint-config-schema.json"
 
+    - name: GitHub Issue Forms
+      fileMatch: [".github/ISSUE_TEMPLATE/problem.yml", ".github/ISSUE_TEMPLATE/suggestion.yml"]
+      location: "https://json.schemastore.org/github-issue-forms.json"
+
     - name: GitHub Issue Template configuration
       fileMatch: [".github/ISSUE_TEMPLATE/config.yml"]
       location: "https://json.schemastore.org/github-issue-config.json"

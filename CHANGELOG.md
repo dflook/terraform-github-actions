@@ -24,9 +24,9 @@ When using an action you can specify the version as:
 ### Fixed
 - Automatic masking of the `variables` input in PR comments, for variables that are defined as sensitive in `.tf.json`/`.tofu.json` files now works correctly.
   Previously these could appear in PR comments unmasked if:
-  - The variable was defined sensitive in a `.tf.json`/`.tofu.json` file (not a `.tf`/`.tofu` file)
-  - The variable was passed using the `variables` input
-  - No `label` input was set
+  * The variable was defined sensitive in a `.tf.json`/`.tofu.json` file (not a `.tf`/`.tofu` file)
+  * The variable was passed using the `variables` input
+  * No `label` input was set
 
   Thanks to [lokesh0186](https://github.com/lokesh0186) for reporting this issue.
 
