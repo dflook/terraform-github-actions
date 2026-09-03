@@ -110,13 +110,13 @@ jobs:
           path: tests/workflows/test-binary-plan
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           label: test-binary-plan plan_changed
           path: tests/workflows/test-binary-plan
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         continue-on-error: true
         id: apply
         with:

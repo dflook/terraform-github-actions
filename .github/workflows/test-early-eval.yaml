@@ -24,7 +24,7 @@ jobs:
           persist-credentials: false
 
       - name: tofu plan
-        uses: ./tofu-plan
+        uses: $/tofu-plan
         id: plan
         with:
           path: tests/workflows/test-early-eval/s3
@@ -41,14 +41,14 @@ jobs:
           fi
 
       - name: tofu apply
-        uses: ./tofu-apply
+        uses: $/tofu-apply
         with:
           path: tests/workflows/test-early-eval/s3
           variables: |
             passphrase = "tofuqwertyuiopasdfgh"
 
       - name: Create workspace
-        uses: ./tofu-new-workspace
+        uses: $/tofu-new-workspace
         with:
           path: tests/workflows/test-early-eval/s3
           workspace: test-workspace
@@ -56,7 +56,7 @@ jobs:
             passphrase = "tofuqwertyuiopasdfgh"
 
       - name: Create workspace again
-        uses: ./tofu-new-workspace
+        uses: $/tofu-new-workspace
         with:
           path: tests/workflows/test-early-eval/s3
           workspace: test-workspace
@@ -64,7 +64,7 @@ jobs:
             passphrase = "tofuqwertyuiopasdfgh"
 
       - name: Destroy workspace
-        uses: ./tofu-destroy-workspace
+        uses: $/tofu-destroy-workspace
         with:
           path: tests/workflows/test-early-eval/s3
           workspace: test-workspace

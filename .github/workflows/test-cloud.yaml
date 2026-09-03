@@ -295,7 +295,7 @@ jobs:
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Destroy non-existent workspace
-        uses: ./terraform-destroy-workspace
+        uses: $/terraform-destroy-workspace
         continue-on-error: true
         id: destroy-non-existant-workspace
         with:
@@ -328,25 +328,25 @@ jobs:
           persist-credentials: false
 
       - name: Create a new workspace with no existing workspaces
-        uses: ./terraform-new-workspace
+        uses: $/terraform-new-workspace
         with:
           path: tests/workflows/test-cloud/partial
           workspace: ${{ github.head_ref }}-cloud-1
 
       - name: Create a new workspace when it doesn't exist
-        uses: ./terraform-new-workspace
+        uses: $/terraform-new-workspace
         with:
           path: tests/workflows/test-cloud/partial
           workspace: ${{ github.head_ref }}-cloud-2
 
       - name: Create a new workspace when it already exists
-        uses: ./terraform-new-workspace
+        uses: $/terraform-new-workspace
         with:
           path: tests/workflows/test-cloud/partial
           workspace: ${{ github.head_ref }}-cloud-2
 
       - name: Auto apply workspace
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: auto_apply
         with:
           path: tests/workflows/test-cloud/partial
@@ -381,7 +381,7 @@ jobs:
           fi
 
       - name: Get outputs
-        uses: ./terraform-output
+        uses: $/terraform-output
         id: output
         with:
           path: tests/workflows/test-cloud/partial
@@ -397,13 +397,13 @@ jobs:
           fi
 
       - name: Check no changes
-        uses: ./terraform-check
+        uses: $/terraform-check
         with:
           path: tests/workflows/test-cloud/partial
           workspace: ${{ github.head_ref }}-cloud-1
 
       - name: Check changes
-        uses: ./terraform-check
+        uses: $/terraform-check
         id: check
         continue-on-error: true
         with:
@@ -434,13 +434,13 @@ jobs:
           fi
 
       - name: Destroy workspace
-        uses: ./terraform-destroy-workspace
+        uses: $/terraform-destroy-workspace
         with:
           path: tests/workflows/test-cloud/partial
           workspace: ${{ github.head_ref }}-cloud-1
 
       - name: Plan changes
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -477,7 +477,7 @@ jobs:
           fi
 
       - name: Apply changes
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -514,7 +514,7 @@ jobs:
           fi
 
       - name: Plan no changes
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan-no-changes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -524,7 +524,7 @@ jobs:
           workspace: ${{ github.head_ref }}-cloud-2
 
       - name: Apply no changes
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply-no-changes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -585,7 +585,7 @@ jobs:
           fi
 
       - name: Saved plan with changes
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: saved-plan-changes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -597,7 +597,7 @@ jobs:
             length=8
 
       - name: Saved apply with changes
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: saved-apply-changes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -649,7 +649,7 @@ jobs:
           fi
 
       - name: Saved plan with no changes
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: saved-plan-no-changes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -661,7 +661,7 @@ jobs:
             length=8
 
       - name: Saved apply with no changes
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: saved-apply-no-changes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -713,13 +713,13 @@ jobs:
           fi
 
       - name: Destroy the last workspace
-        uses: ./terraform-destroy-workspace
+        uses: $/terraform-destroy-workspace
         with:
           path: tests/workflows/test-cloud/partial
           workspace: ${{ github.head_ref }}-cloud-2
 
       - name: Destroy non-existent workspace
-        uses: ./terraform-destroy-workspace
+        uses: $/terraform-destroy-workspace
         continue-on-error: true
         id: destroy-non-existent-workspace
         with:

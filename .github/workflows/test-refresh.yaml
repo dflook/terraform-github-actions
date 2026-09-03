@@ -28,7 +28,7 @@ jobs:
           auto_approve: true
 
       - name: Check no changes
-        uses: ./terraform-check
+        uses: $/terraform-check
         with:
           path: tests/workflows/test-refresh
 
@@ -39,7 +39,7 @@ jobs:
           echo "tyuityuiy" > tests/workflows/test-refresh/test3
 
       - name: Create a normal plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan-with-refresh
         with:
           add_github_comment: false
@@ -61,7 +61,7 @@ jobs:
           fi
 
       - name: Create a non-refresh plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan-without-refresh
         with:
           add_github_comment: false
@@ -80,14 +80,14 @@ jobs:
           fi
 
       - name: Targeted refresh
-        uses: ./terraform-refresh
+        uses: $/terraform-refresh
         with:
           path: tests/workflows/test-refresh
           target: |
             local_file.one
 
       - name: Plan after targeted refresh
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan-after-targeted-refresh
         with:
           path: tests/workflows/test-refresh
@@ -109,7 +109,7 @@ jobs:
           fi
 
       - name: Apply plan after targeted refresh
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply
         continue-on-error: true
         with:
@@ -137,13 +137,13 @@ jobs:
           fi
 
       - name: Apply without refresh
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         with:
           path: tests/workflows/test-refresh
           refresh: false
 
       - name: Create another normal plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan-with-refresh-after-apply
         with:
           add_github_comment: false
@@ -165,12 +165,12 @@ jobs:
           fi
 
       - name: Full refresh
-        uses: ./terraform-refresh
+        uses: $/terraform-refresh
         with:
           path: tests/workflows/test-refresh
 
       - name: Plan after full refresh
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan-after-full-refresh
         with:
           add_github_comment: false

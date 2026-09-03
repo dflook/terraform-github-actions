@@ -23,7 +23,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan with no changes in targets
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan
         with:
           label: test-target-replace plan_targeting
@@ -43,7 +43,7 @@ jobs:
           fi
 
       - name: Plan targeted change
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan-first-change
         with:
           path: tests/workflows/test-target-replace-exclude
@@ -62,7 +62,7 @@ jobs:
           fi
 
       - name: Apply targeted change
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply-first-change
         with:
           path: tests/workflows/test-target-replace-exclude
@@ -81,7 +81,7 @@ jobs:
           fi
 
       - name: Plan targeted change
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan-second-change
         with:
           path: tests/workflows/test-target-replace-exclude
@@ -100,7 +100,7 @@ jobs:
           fi
 
       - name: Apply targeted change
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply-second-change
         with:
           path: tests/workflows/test-target-replace-exclude
@@ -126,7 +126,7 @@ jobs:
           fi
 
       - name: Auto Apply targeted change
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply-third-change
         with:
           path: tests/workflows/test-target-replace-exclude
@@ -155,7 +155,7 @@ jobs:
           fi
 
       - name: Plan targeted replacement
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan-targeted-replacement
         with:
           path: tests/workflows/test-target-replace-exclude
@@ -177,7 +177,7 @@ jobs:
           fi
 
       - name: Apply targeted replacement
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply-targeted-replacement
         with:
           path: tests/workflows/test-target-replace-exclude
@@ -207,7 +207,7 @@ jobs:
           fi
 
       - name: Plan replacement
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan-replacement
         with:
           path: tests/workflows/test-target-replace-exclude
@@ -227,7 +227,7 @@ jobs:
           fi
 
       - name: Apply replacement
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply-replacement
         with:
           path: tests/workflows/test-target-replace-exclude
@@ -282,14 +282,14 @@ jobs:
           EOF
 
       - name: Create test workspace
-        uses: ./terraform-new-workspace
+        uses: $/terraform-new-workspace
         with:
           path: tests/workflows/test-target-replace-exclude
           workspace: ${{ github.head_ref }}
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Plan with no changes in targets
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan
         with:
           label: test-target-replace remote_plan_targeting
@@ -311,7 +311,7 @@ jobs:
           fi
 
       - name: Plan targeted change
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan-first-change
         with:
           path: tests/workflows/test-target-replace-exclude
@@ -332,7 +332,7 @@ jobs:
           fi
 
       - name: Apply targeted change
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply-first-change
         with:
           path: tests/workflows/test-target-replace-exclude
@@ -353,7 +353,7 @@ jobs:
           fi
 
       - name: Plan targeted change
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan-second-change
         with:
           path: tests/workflows/test-target-replace-exclude
@@ -374,7 +374,7 @@ jobs:
           fi
 
       - name: Apply targeted change
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply-second-change
         with:
           path: tests/workflows/test-target-replace-exclude
@@ -402,7 +402,7 @@ jobs:
           fi
 
       - name: Auto Apply targeted change
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply-third-change
         with:
           path: tests/workflows/test-target-replace-exclude
@@ -433,7 +433,7 @@ jobs:
           fi
 
       - name: Plan targeted replacement
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan-targeted-replacement
         with:
           path: tests/workflows/test-target-replace-exclude
@@ -457,7 +457,7 @@ jobs:
           fi
 
       - name: Apply targeted replacement
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply-targeted-replacement
         with:
           path: tests/workflows/test-target-replace-exclude
@@ -489,7 +489,7 @@ jobs:
           fi
 
       - name: Plan replacement
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan-replacement
         with:
           path: tests/workflows/test-target-replace-exclude
@@ -511,7 +511,7 @@ jobs:
           fi
 
       - name: Apply replacement
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply-replacement
         with:
           path: tests/workflows/test-target-replace-exclude
@@ -541,7 +541,7 @@ jobs:
           fi
 
       - name: Destroy the workspace
-        uses: ./terraform-destroy-workspace
+        uses: $/terraform-destroy-workspace
         with:
           path: tests/workflows/test-target-replace-exclude
           workspace: ${{ github.head_ref }}
@@ -562,7 +562,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan excluding resources
-        uses: ./tofu-plan
+        uses: $/tofu-plan
         id: plan-exclude
         with:
           label: test-exclude tofu_exclude_testing
@@ -583,7 +583,7 @@ jobs:
           fi
 
       - name: Apply excluding resources
-        uses: ./tofu-apply
+        uses: $/tofu-apply
         id: apply-exclude
         with:
           label: test-exclude tofu_exclude_testing
@@ -627,7 +627,7 @@ jobs:
           fi
 
       - name: Plan excluding resources without label
-        uses: ./tofu-plan
+        uses: $/tofu-plan
         id: plan-exclude-no-label
         with:
           path: tests/workflows/test-target-replace-exclude
@@ -646,7 +646,7 @@ jobs:
           fi
 
       - name: Apply excluding resources without label
-        uses: ./tofu-apply
+        uses: $/tofu-apply
         id: apply-exclude-no-label
         with:
           path: tests/workflows/test-target-replace-exclude

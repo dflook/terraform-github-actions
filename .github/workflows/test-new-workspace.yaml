@@ -50,7 +50,7 @@ jobs:
           workspace: test-workspace
 
       - name: Apply in first workspace
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         with:
           path: tests/workflows/test-new-workspace
           workspace: test-workspace
@@ -58,13 +58,13 @@ jobs:
           auto_approve: true
 
       - name: Create a second workspace
-        uses: ./terraform-new-workspace
+        uses: $/terraform-new-workspace
         with:
           path: tests/workflows/test-new-workspace
           workspace: ${{ github.head_ref }}
 
       - name: Apply in second workspace
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         with:
           path: tests/workflows/test-new-workspace
           workspace: ${{ github.head_ref }}
@@ -72,14 +72,14 @@ jobs:
           auto_approve: true
 
       - name: Get first workspace outputs
-        uses: ./terraform-output
+        uses: $/terraform-output
         id: first
         with:
           path: tests/workflows/test-new-workspace
           workspace: test-workspace
 
       - name: Get second workspace outputs
-        uses: ./terraform-output
+        uses: $/terraform-output
         id: second
         with:
           path: tests/workflows/test-new-workspace
@@ -101,14 +101,14 @@ jobs:
           fi
 
       - name: Destroy first workspace
-        uses: ./terraform-destroy-workspace
+        uses: $/terraform-destroy-workspace
         with:
           path: tests/workflows/test-new-workspace
           workspace: test-workspace
           variables: my_string="hello"
 
       - name: Destroy second workspace
-        uses: ./terraform-destroy-workspace
+        uses: $/terraform-destroy-workspace
         with:
           path: tests/workflows/test-new-workspace
           workspace: ${{ github.head_ref }}
