@@ -632,7 +632,7 @@ jobs:
         run: |
           echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
 
-          if [[ "$DETECTED_TERRAFORM_VERSION" != *"1.15"* ]]; then
+          if [[ "$DETECTED_TERRAFORM_VERSION" != *"1.16"* ]]; then
             echo "::error:: Latest version was not used"
             exit 1
           fi
