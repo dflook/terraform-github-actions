@@ -12,6 +12,9 @@ include = [
 ]
 
 [lint]
+# The rules ruff enabled by default before 0.16, which expanded the default set considerably.
+select = ["E4", "E7", "E9", "F"]
+
 # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
 unfixable = []
