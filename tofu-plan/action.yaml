@@ -120,6 +120,10 @@ outputs:
     description: The number of resources that would be affected by this operation.
   run_id:
     description: If the root module uses the `remote` or `cloud` backend in remote execution mode, this output will be set to the remote run id.
+  comment_url:
+    description: |
+      The URL of the GitHub PR comment that was created or updated with the plan.
+      This will only be set if a comment was created (i.e., when running on a pull request with add_github_comment enabled).
 
 runs:
   env:

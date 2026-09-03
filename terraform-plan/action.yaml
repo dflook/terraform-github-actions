@@ -78,6 +78,16 @@ inputs:
     description: Limit the number of concurrent operations
     required: false
     default: "0"
+  speculative:
+    description: |
+      Set to `true` to force a speculative plan that cannot be applied.
+
+      This creates a "Planned and finished" run in Terraform Cloud instead of "Planned and saved".
+      Speculative plans don't lock state and can run in parallel with other operations.
+
+      This is useful for PR workflows where you want to preview changes without blocking other runs.
+    required: false
+    default: "false"
 
 outputs:
   changes:
@@ -88,6 +98,8 @@ outputs:
       The path is relative to the Actions workspace.
 
       The plan can be used as the `plan_file` input to the [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/main/terraform-apply) action.
+
+      This won't be set if `speculative` is `true` or if the backend type is `remote`/`cloud` in remote execution mode.
 
       Terraform plans often contain sensitive information, so this output should be treated with care.
   json_plan_path:
@@ -112,6 +124,10 @@ outputs:
     description: The number of resources that would be affected by this operation.
   run_id:
     description: If the root module uses the `remote` or `cloud` backend in remote execution mode, this output will be set to the remote run id.
+  comment_url:
+    description: |
+      The URL of the GitHub PR comment that was created or updated with the plan.
+      This will only be set if a comment was created (i.e., when running on a pull request with add_github_comment enabled).
 
 runs:
   using: docker

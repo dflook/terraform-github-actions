@@ -505,7 +505,44 @@ function plan() {
     # shellcheck disable=SC2086
     (cd "$INPUT_PATH" && $TOOL_COMMAND_NAME plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PARALLEL_ARG $PLAN_OUT_ARG $PLAN_ARGS) \
         2>"$STEP_TMP_DIR/terraform_plan.stderr" \
+        | python3 -c "
+import sys
+# tfmask uses bufio.Scanner which has a 64KB line limit. Resources that embed
+# large base64 blobs (e.g. google_api_gateway_api_config openapi_documents)
+# produce lines that exceed this limit, causing tfmask to crash mid-pipe and
+# terraform to exit via SIGPIPE with a non-standard exit code. That prevents
+# PIPESTATUS[0] from returning 2 (changes), so the apply step is skipped.
+# Split long lines into chunks with a sentinel prefix so tfmask can process
+# each chunk; the unchunker below reassembles them preserving the full content.
+CHUNK = 60000
+for line in sys.stdin:
+    s = line.rstrip('\n')
+    if len(s) <= CHUNK:
+        sys.stdout.write(line)
+    else:
+        parts = [s[i:i+CHUNK] for i in range(0, len(s), CHUNK)]
+        for i, p in enumerate(parts):
+            sys.stdout.write(f'##TF_CHUNK:{i}/{len(parts)}/{p}\n')
+" \
         | $TFMASK \
+        | python3 -c "
+import sys
+# Reassemble lines that were split by the chunker above.
+buf = []
+for line in sys.stdin:
+    s = line.rstrip('\n')
+    if s.startswith('##TF_CHUNK:'):
+        rest = s[11:]
+        slash1 = rest.index('/')
+        slash2 = rest.index('/', slash1 + 1)
+        i, total = int(rest[:slash1]), int(rest[slash1+1:slash2])
+        buf.append((i, rest[slash2+1:]))
+        if len(buf) == total:
+            sys.stdout.write(''.join(p[1] for p in sorted(buf)) + '\n')
+            buf = []
+    else:
+        sys.stdout.write(line)
+" \
         | tee /dev/fd/3 "$STEP_TMP_DIR/terraform_plan.stdout" \
         | compact_plan \
             >"$STEP_TMP_DIR/plan.txt"
