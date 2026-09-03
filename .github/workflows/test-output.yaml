@@ -21,7 +21,7 @@ jobs:
           persist-credentials: false
 
       - name: Get outputs
-        uses: ./terraform-output
+        uses: $/terraform-output
         id: terraform-output
         with:
           path: tests/workflows/test-output

@@ -17,7 +17,7 @@ jobs:
           persist-credentials: false
 
       - name: Check
-        uses: ./terraform-check
+        uses: $/terraform-check
         id: check
         with:
           path: tests/workflows/test-check/no_changes
@@ -47,7 +47,7 @@ jobs:
           persist-credentials: false
 
       - name: Check
-        uses: ./terraform-check
+        uses: $/terraform-check
         continue-on-error: true
         id: check
         with:

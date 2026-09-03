@@ -21,13 +21,13 @@ jobs:
           persist-credentials: false
 
       - name: Check state is not locked
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         with:
           path: tests/workflows/test-unlock-state
           auto_approve: true
 
       - name: Intentionally lock the state
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: failed-apply
         continue-on-error: true
         with:
@@ -61,7 +61,7 @@ jobs:
 
       # Check state-locked
       - name: Try using locked state using terraform-apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: locked-state-apply
         continue-on-error: true
         with:
@@ -101,7 +101,7 @@ jobs:
           echo "Lock id is $LOCK_ID"
 
       - name: Try using locked state using terraform-destroy
-        uses: ./terraform-destroy
+        uses: $/terraform-destroy
         id: locked-state-destroy
         continue-on-error: true
         with:
@@ -140,14 +140,14 @@ jobs:
           echo "Lock id is $LOCK_ID"
 
       - name: Unlock the state
-        uses: ./terraform-unlock-state
+        uses: $/terraform-unlock-state
         continue-on-error: true
         with:
           path: tests/workflows/test-unlock-state
           lock_id: ${{ fromJson(steps.locked-state-apply.outputs.lock-info).ID }}
 
       - name: Check state is not locked
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         with:
           path: tests/workflows/test-unlock-state
           auto_approve: true
@@ -162,20 +162,20 @@ jobs:
           persist-credentials: false
 
       - name: Create first workspace
-        uses: ./terraform-new-workspace
+        uses: $/terraform-new-workspace
         with:
           path: tests/workflows/test-unlock-state
           workspace: hello
 
       - name: Check state is not locked
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         with:
           path: tests/workflows/test-unlock-state
           workspace: hello
           auto_approve: true
 
       - name: Intentionally lock the state
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: failed-apply-workspace
         continue-on-error: true
         with:
@@ -210,7 +210,7 @@ jobs:
 
       # Check state-locked
       - name: Try using locked state
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: locked-state-workspace
         continue-on-error: true
         with:
@@ -251,7 +251,7 @@ jobs:
           echo "Lock id is $LOCK_ID"
 
       - name: Try using locked state using terraform-destroy-workspace
-        uses: ./terraform-destroy-workspace
+        uses: $/terraform-destroy-workspace
         id: locked-state-destroy-workspace
         continue-on-error: true
         with:
@@ -291,7 +291,7 @@ jobs:
           echo "Lock id is $LOCK_ID"
 
       - name: Unlock the state
-        uses: ./terraform-unlock-state
+        uses: $/terraform-unlock-state
         continue-on-error: true
         with:
           path: tests/workflows/test-unlock-state
@@ -299,14 +299,14 @@ jobs:
           lock_id: ${{ fromJson(steps.locked-state-workspace.outputs.lock-info).ID }}
 
       - name: Check state is not locked
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         with:
           path: tests/workflows/test-unlock-state
           workspace: hello
           auto_approve: true
 
       - name: Destroy workspace
-        uses: ./terraform-destroy-workspace
+        uses: $/terraform-destroy-workspace
         with:
           path: tests/workflows/test-unlock-state
           workspace: hello

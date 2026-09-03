@@ -22,13 +22,13 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           label: pull_request_review
           path: tests/workflows/pull_request_review
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: output
         with:
           label: pull_request_review

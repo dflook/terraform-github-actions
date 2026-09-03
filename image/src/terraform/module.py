@@ -2,16 +2,16 @@
 
 from __future__ import annotations
 
+import terraform.tf_json
 import os
-from typing import Any, cast, NewType, Optional, TYPE_CHECKING, TypedDict, List, Iterable
+from typing import Any, cast, NewType, Optional, TypedDict, List, Iterable
 
 import terraform.hcl
 
 from github_actions.debug import debug
 from terraform.versions import Constraint
 
-if TYPE_CHECKING:
-    from pathlib import Path
+from pathlib import Path
 
 TerraformModule = NewType('TerraformModule', dict[str, list[dict[str, Any]]])
 
@@ -53,22 +53,36 @@ def merge(a: TerraformModule, b: TerraformModule) -> TerraformModule:
 
 def files_in_module(path: Path) -> Iterable[Path]:
 
+    def find_base_name(name: str) -> str:
+        if name.endswith('.tf.json'):
+            return name[:-len('.tf.json')] + '.json'
+        elif name.endswith('.tofu.json'):
+            return name[:-len('.tofu.json')] + '.json'
+        else:
+            return Path(name).stem
+
     if os.environ.get('OPENTOFU') == 'true':
         files = {}
 
         for filename in path.iterdir():
-            stem = filename.stem
+            base_name = find_base_name(str(filename))
 
-            if filename.suffix == '.tf' and stem not in files:
-                files[stem] = filename
+            if filename.suffix == '.tf' and base_name not in files:
+                files[base_name] = filename
             elif filename.suffix == '.tofu':
-                files[stem] = filename
+                files[base_name] = filename
+            elif str(filename).endswith('.tf.json') and base_name not in files:
+                files[base_name] = filename
+            elif str(filename).endswith('.tofu.json'):
+                files[base_name] = filename
 
         yield from files.values()
 
     else:
         for filename in path.iterdir():
             if filename.suffix == '.tf':
+                yield filename
+            elif str(filename).endswith('.tf.json'):
                 yield filename
 
 
@@ -84,13 +98,23 @@ def load_module(path: Path) -> TerraformModule:
 
     for file in files_in_module(path):
 
-        try:
-            tf_file = cast(TerraformModule, terraform.hcl.load(file))
-            module = merge(module, tf_file)
-        except Exception as e:
-            # ignore tf files that don't parse
-            debug(f'Failed to parse {file}')
-            debug(str(e))
+        if file.suffix == '.json':
+            try:
+                json_file = cast(TerraformModule, terraform.tf_json.load(file))
+                module = merge(module, json_file)
+            except Exception as e:
+                # ignore tf.json files that don't parse
+                debug(f'Failed to parse {file}')
+                debug(str(e))
+
+        else:
+            try:
+                tf_file = cast(TerraformModule, terraform.hcl.load(file))
+                module = merge(module, tf_file)
+            except Exception as e:
+                # ignore tf files that don't parse
+                debug(f'Failed to parse {file}')
+                debug(str(e))
 
     return module
 

@@ -25,7 +25,7 @@ jobs:
           persist-credentials: false
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: output
         with:
           path: tests/workflows/test-http
@@ -55,7 +55,7 @@ jobs:
           persist-credentials: false
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: output
         with:
           path: tests/workflows/test-http
@@ -85,7 +85,7 @@ jobs:
           persist-credentials: false
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: output
         with:
           path: tests/workflows/test-http
@@ -110,7 +110,7 @@ jobs:
           persist-credentials: false
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         continue-on-error: true
         id: apply
         with:
@@ -147,7 +147,7 @@ jobs:
           ls -la "$RUNNER_TEMP_D"
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: output
         with:
           path: tests/workflows/test-http/http-module
@@ -176,7 +176,7 @@ jobs:
           persist-credentials: false
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         continue-on-error: true
         id: apply
         with:

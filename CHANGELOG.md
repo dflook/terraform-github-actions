@@ -11,9 +11,24 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v3.0.0` to use an exact release
+- `@v3.0.1` to use an exact release
 - `@v3.0` to use the latest patch release for the specific minor version
 - `@v3` to use the latest patch release for the specific major version
+
+## [3.0.1] - 2026-09-03
+
+### Changed
+- `.tf.json`/`.tofu.json` are now read for terraform/tofu version constraints, backend configuration, and sensitive variable definitions, in addition to `.tf`/`.tofu` files.
+  Previously only `.tf`/`.tofu` files were read for this information.
+
+### Fixed
+- Automatic masking of the `variables` input in PR comments, for variables that are defined as sensitive in `.tf.json`/`.tofu.json` files now works correctly.
+  Previously these could appear in PR comments unmasked if:
+  * The variable was defined sensitive in a `.tf.json`/`.tofu.json` file (not a `.tf`/`.tofu` file)
+  * The variable was passed using the `variables` input
+  * No `label` input was set
+
+  Thanks to [lokesh0186](https://github.com/lokesh0186) for reporting this issue.
 
 ## [3.0.0] - 2026-07-18
 
@@ -822,6 +837,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[3.0.1]: https://github.com/dflook/terraform-github-actions/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/dflook/terraform-github-actions/compare/v2.2.3...v3.0.0
 [2.2.3]: https://github.com/dflook/terraform-github-actions/compare/v2.2.2...v2.2.3
 [2.2.2]: https://github.com/dflook/terraform-github-actions/compare/v2.2.1...v2.2.2

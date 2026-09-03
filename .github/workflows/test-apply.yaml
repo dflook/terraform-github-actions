@@ -17,7 +17,7 @@ jobs:
           persist-credentials: false
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: output
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -63,7 +63,7 @@ jobs:
           persist-credentials: false
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply
         continue-on-error: true
         with:
@@ -126,13 +126,13 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           label: test-apply apply_apply_error
           path: tests/workflows/test-apply/apply-error
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply
         continue-on-error: true
         with:
@@ -189,7 +189,7 @@ jobs:
           persist-credentials: false
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply
         continue-on-error: true
         with:
@@ -237,13 +237,13 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           label: test-apply apply
           path: tests/workflows/test-apply/changes
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: first-apply
         with:
           label: test-apply apply
@@ -277,7 +277,7 @@ jobs:
           fi
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: second-apply
         with:
           label: test-apply apply
@@ -325,7 +325,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           label: test-apply apply_variables
           path: tests/workflows/test-apply/vars
@@ -346,7 +346,7 @@ jobs:
           var_file: tests/workflows/test-apply/test.tfvars
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: output
         with:
           label: test-apply apply_variables
@@ -429,14 +429,14 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           label: test-apply backend_config_12 backend_config_file
           path: tests/workflows/test-apply/backend_config_12
           backend_config_file: tests/workflows/test-apply/backend_config_12/backend_config
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: backend_config_file_12
         with:
           label: test-apply backend_config_12 backend_config_file
@@ -471,7 +471,7 @@ jobs:
           fi
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           label: test-apply backend_config_12 backend_config
           path: tests/workflows/test-apply/backend_config_12
@@ -481,7 +481,7 @@ jobs:
             region=eu-west-2
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: backend_config_12
         with:
           label: test-apply backend_config_12 backend_config
@@ -535,14 +535,14 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           label: test-apply backend_config_12 backend_config_file
           path: tests/workflows/test-apply/backend_config_13
           backend_config_file: tests/workflows/test-apply/backend_config_13/backend_config
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: backend_config_file_13
         with:
           label: test-apply backend_config_12 backend_config_file
@@ -577,7 +577,7 @@ jobs:
           fi
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           label: test-apply backend_config_12 backend_config
           path: tests/workflows/test-apply/backend_config_13
@@ -587,7 +587,7 @@ jobs:
             region=eu-west-2
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: backend_config_13
         with:
           label: test-apply backend_config_12 backend_config
@@ -639,7 +639,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           path: tests/workflows/test-apply/vars
           label: test-apply apply_label
@@ -647,7 +647,7 @@ jobs:
           var_file: tests/workflows/test-apply/test.tfvars
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: output
         with:
           path: tests/workflows/test-apply/vars
@@ -699,7 +699,7 @@ jobs:
           persist-credentials: false
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: output
         with:
           path: tests/workflows/test-apply/remote
@@ -747,7 +747,7 @@ jobs:
           persist-credentials: false
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply
         continue-on-error: true
         with:
@@ -796,13 +796,13 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           label: test-apply apply_user_token
           path: tests/workflows/test-apply/changes
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: output
         with:
           label: test-apply apply_user_token
@@ -850,13 +850,13 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           label: test-apply apply_fine_grained_pat
           path: tests/workflows/test-apply/changes
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: output
         with:
           label: test-apply apply_fine_grained_pat
@@ -905,13 +905,13 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           label: test-apply apply_terraform_actions_github_token
           path: tests/workflows/test-apply/changes
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: output
         with:
           label: test-apply apply_terraform_actions_github_token
@@ -959,7 +959,7 @@ jobs:
           persist-credentials: false
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply
         continue-on-error: true
         with:
@@ -992,21 +992,21 @@ jobs:
           persist-credentials: false
 
       - name: Plan 1
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           label: test-apply apply_refresh 1
           path: tests/workflows/test-apply/refresh_15
           variables: len=10
 
       - name: Apply 1
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         with:
           label: test-apply apply_refresh 1
           path: tests/workflows/test-apply/refresh_15
           variables: len=10
 
       - name: Plan 2
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan
         with:
           label: test-apply apply_refresh 2
@@ -1049,7 +1049,7 @@ jobs:
           exit 1
 
       - name: Apply 2
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: output
         with:
           label: test-apply apply_refresh 2
@@ -1074,13 +1074,13 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           label: test-apply apply_with_pre_run
           path: tests/workflows/test-apply/changes
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: output
         with:
           label: test-apply apply_with_pre_run
@@ -1110,7 +1110,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           label: test-apply warnings_hash
           path: tests/workflows/test-apply/warnings
@@ -1120,7 +1120,7 @@ jobs:
           mv tests/workflows/test-apply/warnings/warning.tfn tests/workflows/test-apply/warnings/warning.tf
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         with:
           label: test-apply warnings_hash
           path: tests/workflows/test-apply/warnings
@@ -1150,7 +1150,7 @@ jobs:
           mv tests/workflows/test-apply/warnings/warning.tfn tests/workflows/test-apply/warnings/warning.tf
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         with:
           label: test-apply warnings_text
           path: tests/workflows/test-apply/warnings
@@ -1170,13 +1170,13 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           label: test-apply long_plan
           path: tests/workflows/test-apply/long_plan
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         with:
           label: test-apply long_plan
           path: tests/workflows/test-apply/long_plan
@@ -1196,13 +1196,13 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           label: test-apply long_plan_changes
           path: tests/workflows/test-apply/long_plan
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply
         continue-on-error: true
         with:
@@ -1256,7 +1256,7 @@ jobs:
           backend_config: key=${{ github.run_id }}${{ github.run_attempt }}
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         with:
           path: tests/workflows/test-apply/partial_backend
           backend_config_file: tests/workflows/test-apply/partial_backend/backend_config
@@ -1296,19 +1296,19 @@ jobs:
           persist-credentials: false
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         with:
           path: tests/workflows/test-apply/destroy_mode
           auto_approve: true
 
       - name: Plan destroy
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           path: tests/workflows/test-apply/destroy_mode
           destroy: true
 
       - name: Apply destroy
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         with:
           path: tests/workflows/test-apply/destroy_mode
           destroy: true
@@ -1328,20 +1328,20 @@ jobs:
           persist-credentials: false
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         with:
           path: tests/workflows/test-apply/destroy_mode
           auto_approve: true
 
       - name: Plan destroy
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           label: test-apply destroy_mode_label
           path: tests/workflows/test-apply/destroy_mode
           destroy: true
 
       - name: Apply destroy
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         with:
           label: test-apply destroy_mode_label
           path: tests/workflows/test-apply/destroy_mode
@@ -1362,7 +1362,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         env:
           OPENTOFU_VERSION: "1.6.0-alpha3"
         with:
@@ -1370,7 +1370,7 @@ jobs:
           path: tests/workflows/test-apply/changes
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         env:
           OPENTOFU_VERSION: "1.6.0-alpha3"
         id: output
@@ -1420,12 +1420,12 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           path: tests/workflows/test-apply/long_outputs
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         with:
           path: tests/workflows/test-apply/long_outputs
 
@@ -1444,12 +1444,12 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           path: tests/workflows/test-apply/outputs
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         with:
           path: tests/workflows/test-apply/outputs
 
@@ -1468,13 +1468,13 @@ jobs:
           persist-credentials: false
 
       - name: Plan using default ephemeral value
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           label: test-apply ephemeral
           path: tests/workflows/test-apply/ephemeral
 
       - name: Apply using default ephemeral value
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply
         with:
           label: test-apply ephemeral
@@ -1492,7 +1492,7 @@ jobs:
       ##
 
       - name: Plan using explicit ephemeral value
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           label: test-apply ephemeral 2
           path: tests/workflows/test-apply/ephemeral
@@ -1501,7 +1501,7 @@ jobs:
             mv = "hello"
 
       - name: Apply using explicit ephemeral value
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply2
         with:
           label: test-apply ephemeral 2
@@ -1522,7 +1522,7 @@ jobs:
       ##
 
       - name: Plan using explicit non-ephemeral value
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           label: test-apply ephemeral 3
           path: tests/workflows/test-apply/ephemeral
@@ -1531,7 +1531,7 @@ jobs:
             mv = "goodbye"
 
       - name: Apply using mismatched explicit non-ephemeral value
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         continue-on-error: true
         id: apply3
         with:
@@ -1560,7 +1560,7 @@ jobs:
           persist-credentials: false
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply
         with:
           auto_approve: true

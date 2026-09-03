@@ -17,7 +17,7 @@ jobs:
           persist-credentials: false
 
       - name: Test terraform-version
-        uses: ./terraform-version
+        uses: $/terraform-version
         id: terraform-version
         with:
           path: tests/workflows/test-version/required_version
@@ -43,7 +43,7 @@ jobs:
           persist-credentials: false
 
       - name: Test terraform-version
-        uses: ./terraform-version
+        uses: $/terraform-version
         id: terraform-version
         with:
           path: tests/workflows/test-version/range
@@ -69,7 +69,7 @@ jobs:
           persist-credentials: false
 
       - name: Test terraform-version
-        uses: ./terraform-version
+        uses: $/terraform-version
         id: terraform-version
         with:
           path: tests/workflows/test-version/v-prefix
@@ -95,7 +95,7 @@ jobs:
           persist-credentials: false
 
       - name: Test terraform-version
-        uses: ./terraform-version
+        uses: $/terraform-version
         id: terraform-version
         with:
           path: tests/workflows/test-version/tfswitch
@@ -121,7 +121,7 @@ jobs:
           persist-credentials: false
 
       - name: Test terraform-version
-        uses: ./terraform-version
+        uses: $/terraform-version
         id: terraform-version
         with:
           path: tests/workflows/test-version/tfenv
@@ -147,7 +147,7 @@ jobs:
           persist-credentials: false
 
       - name: Test tofu-version
-        uses: ./tofu-version
+        uses: $/tofu-version
         id: tofu-version
         with:
           path: tests/workflows/test-version/tofuenv
@@ -173,7 +173,7 @@ jobs:
           persist-credentials: false
 
       - name: Test getting version from .tools-versions
-        uses: ./terraform-version
+        uses: $/terraform-version
         id: terraform-version
         with:
           path: tests/workflows/test-version/asdf
@@ -192,7 +192,7 @@ jobs:
           mv tests/workflows/test-version/asdf/.tool-versions .tool-versions
 
       - name: Test getting version from root .tools-versions
-        uses: ./terraform-version
+        uses: $/terraform-version
         id: root-version
         with:
           path: tests/workflows/test-version/asdf
@@ -216,7 +216,7 @@ jobs:
           persist-credentials: false
 
       - name: Test terraform-version
-        uses: ./terraform-version
+        uses: $/terraform-version
         id: terraform-version
         env:
           TERRAFORM_VERSION: ">=0.12.0,<=0.12.5"
@@ -244,7 +244,7 @@ jobs:
           persist-credentials: false
 
       - name: Create workspace
-        uses: ./terraform-new-workspace
+        uses: $/terraform-new-workspace
         env:
           TERRAFORM_VERSION: 0.12.13
         with:
@@ -253,7 +253,7 @@ jobs:
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Test terraform-version
-        uses: ./terraform-version
+        uses: $/terraform-version
         id: terraform-version
         with:
           path: tests/workflows/test-version/terraform-cloud
@@ -261,7 +261,7 @@ jobs:
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Destroy workspace
-        uses: ./terraform-destroy-workspace
+        uses: $/terraform-destroy-workspace
         with:
           path: tests/workflows/test-version/terraform-cloud
           workspace: test-1
@@ -288,7 +288,7 @@ jobs:
           persist-credentials: false
 
       - name: Create workspace
-        uses: ./terraform-new-workspace
+        uses: $/terraform-new-workspace
         env:
           TERRAFORM_VERSION: 1.1.2
           TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_API_TOKEN }}
@@ -297,7 +297,7 @@ jobs:
           workspace: tfc_cloud_workspace-1
 
       - name: Test terraform-version
-        uses: ./terraform-version
+        uses: $/terraform-version
         id: terraform-version
         env:
           TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_API_TOKEN }}
@@ -306,7 +306,7 @@ jobs:
           workspace: tfc_cloud_workspace-1
 
       - name: Destroy workspace
-        uses: ./terraform-destroy-workspace
+        uses: $/terraform-destroy-workspace
         env:
           TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_API_TOKEN }}
         with:
@@ -334,7 +334,7 @@ jobs:
           persist-credentials: false
 
       - name: Create workspace
-        uses: ./terraform-new-workspace
+        uses: $/terraform-new-workspace
         env:
           TERRAFORM_VERSION: 1.2.1
           TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_API_TOKEN }}
@@ -344,7 +344,7 @@ jobs:
           workspace: tfc_partial_cloud_workspace-1
 
       - name: Test terraform-version
-        uses: ./terraform-version
+        uses: $/terraform-version
         id: terraform-version
         env:
           TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_API_TOKEN }}
@@ -354,7 +354,7 @@ jobs:
           workspace: tfc_partial_cloud_workspace-1
 
       - name: Destroy workspace
-        uses: ./terraform-destroy-workspace
+        uses: $/terraform-destroy-workspace
         env:
           TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_API_TOKEN }}
           TF_CLOUD_ORGANIZATION: flooktech
@@ -383,7 +383,7 @@ jobs:
           persist-credentials: false
 
       - name: Create workspace
-        uses: ./terraform-new-workspace
+        uses: $/terraform-new-workspace
         env:
           TERRAFORM_VERSION: 1.2.1
           TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_API_TOKEN }}
@@ -393,7 +393,7 @@ jobs:
           workspace: tfc_partial_cloud_tags_workspace-1
 
       - name: Test terraform-version
-        uses: ./terraform-version
+        uses: $/terraform-version
         id: terraform-version
         env:
           TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_API_TOKEN }}
@@ -403,7 +403,7 @@ jobs:
           workspace: tfc_partial_cloud_tags_workspace-1
 
       - name: Destroy workspace
-        uses: ./terraform-destroy-workspace
+        uses: $/terraform-destroy-workspace
         env:
           TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_API_TOKEN }}
           TF_CLOUD_ORGANIZATION: flooktech
@@ -432,7 +432,7 @@ jobs:
           persist-credentials: false
 
       - name: Test terraform-version
-        uses: ./terraform-version
+        uses: $/terraform-version
         id: terraform-version
         with:
           path: tests/workflows/test-version/local
@@ -459,7 +459,7 @@ jobs:
           persist-credentials: false
 
       - name: Apply default workspace
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         env:
           TERRAFORM_VERSION: 0.12.9
         with:
@@ -468,13 +468,13 @@ jobs:
           auto_approve: true
 
       - name: Test terraform-version
-        uses: ./terraform-version
+        uses: $/terraform-version
         id: terraform-version
         with:
           path: tests/workflows/test-version/state
 
       - name: Destroy default workspace
-        uses: ./terraform-destroy
+        uses: $/terraform-destroy
         with:
           path: tests/workflows/test-version/state
           variables: my_variable="goodbye"
@@ -491,7 +491,7 @@ jobs:
           fi
 
       - name: Create second workspace
-        uses: ./terraform-new-workspace
+        uses: $/terraform-new-workspace
         env:
           TERRAFORM_VERSION: 1.1.0
         with:
@@ -499,7 +499,7 @@ jobs:
           workspace: second
 
       - name: Apply second workspace
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         with:
           variables: my_variable="goodbye"
           path: tests/workflows/test-version/state
@@ -507,14 +507,14 @@ jobs:
           auto_approve: true
 
       - name: Test terraform-version
-        uses: ./terraform-version
+        uses: $/terraform-version
         id: terraform-version-second
         with:
           path: tests/workflows/test-version/state
           workspace: second
 
       - name: Destroy second workspace
-        uses: ./terraform-destroy-workspace
+        uses: $/terraform-destroy-workspace
         with:
           path: tests/workflows/test-version/state
           workspace: second
@@ -532,7 +532,7 @@ jobs:
           fi
 
       - name: Create third workspace
-        uses: ./terraform-new-workspace
+        uses: $/terraform-new-workspace
         env:
           TERRAFORM_VERSION: 0.13.0
         with:
@@ -540,7 +540,7 @@ jobs:
           workspace: third
 
       - name: Apply third workspace
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         with:
           variables: my_variable="goodbye"
           path: tests/workflows/test-version/state
@@ -548,14 +548,14 @@ jobs:
           auto_approve: true
 
       - name: Test terraform-version
-        uses: ./terraform-version
+        uses: $/terraform-version
         id: terraform-version-third
         with:
           path: tests/workflows/test-version/state
           workspace: third
 
       - name: Destroy third workspace
-        uses: ./terraform-destroy-workspace
+        uses: $/terraform-destroy-workspace
         with:
           path: tests/workflows/test-version/state
           workspace: third
@@ -573,7 +573,7 @@ jobs:
           fi
 
       - name: Test terraform-version
-        uses: ./terraform-version
+        uses: $/terraform-version
         id: terraform-version-fourth
         with:
           path: tests/workflows/test-version/state
@@ -600,7 +600,7 @@ jobs:
           persist-credentials: false
 
       - name: Test terraform-version
-        uses: ./terraform-version
+        uses: $/terraform-version
         id: terraform-version
         with:
           path: tests/workflows/test-version/empty
@@ -611,13 +611,13 @@ jobs:
         run: |
           echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
 
-          if [[ "$DETECTED_TERRAFORM_VERSION" != *"1.15"* ]]; then
+          if [[ "$DETECTED_TERRAFORM_VERSION" != *"1.16"* ]]; then
             echo "::error:: Latest version was not used"
             exit 1
           fi
 
       - name: Version doesn't exist
-        uses: ./terraform-version
+        uses: $/terraform-version
         continue-on-error: true
         id: no-such-version
         env:
@@ -632,7 +632,7 @@ jobs:
         run: |
           echo "The terraform version was $DETECTED_TERRAFORM_VERSION"
 
-          if [[ "$DETECTED_TERRAFORM_VERSION" != *"1.15"* ]]; then
+          if [[ "$DETECTED_TERRAFORM_VERSION" != *"1.16"* ]]; then
             echo "::error:: Latest version was not used"
             exit 1
           fi
@@ -647,7 +647,7 @@ jobs:
           persist-credentials: false
 
       - name: Test terraform-version with 0.12
-        uses: ./terraform-version
+        uses: $/terraform-version
         id: terraform-version-12
         with:
           path: tests/workflows/test-version/providers/0.12
@@ -673,7 +673,7 @@ jobs:
           fi
 
       - name: Test terraform-version with 0.13
-        uses: ./terraform-version
+        uses: $/terraform-version
         id: terraform-version-13
         with:
           path: tests/workflows/test-version/providers/0.13
@@ -699,7 +699,7 @@ jobs:
           fi
 
       - name: Test terraform-version with 0.11
-        uses: ./terraform-version
+        uses: $/terraform-version
         id: terraform-version-11
         with:
           path: tests/workflows/test-version/providers/0.11
@@ -734,7 +734,7 @@ jobs:
           persist-credentials: false
 
       - name: Version unsupported on arm
-        uses: ./terraform-version
+        uses: $/terraform-version
         continue-on-error: true
         id: arm-unsupported
         env:
@@ -752,7 +752,7 @@ jobs:
           fi
 
       - name: Version doesn't exist
-        uses: ./terraform-version
+        uses: $/terraform-version
         continue-on-error: true
         id: no-such-version
         with:
@@ -768,7 +768,7 @@ jobs:
           fi
 
       - name: Test terraform-version
-        uses: ./terraform-version
+        uses: $/terraform-version
         id: terraform-version
         with:
           path: tests/workflows/test-version/tfswitch
@@ -783,7 +783,7 @@ jobs:
           fi
 
       - name: Test tofu-version
-        uses: ./tofu-version
+        uses: $/tofu-version
         id: tofu-version
         with:
           path: tests/workflows/test-version/tofuenv
@@ -807,7 +807,7 @@ jobs:
           persist-credentials: false
 
       - name: Test terraform-version
-        uses: ./terraform-version
+        uses: $/terraform-version
         id: terraform-version
         env:
           OPENTOFU_VERSION: "1.6.0"
@@ -841,7 +841,7 @@ jobs:
           persist-credentials: false
 
       - name: Test terraform-version
-        uses: ./tofu-version
+        uses: $/tofu-version
         id: tofu-version
         env:
           OPENTOFU_VERSION: "1.6.0"
@@ -877,7 +877,7 @@ jobs:
           persist-credentials: false
 
       - name: Test terraform-version
-        uses: ./tofu-version
+        uses: $/tofu-version
         id: tofu-version
         env:
           OPENTOFU_VERSION: "1.6.0-alpha3"
@@ -913,7 +913,7 @@ jobs:
           persist-credentials: false
 
       - name: Test tofu-version
-        uses: ./tofu-version
+        uses: $/tofu-version
         id: tofu-version
         env:
           OPENTOFU_VERSION: "<1.6.0"
@@ -942,7 +942,7 @@ jobs:
           persist-credentials: false
 
       - name: Test terraform-version
-        uses: ./terraform-version
+        uses: $/terraform-version
         id: terraform-version
         with:
           path: tests/workflows/test-version/hard-parse

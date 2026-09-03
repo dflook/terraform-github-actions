@@ -22,7 +22,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan without changes
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan
         with:
           label: test-changes-only change-only THIS SHOULD NOT BE A COMMENT
@@ -39,7 +39,7 @@ jobs:
           fi
 
       - name: Apply without changes
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply
         with:
           label: test-changes-only change-only THIS SHOULD NOT BE A COMMENT
@@ -75,7 +75,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan changes
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: changes-plan
         with:
           label: test-changes-only change_then_no_changes
@@ -94,7 +94,7 @@ jobs:
           fi
 
       - name: Plan no changes
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan
         with:
           label: test-changes-only change_then_no_changes
@@ -113,7 +113,7 @@ jobs:
           fi
 
       - name: Apply no changes
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply
         with:
           label: test-changes-only change_then_no_changes
@@ -151,7 +151,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan no changes
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan
         with:
           path: tests/workflows/test-changes-only
@@ -170,7 +170,7 @@ jobs:
           fi
 
       - name: Apply with changes
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply
         continue-on-error: true
         with:
@@ -215,7 +215,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan Changes
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           path: tests/workflows/test-changes-only
           label: test-changes-only apply_when_plan_has_changed
@@ -223,7 +223,7 @@ jobs:
             cause-changes=true
 
       - name: Apply different changes
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply
         continue-on-error: true
         with:

@@ -22,7 +22,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan
         with:
           path: tests/workflows/test-plan/no_changes
@@ -84,7 +84,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan
         with:
           path: tests/workflows/test-plan/no_changes
@@ -127,7 +127,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan
         with:
           path: tests/workflows/test-plan/plan_11
@@ -200,7 +200,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan
         with:
           path: tests/workflows/test-plan/plan_12
@@ -274,7 +274,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan
         with:
           path: tests/workflows/test-plan/plan_13
@@ -349,7 +349,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan
         with:
           path: tests/workflows/test-plan/plan_14
@@ -424,7 +424,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan
         with:
           path: tests/workflows/test-plan/plan_15
@@ -498,7 +498,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan
         with:
           path: tests/workflows/test-plan/plan_15_4
@@ -572,7 +572,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan
         with:
           path: tests/workflows/test-plan/plan
@@ -646,7 +646,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan
         with:
           path: tests/workflows/test-plan/plan
@@ -689,7 +689,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         continue-on-error: true
         id: plan
         with:
@@ -742,7 +742,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         continue-on-error: true
         id: plan
         with:
@@ -789,7 +789,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         continue-on-error: true
         id: plan
         with:
@@ -837,7 +837,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           path: tests/workflows/test-plan/vars
           variables: |
@@ -859,7 +859,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           path: tests/workflows/test-plan/vars
           variables: |
@@ -881,7 +881,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           path: tests/workflows/test-plan/single_sensitive_variable
           variables: |
@@ -902,7 +902,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           path: tests/workflows/test-plan/sensitive_variables
           variables: |
@@ -942,7 +942,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan
         continue-on-error: true
         with:
@@ -973,7 +973,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           path: tests/workflows/test-plan/plan
           add_github_comment: false
@@ -1000,7 +1000,7 @@ jobs:
         run: cp tests/workflows/test-plan/plan/main.tf ./main.tf
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           label: test-plan default_path
 
@@ -1017,7 +1017,7 @@ jobs:
           persist-credentials: false
 
       - name: path
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: path
         continue-on-error: true
         with:
@@ -1025,7 +1025,7 @@ jobs:
           add_github_comment: false
 
       - name: var_file
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: var_file
         continue-on-error: true
         with:
@@ -1036,7 +1036,7 @@ jobs:
           add_github_comment: false
 
       - name: backend_config_file
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: backend_config_file
         continue-on-error: true
         with:
@@ -1080,13 +1080,13 @@ jobs:
           persist-credentials: false
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         with:
           path: tests/workflows/test-plan/plan
           auto_approve: true
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           path: tests/workflows/test-plan/plan
           label: test-plan test_plan_1_4
@@ -1106,7 +1106,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           path: tests/workflows/test-plan/plan
           label: arm64
@@ -1126,25 +1126,25 @@ jobs:
           persist-credentials: false
 
       - name: Plan with label
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           path: tests/workflows/test-plan/always-new
           label: always-new SHOULD BE OUTDATED
 
       - name: Plan 2 with label
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           path: tests/workflows/test-plan/always-new
           label: always-new SHOULD BE OUTDATED
           add_github_comment: always-new
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           path: tests/workflows/test-plan/always-new
 
       - name: Plan 2
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           path: tests/workflows/test-plan/always-new
           add_github_comment: always-new
@@ -1166,7 +1166,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan with colours
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           path: tests/workflows/test-plan/colours
           label: test-plan colours
@@ -1188,13 +1188,13 @@ jobs:
 #          persist-credentials: false
 #
 #      - name: Plan
-#        uses: ./terraform-plan
+#        uses: $/terraform-plan
 #        with:
 #          label: test-plan self-hosted
 #          path: tests/workflows/test-plan/self-hosted
 #
 #      - name: Plan Again
-#        uses: ./terraform-plan
+#        uses: $/terraform-plan
 #        with:
 #          label: test-plan self-hosted
 #          path: tests/workflows/test-plan/self-hosted
