@@ -31,6 +31,7 @@ paths:
       - 'property "awkward_.*" is not defined in object type'
       - 'property "word" is not defined in object type'
       - 'property "all_vars" is not defined in object type'
+      - 'specifying action "\$/.+" in invalid format because ref is missing'
   .github/workflows/test-target-replace-exclude.yaml:
     ignore:
       - 'property "count" is not defined in object type'
