@@ -23,7 +23,7 @@ jobs:
           persist-credentials: false
 
       - name: terraform plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           label: repository_dispatch
           path: tests/workflows/repository_dispatch

@@ -20,7 +20,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TERRAFORM_SSH_KEY: ${{ secrets.TERRAFORM_SSH_KEY }}
@@ -29,7 +29,7 @@ jobs:
           label: test-ssh ssh_key
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: output
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -57,7 +57,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         continue-on-error: true
         id: plan
         with:

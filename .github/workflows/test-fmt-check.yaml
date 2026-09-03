@@ -17,7 +17,7 @@ jobs:
           persist-credentials: false
 
       - name: fmt-check
-        uses: ./terraform-fmt-check
+        uses: $/terraform-fmt-check
         id: fmt-check
         with:
           path: tests/workflows/test-fmt-check/canonical
@@ -48,7 +48,7 @@ jobs:
           persist-credentials: false
 
       - name: fmt-check
-        uses: ./terraform-fmt-check
+        uses: $/terraform-fmt-check
         continue-on-error: true
         id: fmt-check
         with:

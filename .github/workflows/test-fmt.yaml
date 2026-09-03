@@ -17,11 +17,11 @@ jobs:
           persist-credentials: false
 
       - name: terraform fmt
-        uses: ./terraform-fmt
+        uses: $/terraform-fmt
         with:
           path: tests/workflows/test-fmt/non-canonical
 
       - name: fmt-check
-        uses: ./terraform-fmt-check
+        uses: $/terraform-fmt-check
         with:
           path: tests/workflows/test-fmt/non-canonical

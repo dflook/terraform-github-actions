@@ -17,7 +17,7 @@ jobs:
           persist-credentials: false
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply
         continue-on-error: true
         with:
@@ -49,14 +49,14 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan
         with:
           label: test-binary-plan apply
           path: tests/workflows/test-binary-plan
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: first-apply
         with:
           label: test-binary-plan apply
@@ -73,7 +73,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan
         with:
           label: test-binary-plan auto_approve
@@ -81,7 +81,7 @@ jobs:
           add_github_comment: false
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         with:
           label: test-binary-plan auto_approve
           path: tests/workflows/test-binary-plan
@@ -103,7 +103,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan
         with:
           label: test-binary-plan plan_changed

@@ -31,7 +31,7 @@ jobs:
           ls -la "$RUNNER_TEMP_D"
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         env:
           TERRAFORM_CLOUD_TOKENS: app.terraform.io=${{ secrets.TF_API_TOKEN }}
         with:
@@ -39,7 +39,7 @@ jobs:
           label: test-registry registry_module
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: output
         with:
           path: tests/workflows/test-registry
@@ -79,13 +79,13 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         with:
           path: tests/workflows/test-registry
           label: test-registry multiple_registry_module
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: output
         with:
           path: tests/workflows/test-registry
@@ -110,7 +110,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan
         continue-on-error: true
         env:

@@ -25,7 +25,7 @@ jobs:
           persist-credentials: false
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: output
         with:
           path: tests/workflows/test-http
@@ -55,7 +55,7 @@ jobs:
           persist-credentials: false
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: output
         with:
           path: tests/workflows/test-http
@@ -85,7 +85,7 @@ jobs:
           persist-credentials: false
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: output
         with:
           path: tests/workflows/test-http

@@ -20,7 +20,7 @@ jobs:
           persist-credentials: false
 
       - name: Get remote state
-        uses: ./terraform-remote-state
+        uses: $/terraform-remote-state
         id: terraform-output
         with:
           backend_type: s3

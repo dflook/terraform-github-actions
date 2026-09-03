@@ -24,28 +24,28 @@ jobs:
           persist-credentials: false
 
       - name: Create a new workspace with no existing workspaces
-        uses: ./terraform-new-workspace
+        uses: $/terraform-new-workspace
         with:
           path: tests/workflows/test-cloud/${{ matrix.tf_version }}
           workspace: ${{ github.head_ref }}-1
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Create a new workspace when it doesn't exist
-        uses: ./terraform-new-workspace
+        uses: $/terraform-new-workspace
         with:
           path: tests/workflows/test-cloud/${{ matrix.tf_version }}
           workspace: ${{ github.head_ref }}-2
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Create a new workspace when it already exists
-        uses: ./terraform-new-workspace
+        uses: $/terraform-new-workspace
         with:
           path: tests/workflows/test-cloud/${{ matrix.tf_version }}
           workspace: ${{ github.head_ref }}-2
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Auto apply workspace
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: auto_apply
         with:
           path: tests/workflows/test-cloud/${{ matrix.tf_version }}
@@ -97,7 +97,7 @@ jobs:
           fi
 
       - name: Get outputs
-        uses: ./terraform-output
+        uses: $/terraform-output
         id: output
         with:
           path: tests/workflows/test-cloud/${{ matrix.tf_version }}
@@ -125,7 +125,7 @@ jobs:
           fi
 
       - name: Get outputs
-        uses: ./terraform-output
+        uses: $/terraform-output
         id: name-output
         with:
           path: fixed-workspace-name
@@ -141,7 +141,7 @@ jobs:
           fi
 
       - name: Check no changes
-        uses: ./terraform-check
+        uses: $/terraform-check
         with:
           path: tests/workflows/test-cloud/${{ matrix.tf_version }}
           workspace: ${{ github.head_ref }}-1
@@ -152,7 +152,7 @@ jobs:
             from_variables="from_variables"
 
       - name: Check changes
-        uses: ./terraform-check
+        uses: $/terraform-check
         id: check
         continue-on-error: true
         with:
@@ -186,14 +186,14 @@ jobs:
           fi
 
       - name: Destroy workspace
-        uses: ./terraform-destroy-workspace
+        uses: $/terraform-destroy-workspace
         with:
           path: tests/workflows/test-cloud/${{ matrix.tf_version }}
           workspace: ${{ github.head_ref }}-1
           backend_config: token=${{ secrets.TF_API_TOKEN }}
 
       - name: Plan workspace
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -235,7 +235,7 @@ jobs:
           fi
 
       - name: Apply workspace
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         id: apply
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -288,7 +288,7 @@ jobs:
           fi
 
       - name: Destroy the last workspace
-        uses: ./terraform-destroy-workspace
+        uses: $/terraform-destroy-workspace
         with:
           path: tests/workflows/test-cloud/${{ matrix.tf_version }}
           workspace: ${{ github.head_ref }}-2

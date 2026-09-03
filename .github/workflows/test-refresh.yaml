@@ -22,7 +22,7 @@ jobs:
           persist-credentials: false
 
       - name: Apply
-        uses: ./terraform-apply
+        uses: $/terraform-apply
         with:
           path: tests/workflows/test-refresh
           auto_approve: true

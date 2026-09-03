@@ -38,13 +38,13 @@ jobs:
           EOF
 
       - name: Create first workspace
-        uses: ./terraform-new-workspace
+        uses: $/terraform-new-workspace
         with:
           path: tests/workflows/test-new-workspace
           workspace: test-workspace
 
       - name: Create first workspace again
-        uses: ./terraform-new-workspace
+        uses: $/terraform-new-workspace
         with:
           path: tests/workflows/test-new-workspace
           workspace: test-workspace

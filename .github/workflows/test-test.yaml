@@ -17,7 +17,7 @@ jobs:
           persist-credentials: false
 
       - name: Test
-        uses: ./terraform-test
+        uses: $/terraform-test
         id: test
         env:
           TERRAFORM_VERSION: 1.10.0
@@ -61,7 +61,7 @@ jobs:
           persist-credentials: false
 
       - name: Test
-        uses: ./terraform-test
+        uses: $/terraform-test
         id: test
         env:
           TERRAFORM_VERSION: 1.11.0
@@ -116,7 +116,7 @@ jobs:
           persist-credentials: false
 
       - name: Test
-        uses: ./terraform-test
+        uses: $/terraform-test
         id: test
         with:
           path: tests/workflows/test-test/local
@@ -147,7 +147,7 @@ jobs:
           persist-credentials: false
 
       - name: Test
-        uses: ./terraform-test
+        uses: $/terraform-test
         id: test
         with:
           path: tests/workflows/test-test/local
@@ -181,7 +181,7 @@ jobs:
           persist-credentials: false
 
       - name: Test
-        uses: ./terraform-test
+        uses: $/terraform-test
         id: nonexistent_test_dir
         continue-on-error: true
         with:
@@ -219,7 +219,7 @@ jobs:
           persist-credentials: false
 
       - name: Test
-        uses: ./terraform-test
+        uses: $/terraform-test
         id: faulty_filter
         continue-on-error: true
         with:
@@ -259,7 +259,7 @@ jobs:
           persist-credentials: false
 
       - name: Test
-        uses: ./terraform-test
+        uses: $/terraform-test
         id: failing
         continue-on-error: true
         with:

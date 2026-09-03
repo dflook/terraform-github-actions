@@ -22,7 +22,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan
         with:
           path: tests/workflows/test-plan/no_changes
@@ -84,7 +84,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan
         with:
           path: tests/workflows/test-plan/no_changes
@@ -127,7 +127,7 @@ jobs:
           persist-credentials: false
 
       - name: Plan
-        uses: ./terraform-plan
+        uses: $/terraform-plan
         id: plan
         with:
           path: tests/workflows/test-plan/plan_11

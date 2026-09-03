@@ -17,7 +17,7 @@ jobs:
           persist-credentials: false
 
       - name: validate
-        uses: ./terraform-validate
+        uses: $/terraform-validate
         id: validate
         with:
           path: tests/workflows/test-validate/valid
@@ -47,7 +47,7 @@ jobs:
           persist-credentials: false
 
       - name: validate
-        uses: ./terraform-validate
+        uses: $/terraform-validate
         id: validate
         continue-on-error: true
         with:
@@ -84,19 +84,19 @@ jobs:
           persist-credentials: false
 
       - name: validate prod
-        uses: ./terraform-validate
+        uses: $/terraform-validate
         with:
           path: tests/workflows/test-validate/workspace_eval
           workspace: prod
 
       - name: validate dev
-        uses: ./terraform-validate
+        uses: $/terraform-validate
         with:
           path: tests/workflows/test-validate/workspace_eval
           workspace: dev
 
       - name: validate nonexistant workspace
-        uses: ./terraform-validate
+        uses: $/terraform-validate
         id: validate
         continue-on-error: true
         with:
@@ -133,7 +133,7 @@ jobs:
           persist-credentials: false
 
       - name: validate prod
-        uses: ./terraform-validate
+        uses: $/terraform-validate
         with:
           path: tests/workflows/test-validate/workspace_eval_remote
           workspace: prod
@@ -148,7 +148,7 @@ jobs:
           persist-credentials: false
 
       - name: validate
-        uses: ./terraform-validate
+        uses: $/terraform-validate
         with:
           path: tests/workflows/test-validate/unterminated-string
         id: validate
