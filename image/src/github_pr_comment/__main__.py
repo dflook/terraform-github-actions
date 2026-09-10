@@ -46,6 +46,9 @@ github = GithubApi(
 ToolProductName = os.environ.get('TOOL_PRODUCT_NAME', 'Terraform')
 
 def job_markdown_ref() -> str:
+    if 'DEPOT_JOB_URL' in os.environ:
+        return f'[{os.environ["GITHUB_WORKFLOW"]} #{os.environ["GITHUB_RUN_NUMBER"]}]({os.environ["DEPOT_JOB_URL"]})'
+
     return f'[{os.environ["GITHUB_WORKFLOW"]} #{os.environ["GITHUB_RUN_NUMBER"]}]({os.environ["GITHUB_SERVER_URL"]}/{os.environ["GITHUB_REPOSITORY"]}/actions/runs/{os.environ["GITHUB_RUN_ID"]})'
 
 def job_workflow_ref() -> str:
