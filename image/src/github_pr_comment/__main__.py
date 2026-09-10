@@ -45,14 +45,24 @@ github = GithubApi(
 
 ToolProductName = os.environ.get('TOOL_PRODUCT_NAME', 'Terraform')
 
-def job_markdown_ref() -> str:
-    if 'DEPOT_JOB_URL' in os.environ:
-        return f'[{os.environ["GITHUB_WORKFLOW"]} #{os.environ["GITHUB_RUN_NUMBER"]}]({os.environ["DEPOT_JOB_URL"]})'
+def job_url() -> str:
+    """
+    The URL of the job running this action.
 
-    return f'[{os.environ["GITHUB_WORKFLOW"]} #{os.environ["GITHUB_RUN_NUMBER"]}]({os.environ["GITHUB_SERVER_URL"]}/{os.environ["GITHUB_REPOSITORY"]}/actions/runs/{os.environ["GITHUB_RUN_ID"]})'
+    Depot CI runs GitHub Actions-like workflows with their own service,
+    so the GitHub run URL is not valid there - use DEPOT_JOB_URL instead
+    """
+
+    if depot_job_url := os.environ.get('DEPOT_JOB_URL'):
+        return depot_job_url
+
+    return f'{os.environ["GITHUB_SERVER_URL"]}/{os.environ["GITHUB_REPOSITORY"]}/actions/runs/{os.environ["GITHUB_RUN_ID"]}'
+
+def job_markdown_ref() -> str:
+    return f'[{os.environ["GITHUB_WORKFLOW"]} #{os.environ["GITHUB_RUN_NUMBER"]}]({job_url()})'
 
 def job_workflow_ref() -> str:
-    return f'Job {os.environ["GITHUB_WORKFLOW"]} #{os.environ["GITHUB_RUN_NUMBER"]} at {os.environ["GITHUB_SERVER_URL"]}/{os.environ["GITHUB_REPOSITORY"]}/actions/runs/{os.environ["GITHUB_RUN_ID"]}'
+    return f'Job {os.environ["GITHUB_WORKFLOW"]} #{os.environ["GITHUB_RUN_NUMBER"]} at {job_url()}'
 
 def _mask_backend_config(action_inputs: PlanPrInputs) -> Optional[str]:
     bad_words = [
