@@ -73,7 +73,12 @@ function test-terraform-version() {
 }
 
 function job_markdown_ref() {
-    echo "[${GITHUB_WORKFLOW} #${GITHUB_RUN_NUMBER}](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})"
+    # If we're running in Depot CI, use the provided URL instead of github actions
+    if [[ -n "${DEPOT_JOB_URL:-}" ]]; then
+        echo "[${GITHUB_WORKFLOW} #${GITHUB_RUN_NUMBER}](${DEPOT_JOB_URL})"
+    else
+        echo "[${GITHUB_WORKFLOW} #${GITHUB_RUN_NUMBER}](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})"
+    fi
 }
 
 function detect-tfmask() {

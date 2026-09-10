@@ -11,9 +11,18 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v3.0.1` to use an exact release
-- `@v3.0` to use the latest patch release for the specific minor version
+- `@v3.1.0` to use an exact release
+- `@v3.1` to use the latest patch release for the specific minor version
 - `@v3` to use the latest patch release for the specific major version
+
+## [3.1.0] - 2026-09-10
+
+### Added
+- PR comments created by [dflook/terraform-plan](https://github.com/dflook/terraform-github-actions/tree/main/terraform-plan)/[dflook/tofu-plan](https://github.com/dflook/terraform-github-actions/tree/main/tofu-plan)
+  and [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/main/terraform-apply)/[dflook/tofu-apply](https://github.com/dflook/terraform-github-actions/tree/main/tofu-apply)
+  now link to the job in [Depot CI](https://depot.dev/docs/ci/overview) when the workflow runs there.
+
+  Thanks to [DanielMiddleton](https://github.com/DanielMiddleton) for suggesting this.
 
 ## [3.0.1] - 2026-09-03
 
@@ -837,6 +846,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[3.1.0]: https://github.com/dflook/terraform-github-actions/compare/v3.0.1...v3.1.0
 [3.0.1]: https://github.com/dflook/terraform-github-actions/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/dflook/terraform-github-actions/compare/v2.2.3...v3.0.0
 [2.2.3]: https://github.com/dflook/terraform-github-actions/compare/v2.2.2...v2.2.3
