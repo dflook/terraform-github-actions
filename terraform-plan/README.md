@@ -170,6 +170,24 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   - Optional
   - Default: The Terraform default (10).
 
+* `speculative`
+
+  Set to `true` to force a speculative plan that cannot be applied.
+
+  This creates a "Planned and finished" run in Terraform Cloud instead of "Planned and saved".
+  Speculative plans don't lock state and can run in parallel with other operations.
+
+  This is useful for PR workflows where you want to preview changes without blocking other runs.
+
+  ```yaml
+  with:
+    speculative: true
+  ```
+
+  - Type: boolean
+  - Optional
+  - Default: `false`
+
 ## Outputs
 
 * `changes`
@@ -184,6 +202,8 @@ The [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/
   The path is relative to the Actions workspace.
 
   The plan can be used as the `plan_file` input to the [dflook/terraform-apply](https://github.com/dflook/terraform-github-actions/tree/main/terraform-apply) action.
+
+  This won't be set if `speculative` is `true` or if the backend type is `remote`/`cloud` in remote execution mode.
 
   Terraform plans often contain sensitive information, so this output should be treated with care.
 
