@@ -17,5 +17,7 @@ from terraform.module import load_module, get_backend_type
 def main() -> None:
     """Entrypoint for terraform-backend"""
 
-    module = load_module(Path(os.environ.get('INPUT_PATH', '.')))
+    # A backend can only be declared by a file that mentions 'backend' or 'cloud',
+    # so the rest of the root module does not need parsing to answer this.
+    module = load_module(Path(os.environ.get('INPUT_PATH', '.')), declaring=['backend', 'cloud'])
     sys.stdout.write(f'{get_backend_type(module)}\n')

@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 from terraform.hcl import loads
-from terraform.module import get_sensitive_variables, files_in_module, load_module
+from terraform.module import get_backend_type, get_sensitive_variables, files_in_module, load_module, mentions
 
 
 def test_get_sensitive_variables():
@@ -106,3 +106,55 @@ def test_load_module_ignores_malformed_json(tmp_path, monkeypatch):
     (tmp_path / 'wrong-types.tf.json').write_text(json.dumps({'variable': 'nope', 'terraform': 5}))
 
     assert get_sensitive_variables(load_module(tmp_path)) == ['good_secret']
+
+
+def test_mentions_reports_words_anywhere_in_the_file(tmp_path):
+    declares = tmp_path / 'declares.tf'
+    declares.write_text('terraform {\n  backend "s3" {}\n}\n')
+    mentions_in_comment = tmp_path / 'comment.tf'
+    mentions_in_comment.write_text('# the backend is configured elsewhere\n')
+    unrelated = tmp_path / 'unrelated.tf'
+    unrelated.write_text('resource "null_resource" "example" {}\n')
+
+    assert mentions(declares, ['backend', 'cloud'])
+    assert mentions(mentions_in_comment, ['backend', 'cloud'])
+    assert not mentions(unrelated, ['backend', 'cloud'])
+
+
+def test_mentions_parses_files_it_cannot_read(tmp_path):
+    assert mentions(tmp_path / 'does-not-exist.tf', ['backend'])
+
+
+def test_load_module_declaring_finds_the_backend(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / 'main.tf').write_text('terraform {\n  backend "s3" {\n    bucket = "state"\n  }\n}\n')
+    (tmp_path / 'unrelated.tf').write_text('variable "example" {\n  type = string\n}\n')
+
+    assert get_backend_type(load_module(tmp_path, declaring=['backend', 'cloud'])) == 's3'
+    assert get_backend_type(load_module(tmp_path)) == 's3'
+
+
+def test_load_module_declaring_skips_files_that_cannot_declare_it(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / 'main.tf').write_text('terraform {\n  backend "s3" {}\n}\n')
+    (tmp_path / 'other.tf').write_text('variable "skipped" {\n  sensitive = true\n}\n')
+
+    filtered = load_module(tmp_path, declaring=['backend', 'cloud'])
+
+    # The skipped file is not parsed, so nothing it declares is loaded.
+    assert get_sensitive_variables(filtered) == []
+    assert get_sensitive_variables(load_module(tmp_path)) == ['skipped']
+
+
+def test_load_module_declaring_reports_local_when_nothing_declares_a_backend(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / 'main.tf').write_text('resource "null_resource" "example" {}\n')
+
+    assert get_backend_type(load_module(tmp_path, declaring=['backend', 'cloud'])) == 'local'
+
+
+def test_load_module_declaring_finds_a_cloud_block(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / 'main.tf').write_text('terraform {\n  cloud {\n    organization = "example"\n  }\n}\n')
+
+    assert get_backend_type(load_module(tmp_path, declaring=['backend', 'cloud'])) == 'cloud'
