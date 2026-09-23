@@ -12,6 +12,7 @@ from environment_variables.TF_PLAN_COLLAPSE_LENGTH import TF_PLAN_COLLAPSE_LENGT
 from inputs.add_github_comment import add_github_comment
 from inputs.backend_config import backend_config
 from inputs.backend_config_file import backend_config_file
+from inputs.backend_type import backend_type
 from inputs.destroy import destroy
 from inputs.label import label
 from inputs.parallelism import parallelism
@@ -49,6 +50,17 @@ The [dflook/$ToolName-apply](https://github.com/dflook/terraform-github-actions/
     meta_description='Create a $ProductName plan',
     inputs=[
         dataclasses.replace(path, description="The path to the $ProductName root module to generate a plan for."),
+        dataclasses.replace(
+            backend_type,
+            required=False,
+            description='''
+The name of the $ProductName plugin used for backend state.
+
+Set this to skip discovering the backend type from the root module.
+Discovering it means parsing every file in the root module, which is slow for large modules.
+The value must name the backend that the module actually declares.
+'''
+        ),
         dataclasses.replace(workspace, description='$ProductName workspace to run the plan for.'),
         dataclasses.replace(label, description=label.description + "\nIf this is set, it must be the same as the `label` used in any corresponding [`dflook/$ToolName-apply`](https://github.com/dflook/terraform-github-actions/tree/main/$ToolName-apply) action."),
         variables,

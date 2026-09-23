@@ -16,6 +16,17 @@ This is intended to run on a schedule to notify if manual changes to your infras
   - Optional
   - Default: The action workspace
 
+* `backend_type`
+
+  The name of the OpenTofu plugin used for backend state.
+
+  Set this to skip discovering the backend type from the root module.
+  Discovering it means parsing every file in the root module, which is slow for large modules.
+  The value must name the backend that the module actually declares.
+
+  - Type: string
+  - Optional
+
 * `workspace`
 
   OpenTofu workspace to run the plan in

@@ -143,11 +143,17 @@ function setup() {
 
     detect-terraform-version
 
-    TERRAFORM_BACKEND_TYPE=$(terraform-backend)
-    readonly TERRAFORM_BACKEND_TYPE
-    if [[ "$TERRAFORM_BACKEND_TYPE" != "" ]]; then
-        echo "Detected $TERRAFORM_BACKEND_TYPE backend"
+    if [[ -n "${INPUT_BACKEND_TYPE:-}" ]]; then
+        # Given by the workflow, so the root module does not need inspecting.
+        TERRAFORM_BACKEND_TYPE="$INPUT_BACKEND_TYPE"
+        echo "Using the $TERRAFORM_BACKEND_TYPE backend given by the backend_type input"
+    else
+        TERRAFORM_BACKEND_TYPE=$(terraform-backend)
+        if [[ "$TERRAFORM_BACKEND_TYPE" != "" ]]; then
+            echo "Detected $TERRAFORM_BACKEND_TYPE backend"
+        fi
     fi
+    readonly TERRAFORM_BACKEND_TYPE
     export TERRAFORM_BACKEND_TYPE
 
     end_group
