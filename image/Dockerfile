@@ -6,8 +6,43 @@ ARG TARGETARCH
 ARG FETCH_CHECKSUMS
 ARG VERSION=99.0.0
 
-RUN python3 -m venv /opt/venv
+# The pip wheel used by `python3 -m venv` also vendors a CA bundle
+# Replace it with a copy of the system bundle, updating the wheel RECORD to match
+RUN python3 <<'EOF'
+import base64, hashlib, re, zipfile
+from pathlib import Path
+
+WHEEL = Path('/usr/share/python-wheels/pip-25.1.1-py3-none-any.whl')
+RECORD = 'pip-25.1.1.dist-info/RECORD'
+CACERT = 'pip/_vendor/certifi/cacert.pem'
+bundle = Path('/etc/ssl/certs/ca-certificates.crt').read_bytes()
+digest = base64.urlsafe_b64encode(hashlib.sha256(bundle).digest()).rstrip(b'=').decode()
+
+patched = WHEEL.with_suffix('.tmp')
+
+with zipfile.ZipFile(WHEEL) as src, zipfile.ZipFile(patched, 'w') as dst:
+    for info in src.infolist():
+        data = src.read(info)
+        if info.filename == CACERT:
+            data = bundle
+        elif info.filename == RECORD:
+            record, count = re.subn(rf'^{re.escape(CACERT)},[^\r\n]*', f'{CACERT},sha256={digest},{len(bundle)}', data.decode(), flags=re.M)
+            assert count == 1, count
+            data = record.encode()
+        dst.writestr(info, data)
+
+patched.replace(WHEEL)
+EOF
+
+# Debian patches pip to use the system CA bundle, so pip's vendored bundles are unused
+# Point them at the system bundle anyway so they don't carry stale CAs
+RUN python3 -m venv /opt/venv \
+ && ln -sf /etc/ssl/certs/ca-certificates.crt /usr/lib/python3/dist-packages/pip/_vendor/certifi/cacert.pem \
+ && ln -sf /etc/ssl/certs/ca-certificates.crt /opt/venv/lib/python3.13/site-packages/pip/_vendor/certifi/cacert.pem
 ENV PATH="/opt/venv/bin:$PATH"
+
+# Use the system CA bundle (kept current by the base image) instead of certifi
+ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
 
 RUN --mount=type=bind,source=requirements.txt,target=/tmp/requirements.txt \
     pip install --no-cache-dir --require-hashes -r /tmp/requirements.txt
