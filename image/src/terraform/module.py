@@ -86,17 +86,48 @@ def files_in_module(path: Path) -> Iterable[Path]:
                 yield filename
 
 
-def load_module(path: Path) -> TerraformModule:
+def mentions(file: Path, words: Iterable[str]) -> bool:
+    """
+    Whether the file mentions any of the given words anywhere in its text.
+
+    A block cannot appear in a file that does not mention its name, so this is a
+    cheap way of finding the files that are worth parsing properly. A file that
+    only mentions a word in a comment or a string is still parsed, so this never
+    changes the result - it only avoids work.
+
+    A file that cannot be read is reported as mentioning the words, so that the
+    usual parsing and error handling applies to it.
+    """
+
+    try:
+        body = file.read_text(errors='ignore')
+    except OSError as e:
+        debug(f'Failed to read {file}')
+        debug(str(e))
+        return True
+
+    return any(word in body for word in words)
+
+
+def load_module(path: Path, declaring: Optional[Iterable[str]] = None) -> TerraformModule:
     """
     Load the terraform module.
 
     Every .tf file in the given directory is read and merged into one terraform module.
     If any .tf file fails to parse, it is ignored.
+
+    If declaring is given, only files mentioning at least one of those words are
+    parsed. Use it when only some blocks are of interest, to avoid parsing files
+    that cannot contain them.
     """
 
     module = cast(TerraformModule, {})
+    words = list(declaring) if declaring is not None else None
 
     for file in files_in_module(path):
+
+        if words is not None and not mentions(file, words):
+            continue
 
         if file.suffix == '.json':
             try:

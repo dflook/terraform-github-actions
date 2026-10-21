@@ -16,6 +16,7 @@ from terraform.module import load_module, get_backend_type
 from terraform.versions import apply_constraints, get_terraform_versions, Version, Constraint, latest_non_prerelease_version
 from terraform_version.asdf import try_read_asdf
 from terraform_version.env import try_read_env
+from terraform_version.exact import try_get_exact_version
 from terraform_version.local_state import try_read_local_state
 from terraform_version.remote_state import get_backend_constraints, read_backend_config_vars, try_guess_state_version
 from terraform_version.remote_workspace import try_get_remote_workspace_version
@@ -134,6 +135,12 @@ def main() -> None:
     try:
         if len(sys.argv) > 1:
             switch(Version(sys.argv[1]))
+
+        elif exact_version := try_get_exact_version(
+            cast(InitInputs, os.environ), cast(ActionsEnv, os.environ), 'OPENTOFU' in os.environ
+        ):
+            sys.stdout.write(f'Using {exact_version.product} {exact_version}, which is pinned exactly\n')
+            switch(exact_version)
 
         else:
             version = determine_version(
