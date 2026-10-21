@@ -11,9 +11,18 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v3.1.1` to use an exact release
+- `@v3.1.2` to use an exact release
 - `@v3.1` to use the latest patch release for the specific minor version
 - `@v3` to use the latest patch release for the specific major version
+
+## [3.1.2] - 2026-10-21
+
+### Security
+- HTTPS requests made by the actions themselves, including to the GitHub API and Terraform Cloud/Enterprise, used the CA bundle from the `certifi` Python package,
+  which still trusted the `emSign ECC Root CA - G3` root certificate removed in 3.1.1.
+  These requests now use the container's system CA bundle, and `certifi` has been updated to a version without this root.
+- The CA bundles vendored by pip in the container have been replaced with the system CA bundle.
+  These were not used, as Debian's pip is already patched to use the system CA bundle.
 
 ## [3.1.1] - 2026-10-21
 
@@ -856,6 +865,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[3.1.2]: https://github.com/dflook/terraform-github-actions/compare/v3.1.1...v3.1.2
 [3.1.1]: https://github.com/dflook/terraform-github-actions/compare/v3.1.0...v3.1.1
 [3.1.0]: https://github.com/dflook/terraform-github-actions/compare/v3.0.1...v3.1.0
 [3.0.1]: https://github.com/dflook/terraform-github-actions/compare/v3.0.0...v3.0.1
