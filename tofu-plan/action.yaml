@@ -7,6 +7,14 @@ inputs:
     description: The path to the OpenTofu root module to generate a plan for.
     required: false
     default: "."
+  backend_type:
+    description: |
+      The name of the OpenTofu plugin used for backend state.
+
+      Set this to skip discovering the backend type from the root module.
+      Discovering it means parsing every file in the root module, which is slow for large modules.
+      The value must name the backend that the module actually declares.
+    required: false
   workspace:
     description: OpenTofu workspace to run the plan for.
     required: false

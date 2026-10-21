@@ -11,6 +11,7 @@ from environment_variables.TERRAFORM_SSH_KEY import TERRAFORM_SSH_KEY
 from inputs.auto_approve import auto_approve
 from inputs.backend_config import backend_config
 from inputs.backend_config_file import backend_config_file
+from inputs.backend_type import backend_type
 from inputs.destroy import destroy
 from inputs.label import label
 from inputs.parallelism import parallelism
@@ -70,6 +71,17 @@ These input values must be the same as any [`dflook/$ToolName-plan`](https://git
     ''',
     inputs=[
         dataclasses.replace(path, description="Path to the $ProductName root module to apply"),
+        dataclasses.replace(
+            backend_type,
+            required=False,
+            description='''
+The name of the $ProductName plugin used for backend state.
+
+Set this to skip discovering the backend type from the root module.
+Discovering it means parsing every file in the root module, which is slow for large modules.
+The value must name the backend that the module actually declares.
+'''
+        ),
         dataclasses.replace(workspace, description="$ProductName workspace to run the apply in"),
         dataclasses.replace(label, description=label.description + "\nIt must be the same as the `label` used in the corresponding [`dflook/$ToolName-plan`](https://github.com/dflook/terraform-github-actions/tree/main/$ToolName-plan) action."),
         variables,

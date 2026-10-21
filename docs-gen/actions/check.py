@@ -9,6 +9,7 @@ from environment_variables.TERRAFORM_SSH_KEY import TERRAFORM_SSH_KEY
 from inputs.var import var
 from inputs.backend_config import backend_config
 from inputs.backend_config_file import backend_config_file
+from inputs.backend_type import backend_type
 from inputs.parallelism import parallelism
 from inputs.path import path
 from inputs.var_file import var_file
@@ -26,6 +27,17 @@ check = Action(
     meta_description='Check if there are $ProductName changes to apply',
     inputs=[
         dataclasses.replace(path, description='Path to the $ProductName root module to check'),
+        dataclasses.replace(
+            backend_type,
+            required=False,
+            description='''
+The name of the $ProductName plugin used for backend state.
+
+Set this to skip discovering the backend type from the root module.
+Discovering it means parsing every file in the root module, which is slow for large modules.
+The value must name the backend that the module actually declares.
+'''
+        ),
         dataclasses.replace(workspace, description='$ProductName workspace to run the plan in'),
         variables,
         var_file,

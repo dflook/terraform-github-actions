@@ -43,6 +43,17 @@ These input values must be the same as any [`dflook/terraform-plan`](https://git
   - Optional
   - Default: The action workspace
 
+* `backend_type`
+
+  The name of the Terraform plugin used for backend state.
+
+  Set this to skip discovering the backend type from the root module.
+  Discovering it means parsing every file in the root module, which is slow for large modules.
+  The value must name the backend that the module actually declares.
+
+  - Type: string
+  - Optional
+
 * `workspace`
 
   Terraform workspace to run the apply in
