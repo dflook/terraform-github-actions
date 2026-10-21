@@ -11,9 +11,19 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v3.1.0` to use an exact release
+- `@v3.1.1` to use an exact release
 - `@v3.1` to use the latest patch release for the specific minor version
 - `@v3` to use the latest patch release for the specific major version
+
+## [3.1.1] - 2026-10-21
+
+### Security
+- The container image has been rebuilt with Debian's updated `ca-certificates` package (`20250419+deb13u1`).
+  This removes the `emSign ECC Root CA - G3` and `AAA Certificate Services` root certificates,
+  which are no longer trusted following the [eMudhra key compromise](https://bugzilla.mozilla.org/show_bug.cgi?id=2083449).
+  Previously Terraform/OpenTofu would trust certificates issued from these roots.
+
+  Thanks to [kumarpramod](https://github.com/kumarpramod) for reporting this issue.
 
 ## [3.1.0] - 2026-09-10
 
@@ -846,6 +856,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[3.1.1]: https://github.com/dflook/terraform-github-actions/compare/v3.1.0...v3.1.1
 [3.1.0]: https://github.com/dflook/terraform-github-actions/compare/v3.0.1...v3.1.0
 [3.0.1]: https://github.com/dflook/terraform-github-actions/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/dflook/terraform-github-actions/compare/v2.2.3...v3.0.0
