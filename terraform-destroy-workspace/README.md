@@ -211,7 +211,7 @@ This action uses the `terraform destroy` command to destroy all resources in a T
 
   Each command is printed to the workflow log before it is run, including any values it uses.
   Workflow commands such as `::add-mask::` are not processed in this script, so can't be used to mask values fetched at runtime.
-  If the commands use secrets, start the script with `set +x`.
+  If the commands contain secrets, start the script with `set +x`.
 
   For example:
 
