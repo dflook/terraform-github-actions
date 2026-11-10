@@ -18,7 +18,7 @@ When using an action you can specify the version as:
 ## [3.1.3] - 2026-11-10
 
 ### Security
-- The debug log no longer includes every environment variable. 
+- The debug log no longer includes every environment variable.
   Only the default environment variables set by the actions runner are logged, e.g. `GITHUB_REPOSITORY` and `RUNNER_OS`.
 
   GitHub hides the debug log unless debug logging is enabled and masks known secrets, but self-hosted or
