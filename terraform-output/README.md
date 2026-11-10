@@ -183,6 +183,10 @@ Retrieve the root-level outputs from a Terraform configuration.
 
   The runtime image is currently based on `debian:trixie`, with the command run using `bash -xeo pipefail`.
 
+  Each command is printed to the workflow log before it is run, including any values it uses.
+  Workflow commands such as `::add-mask::` are not processed in this script, so can't be used to mask values fetched at runtime.
+  If the commands use secrets, start the script with `set +x`.
+
   For example:
 
   ```yaml

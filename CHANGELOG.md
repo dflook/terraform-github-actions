@@ -11,9 +11,21 @@ The actions are versioned as a suite. Some actions may have no change in behavio
 
 When using an action you can specify the version as:
 
-- `@v3.1.2` to use an exact release
+- `@v3.1.3` to use an exact release
 - `@v3.1` to use the latest patch release for the specific minor version
 - `@v3` to use the latest patch release for the specific major version
+
+## [3.1.3] - 2026-11-10
+
+### Security
+- The debug log no longer includes every environment variable.
+  Only the default environment variables set by the actions runner are logged, e.g. `GITHUB_REPOSITORY` and `RUNNER_OS`.
+
+  GitHub hides the debug log unless debug logging is enabled and masks known secrets, but self-hosted or
+  third-party runners that capture the raw output of the action could have shown the values of
+  environment variables containing secrets, such as `TERRAFORM_CLOUD_TOKENS`.
+
+  Thanks to [bamarch](https://github.com/bamarch) for reporting this issue.
 
 ## [3.1.2] - 2026-10-21
 
@@ -865,6 +877,7 @@ First release of the GitHub Actions:
 - [dflook/terraform-new-workspace](terraform-new-workspace)
 - [dflook/terraform-destroy-workspace](terraform-destroy-workspace)
 
+[3.1.3]: https://github.com/dflook/terraform-github-actions/compare/v3.1.2...v3.1.3
 [3.1.2]: https://github.com/dflook/terraform-github-actions/compare/v3.1.1...v3.1.2
 [3.1.1]: https://github.com/dflook/terraform-github-actions/compare/v3.1.0...v3.1.1
 [3.1.0]: https://github.com/dflook/terraform-github-actions/compare/v3.0.1...v3.1.0
