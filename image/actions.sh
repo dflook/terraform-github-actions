@@ -32,9 +32,40 @@ repair_environment
 # shellcheck source=../workflow_commands.sh
 source /usr/local/workflow_commands.sh
 
+# Environment variables set by the actions runner.
+# Other environment variables may contain secrets, so are not printed to the debug log.
+RUNNER_ENV_VARS=(
+    CI HOME
+    GITHUB_ACTION GITHUB_ACTIONS GITHUB_ACTION_PATH GITHUB_ACTION_REF GITHUB_ACTION_REPOSITORY
+    GITHUB_ACTOR GITHUB_ACTOR_ID GITHUB_API_URL GITHUB_ARTIFACTS GITHUB_ARTIFACTS_LIST
+    GITHUB_BASE_REF GITHUB_ENV GITHUB_EVENT_NAME GITHUB_EVENT_PATH GITHUB_GRAPHQL_URL
+    GITHUB_HEAD_REF GITHUB_JOB GITHUB_OUTPUT GITHUB_PATH GITHUB_REF GITHUB_REF_NAME
+    GITHUB_REF_PROTECTED GITHUB_REF_TYPE GITHUB_REPOSITORY GITHUB_REPOSITORY_ID
+    GITHUB_REPOSITORY_OWNER GITHUB_REPOSITORY_OWNER_ID GITHUB_RETENTION_DAYS GITHUB_RUN_ATTEMPT
+    GITHUB_RUN_ID GITHUB_RUN_NUMBER GITHUB_SERVER_URL GITHUB_SHA GITHUB_STATE GITHUB_STEP_SUMMARY
+    GITHUB_TRIGGERING_ACTOR GITHUB_WORKFLOW GITHUB_WORKFLOW_REF GITHUB_WORKFLOW_SHA GITHUB_WORKSPACE
+    RUNNER_ARCH RUNNER_DEBUG RUNNER_ENVIRONMENT RUNNER_NAME RUNNER_OS RUNNER_TEMP
+    RUNNER_TOOL_CACHE RUNNER_WORKSPACE
+)
+
+function debug_env() {
+    local name
+    local value
+
+    for name in "${RUNNER_ENV_VARS[@]}"; do
+        if [[ -v "$name" ]]; then
+            value="${!name}"
+            value="${value//'%'/%25}"
+            value="${value//$'\r'/%0D}"
+            value="${value//$'\n'/%0A}"
+            debug_log "env:$name=$value"
+        fi
+    done
+}
+
 function debug() {
     debug_cmd pwd
-    debug_cmd printenv
+    debug_env
     debug_tree "$HOME"
     debug_file "$GITHUB_EVENT_PATH"
     echo
