@@ -4,9 +4,20 @@ on:
   release:
     types:
       - released
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: An existing release to finish publishing, e.g. v3.1.3.
+        required: true
+        type: string
 
 permissions:
   contents: read
+
+# Publishing moves branches and tags in every action repo, so releases must not overlap.
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   image:
@@ -19,14 +30,28 @@ jobs:
       attestations: write
     environment:
       name: dockerhub
-      url: https://hub.docker.com/r/danielflook/terraform-github-actions/tags?name=${{ github.event.release.tag_name }}
+      url: https://hub.docker.com/r/danielflook/terraform-github-actions/tags?name=${{ github.event.release.tag_name || inputs.tag_name }}
     outputs:
-      digest: ${{ steps.image_build.outputs.digest }}
-      base-digest: ${{ steps.image_build.outputs.base-digest }}
+      digest: ${{ steps.existing_image.outputs.digest || steps.image_build.outputs.digest }}
+      base-digest: ${{ steps.existing_image.outputs.base-digest || steps.image_build.outputs.base-digest }}
     steps:
+      - name: Check this is the latest release
+        env:
+          RELEASE_TAG: "${{ github.event.release.tag_name || inputs.tag_name }}"
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Only allow the workflow to run for the latest release
+          LATEST_RELEASE=$(gh api "repos/$GITHUB_REPOSITORY/releases/latest" --jq '.tag_name')
+
+          if [[ "$RELEASE_TAG" != "$LATEST_RELEASE" ]]; then
+            echo "::error::Only the latest release can be published, which is $LATEST_RELEASE"
+            exit 1
+          fi
+
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          ref: refs/tags/${{ github.event.release.tag_name || inputs.tag_name }}
           persist-credentials: false
 
       - name: Check action documentation is up-to-date
@@ -45,10 +70,91 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
 
+      - name: Find existing release image
+        id: existing_image
+        env:
+          RELEASE_TAG: "${{ github.event.release.tag_name || inputs.tag_name }}"
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # If a previous attempt at this release has already built and attested the image, it is used instead of building it again.
+          IMAGE_REF="danielflook/terraform-github-actions:$RELEASE_TAG"
+
+          # The image is only built by a run for the release tag itself, so that its annotations and attestations are for the release.
+          function build_image() {
+              if [[ "$GITHUB_REF" != "refs/tags/$RELEASE_TAG" ]]; then
+                echo "::error::$1. It can only be built by a run for refs/tags/$RELEASE_TAG, this run is for $GITHUB_REF"
+                exit 1
+              fi
+
+              echo "$1, so it will be built"
+              exit 0
+          }
+
+          REGISTRY_TOKEN=$(curl --silent --fail "https://auth.docker.io/token?service=registry.docker.io&scope=repository:danielflook/terraform-github-actions:pull" | jq -r '.token')
+          TAG_STATUS=$(curl --silent --head --output /dev/null --write-out "%{http_code}" \
+            --header "Authorization: Bearer $REGISTRY_TOKEN" \
+            --header "Accept: application/vnd.oci.image.index.v1+json" \
+            --header "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
+            "https://registry-1.docker.io/v2/danielflook/terraform-github-actions/manifests/$RELEASE_TAG")
+
+          if [[ "$TAG_STATUS" == "404" ]]; then
+            build_image "$IMAGE_REF does not exist"
+          elif [[ "$TAG_STATUS" != "200" ]]; then
+            echo "::error::Unexpected response checking for $IMAGE_REF: $TAG_STATUS"
+            exit 1
+          fi
+
+          IMAGE=$(docker buildx imagetools inspect "$IMAGE_REF" --format '{{json .}}')
+          DIGEST=$(jq -r '.manifest.digest' <<<"$IMAGE")
+          BASE_DIGEST=$(jq -r '.manifest.annotations."base.manifest.digest"' <<<"$IMAGE")
+          REVISION=$(jq -r '.manifest.annotations."org.opencontainers.image.revision"' <<<"$IMAGE")
+
+          if [[ ! "$DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]; then
+            echo "::error::Unable to get the digest of $IMAGE_REF"
+            exit 1
+          fi
+
+          # A complete build has two attestations, one for each of the Docker Hub and GHCR refs.
+          ATTESTATIONS_STATUS=$(curl --silent --output "$RUNNER_TEMP/attestations.json" --write-out "%{http_code}" \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/dflook/terraform-github-actions/attestations/$DIGEST")
+
+          if [[ "$ATTESTATIONS_STATUS" == "404" ]]; then
+            build_image "$IMAGE_REF exists but has no attestations"
+          elif [[ "$ATTESTATIONS_STATUS" != "200" ]]; then
+            echo "::error::Unexpected response checking for attestations of $IMAGE_REF: $ATTESTATIONS_STATUS"
+            exit 1
+          elif [[ "$(jq -r '.attestations | length' "$RUNNER_TEMP/attestations.json")" -lt 2 ]]; then
+            build_image "$IMAGE_REF exists but was not fully attested"
+          fi
+
+          if [[ ! "$BASE_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]; then
+            echo "::error::Unable to get the base image digest of $IMAGE_REF"
+            exit 1
+          fi
+
+          if [[ "$REVISION" != "$(git rev-parse HEAD)" ]]; then
+            echo "::error::$IMAGE_REF was built from $REVISION, which is not this release"
+            exit 1
+          fi
+
+          gh attestation verify \
+            --repo dflook/terraform-github-actions \
+            --signer-workflow dflook/terraform-github-actions/.github/workflows/release.yaml \
+            --source-ref "refs/tags/$RELEASE_TAG" \
+            --source-digest "$(git rev-parse HEAD)" \
+            "oci://index.docker.io/danielflook/terraform-github-actions@$DIGEST"
+
+          echo "Using the existing image $IMAGE_REF@$DIGEST"
+          echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
+          echo "base-digest=$BASE_DIGEST" >> "$GITHUB_OUTPUT"
+
       - name: Build action image
         id: image_build
+        if: steps.existing_image.outputs.digest == ''
         env:
-          RELEASE_TAG: "${{ github.event.release.tag_name }}"
+          RELEASE_TAG: "${{ github.event.release.tag_name || inputs.tag_name }}"
           GH_TOKEN: ${{ github.token }}
         run: |
           BASE_TAG=$(docker buildx imagetools inspect danielflook/terraform-github-actions-base:latest --format '{{json .}}' | jq -r '.manifest.annotations."ref.tag"')
@@ -67,7 +173,7 @@ jobs:
             --attest "type=provenance,mode=max,builder-id=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
             --annotation "index,manifest:org.opencontainers.image.created=$(date '+%Y-%m-%dT%H:%M:%S%z')" \
             --annotation "index,manifest:org.opencontainers.image.source=https://github.com/${{ github.repository }}" \
-            --annotation "index,manifest:org.opencontainers.image.revision=${{ github.sha }}" \
+            --annotation "index,manifest:org.opencontainers.image.revision=$(git rev-parse HEAD)" \
             --annotation "index,manifest:org.opencontainers.image.version=$RELEASE_TAG" \
             --annotation "index,manifest:org.opencontainers.image.title=terraform-github-actions" \
             --annotation "index,manifest:org.opencontainers.image.description=GitHub actions for terraform" \
@@ -85,12 +191,14 @@ jobs:
           echo "base-digest=$BASE_DIGEST" >> "$GITHUB_OUTPUT"
 
       - name: Dockerhub ref attestation
+        if: steps.existing_image.outputs.digest == ''
         uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 # v4.1.0
         with:
           subject-name: index.docker.io/danielflook/terraform-github-actions
           subject-digest: ${{ steps.image_build.outputs.digest }}
 
       - name: GHCR ref attestation
+        if: steps.existing_image.outputs.digest == ''
         uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 # v4.1.0
         with:
           subject-name: ghcr.io/dflook/terraform-github-actions
@@ -103,11 +211,12 @@ jobs:
       - image
     environment:
       name: release
-      url: https://github.com/dflook/terraform-github-actions/releases/tag/${{ github.event.release.tag_name }}
+      url: https://github.com/dflook/terraform-github-actions/releases/tag/${{ github.event.release.tag_name || inputs.tag_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          ref: refs/tags/${{ github.event.release.tag_name || inputs.tag_name }}
           fetch-depth: 0
           persist-credentials: false
 
@@ -125,13 +234,18 @@ jobs:
       - name: Release actions
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
-          RELEASE_TAG: "${{ github.event.release.tag_name }}"
+          RELEASE_TAG: "${{ github.event.release.tag_name || inputs.tag_name }}"
           IMAGE_DIGEST: ${{ needs.image.outputs.digest }}
         run: |
           major=$(echo "$RELEASE_TAG" | cut -d. -f1)
           minor=$(echo "$RELEASE_TAG" | cut -d. -f2)
           export major
           export minor
+
+          if [[ ! "$IMAGE_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]; then
+            echo "::error::Not an image digest: $IMAGE_DIGEST"
+            exit 1
+          fi
 
           function prepare_release() {
               rsync -r "$GITHUB_WORKSPACE/$action/" "$HOME/$action"
@@ -140,51 +254,103 @@ jobs:
               cp "$GITHUB_WORKSPACE/.github/FUNDING.yml" "$HOME/$action/.github/FUNDING.yml"
           }
 
+          # Commit the prepared release, unless the branch already has it
+          function commit_release() {
+              git -C "$HOME/$action" add -A
+              git -C "$HOME/$action" diff --cached --quiet || git -C "$HOME/$action" commit -m "$1"
+          }
+
+          function tag_exists() {
+              git -C "$HOME/$action" rev-parse --quiet --verify "refs/tags/$1" >/dev/null
+          }
+
+          # Create a full version tag for a commit, unless the tag already exists
+          # e.g. create_tag v3.1.3 HEAD
+          function create_tag() {
+              if ! tag_exists "$1"; then
+                  git -C "$HOME/$action" tag -a -m"$RELEASE_TAG" "$1" "$2"
+                  git -C "$HOME/$action" push origin "refs/tags/$1"
+              fi
+          }
+
+          # Print the highest full version out of this release and the tags that already exist in the action repo
+          # e.g. if this release is v3.1.3 and the tags v3.0.4 and v3.1.2 exist, this prints v3.1.3
+          function latest_version() {
+              { git -C "$HOME/$action" tag --list; echo "$RELEASE_TAG"; } | { grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' || true; } | sort --version-sort | tail -n1
+          }
+
+          # Point a mutable version tag at the commit of a full version tag, unless it already does
+          # e.g. move_tag v3 v3.1.3
+          function move_tag() {
+              local wanted
+              local current
+
+              wanted=$(git -C "$HOME/$action" rev-parse --verify "refs/tags/$2^{commit}")
+              current=$(git -C "$HOME/$action" rev-parse --quiet --verify "refs/tags/$1^{commit}" || true)
+
+              if [[ "$current" != "$wanted" ]]; then
+                  git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$1" "$wanted"
+                  git -C "$HOME/$action" push --force origin "refs/tags/$1"
+              fi
+          }
+
+          # Each step is skipped if it has already been done, so a release that failed part way through can be retried.
           for action in $(cd "$GITHUB_WORKSPACE" && find . -name action.yaml -printf "%h\n" | sed 's/^.\///'); do
+            echo "Releasing dflook/$action@$RELEASE_TAG"
 
-            if git clone "https://dflook:$GITHUB_TOKEN@github.com/dflook/$action.git" "$HOME/$action"; then
-              echo "Releasing dflook/$action@$RELEASE_TAG"
+            git clone "https://dflook:$GITHUB_TOKEN@github.com/dflook/$action.git" "$HOME/$action"
 
-              # git tags that use DockerHub for the image
+            # Publishing updates the branches and mutable version tags, so only the latest version can be published.
+            if [[ "$(latest_version)" != "$RELEASE_TAG" ]]; then
+              echo "::error::dflook/$action already has $(latest_version), which is newer than $RELEASE_TAG"
+              exit 1
+            fi
+
+            # git tags that use DockerHub for the image
+            if ! tag_exists "$RELEASE_TAG"; then
               prepare_release
               sed -i "s|  image:.*|  image: docker://danielflook/terraform-github-actions@$IMAGE_DIGEST|" "$HOME/$action/action.yaml"
 
-              git -C "$HOME/$action" add -A
-              git -C "$HOME/$action" commit -m "$RELEASE_TAG"
-              git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$RELEASE_TAG"
-              git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$major"
-              git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$major.$minor"
-              git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$RELEASE_TAG-dockerhub"
-              git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$major-dockerhub"
-              git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$major.$minor-dockerhub"
+              commit_release "$RELEASE_TAG"
               git -C "$HOME/$action" push --force
-              git -C "$HOME/$action" push --force --tags
+              create_tag "$RELEASE_TAG" HEAD
+            fi
+            create_tag "$RELEASE_TAG-dockerhub" "refs/tags/$RELEASE_TAG^{commit}"
 
-              # git tags that use GitHub Container Registry for the image
+            # git tags that use GitHub Container Registry for the image
+            if ! tag_exists "$RELEASE_TAG-ghcr"; then
               git -C "$HOME/$action" checkout ghcr || git -C "$HOME/$action" checkout -b ghcr
               prepare_release
               sed -i "s|  image:.*|  image: docker://ghcr.io/dflook/terraform-github-actions@$IMAGE_DIGEST|" "$HOME/$action/action.yaml"
 
-              git -C "$HOME/$action" add -A
-              git -C "$HOME/$action" commit -m "$RELEASE_TAG-ghcr"
-              git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$RELEASE_TAG-ghcr"
-              git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$major-ghcr"
-              git -C "$HOME/$action" tag --force -a -m"$RELEASE_TAG" "$major.$minor-ghcr"
+              commit_release "$RELEASE_TAG-ghcr"
               git -C "$HOME/$action" push --set-upstream origin ghcr --force
-              git -C "$HOME/$action" push --force --tags
+              create_tag "$RELEASE_TAG-ghcr" HEAD
+            fi
 
-              # Create the github release
+            # Update the mutable version tags
+            # The empty variant is the tags with no suffix, e.g. v3 and v3.1
+            for variant in "" "-dockerhub" "-ghcr"; do
+              move_tag "$major$variant" "$RELEASE_TAG$variant"
+              move_tag "$major.$minor$variant" "$RELEASE_TAG$variant"
+            done
+
+            # Create the github release
+            release_status=$(curl --silent --output /dev/null --write-out "%{http_code}" --user "dflook:$GITHUB_TOKEN" "https://api.github.com/repos/dflook/$action/releases/tags/$RELEASE_TAG")
+
+            if [[ "$release_status" == "404" ]]; then
               cat "$GITHUB_WORKSPACE/.github/release_template.md" \
                | envsubst \
-               | jq --slurp --raw-input --arg RELEASE_TAG "$RELEASE_TAG" '{"tag_name": $RELEASE_TAG, "name": $RELEASE_TAG, "body": . }' \
+               | jq --slurp --raw-input --arg RELEASE_TAG "$RELEASE_TAG" '{"tag_name": $RELEASE_TAG, "name": $RELEASE_TAG, "body": ., "make_latest": "true"}' \
                | curl -X POST \
+                   --fail-with-body \
                    --user "dflook:$GITHUB_TOKEN" \
                    --header "Content-Type: application/json" \
                    --data-binary @- \
                    "https://api.github.com/repos/dflook/$action/releases"
-
-            else
-              echo "Skipping dflook/$action"
+            elif [[ "$release_status" != "200" ]]; then
+              echo "::error::Unexpected response checking for an existing dflook/$action@$RELEASE_TAG release: $release_status"
+              exit 1
             fi
           done
 
@@ -197,7 +363,7 @@ jobs:
     permissions: {}
     environment:
       name: dockerhub
-      url: https://hub.docker.com/r/danielflook/terraform-github-actions-base/tags?name=${{ github.event.release.tag_name }}
+      url: https://hub.docker.com/r/danielflook/terraform-github-actions-base/tags?name=${{ github.event.release.tag_name || inputs.tag_name }}
     steps:
       - name: Registry login
         env:
@@ -210,9 +376,14 @@ jobs:
 
       - name: Tag and push base image with release version
         env:
-          RELEASE_TAG: "${{ github.event.release.tag_name }}"
+          RELEASE_TAG: "${{ github.event.release.tag_name || inputs.tag_name }}"
           BASE_DIGEST: ${{ needs.image.outputs.base-digest }}
         run: |
+          if [[ ! "$BASE_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]; then
+            echo "::error::Not an image digest: $BASE_DIGEST"
+            exit 1
+          fi
+
           # Tag the base image manifest list with the release version
           docker buildx imagetools create \
             --tag "danielflook/terraform-github-actions-base:$RELEASE_TAG" \
