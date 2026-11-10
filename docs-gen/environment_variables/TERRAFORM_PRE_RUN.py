@@ -9,6 +9,8 @@ The runtime environment for these actions is subject to change in minor version 
   
 The runtime image is currently based on `debian:trixie`, with the command run using `bash -xeo pipefail`.
 
+Each command is printed to the workflow log before it is run, including any values it uses. Workflow commands such as `::add-mask::` are not processed in this script, so can't be used to mask values fetched at runtime. If the commands use secrets, start the script with `set +x`.
+
 For example:
 
 ```yaml
